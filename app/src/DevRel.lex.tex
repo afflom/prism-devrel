@@ -12,7 +12,9 @@ definition{
   name: dispatch,
   parameters: [value : Bytes],
   result: Bytes,
-  body: (Foundation.DevRel.V1.Model::lookup value (Catalog::records) (Catalog::resources) (Catalog::covers)),
+  body: (match (Foundation.DevRel.V1.Model::requestIndex value)
+    | Option.none => (prim utf8_encode "invalid request" : Bytes)
+    | Option.some position => (Catalog::answerAt position)),
   axioms: [Quot.sound, propext]
 }
 

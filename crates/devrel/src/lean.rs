@@ -28,12 +28,64 @@ fn list(items: &[String], element: &str) -> String {
     out
 }
 
+/// A declaration in the layout `lexlean fmt` keeps: on one line when that
+/// line fits in 100 columns, one field per line otherwise.
+fn declaration(keyword: &str, fields: &[(&str, String)]) -> String {
+    let one = format!(
+        "{keyword}{{{}}}\n",
+        fields
+            .iter()
+            .map(|(k, v)| format!("{k}: {v}"))
+            .collect::<Vec<_>>()
+            .join(", ")
+    );
+    if one.len() <= 101 {
+        return one;
+    }
+    format!(
+        "{keyword}{{\n{}\n}}\n",
+        fields
+            .iter()
+            .map(|(k, v)| format!("  {k}: {v}"))
+            .collect::<Vec<_>>()
+            .join(",\n")
+    )
+}
+
 fn definition(name: &str, result: &str, body: &str) -> String {
-    format!("definition{{\n  name: {name},\n  parameters: [],\n  result: {result},\n  body: {body}\n}}\n")
+    declaration(
+        "definition",
+        &[
+            ("name", name.into()),
+            ("parameters", "[]".into()),
+            ("result", result.into()),
+            ("body", body.into()),
+        ],
+    )
+}
+
+fn indexed(name: &str, body: &str) -> String {
+    declaration(
+        "definition",
+        &[
+            ("name", name.into()),
+            ("parameters", "[position : Nat]".into()),
+            ("result", "Bytes".into()),
+            ("body", body.into()),
+        ],
+    )
 }
 
 fn theorem(name: &str, statement: &str) -> String {
-    format!("theorem{{\n  name: {name},\n  parameters: [],\n  statement: {statement},\n  proof: decide{{}}\n}}\n")
+    declaration(
+        "theorem",
+        &[
+            ("name", name.into()),
+            ("parameters", "[]".into()),
+            ("statement", statement.into()),
+            ("proof", "decide{}".into()),
+        ],
+    )
 }
 
 /// The acceptance vectors of the lookup, replayed in the compiled guest: the first and last record, the
@@ -85,6 +137,20 @@ fn chunked(decls: &mut Vec<String>, name: &str, element: &str, append: &str, ite
         body = format!("({MODEL}::{append} ({part}) {body})");
     }
     decls.push(definition(name, &ty, &body));
+}
+
+fn tree(decls: &mut Vec<String>, low: usize, high: usize) -> String {
+    let name = format!("answerIn{low}x{high}");
+    let body = if high - low == 1 {
+        format!("(answer{low})")
+    } else {
+        let mid = low + (high - low) / 2;
+        let left = tree(decls, low, mid);
+        let right = tree(decls, mid, high);
+        format!("(if (position <? {mid}) then ({left} position) else ({right} position))")
+    };
+    decls.push(indexed(&name, &body));
+    name
 }
 
 /// `app/src/Catalog.lex.tex` for this catalog.
@@ -172,6 +238,23 @@ pub fn catalog(c: &Catalog) -> String {
         "vectors",
         &format!("(List {view})"),
         &list(&vector_items, view),
+    ));
+    // The answers the guest serves. Each record's answer is its own small
+    // definition, reached through a balanced tree of comparisons, so the
+    // compiled guest holds no long list: the production exporter refuses a
+    // let-chain as deep as one element per record (PP5008, TooLarge).
+    for r in &c.records {
+        decls.push(definition(
+            &format!("answer{}", r.index),
+            "Bytes",
+            &hex(c.answer(r.index).as_bytes()),
+        ));
+    }
+    tree(&mut decls, 0, c.records.len());
+    let n = c.records.len();
+    decls.push(indexed(
+        "answerAt",
+        &format!("(if (position <? {n}) then (answerIn0x{n} position) else (prim utf8_encode \"unknown record\" : Bytes))"),
     ));
     for r in c.resources.iter().filter(|r| r.scope != Scope::Index) {
         let name = resource_name(r.slug);

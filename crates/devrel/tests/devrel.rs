@@ -226,9 +226,38 @@ fn lookup_dr_06() {
         .any(|(q, a)| q.len() > 6 && a == b"invalid request"));
     let rules = std::fs::read_to_string(root().join("app/src/Foundation/DevRel/V1/Model.lex.tex"))
         .expect("the DevRel facet");
-    let lookup = declaration(&rules, "lookup");
+    let bound = declaration(&rules, "requestIndex");
     assert!(
-        lookup.contains("(6 <? (Foundation.Bytes::byteLength value))"),
+        bound.contains("(6 <? (Foundation.Bytes::byteLength value))"),
         "the request bound is not six bytes"
     );
+    // Every answer the guest serves is the generator's answer for that record,
+    // and a branch of the tree reaches each of them.
+    let generated = lean::catalog(&catalog);
+    for r in &catalog.records {
+        let body = lean::hex(catalog.answer(r.index).as_bytes());
+        let one = format!(
+            "name: answer{}, parameters: [], result: Bytes, body: {body}}}",
+            r.index
+        );
+        let multi = format!(
+            "  name: answer{},\n  parameters: [],\n  result: Bytes,\n  body: {body}\n",
+            r.index
+        );
+        assert!(
+            generated.contains(&one) || generated.contains(&multi),
+            "answer{} is not the record's answer",
+            r.index
+        );
+        assert!(
+            generated.contains(&format!("(answer{})", r.index)),
+            "no branch reaches answer{}",
+            r.index
+        );
+    }
+    let app =
+        std::fs::read_to_string(root().join("app/src/DevRel.lex.tex")).expect("the application");
+    let dispatch = declaration(&app, "dispatch");
+    assert!(dispatch.contains("Foundation.DevRel.V1.Model::requestIndex value"));
+    assert!(dispatch.contains("(Catalog::answerAt position)"));
 }

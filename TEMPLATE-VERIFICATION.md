@@ -227,9 +227,9 @@ outside the SDK image; the SDK checks run in the pull request's bootstrap job.
 ## The DevRel record lookup
 
 `app/` is a Prism text/3 application (`prismpm/text-application/3`, no
-workbench, so it keeps the Text/1 page with closure v2). `DevRel::dispatch` is
-`Foundation.DevRel.V1.Model::lookup` over the generated catalog
-(`app/src/Catalog.lex.tex`): a request of one to six decimal digits answers
+workbench, so it keeps the Text/1 page with closure v2). `DevRel::dispatch`
+reads the request with `Foundation.DevRel.V1.Model::requestIndex` and answers
+with `Catalog::answerAt`: a request of one to six decimal digits answers
 `record <id>:` followed by the slugs of the covering resources, an index past
 the end answers `unknown record`, and anything else `invalid request`. The
 acceptance vectors are generated with the catalog: the first, middle and last
@@ -242,6 +242,14 @@ kernel (`ByteArray` equality is implemented natively), so the lookup's answers
 are checked by the acceptance vectors replayed in the compiled guest rather
 than by `decide` theorems; `lookup_dr_06` pins the request bound and the answer
 format against the generator's own copy of the answer.
+
+The first `prismpm verify` of a dispatch that walked the catalog lists in the
+guest failed with `PP5008` (the production exporter's LCNF reader refused the
+let-chain of the list literal as `TooLarge`). The generator now writes each
+record's answer as its own `Bytes` definition, `answer<i>`, reached through a
+balanced tree of comparisons (`answerIn<lo>x<hi>`), so the guest holds no list
+deeper than the tree, and `lookup_dr_06` requires every `answer<i>` to be the
+generator's answer for record `i` and to be reached by a branch.
 
 The LexLean front end reads a module through a JSON reader with a nesting
 limit, and every element of a `cons` chain is one level; the generator
