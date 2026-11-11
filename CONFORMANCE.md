@@ -24,6 +24,17 @@ model does not sanction.
 | --- | --- | --- |
 | `TC-01` | `build` | The checker answers conformant exactly when every universal policy file's observed digest equals its locked digest |
 
+## devrel
+
+| ID | Level | Statement |
+| --- | --- | --- |
+| `DR-01` | `build` | Every facet record of the subject is covered by at least one resource, and every resource a cover names is declared |
+| `DR-02` | `build` | A catalog with an uncovered record or a cover naming an undeclared resource is refused |
+| `DR-03` | `build` | The committed catalog is the catalog of the subject at the commit devrel/subject.json pins |
+| `DR-04` | `build` | Every page shows every record the catalog says it covers, and its Markdown twin quotes the same records |
+| `DR-05` | `build` | Subject text is escaped in every page and quoted as data in every twin |
+| `DR-06` | `build` | The lookup answers a record index with the record identifier and the slugs of the resources that cover it, and refuses malformed requests |
+
 ## Cited authorities
 
 Never re-derived, vendored, or gated on.

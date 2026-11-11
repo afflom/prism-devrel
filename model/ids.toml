@@ -26,3 +26,39 @@ id = "TC-01"
 level = "build"
 suite = "contract"
 statement = "The checker answers conformant exactly when every universal policy file's observed digest equals its locked digest"
+
+[[id]]
+id = "DR-01"
+level = "build"
+suite = "devrel"
+statement = "Every facet record of the subject is covered by at least one resource, and every resource a cover names is declared"
+
+[[id]]
+id = "DR-02"
+level = "build"
+suite = "devrel"
+statement = "A catalog with an uncovered record or a cover naming an undeclared resource is refused"
+
+[[id]]
+id = "DR-03"
+level = "build"
+suite = "devrel"
+statement = "The committed catalog is the catalog of the subject at the commit devrel/subject.json pins"
+
+[[id]]
+id = "DR-04"
+level = "build"
+suite = "devrel"
+statement = "Every page shows every record the catalog says it covers, and its Markdown twin quotes the same records"
+
+[[id]]
+id = "DR-05"
+level = "build"
+suite = "devrel"
+statement = "Subject text is escaped in every page and quoted as data in every twin"
+
+[[id]]
+id = "DR-06"
+level = "build"
+suite = "devrel"
+statement = "The lookup answers a record index with the record identifier and the slugs of the resources that cover it, and refuses malformed requests"

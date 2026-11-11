@@ -49,6 +49,22 @@ jobs:
           node bootstrap/brand-sync.mjs --check
           python3 -I bootstrap/brand-fonts.py --check
           node bootstrap/frame-sync.mjs --check
+      - name: Regenerate the DevRel catalog from the pinned subject and write the learning pages
+        # devrel/subject.json pins the subject's repository, full commit and
+        # project path. The committed app/src/Catalog.lex.tex must be the
+        # catalog of exactly that commit (DR-03); the pages under site/learn/,
+        # their Markdown twins, llms.txt and feed.xml are generated here and
+        # never committed.
+        shell: bash
+        run: |
+          set -euo pipefail
+          field() { node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync("devrel/subject.json", "utf8"))[process.argv[1]])' "$1"; }
+          subject="$RUNNER_TEMP/subject"
+          git init -q "$subject"
+          git -C "$subject" fetch -q --depth 1 "$(field repository)" "$(field commit)"
+          git -C "$subject" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$subject" rev-parse HEAD)" = "$(field commit)"
+          cargo run -q --locked -p devrel-catalog -- --config devrel/subject.json --subject "$subject/$(field path)" --lean app/src/Catalog.lex.tex --check --site site
       - name: Build and verify the holo through the locked SDK
         shell: bash
         run: |
