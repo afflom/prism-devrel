@@ -53,7 +53,8 @@ p, ul { max-width: 46rem; }
 .stats dt { font-size: var(--fd-label); color: hsl(var(--fd-dim)); }
 .stats dd { margin: 4px 0 0; font-size: clamp(24px, 3.4vw, 40px); font-weight: 700; }
 .table { overflow-x: auto; border: 1px solid hsl(var(--fd-line)); border-radius: 8px; margin: 16px 0; }
-table { border-collapse: collapse; width: 100%; font-size: 15px; }
+table { border-collapse: collapse; width: 100%; min-width: 40rem; font-size: 15px; }
+td code { overflow-wrap: normal; white-space: nowrap; }
 th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid hsl(var(--fd-line)); vertical-align: top; }
 th { font-size: var(--fd-label); font-weight: 400; color: hsl(var(--fd-dim)); }
 .records { display: grid; gap: 12px; }
@@ -92,5 +93,6 @@ figcaption { font-size: 14px; color: hsl(var(--fd-dim)); margin-top: 8px; }
   .shell { grid-template-columns: minmax(0, 1fr); }
   .side ol { position: static; display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 16px 0 0; }
   .record dl { grid-template-columns: minmax(0, 1fr); }
+  .explorer { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
