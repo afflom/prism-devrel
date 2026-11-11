@@ -1,0 +1,17 @@
+spec = "lexlean/entry/1"
+id = "devrel-compliance"
+category = "label-word"
+surface_arity = 0
+frame = "atom"
+
+[denotation]
+kind = "document"
+module = "Compliance"
+component = "obligations"
+
+[[form]]
+id = "devrel-compliance"
+channel = "text"
+surface = "DevRel compliance"
+canonical_source = true
+features = ["sentence-case", "singular"]

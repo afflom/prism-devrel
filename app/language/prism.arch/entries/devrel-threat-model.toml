@@ -1,0 +1,17 @@
+spec = "lexlean/entry/1"
+id = "devrel-threat-model"
+category = "label-word"
+surface_arity = 0
+frame = "atom"
+
+[denotation]
+kind = "document"
+module = "Security"
+component = "controlSet"
+
+[[form]]
+id = "devrel-threat-model"
+channel = "text"
+surface = "DevRel threat model"
+canonical_source = true
+features = ["sentence-case", "singular"]

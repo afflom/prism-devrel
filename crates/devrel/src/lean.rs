@@ -3,7 +3,7 @@
 //! byte comparison.
 
 use crate::lextex::quote;
-use crate::Catalog;
+use crate::{Catalog, Scope};
 
 const MODEL: &str = "Foundation.DevRel.V1.Model";
 
@@ -155,6 +155,23 @@ pub fn catalog(c: &Catalog) -> String {
         })
         .collect();
     chunked(&mut decls, "covers", "Covers", "appendRows", &rows);
+    for r in c.resources.iter().filter(|r| r.scope != Scope::Index) {
+        let name = resource_name(r.slug);
+        decls.push(definition(
+            &format!("{name}Teaches"),
+            "Bool",
+            &format!("({MODEL}::teaches {} (covers))", r.index),
+        ));
+        // A subject with no record in a resource's scope (no extension facet,
+        // say) leaves that page with nothing to teach: the definition still
+        // names it, and no theorem claims otherwise.
+        if c.covers.iter().any(|rs| rs.contains(&r.index)) {
+            decls.push(theorem(
+                &format!("{name}TeachesHolds"),
+                &format!("(({name}Teaches) = true)"),
+            ));
+        }
+    }
     decls.push(theorem(
         "catalogCovered",
         &format!("(({MODEL}::catalogValid (subject) (records) (resources) (covers)) = true)"),

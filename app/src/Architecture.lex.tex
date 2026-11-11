@@ -1,0 +1,405 @@
+\begin{lexlean}{Architecture}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\importmodule{Foundation.Arch}
+\title{DevRel architecture description}
+\begin{semanticmodule}
+definition{
+  name: standardIso25010,
+  parameters: [],
+  result: Foundation.Arch::StandardReference,
+  body: (record Foundation.Arch::StandardReference {standardIndex := 0, editionIndex := 0, standardId := "ISO-25010-2023", edition := "2023"})
+}
+
+definition{
+  name: standardIso27005,
+  parameters: [],
+  result: Foundation.Arch::StandardReference,
+  body: (record Foundation.Arch::StandardReference {standardIndex := 1, editionIndex := 0, standardId := "ISO-27005-2022", edition := "2022"})
+}
+
+definition{
+  name: standardIso27034,
+  parameters: [],
+  result: Foundation.Arch::StandardReference,
+  body: (record Foundation.Arch::StandardReference {standardIndex := 2, editionIndex := 0, standardId := "ISO-27034-1-2011", edition := "2011"})
+}
+
+definition{
+  name: standardIso42010,
+  parameters: [],
+  result: Foundation.Arch::StandardReference,
+  body: (record Foundation.Arch::StandardReference {standardIndex := 4, editionIndex := 0, standardId := "ISO-42010-2022", edition := "2022"})
+}
+
+definition{
+  name: stakeholderDevRelAuthor,
+  parameters: [],
+  result: Foundation.Arch::Stakeholder,
+  body: (record Foundation.Arch::Stakeholder {index := 0, name := "DevRel author", text := "Writes and maintains the learning resources, and needs to know which records no page teaches yet."})
+}
+
+definition{
+  name: stakeholderMaintainer,
+  parameters: [],
+  result: Foundation.Arch::Stakeholder,
+  body: (record Foundation.Arch::Stakeholder {index := 1, name := "Maintainer", text := "Keeps the catalog in step with the subject when either changes, without hand-editing generated pages."})
+}
+
+definition{
+  name: stakeholderPrismModeler,
+  parameters: [],
+  result: Foundation.Arch::Stakeholder,
+  body: (record Foundation.Arch::Stakeholder {index := 2, name := "Prism modeler", text := "Already writes Prism models and wants to see how a complete subject model is laid out, record by record."})
+}
+
+definition{
+  name: stakeholderRustNewcomer,
+  parameters: [],
+  result: Foundation.Arch::Stakeholder,
+  body: (record Foundation.Arch::Stakeholder {index := 3, name := "Rust developer new to Prism", text := "Knows Cargo and Rust, has never written a Prism model, and wants a working model of their own workspace."})
+}
+
+definition{
+  name: stakeholderSecurityReviewer,
+  parameters: [],
+  result: Foundation.Arch::Stakeholder,
+  body: (record Foundation.Arch::Stakeholder {index := 4, name := "Security reviewer", text := "Checks what the subject claims about threats and controls, and that the catalog cannot misstate it."})
+}
+
+definition{
+  name: concernAccessibility,
+  parameters: [],
+  result: Foundation.Arch::Concern,
+  body: (record Foundation.Arch::Concern {index := 0, name := "Accessibility of every page", text := "Every page reads for people with assistive technology and, as plain text, for agents."})
+}
+
+definition{
+  name: concernAccuracy,
+  parameters: [],
+  result: Foundation.Arch::Concern,
+  body: (record Foundation.Arch::Concern {index := 1, name := "Accuracy against the subject", text := "A page states only what the subject model declares, quoted from its records at the pinned commit."})
+}
+
+definition{
+  name: concernCoverage,
+  parameters: [],
+  result: Foundation.Arch::Concern,
+  body: (record Foundation.Arch::Concern {index := 2, name := "Coverage of every record", text := "Every facet record of the subject is taught by at least one resource."})
+}
+
+definition{
+  name: concernFindability,
+  parameters: [],
+  result: Foundation.Arch::Concern,
+  body: (record Foundation.Arch::Concern {index := 3, name := "Findability of a record", text := "Given a record identifier or index, a developer reaches the pages that teach it."})
+}
+
+definition{
+  name: concernFreshness,
+  parameters: [],
+  result: Foundation.Arch::Concern,
+  body: (record Foundation.Arch::Concern {index := 4, name := "Freshness of the catalog", text := "The catalog names the subject commit it describes and is regenerated when the pin moves."})
+}
+
+definition{
+  name: concernIntegrity,
+  parameters: [],
+  result: Foundation.Arch::Concern,
+  body: (record Foundation.Arch::Concern {index := 5, name := "Integrity of what is published", text := "What a reader loads is what the pinned build generated, and subject text cannot run as code."})
+}
+
+definition{
+  name: componentAgentClient,
+  parameters: [],
+  result: Foundation.Arch::Component,
+  body: (record Foundation.Arch::Component {index := 0, kind := (ctor Foundation.Arch::ComponentKind.externalSystem), name := "Agent client", text := "An agent that reads llms.txt and the Markdown twins instead of the HTML pages."})
+}
+
+definition{
+  name: componentBrowser,
+  parameters: [],
+  result: Foundation.Arch::Component,
+  body: (record Foundation.Arch::Component {index := 1, kind := (ctor Foundation.Arch::ComponentKind.externalSystem), name := "Browser", text := "The developer's web browser, which loads the catalog pages and runs the record lookup guest."})
+}
+
+definition{
+  name: componentCatalogGenerator,
+  parameters: [],
+  result: Foundation.Arch::Component,
+  body: (record Foundation.Arch::Component {index := 2, kind := (ctor Foundation.Arch::ComponentKind.cliAdapter), name := "Catalog generator", text := "devrel-catalog: reads the subject's facet records at the pinned commit and writes the catalog data and the pages."})
+}
+
+definition{
+  name: componentCatalogSite,
+  parameters: [],
+  result: Foundation.Arch::Component,
+  body: (record Foundation.Arch::Component {index := 3, kind := (ctor Foundation.Arch::ComponentKind.staticSite), name := "Catalog site", text := "The learning pages under learn/, their Markdown twins, llms.txt and feed.xml."})
+}
+
+definition{
+  name: componentLookupGuest,
+  parameters: [],
+  result: Foundation.Arch::Component,
+  body: (record Foundation.Arch::Component {index := 4, kind := (ctor Foundation.Arch::ComponentKind.service), name := "Record lookup guest", text := "The Core-Wasm guest that answers a record index with the record's identifier and the resources that cover it."})
+}
+
+definition{
+  name: componentPagesTarget,
+  parameters: [],
+  result: Foundation.Arch::Component,
+  body: (record Foundation.Arch::Component {index := 5, kind := (ctor Foundation.Arch::ComponentKind.externalSystem), name := "GitHub Pages", text := "Serves the catalog site and the holo from the repository's Pages workflow."})
+}
+
+definition{
+  name: componentPrismPmDocs,
+  parameters: [],
+  result: Foundation.Arch::Component,
+  body: (record Foundation.Arch::Component {index := 6, kind := (ctor Foundation.Arch::ComponentKind.externalSystem), name := "PrismPM documentation", text := "The upstream documentation every page links to instead of restating it."})
+}
+
+definition{
+  name: componentSubjectRepository,
+  parameters: [],
+  result: Foundation.Arch::Component,
+  body: (record Foundation.Arch::Component {index := 7, kind := (ctor Foundation.Arch::ComponentKind.externalSystem), name := "Subject repository", text := "The subject's Git repository, read at the commit devrel/subject.json pins."})
+}
+
+definition{
+  name: edgeBrowserToGuest,
+  parameters: [],
+  result: Foundation.Arch::Edge,
+  body: (record Foundation.Arch::Edge {index := 0, fromIndex := 1, toIndex := 4, kind := (ctor Foundation.Arch::EdgeKind.dataFlow)})
+}
+
+definition{
+  name: edgeGeneratorToGuest,
+  parameters: [],
+  result: Foundation.Arch::Edge,
+  body: (record Foundation.Arch::Edge {index := 1, fromIndex := 2, toIndex := 4, kind := (ctor Foundation.Arch::EdgeKind.dataFlow)})
+}
+
+definition{
+  name: edgeGeneratorToSite,
+  parameters: [],
+  result: Foundation.Arch::Edge,
+  body: (record Foundation.Arch::Edge {index := 2, fromIndex := 2, toIndex := 3, kind := (ctor Foundation.Arch::EdgeKind.dataFlow)})
+}
+
+definition{
+  name: edgeGuestToBrowser,
+  parameters: [],
+  result: Foundation.Arch::Edge,
+  body: (record Foundation.Arch::Edge {index := 3, fromIndex := 4, toIndex := 1, kind := (ctor Foundation.Arch::EdgeKind.dataFlow)})
+}
+
+definition{
+  name: edgePagesToAgent,
+  parameters: [],
+  result: Foundation.Arch::Edge,
+  body: (record Foundation.Arch::Edge {index := 4, fromIndex := 5, toIndex := 0, kind := (ctor Foundation.Arch::EdgeKind.dataFlow)})
+}
+
+definition{
+  name: edgePagesToBrowser,
+  parameters: [],
+  result: Foundation.Arch::Edge,
+  body: (record Foundation.Arch::Edge {index := 5, fromIndex := 5, toIndex := 1, kind := (ctor Foundation.Arch::EdgeKind.dataFlow)})
+}
+
+definition{
+  name: edgeSiteToDocs,
+  parameters: [],
+  result: Foundation.Arch::Edge,
+  body: (record Foundation.Arch::Edge {index := 6, fromIndex := 3, toIndex := 6, kind := (ctor Foundation.Arch::EdgeKind.controlFlow)})
+}
+
+definition{
+  name: edgeSiteToPages,
+  parameters: [],
+  result: Foundation.Arch::Edge,
+  body: (record Foundation.Arch::Edge {index := 7, fromIndex := 3, toIndex := 5, kind := (ctor Foundation.Arch::EdgeKind.dataFlow)})
+}
+
+definition{
+  name: edgeSubjectToGenerator,
+  parameters: [],
+  result: Foundation.Arch::Edge,
+  body: (record Foundation.Arch::Edge {index := 8, fromIndex := 7, toIndex := 2, kind := (ctor Foundation.Arch::EdgeKind.dataFlow)})
+}
+
+definition{
+  name: viewpointAuthorCoverage,
+  parameters: [],
+  result: Foundation.Arch::Viewpoint,
+  body: (record Foundation.Arch::Viewpoint {index := 0, stakeholderIndex := 0, concernIndex := 2, modelKindIndex := 0})
+}
+
+definition{
+  name: viewpointMaintainerFreshness,
+  parameters: [],
+  result: Foundation.Arch::Viewpoint,
+  body: (record Foundation.Arch::Viewpoint {index := 1, stakeholderIndex := 1, concernIndex := 4, modelKindIndex := 0})
+}
+
+definition{
+  name: viewpointModelerFindability,
+  parameters: [],
+  result: Foundation.Arch::Viewpoint,
+  body: (record Foundation.Arch::Viewpoint {index := 2, stakeholderIndex := 2, concernIndex := 3, modelKindIndex := 0})
+}
+
+definition{
+  name: viewpointNewcomerAccessibility,
+  parameters: [],
+  result: Foundation.Arch::Viewpoint,
+  body: (record Foundation.Arch::Viewpoint {index := 3, stakeholderIndex := 3, concernIndex := 0, modelKindIndex := 1})
+}
+
+definition{
+  name: viewpointNewcomerAccuracy,
+  parameters: [],
+  result: Foundation.Arch::Viewpoint,
+  body: (record Foundation.Arch::Viewpoint {index := 4, stakeholderIndex := 3, concernIndex := 1, modelKindIndex := 1})
+}
+
+definition{
+  name: viewpointReviewerIntegrity,
+  parameters: [],
+  result: Foundation.Arch::Viewpoint,
+  body: (record Foundation.Arch::Viewpoint {index := 5, stakeholderIndex := 4, concernIndex := 5, modelKindIndex := 2})
+}
+
+definition{
+  name: viewAuthorCoverage,
+  parameters: [],
+  result: Foundation.Arch::View,
+  body: (record Foundation.Arch::View {index := 0, viewpointIndex := 0, modelKindIndex := 0})
+}
+
+definition{
+  name: viewMaintainerFreshness,
+  parameters: [],
+  result: Foundation.Arch::View,
+  body: (record Foundation.Arch::View {index := 1, viewpointIndex := 1, modelKindIndex := 0})
+}
+
+definition{
+  name: viewModelerFindability,
+  parameters: [],
+  result: Foundation.Arch::View,
+  body: (record Foundation.Arch::View {index := 2, viewpointIndex := 2, modelKindIndex := 0})
+}
+
+definition{
+  name: viewNewcomerAccessibility,
+  parameters: [],
+  result: Foundation.Arch::View,
+  body: (record Foundation.Arch::View {index := 3, viewpointIndex := 3, modelKindIndex := 1})
+}
+
+definition{
+  name: viewNewcomerAccuracy,
+  parameters: [],
+  result: Foundation.Arch::View,
+  body: (record Foundation.Arch::View {index := 4, viewpointIndex := 4, modelKindIndex := 1})
+}
+
+definition{
+  name: viewReviewerIntegrity,
+  parameters: [],
+  result: Foundation.Arch::View,
+  body: (record Foundation.Arch::View {index := 5, viewpointIndex := 5, modelKindIndex := 2})
+}
+
+definition{
+  name: componentRecords,
+  parameters: [],
+  result: (List Foundation.Arch::Component),
+  body: (cons (componentAgentClient) (cons (componentBrowser) (cons (componentCatalogGenerator) (cons (componentCatalogSite) (cons (componentLookupGuest) (cons (componentPagesTarget) (cons (componentPrismPmDocs) (cons (componentSubjectRepository) (nil Foundation.Arch::Component)))))))))
+}
+
+definition{
+  name: edgeRecords,
+  parameters: [],
+  result: (List Foundation.Arch::Edge),
+  body: (cons (edgeBrowserToGuest) (cons (edgeGeneratorToGuest) (cons (edgeGeneratorToSite) (cons (edgeGuestToBrowser) (cons (edgePagesToAgent) (cons (edgePagesToBrowser) (cons (edgeSiteToDocs) (cons (edgeSiteToPages) (cons (edgeSubjectToGenerator) (nil Foundation.Arch::Edge))))))))))
+}
+
+definition{
+  name: viewpointRecords,
+  parameters: [],
+  result: (List Foundation.Arch::Viewpoint),
+  body: (cons (viewpointAuthorCoverage) (cons (viewpointMaintainerFreshness) (cons (viewpointModelerFindability) (cons (viewpointNewcomerAccessibility) (cons (viewpointNewcomerAccuracy) (cons (viewpointReviewerIntegrity) (nil Foundation.Arch::Viewpoint)))))))
+}
+
+definition{
+  name: viewRecords,
+  parameters: [],
+  result: (List Foundation.Arch::View),
+  body: (cons (viewAuthorCoverage) (cons (viewMaintainerFreshness) (cons (viewModelerFindability) (cons (viewNewcomerAccessibility) (cons (viewNewcomerAccuracy) (cons (viewReviewerIntegrity) (nil Foundation.Arch::View)))))))
+}
+
+definition{
+  name: edgesKnown,
+  parameters: [count : Nat, records : (List Foundation.Arch::Edge)],
+  result: Bool,
+  body: (match records
+    | List.nil => true
+    | List.cons edge rest => (((project edge fromIndex) <? count) && (((project edge toIndex) <? count) && (edgesKnown count rest)))),
+  recursive_argument: records
+}
+
+definition{
+  name: viewpointsKnown,
+  parameters: [
+    stakeholderCount : Nat,
+    concernCount : Nat,
+    records : (List Foundation.Arch::Viewpoint)
+  ],
+  result: Bool,
+  body: (match records
+    | List.nil => true
+    | List.cons viewpoint rest => (((project viewpoint stakeholderIndex) <? stakeholderCount) && (((project viewpoint concernIndex) <? concernCount) && (((project viewpoint modelKindIndex) <? 3) && (viewpointsKnown stakeholderCount concernCount rest))))),
+  recursive_argument: records
+}
+
+definition{
+  name: viewMatches,
+  parameters: [view : Foundation.Arch::View, viewpoints : (List Foundation.Arch::Viewpoint)],
+  result: Bool,
+  body: (match viewpoints
+    | List.nil => false
+    | List.cons viewpoint rest => ((((project viewpoint index) =? (project view viewpointIndex)) && ((project viewpoint modelKindIndex) =? (project view modelKindIndex))) || (viewMatches view rest))),
+  recursive_argument: viewpoints
+}
+
+definition{
+  name: viewsConform,
+  parameters: [
+    viewpoints : (List Foundation.Arch::Viewpoint),
+    records : (List Foundation.Arch::View)
+  ],
+  result: Bool,
+  body: (match records
+    | List.nil => true
+    | List.cons view rest => ((viewMatches view viewpoints) && (viewsConform viewpoints rest))),
+  recursive_argument: records
+}
+
+definition{
+  name: architectureValid,
+  parameters: [],
+  result: Bool,
+  body: ((edgesKnown 8 (edgeRecords)) && ((viewpointsKnown 5 6 (viewpointRecords)) && (viewsConform (viewpointRecords) (viewRecords))))
+}
+
+theorem{
+  name: architectureDescriptionHolds,
+  parameters: [],
+  statement: ((architectureValid) = true),
+  proof: decide{}
+}
+\end{semanticmodule}
+\end{lexlean}

@@ -1,0 +1,142 @@
+\begin{lexlean}{Features}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\importmodule{Catalog}
+\importmodule{Foundation.Arch}
+\title{DevRel features and journeys}
+\begin{semanticmodule}
+definition{
+  name: featureGettingStarted,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "A Rust developer goes from a Cargo workspace to a checked Prism model with UORust, following one page.", calls := (cons "Catalog::resourceGettingStarted" (nil String)), acceptance := (cons "Catalog::resourceGettingStartedTeaches" (nil String))})
+}
+
+definition{
+  name: featureCaseStudy,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "A reader learns who the subject model serves, what they care about, and how each concern became a facet.", calls := (cons "Catalog::resourceCaseStudy" (nil String)), acceptance := (cons "Catalog::resourceCaseStudyTeaches" (nil String))})
+}
+
+definition{
+  name: featureArchitecture,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "Every architecture record of the subject is explained with its stakeholders, concerns, components, edges, viewpoints and views.", calls := (cons "Catalog::resourceArchitecture" (nil String)), acceptance := (cons "Catalog::resourceArchitectureTeaches" (nil String))})
+}
+
+definition{
+  name: featureDesign,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "Every design view of the subject is drawn and every element of it is listed.", calls := (cons "Catalog::resourceDesign" (nil String)), acceptance := (cons "Catalog::resourceDesignTeaches" (nil String))})
+}
+
+definition{
+  name: featureFeatures,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "Every feature and journey of the subject is explained with the calls that realize it and the rows that accept it.", calls := (cons "Catalog::resourceFeatures" (nil String)), acceptance := (cons "Catalog::resourceFeaturesTeaches" (nil String))})
+}
+
+definition{
+  name: featureSecurity,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "Every asset, threat, risk, control and threat model row of the subject is explained with its STRIDE category and evidence.", calls := (cons "Catalog::resourceSecurity" (nil String)), acceptance := (cons "Catalog::resourceSecurityTeaches" (nil String))})
+}
+
+definition{
+  name: featureQuality,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "Every ISO/IEC 25010 record of the subject is listed with its characteristic and threshold.", calls := (cons "Catalog::resourceQuality" (nil String)), acceptance := (cons "Catalog::resourceQualityTeaches" (nil String))})
+}
+
+definition{
+  name: featureBehavior,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "Every theorem of the subject is listed with its statement and proof method.", calls := (cons "Catalog::resourceBehavior" (nil String)), acceptance := (cons "Catalog::resourceBehaviorTeaches" (nil String))})
+}
+
+definition{
+  name: featureSystem,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "The subject's system model and release manifest are explained, and how a holo is published.", calls := (cons "Catalog::resourceSystem" (nil String)), acceptance := (cons "Catalog::resourceSystemTeaches" (nil String))})
+}
+
+definition{
+  name: featureExtensions,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "Every extension facet record of the subject is listed by its domain.", calls := (cons "Catalog::resourceExtensions" (nil String)), acceptance := (cons "Catalog::resourceExtensionsTeaches" (nil String))})
+}
+
+definition{
+  name: featureSlides,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "One slide per facet, with a script to read over it, introduces the subject in a talk.", calls := (cons "Catalog::resourceSlides" (nil String)), acceptance := (cons "Catalog::resourceSlidesTeaches" (nil String))})
+}
+
+definition{
+  name: featureExplorer,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "A developer finds any facet record by identifier, facet or text, and opens the pages that teach it.", calls := (cons "Catalog::resourceExplorer" (nil String)), acceptance := (cons "Catalog::records" (nil String))})
+}
+
+definition{
+  name: featureAgents,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "An agent reads the whole catalog as plain text through llms.txt, a Markdown twin of every page and a feed.", calls := (cons "Catalog::resourceAgents" (nil String)), acceptance := (cons "Catalog::records" (nil String))})
+}
+
+definition{
+  name: featureLookup,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "Given a record index, the application answers the record identifier and the slugs of the resources that cover it.", calls := (cons "Foundation.DevRel.V1.Model::lookup" (nil String)), acceptance := (cons "Catalog::covers" (nil String))})
+}
+
+definition{
+  name: journeyAuthor,
+  parameters: [],
+  result: Foundation.Arch::Journey,
+  body: (record Foundation.Arch::Journey {actor := "Architecture::stakeholderDevRelAuthor", steps := (cons "Features::featureCaseStudy" (cons "Features::featureSlides" (cons "Features::featureAgents" (nil String))))})
+}
+
+definition{
+  name: journeyMaintainer,
+  parameters: [],
+  result: Foundation.Arch::Journey,
+  body: (record Foundation.Arch::Journey {actor := "Architecture::stakeholderMaintainer", steps := (cons "Features::featureExplorer" (cons "Features::featureLookup" (cons "Features::featureSystem" (nil String))))})
+}
+
+definition{
+  name: journeyModeler,
+  parameters: [],
+  result: Foundation.Arch::Journey,
+  body: (record Foundation.Arch::Journey {actor := "Architecture::stakeholderPrismModeler", steps := (cons "Features::featureCaseStudy" (cons "Features::featureExplorer" (cons "Features::featureLookup" (cons "Features::featureExtensions" (nil String)))))})
+}
+
+definition{
+  name: journeyNewcomer,
+  parameters: [],
+  result: Foundation.Arch::Journey,
+  body: (record Foundation.Arch::Journey {actor := "Architecture::stakeholderRustNewcomer", steps := (cons "Features::featureGettingStarted" (cons "Features::featureArchitecture" (cons "Features::featureDesign" (cons "Features::featureFeatures" (cons "Features::featureSecurity" (cons "Features::featureQuality" (cons "Features::featureBehavior" (cons "Features::featureSystem" (nil String)))))))))})
+}
+
+definition{
+  name: journeyReviewer,
+  parameters: [],
+  result: Foundation.Arch::Journey,
+  body: (record Foundation.Arch::Journey {actor := "Architecture::stakeholderSecurityReviewer", steps := (cons "Features::featureSecurity" (cons "Features::featureBehavior" (cons "Features::featureExplorer" (nil String))))})
+}
+\end{semanticmodule}
+\end{lexlean}

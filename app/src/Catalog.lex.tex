@@ -292,6 +292,146 @@ definition{
   body: (Foundation.DevRel.V1.Model::appendRows (coversPart0) (Foundation.DevRel.V1.Model::appendRows (coversPart1) (Foundation.DevRel.V1.Model::appendRows (coversPart2) (Foundation.DevRel.V1.Model::appendRows (coversPart3) (Foundation.DevRel.V1.Model::appendRows (coversPart4) (Foundation.DevRel.V1.Model::appendRows (coversPart5) (Foundation.DevRel.V1.Model::appendRows (coversPart6) (Foundation.DevRel.V1.Model::appendRows (coversPart7) (Foundation.DevRel.V1.Model::appendRows (coversPart8) (Foundation.DevRel.V1.Model::appendRows (coversPart9) (Foundation.DevRel.V1.Model::appendRows (coversPart10) (Foundation.DevRel.V1.Model::appendRows (coversPart11) (nil Foundation.DevRel.V1.Model::Covers)))))))))))))
 }
 
+definition{
+  name: resourceGettingStartedTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 0 (covers))
+}
+
+theorem{
+  name: resourceGettingStartedTeachesHolds,
+  parameters: [],
+  statement: ((resourceGettingStartedTeaches) = true),
+  proof: decide{}
+}
+
+definition{
+  name: resourceCaseStudyTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 1 (covers))
+}
+
+theorem{
+  name: resourceCaseStudyTeachesHolds,
+  parameters: [],
+  statement: ((resourceCaseStudyTeaches) = true),
+  proof: decide{}
+}
+
+definition{
+  name: resourceArchitectureTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 2 (covers))
+}
+
+theorem{
+  name: resourceArchitectureTeachesHolds,
+  parameters: [],
+  statement: ((resourceArchitectureTeaches) = true),
+  proof: decide{}
+}
+
+definition{
+  name: resourceDesignTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 3 (covers))
+}
+
+theorem{
+  name: resourceDesignTeachesHolds,
+  parameters: [],
+  statement: ((resourceDesignTeaches) = true),
+  proof: decide{}
+}
+
+definition{
+  name: resourceFeaturesTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 4 (covers))
+}
+
+definition{
+  name: resourceSecurityTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 5 (covers))
+}
+
+theorem{
+  name: resourceSecurityTeachesHolds,
+  parameters: [],
+  statement: ((resourceSecurityTeaches) = true),
+  proof: decide{}
+}
+
+definition{
+  name: resourceQualityTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 6 (covers))
+}
+
+theorem{
+  name: resourceQualityTeachesHolds,
+  parameters: [],
+  statement: ((resourceQualityTeaches) = true),
+  proof: decide{}
+}
+
+definition{
+  name: resourceBehaviorTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 7 (covers))
+}
+
+theorem{
+  name: resourceBehaviorTeachesHolds,
+  parameters: [],
+  statement: ((resourceBehaviorTeaches) = true),
+  proof: decide{}
+}
+
+definition{
+  name: resourceSystemTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 8 (covers))
+}
+
+theorem{
+  name: resourceSystemTeachesHolds,
+  parameters: [],
+  statement: ((resourceSystemTeaches) = true),
+  proof: decide{}
+}
+
+definition{
+  name: resourceExtensionsTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 9 (covers))
+}
+
+definition{
+  name: resourceSlidesTeaches,
+  parameters: [],
+  result: Bool,
+  body: (Foundation.DevRel.V1.Model::teaches 10 (covers))
+}
+
+theorem{
+  name: resourceSlidesTeachesHolds,
+  parameters: [],
+  statement: ((resourceSlidesTeaches) = true),
+  proof: decide{}
+}
+
 theorem{
   name: catalogCovered,
   parameters: [],

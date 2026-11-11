@@ -1,0 +1,17 @@
+spec = "lexlean/entry/1"
+id = "devrel-features-and-journeys"
+category = "label-word"
+surface_arity = 0
+frame = "atom"
+
+[denotation]
+kind = "document"
+module = "Features"
+component = "featureLookup"
+
+[[form]]
+id = "devrel-features-and-journeys"
+channel = "text"
+surface = "DevRel features and journeys"
+canonical_source = true
+features = ["sentence-case", "singular"]

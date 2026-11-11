@@ -1,0 +1,297 @@
+\begin{lexlean}{Quality}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\useglossary{prism.qual@1.0.0}
+\importmodule{Foundation.Qual}
+\title{DevRel quality model}
+\begin{semanticmodule}
+structure{
+  name: Named,
+  type_parameters: [],
+  parameters: [],
+  fields: [{name: index, type: Nat}, {name: name, type: String}, {name: text, type: String}]
+}
+
+definition{
+  name: characteristicFunctionalSuitability,
+  parameters: [],
+  result: Foundation.Qual::ProductQualityCharacteristic,
+  body: (record Foundation.Qual::ProductQualityCharacteristic {index := 0})
+}
+
+definition{
+  name: characteristicInteractionCapability,
+  parameters: [],
+  result: Foundation.Qual::ProductQualityCharacteristic,
+  body: (record Foundation.Qual::ProductQualityCharacteristic {index := 1})
+}
+
+definition{
+  name: characteristicMaintainability,
+  parameters: [],
+  result: Foundation.Qual::ProductQualityCharacteristic,
+  body: (record Foundation.Qual::ProductQualityCharacteristic {index := 2})
+}
+
+definition{
+  name: characteristicPerformanceEfficiency,
+  parameters: [],
+  result: Foundation.Qual::ProductQualityCharacteristic,
+  body: (record Foundation.Qual::ProductQualityCharacteristic {index := 3})
+}
+
+definition{
+  name: subcharacteristicFunctionalCompleteness,
+  parameters: [],
+  result: Foundation.Qual::QualitySubcharacteristic,
+  body: (record Foundation.Qual::QualitySubcharacteristic {index := 0, characteristicIndex := 0})
+}
+
+definition{
+  name: subcharacteristicFunctionalCorrectness,
+  parameters: [],
+  result: Foundation.Qual::QualitySubcharacteristic,
+  body: (record Foundation.Qual::QualitySubcharacteristic {index := 1, characteristicIndex := 0})
+}
+
+definition{
+  name: subcharacteristicInclusivity,
+  parameters: [],
+  result: Foundation.Qual::QualitySubcharacteristic,
+  body: (record Foundation.Qual::QualitySubcharacteristic {index := 2, characteristicIndex := 1})
+}
+
+definition{
+  name: subcharacteristicLearnability,
+  parameters: [],
+  result: Foundation.Qual::QualitySubcharacteristic,
+  body: (record Foundation.Qual::QualitySubcharacteristic {index := 3, characteristicIndex := 1})
+}
+
+definition{
+  name: subcharacteristicModifiability,
+  parameters: [],
+  result: Foundation.Qual::QualitySubcharacteristic,
+  body: (record Foundation.Qual::QualitySubcharacteristic {index := 4, characteristicIndex := 2})
+}
+
+definition{
+  name: subcharacteristicTimeBehaviour,
+  parameters: [],
+  result: Foundation.Qual::QualitySubcharacteristic,
+  body: (record Foundation.Qual::QualitySubcharacteristic {index := 5, characteristicIndex := 3})
+}
+
+definition{
+  name: requirementAccessiblePages,
+  parameters: [],
+  result: Foundation.Qual::QualityRequirement,
+  body: (record Foundation.Qual::QualityRequirement {index := 0, subcharacteristicIndex := 2})
+}
+
+definition{
+  name: requirementEveryRecordCovered,
+  parameters: [],
+  result: Foundation.Qual::QualityRequirement,
+  body: (record Foundation.Qual::QualityRequirement {index := 1, subcharacteristicIndex := 0})
+}
+
+definition{
+  name: requirementLearningPath,
+  parameters: [],
+  result: Foundation.Qual::QualityRequirement,
+  body: (record Foundation.Qual::QualityRequirement {index := 2, subcharacteristicIndex := 3})
+}
+
+definition{
+  name: requirementLookupBounded,
+  parameters: [],
+  result: Foundation.Qual::QualityRequirement,
+  body: (record Foundation.Qual::QualityRequirement {index := 3, subcharacteristicIndex := 5})
+}
+
+definition{
+  name: requirementNoUndeclaredReference,
+  parameters: [],
+  result: Foundation.Qual::QualityRequirement,
+  body: (record Foundation.Qual::QualityRequirement {index := 4, subcharacteristicIndex := 1})
+}
+
+definition{
+  name: requirementRegenerable,
+  parameters: [],
+  result: Foundation.Qual::QualityRequirement,
+  body: (record Foundation.Qual::QualityRequirement {index := 5, subcharacteristicIndex := 4})
+}
+
+definition{
+  name: measureAccessibilityScore,
+  parameters: [],
+  result: Foundation.Qual::QualityMeasure,
+  body: (record Foundation.Qual::QualityMeasure {index := 0, requirementIndex := 0, threshold := 100})
+}
+
+definition{
+  name: measureJourneysPerStakeholder,
+  parameters: [],
+  result: Foundation.Qual::QualityMeasure,
+  body: (record Foundation.Qual::QualityMeasure {index := 1, requirementIndex := 2, threshold := 1})
+}
+
+definition{
+  name: measureRegenerationDiffBytes,
+  parameters: [],
+  result: Foundation.Qual::QualityMeasure,
+  body: (record Foundation.Qual::QualityMeasure {index := 2, requirementIndex := 5, threshold := 0})
+}
+
+definition{
+  name: measureRequestBytes,
+  parameters: [],
+  result: Foundation.Qual::QualityMeasure,
+  body: (record Foundation.Qual::QualityMeasure {index := 3, requirementIndex := 3, threshold := 6})
+}
+
+definition{
+  name: measureUncoveredRecords,
+  parameters: [],
+  result: Foundation.Qual::QualityMeasure,
+  body: (record Foundation.Qual::QualityMeasure {index := 4, requirementIndex := 1, threshold := 0})
+}
+
+definition{
+  name: measureUndeclaredReferences,
+  parameters: [],
+  result: Foundation.Qual::QualityMeasure,
+  body: (record Foundation.Qual::QualityMeasure {index := 5, requirementIndex := 4, threshold := 0})
+}
+
+definition{
+  name: characteristicNames,
+  parameters: [],
+  result: (List Named),
+  body: (cons (record Named {index := 0, name := "Functional suitability", text := "The catalog teaches every record of the subject and nothing it does not declare."}) (cons (record Named {index := 1, name := "Interaction capability", text := "Developers and agents can learn the subject from the pages, whatever they read with."}) (cons (record Named {index := 2, name := "Maintainability", text := "The catalog is regenerated from the subject, never edited by hand."}) (cons (record Named {index := 3, name := "Performance efficiency", text := "The lookup answers within a fixed bound on its input."}) (nil Named)))))
+}
+
+definition{
+  name: subcharacteristicNames,
+  parameters: [],
+  result: (List Named),
+  body: (cons (record Named {index := 0, name := "Functional completeness", text := "Functional suitability: Functional completeness."}) (cons (record Named {index := 1, name := "Functional correctness", text := "Functional suitability: Functional correctness."}) (cons (record Named {index := 2, name := "Inclusivity", text := "Interaction capability: Inclusivity."}) (cons (record Named {index := 3, name := "Learnability", text := "Interaction capability: Learnability."}) (cons (record Named {index := 4, name := "Modifiability", text := "Maintainability: Modifiability."}) (cons (record Named {index := 5, name := "Time behaviour", text := "Performance efficiency: Time behaviour."}) (nil Named)))))))
+}
+
+definition{
+  name: requirementNames,
+  parameters: [],
+  result: (List Named),
+  body: (cons (record Named {index := 0, name := "AccessiblePages", text := "Every page scores 100 for accessibility on mobile and meets WCAG 2.2 AA."}) (cons (record Named {index := 1, name := "EveryRecordCovered", text := "Every facet record of the subject is covered by at least one resource."}) (cons (record Named {index := 2, name := "LearningPath", text := "Every stakeholder has at least one journey through the catalog."}) (cons (record Named {index := 3, name := "LookupBounded", text := "The lookup refuses any request longer than six bytes before parsing it."}) (cons (record Named {index := 4, name := "NoUndeclaredReference", text := "No resource covers a record the subject does not declare, and no cover names an undeclared resource."}) (cons (record Named {index := 5, name := "Regenerable", text := "Regenerating the catalog from the pinned subject reproduces the committed catalog byte for byte."}) (nil Named)))))))
+}
+
+definition{
+  name: measureNames,
+  parameters: [],
+  result: (List Named),
+  body: (cons (record Named {index := 0, name := "AccessibilityScore", text := "Lighthouse accessibility score of the root page, mobile."}) (cons (record Named {index := 1, name := "JourneysPerStakeholder", text := "Fewest journeys any stakeholder has."}) (cons (record Named {index := 2, name := "RegenerationDiffBytes", text := "Bytes by which the regenerated catalog differs from the committed one."}) (cons (record Named {index := 3, name := "RequestBytes", text := "Longest request the lookup parses, in bytes."}) (cons (record Named {index := 4, name := "UncoveredRecords", text := "Subject records no resource covers."}) (cons (record Named {index := 5, name := "UndeclaredReferences", text := "Covers that name an undeclared resource or record."}) (nil Named)))))))
+}
+
+definition{
+  name: subcharacteristicRecords,
+  parameters: [],
+  result: (List Foundation.Qual::QualitySubcharacteristic),
+  body: (cons (subcharacteristicFunctionalCompleteness) (cons (subcharacteristicFunctionalCorrectness) (cons (subcharacteristicInclusivity) (cons (subcharacteristicLearnability) (cons (subcharacteristicModifiability) (cons (subcharacteristicTimeBehaviour) (nil Foundation.Qual::QualitySubcharacteristic)))))))
+}
+
+definition{
+  name: requirementRecords,
+  parameters: [],
+  result: (List Foundation.Qual::QualityRequirement),
+  body: (cons (requirementAccessiblePages) (cons (requirementEveryRecordCovered) (cons (requirementLearningPath) (cons (requirementLookupBounded) (cons (requirementNoUndeclaredReference) (cons (requirementRegenerable) (nil Foundation.Qual::QualityRequirement)))))))
+}
+
+definition{
+  name: measureRecords,
+  parameters: [],
+  result: (List Foundation.Qual::QualityMeasure),
+  body: (cons (measureAccessibilityScore) (cons (measureJourneysPerStakeholder) (cons (measureRegenerationDiffBytes) (cons (measureRequestBytes) (cons (measureUncoveredRecords) (cons (measureUndeclaredReferences) (nil Foundation.Qual::QualityMeasure)))))))
+}
+
+definition{
+  name: namesNumbered,
+  parameters: [position : Nat, names : (List Named)],
+  result: Bool,
+  body: (match names
+    | List.nil => true
+    | List.cons item rest => (((project item index) =? position) && (namesNumbered (position + 1) rest))),
+  recursive_argument: names
+}
+
+definition{
+  name: parentsKnown,
+  parameters: [count : Nat, records : (List Foundation.Qual::QualitySubcharacteristic)],
+  result: Bool,
+  body: (match records
+    | List.nil => true
+    | List.cons item rest => (((project item characteristicIndex) <? count) && (parentsKnown count rest))),
+  recursive_argument: records
+}
+
+definition{
+  name: requirementsKnown,
+  parameters: [count : Nat, records : (List Foundation.Qual::QualityRequirement)],
+  result: Bool,
+  body: (match records
+    | List.nil => true
+    | List.cons item rest => (((project item subcharacteristicIndex) <? count) && (requirementsKnown count rest))),
+  recursive_argument: records
+}
+
+definition{
+  name: measuresKnown,
+  parameters: [count : Nat, records : (List Foundation.Qual::QualityMeasure)],
+  result: Bool,
+  body: (match records
+    | List.nil => true
+    | List.cons item rest => (((project item requirementIndex) <? count) && (measuresKnown count rest))),
+  recursive_argument: records
+}
+
+definition{
+  name: thresholdOf,
+  parameters: [wanted : Nat, records : (List Foundation.Qual::QualityMeasure)],
+  result: Nat,
+  body: (match records
+    | List.nil => 0
+    | List.cons head rest => (if ((project head index) =? wanted) then (project head threshold) else (thresholdOf wanted rest))),
+  recursive_argument: records
+}
+
+definition{
+  name: qualityValid,
+  parameters: [],
+  result: Bool,
+  body: ((namesNumbered 0 (characteristicNames)) && ((namesNumbered 0 (subcharacteristicNames)) && ((namesNumbered 0 (requirementNames)) && ((namesNumbered 0 (measureNames)) && ((parentsKnown 4 (subcharacteristicRecords)) && ((requirementsKnown 6 (requirementRecords)) && (measuresKnown 6 (measureRecords))))))))
+}
+
+theorem{
+  name: qualityModelHolds,
+  parameters: [],
+  statement: ((qualityValid) = true),
+  proof: decide{}
+}
+
+theorem{
+  name: uncoveredBudgetIsZero,
+  parameters: [],
+  statement: ((thresholdOf 4 (measureRecords)) = 0),
+  proof: decide{}
+}
+
+theorem{
+  name: requestBudgetIsSix,
+  parameters: [],
+  statement: ((thresholdOf 3 (measureRecords)) = 6),
+  proof: decide{}
+}
+\end{semanticmodule}
+\end{lexlean}

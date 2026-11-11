@@ -244,6 +244,26 @@ definition{
 }
 
 definition{
+  name: memberNat,
+  parameters: [wanted : Nat, values : (List Nat)],
+  result: Bool,
+  body: (match values
+    | List.nil => false
+    | List.cons value rest => ((value =? wanted) || (memberNat wanted rest))),
+  recursive_argument: values
+}
+
+definition{
+  name: teaches,
+  parameters: [resource : Nat, rows : (List Covers)],
+  result: Bool,
+  body: (match rows
+    | List.nil => false
+    | List.cons row rest => ((memberNat resource (project row resources)) || (teaches resource rest))),
+  recursive_argument: rows
+}
+
+definition{
   name: recordAt,
   parameters: [position : Nat, records : (List SubjectRecord)],
   result: (Option SubjectRecord),

@@ -1,0 +1,17 @@
+spec = "lexlean/entry/1"
+id = "devrel-design-views"
+category = "label-word"
+surface_arity = 0
+frame = "atom"
+
+[denotation]
+kind = "document"
+module = "Design"
+component = "viewOpmGenerate"
+
+[[form]]
+id = "devrel-design-views"
+channel = "text"
+surface = "DevRel design views"
+canonical_source = true
+features = ["sentence-case", "singular"]

@@ -1,0 +1,380 @@
+\begin{lexlean}{Design}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\importmodule{Architecture}
+\importmodule{Foundation.Arch}
+\title{DevRel design views}
+\begin{semanticmodule}
+definition{
+  name: processAnswerLookup,
+  parameters: [],
+  result: Foundation.Arch::SystemProcess,
+  body: (record Foundation.Arch::SystemProcess {owner := "Architecture::componentLookupGuest"})
+}
+
+definition{
+  name: processAssignCovers,
+  parameters: [],
+  result: Foundation.Arch::SystemProcess,
+  body: (record Foundation.Arch::SystemProcess {owner := "Architecture::componentCatalogGenerator"})
+}
+
+definition{
+  name: processGenerate,
+  parameters: [],
+  result: Foundation.Arch::SystemProcess,
+  body: (record Foundation.Arch::SystemProcess {owner := "Architecture::componentCatalogGenerator"})
+}
+
+definition{
+  name: processParseRequest,
+  parameters: [],
+  result: Foundation.Arch::SystemProcess,
+  body: (record Foundation.Arch::SystemProcess {owner := "Architecture::componentLookupGuest"})
+}
+
+definition{
+  name: processReadFacets,
+  parameters: [],
+  result: Foundation.Arch::SystemProcess,
+  body: (record Foundation.Arch::SystemProcess {owner := "Architecture::componentCatalogGenerator"})
+}
+
+definition{
+  name: processRenderPages,
+  parameters: [],
+  result: Foundation.Arch::SystemProcess,
+  body: (record Foundation.Arch::SystemProcess {owner := "Architecture::componentCatalogGenerator"})
+}
+
+definition{
+  name: processRequestLookup,
+  parameters: [],
+  result: Foundation.Arch::SystemProcess,
+  body: (record Foundation.Arch::SystemProcess {owner := "Architecture::componentBrowser"})
+}
+
+definition{
+  name: stateCatalogCurrent,
+  parameters: [],
+  result: Foundation.Arch::SystemState,
+  body: (record Foundation.Arch::SystemState {owner := "Architecture::componentCatalogSite"})
+}
+
+definition{
+  name: stateCatalogStale,
+  parameters: [],
+  result: Foundation.Arch::SystemState,
+  body: (record Foundation.Arch::SystemState {owner := "Architecture::componentCatalogSite"})
+}
+
+definition{
+  name: stateGuestAnswering,
+  parameters: [],
+  result: Foundation.Arch::SystemState,
+  body: (record Foundation.Arch::SystemState {owner := "Architecture::componentLookupGuest"})
+}
+
+definition{
+  name: stateGuestIdle,
+  parameters: [],
+  result: Foundation.Arch::SystemState,
+  body: (record Foundation.Arch::SystemState {owner := "Architecture::componentLookupGuest"})
+}
+
+definition{
+  name: viewOpmGenerate,
+  parameters: [],
+  result: Foundation.Arch::DesignView,
+  body: (record Foundation.Arch::DesignView {title := "Generating the catalog", viewpoint := "Architecture::viewpointAuthorCoverage", diagram := (ctor Foundation.Arch::DesignDiagram.opmObjectProcess)})
+}
+
+definition{
+  name: viewUmlComponents,
+  parameters: [],
+  result: Foundation.Arch::DesignView,
+  body: (record Foundation.Arch::DesignView {title := "Components of the catalog", viewpoint := "Architecture::viewpointModelerFindability", diagram := (ctor Foundation.Arch::DesignDiagram.umlComponent)})
+}
+
+definition{
+  name: viewUmlLookup,
+  parameters: [],
+  result: Foundation.Arch::DesignView,
+  body: (record Foundation.Arch::DesignView {title := "Looking up a record", viewpoint := "Architecture::viewpointNewcomerAccuracy", diagram := (ctor Foundation.Arch::DesignDiagram.umlSequence)})
+}
+
+definition{
+  name: viewUmlGuestStates,
+  parameters: [],
+  result: Foundation.Arch::DesignView,
+  body: (record Foundation.Arch::DesignView {title := "States of the lookup guest", viewpoint := "Architecture::viewpointReviewerIntegrity", diagram := (ctor Foundation.Arch::DesignDiagram.umlStateMachine)})
+}
+
+definition{
+  name: opmSubject,
+  parameters: [],
+  result: Foundation.Arch::OpmThing,
+  body: (record Foundation.Arch::OpmThing {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmThingKind.object), subject := "Architecture::componentSubjectRepository"})
+}
+
+definition{
+  name: opmGenerator,
+  parameters: [],
+  result: Foundation.Arch::OpmThing,
+  body: (record Foundation.Arch::OpmThing {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmThingKind.object), subject := "Architecture::componentCatalogGenerator"})
+}
+
+definition{
+  name: opmSite,
+  parameters: [],
+  result: Foundation.Arch::OpmThing,
+  body: (record Foundation.Arch::OpmThing {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmThingKind.object), subject := "Architecture::componentCatalogSite"})
+}
+
+definition{
+  name: opmGenerate,
+  parameters: [],
+  result: Foundation.Arch::OpmThing,
+  body: (record Foundation.Arch::OpmThing {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmThingKind.process), subject := "Design::processGenerate"})
+}
+
+definition{
+  name: opmRead,
+  parameters: [],
+  result: Foundation.Arch::OpmThing,
+  body: (record Foundation.Arch::OpmThing {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmThingKind.process), subject := "Design::processReadFacets"})
+}
+
+definition{
+  name: opmAssign,
+  parameters: [],
+  result: Foundation.Arch::OpmThing,
+  body: (record Foundation.Arch::OpmThing {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmThingKind.process), subject := "Design::processAssignCovers"})
+}
+
+definition{
+  name: opmRender,
+  parameters: [],
+  result: Foundation.Arch::OpmThing,
+  body: (record Foundation.Arch::OpmThing {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmThingKind.process), subject := "Design::processRenderPages"})
+}
+
+definition{
+  name: opmSiteStale,
+  parameters: [],
+  result: Foundation.Arch::OpmState,
+  body: (record Foundation.Arch::OpmState {view := "Design::viewOpmGenerate", thing := "Architecture::componentCatalogSite", state := "Design::stateCatalogStale"})
+}
+
+definition{
+  name: opmSiteCurrent,
+  parameters: [],
+  result: Foundation.Arch::OpmState,
+  body: (record Foundation.Arch::OpmState {view := "Design::viewOpmGenerate", thing := "Architecture::componentCatalogSite", state := "Design::stateCatalogCurrent"})
+}
+
+definition{
+  name: opmGeneratorAgent,
+  parameters: [],
+  result: Foundation.Arch::OpmLink,
+  body: (record Foundation.Arch::OpmLink {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmLinkKind.agent), source := "Architecture::componentCatalogGenerator", target := "Design::processGenerate"})
+}
+
+definition{
+  name: opmSubjectInstrument,
+  parameters: [],
+  result: Foundation.Arch::OpmLink,
+  body: (record Foundation.Arch::OpmLink {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmLinkKind.instrument), source := "Architecture::componentSubjectRepository", target := "Design::processReadFacets"})
+}
+
+definition{
+  name: opmReadInvokesAssign,
+  parameters: [],
+  result: Foundation.Arch::OpmLink,
+  body: (record Foundation.Arch::OpmLink {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmLinkKind.invocation), source := "Design::processReadFacets", target := "Design::processAssignCovers"})
+}
+
+definition{
+  name: opmAssignInvokesRender,
+  parameters: [],
+  result: Foundation.Arch::OpmLink,
+  body: (record Foundation.Arch::OpmLink {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmLinkKind.invocation), source := "Design::processAssignCovers", target := "Design::processRenderPages"})
+}
+
+definition{
+  name: opmRenderAffectsSite,
+  parameters: [],
+  result: Foundation.Arch::OpmLink,
+  body: (record Foundation.Arch::OpmLink {view := "Design::viewOpmGenerate", kind := (ctor Foundation.Arch::OpmLinkKind.effect), source := "Architecture::componentCatalogSite", target := "Design::processRenderPages"})
+}
+
+definition{
+  name: opmZoomRead,
+  parameters: [],
+  result: Foundation.Arch::OpmZoom,
+  body: (record Foundation.Arch::OpmZoom {view := "Design::viewOpmGenerate", process := "Design::processGenerate", subprocess := "Design::processReadFacets", order := 0})
+}
+
+definition{
+  name: opmZoomAssign,
+  parameters: [],
+  result: Foundation.Arch::OpmZoom,
+  body: (record Foundation.Arch::OpmZoom {view := "Design::viewOpmGenerate", process := "Design::processGenerate", subprocess := "Design::processAssignCovers", order := 1})
+}
+
+definition{
+  name: opmZoomRender,
+  parameters: [],
+  result: Foundation.Arch::OpmZoom,
+  body: (record Foundation.Arch::OpmZoom {view := "Design::viewOpmGenerate", process := "Design::processGenerate", subprocess := "Design::processRenderPages", order := 2})
+}
+
+definition{
+  name: umlSubjectRepository,
+  parameters: [],
+  result: Foundation.Arch::UmlComponent,
+  body: (record Foundation.Arch::UmlComponent {view := "Design::viewUmlComponents", component := "Architecture::componentSubjectRepository"})
+}
+
+definition{
+  name: umlCatalogGenerator,
+  parameters: [],
+  result: Foundation.Arch::UmlComponent,
+  body: (record Foundation.Arch::UmlComponent {view := "Design::viewUmlComponents", component := "Architecture::componentCatalogGenerator"})
+}
+
+definition{
+  name: umlCatalogSite,
+  parameters: [],
+  result: Foundation.Arch::UmlComponent,
+  body: (record Foundation.Arch::UmlComponent {view := "Design::viewUmlComponents", component := "Architecture::componentCatalogSite"})
+}
+
+definition{
+  name: umlLookupGuest,
+  parameters: [],
+  result: Foundation.Arch::UmlComponent,
+  body: (record Foundation.Arch::UmlComponent {view := "Design::viewUmlComponents", component := "Architecture::componentLookupGuest"})
+}
+
+definition{
+  name: umlPagesTarget,
+  parameters: [],
+  result: Foundation.Arch::UmlComponent,
+  body: (record Foundation.Arch::UmlComponent {view := "Design::viewUmlComponents", component := "Architecture::componentPagesTarget"})
+}
+
+definition{
+  name: umlBrowser,
+  parameters: [],
+  result: Foundation.Arch::UmlComponent,
+  body: (record Foundation.Arch::UmlComponent {view := "Design::viewUmlComponents", component := "Architecture::componentBrowser"})
+}
+
+definition{
+  name: umlSubjectToGenerator,
+  parameters: [],
+  result: Foundation.Arch::UmlConnector,
+  body: (record Foundation.Arch::UmlConnector {view := "Design::viewUmlComponents", edge := "Architecture::edgeSubjectToGenerator"})
+}
+
+definition{
+  name: umlGeneratorToSite,
+  parameters: [],
+  result: Foundation.Arch::UmlConnector,
+  body: (record Foundation.Arch::UmlConnector {view := "Design::viewUmlComponents", edge := "Architecture::edgeGeneratorToSite"})
+}
+
+definition{
+  name: umlGeneratorToGuest,
+  parameters: [],
+  result: Foundation.Arch::UmlConnector,
+  body: (record Foundation.Arch::UmlConnector {view := "Design::viewUmlComponents", edge := "Architecture::edgeGeneratorToGuest"})
+}
+
+definition{
+  name: umlSiteToPages,
+  parameters: [],
+  result: Foundation.Arch::UmlConnector,
+  body: (record Foundation.Arch::UmlConnector {view := "Design::viewUmlComponents", edge := "Architecture::edgeSiteToPages"})
+}
+
+definition{
+  name: umlPagesToBrowser,
+  parameters: [],
+  result: Foundation.Arch::UmlConnector,
+  body: (record Foundation.Arch::UmlConnector {view := "Design::viewUmlComponents", edge := "Architecture::edgePagesToBrowser"})
+}
+
+definition{
+  name: umlBrowserToGuest,
+  parameters: [],
+  result: Foundation.Arch::UmlConnector,
+  body: (record Foundation.Arch::UmlConnector {view := "Design::viewUmlComponents", edge := "Architecture::edgeBrowserToGuest"})
+}
+
+definition{
+  name: umlGuestToBrowser,
+  parameters: [],
+  result: Foundation.Arch::UmlConnector,
+  body: (record Foundation.Arch::UmlConnector {view := "Design::viewUmlComponents", edge := "Architecture::edgeGuestToBrowser"})
+}
+
+definition{
+  name: seqBrowser,
+  parameters: [],
+  result: Foundation.Arch::UmlLifeline,
+  body: (record Foundation.Arch::UmlLifeline {view := "Design::viewUmlLookup", component := "Architecture::componentBrowser", order := 0})
+}
+
+definition{
+  name: seqLookupGuest,
+  parameters: [],
+  result: Foundation.Arch::UmlLifeline,
+  body: (record Foundation.Arch::UmlLifeline {view := "Design::viewUmlLookup", component := "Architecture::componentLookupGuest", order := 1})
+}
+
+definition{
+  name: seqRequest,
+  parameters: [],
+  result: Foundation.Arch::UmlMessage,
+  body: (record Foundation.Arch::UmlMessage {view := "Design::viewUmlLookup", kind := (ctor Foundation.Arch::UmlMessageKind.synchronous), order := 0, source := "Architecture::componentBrowser", target := "Architecture::componentLookupGuest", process := "Design::processAnswerLookup"})
+}
+
+definition{
+  name: seqReply,
+  parameters: [],
+  result: Foundation.Arch::UmlMessage,
+  body: (record Foundation.Arch::UmlMessage {view := "Design::viewUmlLookup", kind := (ctor Foundation.Arch::UmlMessageKind.reply), order := 1, source := "Architecture::componentLookupGuest", target := "Architecture::componentBrowser", process := "Design::processAnswerLookup"})
+}
+
+definition{
+  name: stIdle,
+  parameters: [],
+  result: Foundation.Arch::UmlState,
+  body: (record Foundation.Arch::UmlState {view := "Design::viewUmlGuestStates", state := "Design::stateGuestIdle", initial := true})
+}
+
+definition{
+  name: stAnswering,
+  parameters: [],
+  result: Foundation.Arch::UmlState,
+  body: (record Foundation.Arch::UmlState {view := "Design::viewUmlGuestStates", state := "Design::stateGuestAnswering", initial := false})
+}
+
+definition{
+  name: trRequest,
+  parameters: [],
+  result: Foundation.Arch::UmlTransition,
+  body: (record Foundation.Arch::UmlTransition {view := "Design::viewUmlGuestStates", order := 0, source := "Design::stateGuestIdle", target := "Design::stateGuestAnswering", trigger := "Design::processParseRequest"})
+}
+
+definition{
+  name: trAnswer,
+  parameters: [],
+  result: Foundation.Arch::UmlTransition,
+  body: (record Foundation.Arch::UmlTransition {view := "Design::viewUmlGuestStates", order := 1, source := "Design::stateGuestAnswering", target := "Design::stateGuestIdle", trigger := "Design::processAnswerLookup"})
+}
+\end{semanticmodule}
+\end{lexlean}

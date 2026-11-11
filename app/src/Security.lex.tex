@@ -1,0 +1,354 @@
+\begin{lexlean}{Security}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\useglossary{prism.sec@1.0.0}
+\importmodule{Foundation.Sec}
+\importmodule{Production.ThreatModel}
+\importmodule{Architecture}
+\title{DevRel threat model}
+\begin{semanticmodule}
+definition{
+  name: assetCatalogData,
+  parameters: [],
+  result: Foundation.Sec::Asset,
+  body: (record Foundation.Sec::Asset {index := 0, componentIndex := 4})
+}
+
+definition{
+  name: assetCatalogPages,
+  parameters: [],
+  result: Foundation.Sec::Asset,
+  body: (record Foundation.Sec::Asset {index := 1, componentIndex := 3})
+}
+
+definition{
+  name: assetPagesArtifact,
+  parameters: [],
+  result: Foundation.Sec::Asset,
+  body: (record Foundation.Sec::Asset {index := 2, componentIndex := 5})
+}
+
+definition{
+  name: assetSubjectPin,
+  parameters: [],
+  result: Foundation.Sec::Asset,
+  body: (record Foundation.Sec::Asset {index := 3, componentIndex := 2})
+}
+
+definition{
+  name: threatAgentInstructionInjection,
+  parameters: [],
+  result: Foundation.Sec::Threat,
+  body: (record Foundation.Sec::Threat {index := 0})
+}
+
+definition{
+  name: threatFabricatedCoverage,
+  parameters: [],
+  result: Foundation.Sec::Threat,
+  body: (record Foundation.Sec::Threat {index := 1})
+}
+
+definition{
+  name: threatHostSubstitution,
+  parameters: [],
+  result: Foundation.Sec::Threat,
+  body: (record Foundation.Sec::Threat {index := 2})
+}
+
+definition{
+  name: threatLookupExhaustion,
+  parameters: [],
+  result: Foundation.Sec::Threat,
+  body: (record Foundation.Sec::Threat {index := 3})
+}
+
+definition{
+  name: threatMarkupInjection,
+  parameters: [],
+  result: Foundation.Sec::Threat,
+  body: (record Foundation.Sec::Threat {index := 4})
+}
+
+definition{
+  name: threatStaleCatalog,
+  parameters: [],
+  result: Foundation.Sec::Threat,
+  body: (record Foundation.Sec::Threat {index := 5})
+}
+
+definition{
+  name: threatSubjectSubstitution,
+  parameters: [],
+  result: Foundation.Sec::Threat,
+  body: (record Foundation.Sec::Threat {index := 6})
+}
+
+definition{
+  name: riskAgentInstructionInjection,
+  parameters: [],
+  result: Foundation.Sec::Risk,
+  body: (record Foundation.Sec::Risk {index := 0, assetIndex := 1, threatIndex := 0, likelihood := (ctor Foundation.Sec::Likelihood.low), impact := (ctor Foundation.Sec::Impact.major)})
+}
+
+definition{
+  name: riskFabricatedCoverage,
+  parameters: [],
+  result: Foundation.Sec::Risk,
+  body: (record Foundation.Sec::Risk {index := 1, assetIndex := 0, threatIndex := 1, likelihood := (ctor Foundation.Sec::Likelihood.medium), impact := (ctor Foundation.Sec::Impact.major)})
+}
+
+definition{
+  name: riskHostSubstitution,
+  parameters: [],
+  result: Foundation.Sec::Risk,
+  body: (record Foundation.Sec::Risk {index := 2, assetIndex := 2, threatIndex := 2, likelihood := (ctor Foundation.Sec::Likelihood.low), impact := (ctor Foundation.Sec::Impact.critical)})
+}
+
+definition{
+  name: riskLookupExhaustion,
+  parameters: [],
+  result: Foundation.Sec::Risk,
+  body: (record Foundation.Sec::Risk {index := 3, assetIndex := 0, threatIndex := 3, likelihood := (ctor Foundation.Sec::Likelihood.low), impact := (ctor Foundation.Sec::Impact.minor)})
+}
+
+definition{
+  name: riskMarkupInjection,
+  parameters: [],
+  result: Foundation.Sec::Risk,
+  body: (record Foundation.Sec::Risk {index := 4, assetIndex := 1, threatIndex := 4, likelihood := (ctor Foundation.Sec::Likelihood.medium), impact := (ctor Foundation.Sec::Impact.major)})
+}
+
+definition{
+  name: riskStaleCatalog,
+  parameters: [],
+  result: Foundation.Sec::Risk,
+  body: (record Foundation.Sec::Risk {index := 5, assetIndex := 3, threatIndex := 5, likelihood := (ctor Foundation.Sec::Likelihood.medium), impact := (ctor Foundation.Sec::Impact.major)})
+}
+
+definition{
+  name: riskSubjectSubstitution,
+  parameters: [],
+  result: Foundation.Sec::Risk,
+  body: (record Foundation.Sec::Risk {index := 6, assetIndex := 3, threatIndex := 6, likelihood := (ctor Foundation.Sec::Likelihood.low), impact := (ctor Foundation.Sec::Impact.critical)})
+}
+
+definition{
+  name: controlCoverageTheorems,
+  parameters: [],
+  result: Foundation.Sec::ApplicationSecurityControl,
+  body: (record Foundation.Sec::ApplicationSecurityControl {index := 0, riskIndex := 1})
+}
+
+definition{
+  name: controlEscapedText,
+  parameters: [],
+  result: Foundation.Sec::ApplicationSecurityControl,
+  body: (record Foundation.Sec::ApplicationSecurityControl {index := 1, riskIndex := 4})
+}
+
+definition{
+  name: controlPinnedSubject,
+  parameters: [],
+  result: Foundation.Sec::ApplicationSecurityControl,
+  body: (record Foundation.Sec::ApplicationSecurityControl {index := 2, riskIndex := 6})
+}
+
+definition{
+  name: controlQuotedTwins,
+  parameters: [],
+  result: Foundation.Sec::ApplicationSecurityControl,
+  body: (record Foundation.Sec::ApplicationSecurityControl {index := 3, riskIndex := 0})
+}
+
+definition{
+  name: controlRegeneratedCatalog,
+  parameters: [],
+  result: Foundation.Sec::ApplicationSecurityControl,
+  body: (record Foundation.Sec::ApplicationSecurityControl {index := 4, riskIndex := 5})
+}
+
+definition{
+  name: controlRequestBound,
+  parameters: [],
+  result: Foundation.Sec::ApplicationSecurityControl,
+  body: (record Foundation.Sec::ApplicationSecurityControl {index := 5, riskIndex := 3})
+}
+
+definition{
+  name: controlSet,
+  parameters: [],
+  result: Production.ThreatModel::ControlSet,
+  body: (record Production.ThreatModel::ControlSet {title := "Prism-DevRel security controls", text := "Prism-DevRel generates static pages and a Core-Wasm lookup from a pinned subject model. It keeps no storage and calls no service at run time.", version := "0.1.0", lastModified := "2026-11-11T00:00:00Z"})
+}
+
+definition{
+  name: modeledAssetCatalogData,
+  parameters: [],
+  result: Production.ThreatModel::ModeledAsset,
+  body: (record Production.ThreatModel::ModeledAsset {asset := "Security::assetCatalogData", name := "Catalog data", text := "The Subject, Resource and Covers records compiled into the lookup guest."})
+}
+
+definition{
+  name: modeledAssetCatalogPages,
+  parameters: [],
+  result: Production.ThreatModel::ModeledAsset,
+  body: (record Production.ThreatModel::ModeledAsset {asset := "Security::assetCatalogPages", name := "Catalog pages", text := "The learning pages, their Markdown twins, llms.txt and feed.xml."})
+}
+
+definition{
+  name: modeledAssetPagesArtifact,
+  parameters: [],
+  result: Production.ThreatModel::ModeledAsset,
+  body: (record Production.ThreatModel::ModeledAsset {asset := "Security::assetPagesArtifact", name := "Pages artifact", text := "The site and holo the Pages workflow uploads."})
+}
+
+definition{
+  name: modeledAssetSubjectPin,
+  parameters: [],
+  result: Production.ThreatModel::ModeledAsset,
+  body: (record Production.ThreatModel::ModeledAsset {asset := "Security::assetSubjectPin", name := "Subject pin", text := "The repository, commit and path devrel/subject.json names, which decide what the catalog describes."})
+}
+
+definition{
+  name: modeledThreatAgentInstructionInjection,
+  parameters: [],
+  result: Production.ThreatModel::ModeledThreat,
+  body: (record Production.ThreatModel::ModeledThreat {threat := "Security::threatAgentInstructionInjection", name := "Instructions in subject text", text := "A record's text carries instructions that an agent reading a Markdown twin follows as if the catalog gave them.", category := (ctor Production.ThreatModel::Stride.tampering)})
+}
+
+definition{
+  name: modeledThreatFabricatedCoverage,
+  parameters: [],
+  result: Production.ThreatModel::ModeledThreat,
+  body: (record Production.ThreatModel::ModeledThreat {threat := "Security::threatFabricatedCoverage", name := "Fabricated coverage", text := "The catalog claims a record is taught by a page that does not teach it, or names a record or resource that does not exist.", category := (ctor Production.ThreatModel::Stride.repudiation)})
+}
+
+definition{
+  name: modeledThreatHostSubstitution,
+  parameters: [],
+  result: Production.ThreatModel::ModeledThreat,
+  body: (record Production.ThreatModel::ModeledThreat {threat := "Security::threatHostSubstitution", name := "Substituted host", text := "Something other than the repository's Pages workflow serves pages under its address.", category := (ctor Production.ThreatModel::Stride.spoofing)})
+}
+
+definition{
+  name: modeledThreatLookupExhaustion,
+  parameters: [],
+  result: Production.ThreatModel::ModeledThreat,
+  body: (record Production.ThreatModel::ModeledThreat {threat := "Security::threatLookupExhaustion", name := "Oversized lookup", text := "A long request makes the lookup guest parse or allocate without bound.", category := (ctor Production.ThreatModel::Stride.denialOfService)})
+}
+
+definition{
+  name: modeledThreatMarkupInjection,
+  parameters: [],
+  result: Production.ThreatModel::ModeledThreat,
+  body: (record Production.ThreatModel::ModeledThreat {threat := "Security::threatMarkupInjection", name := "Markup in subject text", text := "A record's text contains HTML or script that runs in the reader's browser when a page shows it.", category := (ctor Production.ThreatModel::Stride.elevationOfPrivilege)})
+}
+
+definition{
+  name: modeledThreatStaleCatalog,
+  parameters: [],
+  result: Production.ThreatModel::ModeledThreat,
+  body: (record Production.ThreatModel::ModeledThreat {threat := "Security::threatStaleCatalog", name := "Stale catalog", text := "The committed catalog describes a different subject commit than the one it names.", category := (ctor Production.ThreatModel::Stride.tampering)})
+}
+
+definition{
+  name: modeledThreatSubjectSubstitution,
+  parameters: [],
+  result: Production.ThreatModel::ModeledThreat,
+  body: (record Production.ThreatModel::ModeledThreat {threat := "Security::threatSubjectSubstitution", name := "Substituted subject", text := "The generator reads a repository or commit other than the pinned one.", category := (ctor Production.ThreatModel::Stride.spoofing)})
+}
+
+definition{
+  name: modeledControlCoverageTheorems,
+  parameters: [],
+  result: Production.ThreatModel::ModeledControl,
+  body: (record Production.ThreatModel::ModeledControl {control := "Security::controlCoverageTheorems", name := "Coverage theorems", text := "The Lean kernel checks that every record is covered, that every covering resource is declared, and that a catalog with an uncovered record or an undeclared resource is refused.", evidence := (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.proof), reference := "Catalog::catalogCovered"}) (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.proof), reference := "Catalog::uncoveredRecordRefused"}) (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.proof), reference := "Catalog::undeclaredResourceRefused"}) (nil Production.ThreatModel::Evidence))))})
+}
+
+definition{
+  name: modeledControlEscapedText,
+  parameters: [],
+  result: Production.ThreatModel::ModeledControl,
+  body: (record Production.ThreatModel::ModeledControl {control := "Security::controlEscapedText", name := "Escaped subject text", text := "Every value read from the subject is HTML-escaped before it reaches a page, and pages carry no inline script from the subject.", evidence := (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.gate), reference := "cargo test -p devrel-catalog escapes_subject_markup"}) (nil Production.ThreatModel::Evidence))})
+}
+
+definition{
+  name: modeledControlPinnedSubject,
+  parameters: [],
+  result: Production.ThreatModel::ModeledControl,
+  body: (record Production.ThreatModel::ModeledControl {control := "Security::controlPinnedSubject", name := "Pinned subject", text := "The Pages workflow fetches exactly the repository and full commit devrel/subject.json names.", evidence := (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.gate), reference := "pages.yml fetches the pinned subject commit"}) (nil Production.ThreatModel::Evidence))})
+}
+
+definition{
+  name: modeledControlQuotedTwins,
+  parameters: [],
+  result: Production.ThreatModel::ModeledControl,
+  body: (record Production.ThreatModel::ModeledControl {control := "Security::controlQuotedTwins", name := "Quoted subject text in twins", text := "The Markdown twins and llms.txt state that record text is quoted data from the subject, and quote it as such.", evidence := (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.gate), reference := "cargo test -p devrel-catalog twins_quote_subject_text"}) (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.review), reference := "llms.txt preamble"}) (nil Production.ThreatModel::Evidence)))})
+}
+
+definition{
+  name: modeledControlRegeneratedCatalog,
+  parameters: [],
+  result: Production.ThreatModel::ModeledControl,
+  body: (record Production.ThreatModel::ModeledControl {control := "Security::controlRegeneratedCatalog", name := "Regenerated catalog", text := "The Pages workflow regenerates the catalog from the pinned subject and fails if the committed Catalog.lex.tex differs by a byte.", evidence := (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.gate), reference := "devrel-catalog --check in pages.yml"}) (nil Production.ThreatModel::Evidence))})
+}
+
+definition{
+  name: modeledControlRequestBound,
+  parameters: [],
+  result: Production.ThreatModel::ModeledControl,
+  body: (record Production.ThreatModel::ModeledControl {control := "Security::controlRequestBound", name := "Bounded lookup request", text := "The lookup refuses an empty request or one longer than six bytes before parsing it.", evidence := (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.gate), reference := "lookup acceptance vectors replayed in the compiled guest"}) (nil Production.ThreatModel::Evidence))})
+}
+
+definition{
+  name: mappingFabricatedCoverage,
+  parameters: [],
+  result: Production.ThreatModel::ThreatMapping,
+  body: (record Production.ThreatModel::ThreatMapping {threat := "Security::threatFabricatedCoverage", controls := (cons "Security::controlCoverageTheorems" (nil String))})
+}
+
+definition{
+  name: mappingMarkupInjection,
+  parameters: [],
+  result: Production.ThreatModel::ThreatMapping,
+  body: (record Production.ThreatModel::ThreatMapping {threat := "Security::threatMarkupInjection", controls := (cons "Security::controlEscapedText" (nil String))})
+}
+
+definition{
+  name: mappingSubjectSubstitution,
+  parameters: [],
+  result: Production.ThreatModel::ThreatMapping,
+  body: (record Production.ThreatModel::ThreatMapping {threat := "Security::threatSubjectSubstitution", controls := (cons "Security::controlPinnedSubject" (nil String))})
+}
+
+definition{
+  name: mappingAgentInstructionInjection,
+  parameters: [],
+  result: Production.ThreatModel::ThreatMapping,
+  body: (record Production.ThreatModel::ThreatMapping {threat := "Security::threatAgentInstructionInjection", controls := (cons "Security::controlQuotedTwins" (nil String))})
+}
+
+definition{
+  name: mappingStaleCatalog,
+  parameters: [],
+  result: Production.ThreatModel::ThreatMapping,
+  body: (record Production.ThreatModel::ThreatMapping {threat := "Security::threatStaleCatalog", controls := (cons "Security::controlRegeneratedCatalog" (nil String))})
+}
+
+definition{
+  name: mappingLookupExhaustion,
+  parameters: [],
+  result: Production.ThreatModel::ThreatMapping,
+  body: (record Production.ThreatModel::ThreatMapping {threat := "Security::threatLookupExhaustion", controls := (cons "Security::controlRequestBound" (nil String))})
+}
+
+definition{
+  name: acceptedHostSubstitution,
+  parameters: [],
+  result: Production.ThreatModel::AcceptedRisk,
+  body: (record Production.ThreatModel::AcceptedRisk {threat := "Security::threatHostSubstitution", rationale := "The pages cannot defend against their own host. The holo carries signed build provenance a reader can check, and the catalog can be rebuilt from the tagged source and the pinned subject."})
+}
+\end{semanticmodule}
+\end{lexlean}
