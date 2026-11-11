@@ -1,0 +1,17 @@
+spec = "lexlean/entry/1"
+id = "devrel-record-lookup"
+category = "label-word"
+surface_arity = 0
+frame = "atom"
+
+[denotation]
+kind = "document"
+module = "DevRel"
+component = "dispatch"
+
+[[form]]
+id = "devrel-record-lookup"
+channel = "text"
+surface = "DevRel record lookup"
+canonical_source = true
+features = ["sentence-case", "singular"]

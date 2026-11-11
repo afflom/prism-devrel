@@ -101,7 +101,7 @@ definition{
   name: featureLookup,
   parameters: [],
   result: Foundation.Arch::Feature,
-  body: (record Foundation.Arch::Feature {statement := "Given a record index, the application answers the record identifier and the slugs of the resources that cover it.", calls := (cons "Foundation.DevRel.V1.Model::lookup" (nil String)), acceptance := (cons "Catalog::covers" (nil String))})
+  body: (record Foundation.Arch::Feature {statement := "Given a record index, the application answers the record identifier and the slugs of the resources that cover it.", calls := (cons "DevRel::dispatch" (nil String)), acceptance := (cons "Catalog::vectors" (nil String))})
 }
 
 definition{

@@ -47,7 +47,9 @@ pub fn vectors(c: &Catalog) -> Vec<(Vec<u8>, Vec<u8>)> {
         .collect();
     out.push((b"7x".to_vec(), b"invalid request".to_vec()));
     out.push((b"".to_vec(), b"invalid request".to_vec()));
-    out.push((b"1234567".to_vec(), b"invalid request".to_vec()));
+    // The guest allocation bound is 17 bytes; the text profile requires one
+    // request exactly that long.
+    out.push((b"12345678901234567".to_vec(), b"invalid request".to_vec()));
     out
 }
 
@@ -155,6 +157,22 @@ pub fn catalog(c: &Catalog) -> String {
         })
         .collect();
     chunked(&mut decls, "covers", "Covers", "appendRows", &rows);
+    let view = "Foundation.View.Text.V1.Model::AcceptanceVector";
+    let vector_items: Vec<String> = vectors(c)
+        .iter()
+        .map(|(q, a)| {
+            format!(
+                "(record {view} {{request := {}, response := {}}})",
+                hex(q),
+                hex(a)
+            )
+        })
+        .collect();
+    decls.push(definition(
+        "vectors",
+        &format!("(List {view})"),
+        &list(&vector_items, view),
+    ));
     for r in c.resources.iter().filter(|r| r.scope != Scope::Index) {
         let name = resource_name(r.slug);
         decls.push(definition(
@@ -187,7 +205,7 @@ pub fn catalog(c: &Catalog) -> String {
         ),
     ));
     format!(
-        "\\begin{{lexlean}}{{Catalog}}\n\\useglossary{{lexlean.std.bool@1.2.0}}\n\\useglossary{{lexlean.std.nat@1.2.0}}\n\\useglossary{{prism.arch@1.0.0}}\n\\importmodule{{{MODEL}}}\n\\title{{DevRel catalog}}\n\\begin{{semanticmodule}}\n{}\\end{{semanticmodule}}\n\\end{{lexlean}}\n",
+        "\\begin{{lexlean}}{{Catalog}}\n\\useglossary{{lexlean.std.bool@1.2.0}}\n\\useglossary{{lexlean.std.nat@1.2.0}}\n\\useglossary{{prism.arch@1.0.0}}\n\\importmodule{{{MODEL}}}\n\\importmodule{{Foundation.View.Text.V1.Model}}\n\\title{{DevRel catalog}}\n\\begin{{semanticmodule}}\n{}\\end{{semanticmodule}}\n\\end{{lexlean}}\n",
         decls.join("\n")
     )
 }

@@ -3,6 +3,7 @@
 \useglossary{lexlean.std.nat@1.2.0}
 \useglossary{prism.arch@1.0.0}
 \importmodule{Foundation.DevRel.V1.Model}
+\importmodule{Foundation.View.Text.V1.Model}
 \title{DevRel catalog}
 \begin{semanticmodule}
 definition{
@@ -290,6 +291,13 @@ definition{
   parameters: [],
   result: (List Foundation.DevRel.V1.Model::Covers),
   body: (Foundation.DevRel.V1.Model::appendRows (coversPart0) (Foundation.DevRel.V1.Model::appendRows (coversPart1) (Foundation.DevRel.V1.Model::appendRows (coversPart2) (Foundation.DevRel.V1.Model::appendRows (coversPart3) (Foundation.DevRel.V1.Model::appendRows (coversPart4) (Foundation.DevRel.V1.Model::appendRows (coversPart5) (Foundation.DevRel.V1.Model::appendRows (coversPart6) (Foundation.DevRel.V1.Model::appendRows (coversPart7) (Foundation.DevRel.V1.Model::appendRows (coversPart8) (Foundation.DevRel.V1.Model::appendRows (coversPart9) (Foundation.DevRel.V1.Model::appendRows (coversPart10) (Foundation.DevRel.V1.Model::appendRows (coversPart11) (nil Foundation.DevRel.V1.Model::Covers)))))))))))))
+}
+
+definition{
+  name: vectors,
+  parameters: [],
+  result: (List Foundation.View.Text.V1.Model::AcceptanceVector),
+  body: (cons (record Foundation.View.Text.V1.Model::AcceptanceVector {request := 0x30, response := 0x7265636f7264204172636869746563747572653a3a6172636869746563747572654465736372697074696f6e486f6c64733a206265686176696f7220736c69646573}) (cons (record Foundation.View.Text.V1.Model::AcceptanceVector {request := 0x313430, response := 0x7265636f726420456e67696e653a3a63657274696679576974684163636570747345786163746c793a206265686176696f72}) (cons (record Foundation.View.Text.V1.Model::AcceptanceVector {request := 0x323739, response := 0x7265636f726420576f726b62656e63683a3a76696f6c6174696f6e735265636f76657265643a206265686176696f72}) (cons (record Foundation.View.Text.V1.Model::AcceptanceVector {request := 0x323830, response := 0x756e6b6e6f776e207265636f7264}) (cons (record Foundation.View.Text.V1.Model::AcceptanceVector {request := 0x3778, response := 0x696e76616c69642072657175657374}) (cons (record Foundation.View.Text.V1.Model::AcceptanceVector {request := 0x, response := 0x696e76616c69642072657175657374}) (cons (record Foundation.View.Text.V1.Model::AcceptanceVector {request := 0x3132333435363738393031323334353637, response := 0x696e76616c69642072657175657374}) (nil Foundation.View.Text.V1.Model::AcceptanceVector))))))))
 }
 
 definition{

@@ -1,8 +1,8 @@
 # Template repository verification
 
 This repository's `just vv` instantiates the universal verification policy in
-`VERIFICATION.md` for the template itself, which is a Prism application: the
-template contract checker in `app/`.
+`VERIFICATION.md` for Prism-DevRel, a Prism application: the DevRel model in
+every facet and the record lookup in `app/`.
 
 | `just` recipe | Enforces | ID classes |
 | --- | --- | --- |
@@ -12,13 +12,15 @@ template contract checker in `app/`.
 | `just lint` | Clippy at `-D warnings`, every target, every optional feature | --- |
 | `just test` | the workspace suite, including the R3 meta-gate | `CM-02`, `CM-03` |
 | `just deny` | R6 over the dependency graph | --- |
-| `just app` | the Prism application: LexLean format and lock, then `prismpm verify`, which builds the holo and checks it | `TC-01` |
+| `just app` | the Prism application: LexLean format and lock, then `prismpm verify`, which builds the holo and checks it | `DR-01`, `DR-02`, `DR-06` |
 
 Each check runs once per `just vv`. `just bdd` runs only the meta-gate while a
 scenario is being written; `just test` already includes it.
 
-The register holds one claim, `TC-01`, so the meta-gate checks a real row, a
-real scenario and a real test. It becomes an error as soon as an ID, scenario,
+The register holds `DR-01` to `DR-06` (suite `devrel`), so the meta-gate checks
+real rows, real scenarios and real tests. `DR-03` is also enforced by
+`pages.yml`, which regenerates the catalog from the pinned subject with
+`devrel-catalog --check`. It becomes an error as soon as an ID, scenario,
 or test is added without the other two.
 
 ## Planted defects
@@ -28,7 +30,14 @@ or test is added without the other two.
 | `check-model` | `CONFORMANCE.md` disagrees with the register | rejected |
 | `audit-deferral` | a deferral marker in a crate and in the gate's own source | both rejected |
 | honesty meta-gate | an ID with no test | rejected |
-| `contract_tc_01` | `Conformant` drops the `bootstrap` conjunct, or `dispatch` answers on `true` instead of `conformant` | both rejected |
+| `prismpm check` (threat model) | the `ThreatMapping` of `Security::threatStaleCatalog` removed | rejected (PP2019) |
+| `prismpm check` (facet records) | `Architecture::stakeholderPrismModeler` given index 3 instead of 2 | rejected (PP4004) |
+| `prismpm check` (design views) | a state transition triggered by a process another component owns; a reply carrying the caller's process | both rejected (PP2012) |
+| `lexlean verify` | `Catalog::uncoveredRecordRefused`, `Catalog::undeclaredResourceRefused`: the catalog with its first cover emptied, and with a cover naming one resource past the last | both decided false by the kernel |
+| `lexlean verify` | a teaching theorem claimed for a resource the subject gives nothing to teach | rejected (`decide` proved it false) |
+| `pinned_subject_dr_03` | `pages.yml` without `devrel-catalog --check` | rejected |
+| `pages_teach_their_records_dr_04` | facet pages render no record cards | rejected |
+| `escapes_subject_markup_dr_05` | `<` written unescaped into pages | rejected |
 | `prismpm verify` | an acceptance vector set without the exact guest-allocation boundary | rejected (PP2009) |
 | `audit-bootstrap` | a floating/copied action, mutable SDK tag, changed universal file, narrowed boundary, shallow/credential-retaining checkout, copied project renderer, omitted standards lock, acceptance bypass, deploy-job signing privilege, incomplete release lifecycle, or a bootstrap that drops a native architecture from main or tags, cancels or replaces a main run, or skips runs by path, condition or matrix exclusion | all rejected |
 
@@ -215,48 +224,29 @@ produced files that passed `cargo fmt --check` and all-feature Clippy, and
 passed with the pinned Rust 1.97.1 on `x86_64-unknown-linux-gnu`, locked,
 outside the SDK image; the SDK checks run in the pull request's bootstrap job.
 
-## The template contract checker
+## The DevRel record lookup
 
-`app/` is a Prism text application modeled in `app/src/Contract.lex.tex`. Its
-request is 384 bytes: for each universal policy file, in `template.lock`
-`policy_files` order, the locked SHA-256 then the observed SHA-256. It answers
-`conformant`, or `drift:` followed by each drifted path after a space, or
-`invalid request` for any
-other length. Lean proves, with only `propext`, that the executable verdict is
-both sound and complete for the specification:
+`app/` is a Prism text/3 application (`prismpm/text-application/3`, no
+workbench, so it keeps the Text/1 page with closure v2). `DevRel::dispatch` is
+`Foundation.DevRel.V1.Model::lookup` over the generated catalog
+(`app/src/Catalog.lex.tex`): a request of one to six decimal digits answers
+`record <id>:` followed by the slugs of the covering resources, an index past
+the end answers `unknown record`, and anything else `invalid request`. The
+acceptance vectors are generated with the catalog: the first, middle and last
+record, the first index past the end, a non-decimal request, the empty request
+and a request of exactly the 17-byte guest allocation bound.
 
-- `conformant_decides`: `conformant observation = true ↔ Conformant observation`.
+The kernel decides `Catalog::catalogCovered` over the catalog, and the two
+planted-defect theorems above. Equality of `Bytes` does not reduce in the
+kernel (`ByteArray` equality is implemented natively), so the lookup's answers
+are checked by the acceptance vectors replayed in the compiled guest rather
+than by `decide` theorems; `lookup_dr_06` pins the request bound and the answer
+format against the generator's own copy of the answer.
 
-The proof is `simplify` over the definitions and Lean's `Bool.and_eq_true` and
-`Nat.beq_eq`, not `linear_arithmetic`. A `linear_arithmetic` proof makes the
-generated module import `LexLeanRuntime.Laws`, and `prismpm build` then
-compiles that module to C, which did not finish within the build's ten-minute
-limit in CI or in 25 minutes locally (without C generation it takes four
-seconds). The first CI run of this app failed exactly there, with
-`PP5007: application-lean timed out`. The second failed in code generation
-(`PP4102`), because the drift report was a `List String` built as an
-intermediate value. It is now `Bytes` appended straight into the response.
-
-`Conformant` is the conjunction of six digest equalities, one per universal
-policy path. A digest is four big-endian 64-bit words, because generated code
-represents a `Nat` as a checked `u64`, and `SameDigest` requires all four words
-to be equal, so two digests are the same exactly when their 32 bytes are. `contract_tc_01` reads the model as text and requires the theorem
-statement, its axiom list, one `Conformant` conjunct for each path in
-`template-contract.json` other than `template.lock` (which cannot pin its own
-digest), each path in the drift report, and a `dispatch` decided by
-`conformant`. The nine acceptance vectors (conformant, four drift cases, 383,
-385, 0 and 512 bytes) are executed against the compiled guest by the build
-that `prismpm verify` runs before it checks the resulting holo, so the proof, the code
-and the observed behaviour ship as one artifact.
-
-Locally, with LexLean 0.4.0 (the SDK's compiler), `lexlean check` and
-`lexlean verify` passed, verifying three modules; both planted defects in the
-table above made `contract_tc_01` fail with a message naming the defect. The
-holo build and verify run in the pull request's bootstrap job inside the
-locked SDK. `just app` runs only `prismpm verify`: it begins with the same
-build `prismpm build` performs, so running both built the holo twice. In the
-first green run, `prismpm build` took 82 seconds and `prismpm verify` 6
-minutes 14 seconds.
+The LexLean front end reads a module through a JSON reader with a nesting
+limit, and every element of a `cons` chain is one level; the generator
+therefore declares long lists in parts of 24 joined by `appendRecords` and
+`appendRows`.
 
 ## Prism accounts: the remembered passkey
 
