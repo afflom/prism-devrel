@@ -1,0 +1,176 @@
+//! The catalog as LexLean: `app/src/Catalog.lex.tex`, written in the form
+//! `lexlean fmt` keeps, so that regenerating it from the pinned subject is a
+//! byte comparison.
+
+use crate::lextex::quote;
+use crate::Catalog;
+
+const MODEL: &str = "Foundation.DevRel.V1.Model";
+
+/// The declaration name of a resource: `resource` and its slug in camel case.
+pub fn resource_name(slug: &str) -> String {
+    let mut out = String::from("resource");
+    for part in slug.split('-') {
+        let mut chars = part.chars();
+        if let Some(first) = chars.next() {
+            out.extend(first.to_uppercase());
+            out.push_str(chars.as_str());
+        }
+    }
+    out
+}
+
+fn list(items: &[String], element: &str) -> String {
+    let mut out = format!("(nil {element})");
+    for item in items.iter().rev() {
+        out = format!("(cons {item} {out})");
+    }
+    out
+}
+
+fn definition(name: &str, result: &str, body: &str) -> String {
+    format!("definition{{\n  name: {name},\n  parameters: [],\n  result: {result},\n  body: {body}\n}}\n")
+}
+
+fn theorem(name: &str, statement: &str) -> String {
+    format!("theorem{{\n  name: {name},\n  parameters: [],\n  statement: {statement},\n  proof: decide{{}}\n}}\n")
+}
+
+/// The acceptance vectors of the lookup, replayed in the compiled guest: the first and last record, the
+/// first index past the end, and two malformed requests.
+pub fn vectors(c: &Catalog) -> Vec<(Vec<u8>, Vec<u8>)> {
+    let last = c.records.len() - 1;
+    let middle = c.records.len() / 2;
+    let mut out: Vec<(Vec<u8>, Vec<u8>)> = [0, middle, last, c.records.len()]
+        .iter()
+        .map(|i| (i.to_string().into_bytes(), c.answer(*i).into_bytes()))
+        .collect();
+    out.push((b"7x".to_vec(), b"invalid request".to_vec()));
+    out.push((b"".to_vec(), b"invalid request".to_vec()));
+    out.push((b"1234567".to_vec(), b"invalid request".to_vec()));
+    out
+}
+
+/// A LexLean byte literal.
+pub fn hex(bytes: &[u8]) -> String {
+    let mut out = String::from("0x");
+    for b in bytes {
+        out.push_str(&format!("{b:02x}"));
+    }
+    out
+}
+
+/// Elements per list literal. The LexLean front end reads a module through a
+/// JSON reader with a nesting limit, and every element of a `cons` chain is a
+/// level, so a long list is declared in parts joined by an append the model
+/// defines.
+const CHUNK: usize = 24;
+
+fn chunked(decls: &mut Vec<String>, name: &str, element: &str, append: &str, items: &[String]) {
+    let ty = format!("(List {MODEL}::{element})");
+    let mut parts = Vec::new();
+    for (i, chunk) in items.chunks(CHUNK).enumerate() {
+        let part = format!("{name}Part{i}");
+        decls.push(definition(
+            &part,
+            &ty,
+            &list(chunk, &format!("{MODEL}::{element}")),
+        ));
+        parts.push(part);
+    }
+    let mut body = format!("(nil {MODEL}::{element})");
+    for part in parts.iter().rev() {
+        body = format!("({MODEL}::{append} ({part}) {body})");
+    }
+    decls.push(definition(name, &ty, &body));
+}
+
+/// `app/src/Catalog.lex.tex` for this catalog.
+pub fn catalog(c: &Catalog) -> String {
+    let mut decls: Vec<String> = Vec::new();
+    decls.push(definition(
+        "subject",
+        &format!("{MODEL}::Subject"),
+        &format!(
+            "(record {MODEL}::Subject {{name := {}, repository := {}, commit := {}, sourceDigest := {}, recordCount := {}}})",
+            quote(&c.subject.name),
+            quote(&c.subject.repository),
+            quote(&c.subject.commit),
+            quote(&format!("sha256:{}", c.source_digest)),
+            c.records.len()
+        ),
+    ));
+    for r in &c.resources {
+        decls.push(definition(
+            &resource_name(r.slug),
+            &format!("{MODEL}::Resource"),
+            &format!(
+                "(record {MODEL}::Resource {{index := {}, slug := {}, title := {}, modality := (ctor {MODEL}::Modality.{})}})",
+                r.index,
+                quote(r.slug),
+                quote(r.title),
+                r.modality.constructor()
+            ),
+        ));
+    }
+    let resource_refs: Vec<String> = c
+        .resources
+        .iter()
+        .map(|r| format!("({})", resource_name(r.slug)))
+        .collect();
+    decls.push(definition(
+        "resources",
+        &format!("(List {MODEL}::Resource)"),
+        &list(&resource_refs, &format!("{MODEL}::Resource")),
+    ));
+    let records: Vec<String> = c
+        .records
+        .iter()
+        .map(|r| {
+            format!(
+                "(record {MODEL}::SubjectRecord {{index := {}, id := {}, facet := (ctor {MODEL}::Facet.{})}})",
+                r.index,
+                quote(&r.id),
+                r.facet.constructor()
+            )
+        })
+        .collect();
+    chunked(
+        &mut decls,
+        "records",
+        "SubjectRecord",
+        "appendRecords",
+        &records,
+    );
+    let rows: Vec<String> = c
+        .covers
+        .iter()
+        .enumerate()
+        .map(|(i, rs)| {
+            let nats: Vec<String> = rs.iter().map(|n| n.to_string()).collect();
+            format!(
+                "(record {MODEL}::Covers {{record := {i}, resources := {}}})",
+                list(&nats, "Nat")
+            )
+        })
+        .collect();
+    chunked(&mut decls, "covers", "Covers", "appendRows", &rows);
+    decls.push(theorem(
+        "catalogCovered",
+        &format!("(({MODEL}::catalogValid (subject) (records) (resources) (covers)) = true)"),
+    ));
+    decls.push(theorem(
+        "uncoveredRecordRefused",
+        &format!("(({MODEL}::catalogValid (subject) (records) (resources) ({MODEL}::withoutFirstCover (covers))) = false)"),
+    ));
+    decls.push(theorem(
+        "undeclaredResourceRefused",
+        &format!(
+            "(({MODEL}::catalogValid (subject) (records) (resources) ({MODEL}::withUndeclaredCover ({MODEL}::resourceTotal (resources)) (covers))) = false)"
+        ),
+    ));
+    format!(
+        "\\begin{{lexlean}}{{Catalog}}\n\\useglossary{{lexlean.std.bool@1.2.0}}\n\\useglossary{{lexlean.std.nat@1.2.0}}\n\\useglossary{{prism.arch@1.0.0}}\n\\importmodule{{{MODEL}}}\n\\title{{DevRel catalog}}\n\\begin{{semanticmodule}}\n{}\\end{{semanticmodule}}\n\\end{{lexlean}}\n",
+        decls.join("\n")
+    )
+}

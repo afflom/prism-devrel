@@ -1,0 +1,17 @@
+spec = "lexlean/entry/1"
+id = "devrel-coverage-model"
+category = "label-word"
+surface_arity = 0
+frame = "atom"
+
+[denotation]
+kind = "document"
+module = "Foundation.DevRel.V1.Model"
+component = "catalogValid"
+
+[[form]]
+id = "devrel-coverage-model"
+channel = "text"
+surface = "DevRel coverage model"
+canonical_source = true
+features = ["sentence-case", "singular"]

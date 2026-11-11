@@ -1,0 +1,6 @@
+{
+  "name": "Prism-code reference model",
+  "repository": "https://github.com/UOR-Foundation/prismpm",
+  "commit": "15f630aa6deec5d6490ac22e222381fa28d6f17d",
+  "path": "tests/fixtures/threat-model/tm-01-prism-code/project"
+}

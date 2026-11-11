@@ -1,0 +1,328 @@
+\begin{lexlean}{Foundation.DevRel.V1.Model}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\importmodule{Foundation.Bytes}
+\title{DevRel coverage model}
+\begin{semanticmodule}
+inductive{
+  name: Facet,
+  type_parameters: [],
+  parameters: [],
+  constructors: [
+    {name: architecture, fields: []},
+    {name: design, fields: []},
+    {name: features, fields: []},
+    {name: security, fields: []},
+    {name: quality, fields: []},
+    {name: behavior, fields: []},
+    {name: system, fields: []},
+    {name: extension, fields: []},
+    {name: application, fields: []}
+  ]
+}
+
+inductive{
+  name: Modality,
+  type_parameters: [],
+  parameters: [],
+  constructors: [
+    {name: walkthrough, fields: []},
+    {name: reference, fields: []},
+    {name: diagram, fields: []},
+    {name: interactiveExplorer, fields: []},
+    {name: videoScript, fields: []},
+    {name: agentTwin, fields: []}
+  ]
+}
+
+structure{
+  name: Subject,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: name, type: String},
+    {name: repository, type: String},
+    {name: commit, type: String},
+    {name: sourceDigest, type: String},
+    {name: recordCount, type: Nat}
+  ]
+}
+
+structure{
+  name: SubjectRecord,
+  type_parameters: [],
+  parameters: [],
+  fields: [{name: index, type: Nat}, {name: id, type: String}, {name: facet, type: Facet}]
+}
+
+structure{
+  name: Resource,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: index, type: Nat},
+    {name: slug, type: String},
+    {name: title, type: String},
+    {name: modality, type: Modality}
+  ]
+}
+
+structure{
+  name: Covers,
+  type_parameters: [],
+  parameters: [],
+  fields: [{name: record, type: Nat}, {name: resources, type: (List Nat)}]
+}
+
+definition{
+  name: appendRecords,
+  parameters: [front : (List SubjectRecord), back : (List SubjectRecord)],
+  result: (List SubjectRecord),
+  body: (match front
+    | List.nil => back
+    | List.cons item rest => (cons item (appendRecords rest back))),
+  recursive_argument: front
+}
+
+definition{
+  name: appendRows,
+  parameters: [front : (List Covers), back : (List Covers)],
+  result: (List Covers),
+  body: (match front | List.nil => back | List.cons row rest => (cons row (appendRows rest back))),
+  recursive_argument: front
+}
+
+definition{
+  name: allBelow,
+  parameters: [bound : Nat, values : (List Nat)],
+  result: Bool,
+  body: (match values
+    | List.nil => true
+    | List.cons value rest => ((value <? bound) && (allBelow bound rest))),
+  recursive_argument: values
+}
+
+definition{
+  name: AllBelow,
+  parameters: [bound : Nat, values : (List Nat)],
+  result: Prop,
+  body: (match values
+    | List.nil => (bound = bound)
+    | List.cons value rest => ((value < bound) /\ (AllBelow bound rest))),
+  recursive_argument: values
+}
+
+theorem{
+  name: allBelow_sound_complete,
+  parameters: [bound : Nat, values : (List Nat)],
+  statement: (((allBelow bound values) = true) <-> (AllBelow bound values)),
+  proof: boolean_reflection{
+    reflection: list{
+      boolean_definition: allBelow,
+      comparison: nat_blt,
+      parameter: bound,
+      proposition_definition: AllBelow,
+      values: values
+    }
+  }
+}
+
+definition{
+  name: nonEmpty,
+  parameters: [values : (List Nat)],
+  result: Bool,
+  body: (match values | List.nil => false | List.cons value rest => true)
+}
+
+definition{
+  name: rowsCovered,
+  parameters: [position : Nat, rows : (List Covers)],
+  result: Bool,
+  body: (match rows
+    | List.nil => true
+    | List.cons row rest => (((project row record) =? position) && ((nonEmpty (project row resources)) && (rowsCovered (position + 1) rest)))),
+  recursive_argument: rows
+}
+
+definition{
+  name: rowCount,
+  parameters: [rows : (List Covers)],
+  result: Nat,
+  body: (match rows | List.nil => 0 | List.cons row rest => (1 + (rowCount rest))),
+  recursive_argument: rows
+}
+
+definition{
+  name: rowsDeclared,
+  parameters: [resourceCount : Nat, rows : (List Covers)],
+  result: Bool,
+  body: (match rows
+    | List.nil => true
+    | List.cons row rest => ((allBelow resourceCount (project row resources)) && (rowsDeclared resourceCount rest))),
+  recursive_argument: rows
+}
+
+definition{
+  name: resourcesNumbered,
+  parameters: [position : Nat, resources : (List Resource)],
+  result: Bool,
+  body: (match resources
+    | List.nil => true
+    | List.cons resource rest => (((project resource index) =? position) && (resourcesNumbered (position + 1) rest))),
+  recursive_argument: resources
+}
+
+definition{
+  name: recordsNumbered,
+  parameters: [position : Nat, records : (List SubjectRecord)],
+  result: Bool,
+  body: (match records
+    | List.nil => true
+    | List.cons item rest => (((project item index) =? position) && (recordsNumbered (position + 1) rest))),
+  recursive_argument: records
+}
+
+definition{
+  name: resourceTotal,
+  parameters: [resources : (List Resource)],
+  result: Nat,
+  body: (match resources | List.nil => 0 | List.cons resource rest => (1 + (resourceTotal rest))),
+  recursive_argument: resources
+}
+
+definition{
+  name: recordTotal,
+  parameters: [records : (List SubjectRecord)],
+  result: Nat,
+  body: (match records | List.nil => 0 | List.cons item rest => (1 + (recordTotal rest))),
+  recursive_argument: records
+}
+
+definition{
+  name: everyRecordCovered,
+  parameters: [subject : Subject, records : (List SubjectRecord), rows : (List Covers)],
+  result: Bool,
+  body: (((recordTotal records) =? (project subject recordCount)) && ((recordsNumbered 0 records) && (((rowCount rows) =? (project subject recordCount)) && (rowsCovered 0 rows))))
+}
+
+definition{
+  name: coversOnlyDeclared,
+  parameters: [resources : (List Resource), rows : (List Covers)],
+  result: Bool,
+  body: ((resourcesNumbered 0 resources) && (rowsDeclared (resourceTotal resources) rows))
+}
+
+definition{
+  name: catalogValid,
+  parameters: [
+    subject : Subject,
+    records : (List SubjectRecord),
+    resources : (List Resource),
+    rows : (List Covers)
+  ],
+  result: Bool,
+  body: ((everyRecordCovered subject records rows) && (coversOnlyDeclared resources rows))
+}
+
+definition{
+  name: withoutFirstCover,
+  parameters: [rows : (List Covers)],
+  result: (List Covers),
+  body: (match rows
+    | List.nil => (nil Covers)
+    | List.cons row rest => (cons (record Covers {record := (project row record), resources := (nil Nat)}) rest))
+}
+
+definition{
+  name: withUndeclaredCover,
+  parameters: [resourceCount : Nat, rows : (List Covers)],
+  result: (List Covers),
+  body: (match rows
+    | List.nil => (nil Covers)
+    | List.cons row rest => (cons (record Covers {record := (project row record), resources := (cons resourceCount (project row resources))}) rest))
+}
+
+definition{
+  name: recordAt,
+  parameters: [position : Nat, records : (List SubjectRecord)],
+  result: (Option SubjectRecord),
+  body: (match records
+    | List.nil => (ctor Option.none [SubjectRecord])
+    | List.cons item rest => (if ((project item index) =? position) then (ctor Option.some [SubjectRecord] item) else (recordAt position rest))),
+  recursive_argument: records
+}
+
+definition{
+  name: rowAt,
+  parameters: [position : Nat, rows : (List Covers)],
+  result: (List Nat),
+  body: (match rows
+    | List.nil => (nil Nat)
+    | List.cons row rest => (if ((project row record) =? position) then (project row resources) else (rowAt position rest))),
+  recursive_argument: rows
+}
+
+definition{
+  name: slugAt,
+  parameters: [position : Nat, resources : (List Resource)],
+  result: Bytes,
+  body: (match resources
+    | List.nil => 0x
+    | List.cons resource rest => (if ((project resource index) =? position) then (prim utf8_encode (project resource slug) : Bytes) else (slugAt position rest))),
+  recursive_argument: resources
+}
+
+definition{
+  name: slugList,
+  parameters: [positions : (List Nat), resources : (List Resource)],
+  result: Bytes,
+  body: (match positions
+    | List.nil => 0x
+    | List.cons position rest => (prim append (prim append 0x20 (slugAt position resources) : Bytes) (slugList rest resources) : Bytes)),
+  recursive_argument: positions
+}
+
+definition{
+  name: answer,
+  parameters: [
+    position : Nat,
+    records : (List SubjectRecord),
+    resources : (List Resource),
+    rows : (List Covers)
+  ],
+  result: Bytes,
+  body: (match (recordAt position records)
+    | Option.none => (prim utf8_encode "unknown record" : Bytes)
+    | Option.some item => (prim append (prim append (prim utf8_encode (project item id) : Bytes) 0x3a : Bytes) (slugList (rowAt position rows) resources) : Bytes))
+}
+
+definition{
+  name: digitsValue,
+  parameters: [value : Bytes, offset : Nat, remaining : Nat, accumulated : Nat],
+  result: (Option Nat),
+  body: (match remaining
+    | Nat.zero => (ctor Option.some [Nat] accumulated)
+    | Nat.succ rest => (match (Foundation.Bytes::byteAt value offset)
+      | Option.none => (ctor Option.some [Nat] accumulated)
+      | Option.some byte => (if (((prim to_nat byte : Nat) <? 48) || (57 <? (prim to_nat byte : Nat))) then (ctor Option.none [Nat]) else (digitsValue value (offset + 1) rest ((prim multiply accumulated 10 : Nat) + (prim subtract (prim to_nat byte : Nat) 48 : Nat)))))),
+  axioms: [Quot.sound, propext],
+  recursive_argument: remaining
+}
+
+definition{
+  name: lookup,
+  parameters: [
+    value : Bytes,
+    records : (List SubjectRecord),
+    resources : (List Resource),
+    rows : (List Covers)
+  ],
+  result: Bytes,
+  body: (if (((Foundation.Bytes::byteLength value) =? 0) || (6 <? (Foundation.Bytes::byteLength value))) then (prim utf8_encode "invalid request" : Bytes) else (match (digitsValue value 0 6 0)
+    | Option.none => (prim utf8_encode "invalid request" : Bytes)
+    | Option.some position => (answer position records resources rows))),
+  axioms: [Quot.sound, propext]
+}
+\end{semanticmodule}
+\end{lexlean}
