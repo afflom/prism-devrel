@@ -33,11 +33,12 @@ records. The Lean kernel checks, over the generated catalog, that:
   record or an undeclared resource is refused (`Catalog::uncoveredRecordRefused`,
   `Catalog::undeclaredResourceRefused`, `DR-02`).
 
-The first subject is [UORust](https://github.com/afflom/uorust), the tool that
-maps a Cargo workspace onto a complete Prism model. Until UORust's own facet
-records are published, the subject is PrismPM's all-facet reference project
-(`tests/fixtures/threat-model/tm-01-prism-code`) at the SDK's commit, so the
-pipeline is exercised on every facet from the start.
+The subject is [UORust](https://github.com/afflom/uorust), the tool that
+maps a Cargo workspace onto a complete Prism model, read from its own
+self-model in `app/` at the commit `devrel/subject.json` pins
+(`a4dfa2270bcb`). All 309 of its facet records are covered: 108 security, 73
+design, 61 architecture, 38 quality, 15 features, 11 behavior, 2 system and 1
+application record.
 
 ## What is published
 

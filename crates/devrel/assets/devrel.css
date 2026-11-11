@@ -31,6 +31,8 @@ a:hover { text-decoration-color: currentColor; }
 a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid hsl(var(--fd-fg)); outline-offset: 2px; }
 code, .eyebrow, .chip, .stats dt, th, .side, .foot { font-family: "JetBrains Mono", ui-monospace, monospace; }
 code { font-size: 0.86em; overflow-wrap: anywhere; }
+pre { background: hsl(var(--fd-panel)); border: 1px solid hsl(var(--fd-line)); padding: 14px 16px; overflow-x: auto; max-width: 100%; }
+pre code { overflow-wrap: normal; white-space: pre; font-size: 0.82em; }
 .skip { position: absolute; left: -9999px; }
 .skip:focus { left: 16px; top: 8px; background: hsl(var(--fd-fg)); color: hsl(var(--fd-bg)); padding: 6px 10px; z-index: 2; }
 .top { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 16px clamp(16px, 4vw, 36px); border-bottom: 1px solid hsl(var(--fd-line)); }

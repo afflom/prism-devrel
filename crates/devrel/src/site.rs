@@ -72,6 +72,8 @@ pub enum Block {
     Slide(String, Vec<String>, String),
     /// Our own HTML, with a plain-text stand-in for the twin.
     Html(String, String),
+    /// A shell listing of our own, shown verbatim.
+    Code(String),
 }
 
 /// A page before rendering.
@@ -427,16 +429,29 @@ fn getting_started(ctx: &Ctx, covered: &[&Record], blocks: &mut Vec<Block>) {
     ));
     blocks.push(Block::Para("Create a repository from [UOR-Foundation/template](https://github.com/UOR-Foundation/template). It brings the gate (`just vv`), the Pages workflow and the register in `model/ids.toml`.".into()));
     blocks.push(Block::Heading(
-        "3. Map your workspace with UORust".into(),
+        "3. Project your workspace with UORust".into(),
         "uorust".into(),
     ));
-    blocks.push(Block::Para(format!("[UORust]({UORUST}) reads a Cargo workspace (`cargo metadata` and the source) and writes a Prism project with every facet: crate targets become components, dependencies edges, public functions interface calls and features, error enums typed failures, tests acceptance rows, `unsafe` and I/O capabilities and threats, `Cargo.lock` the SPDX supply chain. Ambiguity is refused as an open claim, never filled with a default.")));
+    blocks.push(Block::Para(format!("[UORust]({UORUST}) reads a Cargo workspace (`cargo metadata`, `Cargo.lock` and the source through `syn`) and writes a Prism project with every facet. Clone it and run its three commands from its root:")));
+    blocks.push(Block::Code(format!(
+        "git clone {UORUST}\ncd uorust\ncargo run --locked -p uorust -- project path/to/workspace --out path/to/prism-project\ncargo run --locked -p uorust -- check   path/to/workspace --out path/to/prism-project\ncargo run --locked -p uorust -- routes"
+    )));
+    blocks.push(Block::List(vec![
+        "`project` writes `prismpm.toml`, `lexlean.toml`, one module per facet and the register. Re-running it on the same workspace writes byte-identical files.".into(),
+        "`check` confirms the output directory holds exactly the current projection, so CI can fail on drift.".into(),
+        "`routes` prints the route table: which Prism record each kind of Rust fact becomes.".into(),
+    ]));
+    blocks.push(Block::Para("The route table decides the facets: crate targets become components, dependencies edges, `clap` subcommands features, public functions and traits interface calls, tests and doctests acceptance rows, error enums inductives, `unsafe`, FFI and file, network, process and environment use threats and assets, RustSec advisories risks, lints and `rust-version` quality requirements, state enums UML states, calls UML messages, and `Cargo.lock` the SPDX release. A fact whose kinds name two routes is refused as ambiguous and a kind no route names as unknown; each refusal becomes an open claim at the fact's source span, never a default.".into()));
+    blocks.push(Block::Code(
+        "printf 'error-enum' | uorust-routes route              # route UR-R12, exit 0\nprintf 'error-enum\\nstate-enum' | uorust-routes route  # refused ambiguous, exit 1".into(),
+    ));
+    blocks.push(Block::Para(format!("Those are the static route programs the UORust holo build writes; the same table runs in the browser on the [UORust page](https://afflom.github.io/uorust/). The [route table section]({UORUST}#the-route-table) of its README lists every route.")));
     blocks.push(Block::Heading(
         "4. Check, then verify".into(),
         "check".into(),
     ));
     blocks.push(Block::List(vec![
-        "`prismpm --project app check` projects the model and runs the facet checks (design PP2012, features PP2014-PP2018, threat model PP2019-PP2022).".into(),
+        "`prismpm --project path/to/prism-project check` on the projection, or `--project app` in a template repository, projects the model and runs the facet checks (design PP2012, features PP2014-PP2018, threat model PP2019-PP2022).".into(),
         "`lexlean verify` in `app/` has the Lean kernel check every theorem.".into(),
         format!("`prismpm --project app verify` builds the holo and replays its acceptance vectors; see [Verify and inspect]({DOCS}/guides/verify-and-inspect)."),
     ]));
@@ -461,13 +476,21 @@ fn getting_started(ctx: &Ctx, covered: &[&Record], blocks: &mut Vec<Block>) {
 
 fn case_study(ctx: &Ctx, covered: &[&Record], blocks: &mut Vec<Block>) {
     let c = ctx.c;
-    blocks.push(Block::Para(format!("This is the subject read as a design story: the people it serves, what each of them needs to be true, and where in the model that need is answered. The numbers come from the subject at commit `{}`.", &c.subject.commit[..12])));
+    blocks.push(Block::Para(format!("{} models itself: its `app/` directory describes the engine in every Prism facet, and the same locked SDK that checks a projection checks that description. This page reads the self-model as a design story. The numbers come from {} at commit `{}`.", c.subject.name, c.subject.name, &c.subject.commit[..12])));
     let rows = c
         .counts()
         .iter()
         .map(|(f, n)| vec![f.label().to_string(), n.to_string()])
         .collect();
     blocks.push(Block::Table(vec!["Facet".into(), "Records".into()], rows));
+    blocks.push(Block::Heading("The choices".into(), "choices".into()));
+    blocks.push(Block::List(vec![
+        "The application is the route table, not the whole engine. The holo answers one question, which record a kind of Rust fact becomes, so the thing the kernel proves is the thing users rely on: every kind routes to its own row, no two rows share a kind, and conflicting kinds are refused.".into(),
+        format!("One source, two readers. `model/routes.toml` feeds both the Rust router and the LexLean model, and both replay the same acceptance vectors; see the [route table]({UORUST}#the-route-table)."),
+        "The facets are generated, then gated. Scripts in the repository write the route table, its vectors and the facet modules; the gate fails when a committed file differs from what they write, so the model cannot drift from the engine.".into(),
+        "External systems are components too. The subject workspace, Cargo, crates.io, rustc, PrismPM and GitHub Actions appear as components so the threat model can name what crosses each edge.".into(),
+        "The browser page is a Text/3 workbench: `Frame` turns route answers into the page's JSON and `Guide` holds its operations, examples and refusal hints, all as model records.".into(),
+    ]));
     blocks.push(Block::Heading(
         "People and their concerns".into(),
         "people".into(),
@@ -479,10 +502,11 @@ fn case_study(ctx: &Ctx, covered: &[&Record], blocks: &mut Vec<Block>) {
         "answers".into(),
     ));
     blocks.push(Block::List(vec![
-        "Accuracy and correctness concerns land in [Behavior and proofs](../behavior/): theorems the kernel checks.".into(),
-        "Integrity and privacy concerns land in [Security and threat model](../security/): threats with controls and evidence.".into(),
-        "Usability and performance concerns land in [Quality](../quality/): requirements with measured thresholds.".into(),
-        "Structure concerns land in [Architecture](../architecture/) and [Design views](../design/).".into(),
+        "Correctness of routing lands in [Behavior and proofs](../behavior/): decide theorems over the route table and its vectors.".into(),
+        "Supply chain and code-safety concerns land in [Security and threat model](../security/): threats with controls whose evidence is a gate, a proof or a review.".into(),
+        "Drift, determinism and run time land in [Quality](../quality/): requirements with measured thresholds.".into(),
+        "Structure lands in [Architecture](../architecture/) and [Design views](../design/): the ingest, route, admit and emit pipeline and the admission state machine.".into(),
+        "The shipped release lands in [System and release](../system/).".into(),
     ]));
 }
 
@@ -1075,6 +1099,9 @@ fn render_html(ctx: &Ctx, page: &Page) -> String {
                 );
             }
             Block::Html(html, _) => body.push_str(html),
+            Block::Code(code) => {
+                let _ = write!(body, "<pre><code>{}</code></pre>", esc(code));
+            }
         }
     }
     let twin = if from.is_empty() {
@@ -1188,6 +1215,9 @@ fn render_md(ctx: &Ctx, page: &Page) -> String {
             }
             Block::Html(_, text) => {
                 let _ = write!(s, "{text}\n\n");
+            }
+            Block::Code(code) => {
+                let _ = write!(s, "```sh\n{code}\n```\n\n");
             }
         }
     }
