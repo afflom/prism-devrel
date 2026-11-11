@@ -334,7 +334,7 @@ definition{
   name: requestIndex,
   parameters: [value : Bytes],
   result: (Option Nat),
-  body: (if (((Foundation.Bytes::byteLength value) =? 0) || (6 <? (Foundation.Bytes::byteLength value))) then (ctor Option.none [Nat]) else (digitsValue value 0 6 0)),
+  body: (if (((Foundation.Bytes::byteLength value) =? 0) || (6 <? (Foundation.Bytes::byteLength value))) then (ctor Option.none [Nat]) else (digitsValue value 0 (Foundation.Bytes::byteLength value) 0)),
   axioms: [Quot.sound, propext]
 }
 
