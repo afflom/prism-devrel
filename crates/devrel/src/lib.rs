@@ -18,6 +18,7 @@ use std::path::{Path, PathBuf};
 
 use sha2::{Digest, Sha256};
 
+pub mod frame;
 pub mod lean;
 pub mod lextex;
 pub mod site;
@@ -458,25 +459,28 @@ impl Catalog {
     }
 
     /// The answer the DevRel application gives for a record index, the
-    /// generator's copy of `DevRel::answer` so the page and its tests can
-    /// state it: the record's identifier, then the slugs that cover it.
+    /// generator's copy of `Foundation.DevRel.V1.Model::answerFor` so the
+    /// page, the guest's answers and the tests can state it: the record's
+    /// identifier, its facet, then one line per page that covers it.
     pub fn answer(&self, index: usize) -> String {
         match self.records.get(index) {
             Some(r) => {
-                let slugs: Vec<&str> = self.covers[index]
-                    .iter()
-                    .map(|&i| self.resources[i].slug)
-                    .collect();
-                format!(
-                    "record {}:{}",
-                    r.id,
-                    slugs.iter().map(|s| format!(" {s}")).collect::<String>()
-                )
+                let mut out = format!("record {}\nfacet {}", r.id, r.facet.constructor());
+                for &i in &self.covers[index] {
+                    out.push_str("\npage ");
+                    out.push_str(self.resources[i].slug);
+                }
+                out
             }
-            None => "unknown record".to_string(),
+            None => UNKNOWN.to_string(),
         }
     }
 }
+
+/// The answer past the last record.
+pub const UNKNOWN: &str = "refused unknown-record";
+/// The answer to a request that is not one to six decimal digits.
+pub const INVALID: &str = "error invalid-request";
 
 fn covers(scope: Scope, record: &Record, all: &[Record]) -> bool {
     match scope {

@@ -27,7 +27,7 @@ model does not sanction.
 | `DR-03` | `build` | The committed catalog is the catalog of the subject at the commit devrel/subject.json pins |
 | `DR-04` | `build` | Every page shows every record the catalog says it covers, and its Markdown twin quotes the same records |
 | `DR-05` | `build` | Subject text is escaped in every page and quoted as data in every twin |
-| `DR-06` | `build` | The lookup answers a record index with the record identifier and the slugs of the resources that cover it, and refuses malformed requests |
+| `DR-06` | `build` | The lookup answers a record index with the record identifier, its facet and the pages that cover it, refuses malformed requests, and frames the workbench's answers as JSON |
 
 ## Cited authorities
 

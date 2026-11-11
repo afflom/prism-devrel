@@ -55,4 +55,4 @@ statement = "Subject text is escaped in every page and quoted as data in every t
 id = "DR-06"
 level = "build"
 suite = "devrel"
-statement = "The lookup answers a record index with the record identifier and the slugs of the resources that cover it, and refuses malformed requests"
+statement = "The lookup answers a record index with the record identifier, its facet and the pages that cover it, refuses malformed requests, and frames the workbench's answers as JSON"

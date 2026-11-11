@@ -55,9 +55,11 @@ The Pages site has the app at its root and the catalog under `learn/`:
 | Record explorer | interactive search over `learn/records.json` |
 | llms.txt and Markdown twins | `llms.txt`, `llms-full.txt`, `feed.xml` and a `.md` twin of every page |
 
-The app answers a record index (decimal) with `record <id>:` and the slugs of
-the pages that teach it, `unknown record` past the end, and `invalid request`
-otherwise (`DR-06`). The pages link to the [Prism docs](https://uor.foundation/docs)
+The app is a text/3 workbench. It answers a record index (decimal) with
+`record <id>`, `facet <facet>` and one `page <slug>` line per page that
+teaches it, `refused unknown-record` past the end, and `error
+invalid-request` otherwise; the workbench page gets the same answer as JSON
+(`DR-06`). The pages link to the [Prism docs](https://uor.foundation/docs)
 and the [PrismPM specification](https://github.com/UOR-Foundation/prismpm/blob/15f630aa6deec5d6490ac22e222381fa28d6f17d/SPEC.md)
 instead of restating them.
 

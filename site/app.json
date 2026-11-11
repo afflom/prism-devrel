@@ -2,19 +2,19 @@
   "name": "Prism-DevRel",
   "shortName": "DevRel",
   "live": "https://afflom.github.io/prism-devrel/",
-  "purpose": "Answers which learning resources teach a facet record of the subject Prism model. Send a record index as decimal digits; it answers record, the record identifier, then the slugs of the pages that cover it, unknown record past the end, and invalid request for anything else. The pages themselves are at learn/.",
+  "purpose": "Answers which learning resources teach a facet record of the subject Prism model. Send a record index as decimal digits; it answers record and the record identifier, facet and the record's facet, then one page line per page that teaches it; refused unknown-record past the end, and error invalid-request for anything else. The pages themselves are at learn/.",
   "inputLabel": "Record index",
   "placeholder": "0",
   "submitLabel": "Look up",
-  "outputLabel": "Record and resources",
+  "outputLabel": "Record and pages",
   "answers": {
     "positive": [
       "record *"
     ],
     "negative": [
-      "unknown record"
+      "refused *"
     ],
-    "refusal": "invalid request"
+    "refusal": "error invalid-request"
   },
   "promise": {
     "headline": "Every record of the subject is taught by at least one page.",

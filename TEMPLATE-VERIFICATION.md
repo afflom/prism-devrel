@@ -226,30 +226,55 @@ outside the SDK image; the SDK checks run in the pull request's bootstrap job.
 
 ## The DevRel record lookup
 
-`app/` is a Prism text/3 application (`prismpm/text-application/3`, no
-workbench, so it keeps the Text/1 page with closure v2). `DevRel::dispatch`
-reads the request with `Foundation.DevRel.V1.Model::requestIndex` and answers
-with `Catalog::answerAt`: a request of one to six decimal digits answers
-`record <id>:` followed by the slugs of the covering resources, an index past
-the end answers `unknown record`, and anything else `invalid request`. The
-acceptance vectors are generated with the catalog: the first, middle and last
-record, the first index past the end, a non-decimal request, the empty request
-and a request of exactly the 17-byte guest allocation bound.
+`app/` is a Prism text/3 application (`prismpm/text-application/3`) with a
+workbench, in the Frame/Guide pattern of PrismPM's `tm-01` fixture and
+UORust. `DevRel::textDispatch` reads the request with
+`Foundation.DevRel.V1.Model::requestIndex` (one to six decimal digits, parsed
+by an if-chain over the octets) and answers with `Catalog::answerAt`:
+
+```
+record <Module::declaration>
+facet <facet>
+page <slug>          one line per page that teaches the record
+```
+
+An index past the end answers `refused unknown-record`, anything else
+`error invalid-request`. `DevRel::dispatch` first tries `Frame::unframe`: a
+request framed by the workbench (`ui-lookup` or `ui-raw`, then `0x1f`, then
+the index) gets the same answer wrapped as the page's JSON by `Frame::answer`.
+`Guide::view` is the workbench: the operation, the refusal hints, and the
+examples and sections the generator writes into `Catalog` from the subject.
+The acceptance vectors are generated with the catalog: the first, middle and
+last record, the first index past the end, a non-decimal request, the empty
+request, a request of exactly the 65-byte guest allocation bound, the framed
+request of every workbench example, and one raw-editor request.
+`crates/devrel/src/frame.rs` is the generator's copy of the frame JSON, so the
+framed vectors are written by Rust and replayed against the model in the
+compiled guest.
 
 The kernel decides `Catalog::catalogCovered` over the catalog, and the two
 planted-defect theorems above. Equality of `Bytes` does not reduce in the
 kernel (`ByteArray` equality is implemented natively), so the lookup's answers
 are checked by the acceptance vectors replayed in the compiled guest rather
-than by `decide` theorems; `lookup_dr_06` pins the request bound and the answer
-format against the generator's own copy of the answer.
+than by `decide` theorems; `lookup_dr_06` pins the request bound, the answer
+format, the frame and the application's bounds against the generator.
 
-The first `prismpm verify` of a dispatch that walked the catalog lists in the
-guest failed with `PP5008` (the production exporter's LCNF reader refused the
-let-chain of the list literal as `TooLarge`). The generator now writes each
-record's answer as its own `Bytes` definition, `answer<i>`, reached through a
-balanced tree of comparisons (`answerIn<lo>x<hi>`), so the guest holds no list
-deeper than the tree, and `lookup_dr_06` requires every `answer<i>` to be the
-generator's answer for record `i` and to be reached by a branch.
+Earlier `prismpm verify` runs of a text/3 app without a workbench failed in
+codegen with `PP5008` (the production exporter's LCNF reader refused a
+declaration as `TooLarge`), whose LCNF was the inlined UTF-8 encoding of
+`prim utf8_encode` applied to string literals, next to a digit parser over
+`prim to_nat`. The runtime path now follows the codegen rules the UORust lane
+recorded: one `prim utf8_encode` of a computed string in `textDispatch`, each
+record's answer a `String` definition `answer<i>` reached through a balanced
+tree of comparisons (`answerIn<lo>x<hi>`), no list in the runtime path, an
+octet if-chain for digits, and no definition name shared with another module
+(the facet's spec answer is `Model::answerFor`). With that, `prismpm verify`
+on SDK 0.4.0 (`15f630aa`) passes `lexlean verify`, codegen and the browser
+closure check (no `PP5203`) and stops only at `PP5301`: the Hologram oracle
+requires the attached View assets to be exactly `app.css`, `app.js` and
+`index.html`, while closure v2 also attaches the brand files. That is an SDK
+defect (UOR-Foundation/PrismPM#613), not a project one; UORust fails at the
+same step.
 
 The LexLean front end reads a module through a JSON reader with a nesting
 limit, and every element of a `cons` chain is one level; the generator

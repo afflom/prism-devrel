@@ -1,7 +1,7 @@
 spec = "lexlean/lock/2"
 language = "1.2"
 compiler_semantics = "1427f8b629013648a480454d67202788f2303f5396f1d7c70a7c350ddab6f694"
-project_config_sha256 = "9ea0f348c1ec1092619d1105b277ab25cc6e176146cd5868150631874806b3b5"
+project_config_sha256 = "3a3e87615ffc8a0728e10eca63c80f7c437c9ffd3cc3f78460d15ab703690e57"
 lean_toolchain = "leanprover/lean4:v4.32.1"
 
 [[workspace_file]]
@@ -52,7 +52,7 @@ version = "1.0.0"
 kind = "path"
 source = "language/prism.arch"
 revision = "none"
-tree_sha256 = "2c2f6f74a112c69e37fa8515d619dd801376e725d4e51feb71251d40165032b5"
+tree_sha256 = "74f9c435d5af5ad5e1ba1fdb2b41a76a60dc24fbeceaecb996eaaecb2ee569e9"
 manifest_sha256 = "14c95df8b512edacacdb1788b58ae90cf573b4e3f1dca0e41074bfde5a380c9f"
 imports = ["lexlean.core@1.2.0", "lexlean.std.bool@1.2.0", "lexlean.std.nat@1.2.0"]
 

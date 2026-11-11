@@ -37,7 +37,7 @@ Feature: devrel
     And every twin quotes the subject's prose as a block quote
 
   @DR-06 @build
-  Scenario: The lookup answers a record index with the record identifier and the slugs of the resources that cover it, and refuses malformed requests
-    Given the catalog and Foundation.DevRel.V1.Model::lookup
-    When it is asked for a record index, an index past the end, or a request that is empty, too long or not decimal
-    Then it answers the record identifier and its covering slugs, unknown record, or invalid request
+  Scenario: The lookup answers a record index with the record identifier, its facet and the pages that cover it, refuses malformed requests, and frames the workbench's answers as JSON
+    Given the catalog, DevRel::dispatch and the workbench frames
+    When it is asked for a record index, an index past the end, or a request that is empty, too long or not decimal, plainly or framed by the workbench
+    Then it answers record, facet and page lines, refused unknown-record, or error invalid-request, and a framed request gets that answer as the page's JSON
