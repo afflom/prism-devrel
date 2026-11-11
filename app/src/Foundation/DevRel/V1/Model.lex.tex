@@ -314,7 +314,7 @@ definition{
   result: Bytes,
   body: (match (recordAt position records)
     | Option.none => (prim utf8_encode "unknown record" : Bytes)
-    | Option.some item => (prim append (prim append (prim utf8_encode (project item id) : Bytes) 0x3a : Bytes) (slugList (rowAt position rows) resources) : Bytes))
+    | Option.some item => (prim append (prim append (prim append (prim utf8_encode "record " : Bytes) (prim utf8_encode (project item id) : Bytes) : Bytes) 0x3a : Bytes) (slugList (rowAt position rows) resources) : Bytes))
 }
 
 definition{

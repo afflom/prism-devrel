@@ -212,7 +212,7 @@ fn lookup_dr_06() {
     let catalog = own();
     let first = &catalog.records[0];
     let answer = catalog.answer(0);
-    assert!(answer.starts_with(&format!("{}:", first.id)));
+    assert!(answer.starts_with(&format!("record {}:", first.id)));
     for &r in &catalog.covers[0] {
         assert!(answer.contains(&format!(" {}", catalog.resources[r].slug)));
     }

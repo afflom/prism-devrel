@@ -468,7 +468,7 @@ impl Catalog {
                     .map(|&i| self.resources[i].slug)
                     .collect();
                 format!(
-                    "{}:{}",
+                    "record {}:{}",
                     r.id,
                     slugs.iter().map(|s| format!(" {s}")).collect::<String>()
                 )
