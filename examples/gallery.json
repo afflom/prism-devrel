@@ -1,0 +1,19 @@
+{
+  "about": "Each example is one prism/prompt/1 prompt for an app in the spirit of a real Prism project. The builder writes the whole app from it, and the pages workflow verifies every one in the pinned SDK before the site is published.",
+  "examples": [
+    { "prompt": "rule-30-cell.prompt.json", "repository": "afflom/rule30", "summary": "LexLean and Lean 4 formalization of Wolfram's Rule 30 with verified artifacts." },
+    { "prompt": "karst-zero-strike.prompt.json", "repository": "afflom/karst-zero", "live": "https://afflom.github.io/karst-zero/", "summary": "A tactical wargame whose Nemesis Core engine is modeled and verified with LexLean and PrismPM." },
+    { "prompt": "ciris-deferral.prompt.json", "repository": "afflom/prism-ciris", "live": "https://afflom.github.io/prism-ciris/", "summary": "The CIRIS ethical reasoning engine and its wisdom-based deferral, on PrismPM and LexLean." },
+    { "prompt": "legal-limitation.prompt.json", "repository": "afflom/prism-legal", "summary": "A local legal matter workspace authored in LexLean and compiled by PrismPM." },
+    { "prompt": "btc-header-work.prompt.json", "repository": "afflom/prism-btc", "summary": "Bitcoin proof of work as a UOR-ADDR realization." },
+    { "prompt": "garden-attunement.prompt.json", "repository": "afflom/verdant-resonance", "live": "https://afflom.github.io/verdant-resonance/", "summary": "A first-person garden of acoustic biomes and plants that answer the player." },
+    { "prompt": "uorust-capability.prompt.json", "repository": "afflom/uorust", "live": "https://afflom.github.io/UORust/", "summary": "Any Cargo workspace to a complete Prism model, every facet." },
+    { "prompt": "devrel-publish-gate.prompt.json", "repository": "afflom/prism-devrel", "live": "https://afflom.github.io/prism-devrel/", "summary": "This site: a Prism model of developer relations, applied to itself." },
+    { "prompt": "foundry-admission.prompt.json", "repository": "UOR-Foundation/foundry", "live": "https://uor-foundation.github.io/foundry/", "summary": "Prism AI Foundry: describe an app, and it is built, proved and published." },
+    { "prompt": "uorc-admission.prompt.json", "repository": "UOR-Foundation/compression", "summary": "UORC, lossless compression whose compressed object is an executable Universal Object Reference." },
+    { "prompt": "holo-open-policy.prompt.json", "repository": "UOR-Foundation/holo-search", "live": "https://uor-foundation.github.io/holo-search/", "summary": "Find, verify and open Prism apps by their address." },
+    { "prompt": "bft-commit.prompt.json", "repository": "UOR-Foundation/malachite-usdc", "summary": "BFT consensus that references transactions instead of re-sending them." },
+    { "prompt": "kappa-dominance.prompt.json", "repository": "UOR-Foundation/kappa-registry", "summary": "A register of results keyed by the kappa of their question." },
+    { "prompt": "addr-admission.prompt.json", "repository": "UOR-Foundation/uor-addr", "summary": "Typed content addressing: one label for one meaning." }
+  ]
+}

@@ -63,6 +63,52 @@ invalid-request` otherwise; the workbench page gets the same answer as JSON
 and the [PrismPM specification](https://github.com/UOR-Foundation/prismpm/blob/15f630aa6deec5d6490ac22e222381fa28d6f17d/SPEC.md)
 instead of restating them.
 
+## One prompt, a whole Prism app
+
+The builder in `builder/` turns one structured prompt into every facet of a
+Prism application, laid out as a repository created from
+[UOR-Foundation/template](https://github.com/UOR-Foundation/template). The
+site's [Start page](https://afflom.github.io/prism-devrel/start/) runs it in
+the browser, and [Examples](https://afflom.github.io/prism-devrel/examples/)
+shows fourteen apps in the spirit of real Prism projects, each built from one
+prompt and verified.
+
+A prompt is `prism/prompt/1`. Its `app` member is the `prism/spec/1` spec that
+prism-code's MCP tool `prism_spec` takes; stakeholders, concerns, components,
+threats, quality requirements, journeys, license and repository are optional
+and are derived from the spec when absent. From it the builder writes:
+
+| Facet | What the builder writes | Checked by |
+| --- | --- | --- |
+| Behavior | the Text/1 model the guest is built from, a theorem per property, acceptance vectors | the Lean kernel and `prismpm verify` |
+| Architecture | ISO/IEC/IEEE 42010 stakeholders, concerns, components, edges, viewpoints and views | `architectureDescriptionHolds` |
+| Design | OPM object-process and UML component, sequence and state-machine views | the SDK's design check, rendered as OPL and PlantUML |
+| Features | a feature per rule and property, and a journey per stakeholder | acceptance rows naming definitions |
+| Security | assets, STRIDE threats, risks, and controls with evidence or accepted risks | the threat-model checks |
+| Quality | ISO/IEC 25010:2023 requirements with measures and thresholds | `qualityModelHolds` and a theorem per threshold |
+| Compliance | one obligation per standard with its evidence | `everyObligationEvidenced` |
+| System and release | `lexlean.toml`, `lexlean.lock`, register rows, scenarios, Rust tests, `CONFORMANCE.md`, `site/app.json`, an OpenSpec spec | the template's own `just vv` |
+
+```sh
+node builder/cli.mjs check examples/rule-30-cell.prompt.json   # what the app will claim
+node builder/cli.mjs build my.prompt.json --out my-app          # write it into a template instance
+node builder/cli.mjs schema                                     # the MCP tool prism_prompt
+```
+
+A prompt the builder cannot make into a sound app is refused with the reason
+(exit code 2): an example the rules contradict, a property with a
+counterexample, a threat with neither a control with evidence nor an accepted
+risk, an unknown STRIDE category, a subcharacteristic outside its ISO/IEC 25010
+characteristic, a journey step or stakeholder concern that names nothing
+declared. The same prompt and commit instant always write the same bytes
+(`DR-10`). The pages workflow builds every example into the template at the
+commit `frame.lock` pins and runs that instance's whole gate in the locked SDK
+before the example's page offers its holo (`DR-11`). The prism-code journey
+modules the builder reuses are vendored byte for byte, with their digests in
+`builder/vendor/prism-code/VENDOR.md` (`DR-12`). Example pages escape every piece of prompt
+text and quote it as data in their Markdown twins (`DR-13`); with one escape
+removed from the example page, `DR-13` fails on its first assertion.
+
 ## How the catalog is made
 
 1. `devrel/subject.json` pins the subject: repository, full commit and project

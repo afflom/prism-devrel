@@ -1,0 +1,142 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether a value gets a UOR-ADDR content address, so two values with one meaning share a label and a malformed one gets none.",
+  "app": {
+    "name": "addr-admission",
+    "title": "Address admission",
+    "purpose": "Decide whether a value is labeled, refused, or labeled under its schema, from its format, whether it reached a canonical form and whether a pinned schema admits it.",
+    "fields": [
+      {
+        "name": "format",
+        "kind": "choice",
+        "values": [
+          "json",
+          "sexp",
+          "xml",
+          "asn1"
+        ],
+        "means": "the value's format"
+      },
+      {
+        "name": "canonical",
+        "kind": "choice",
+        "values": [
+          "yes",
+          "no"
+        ],
+        "means": "whether the value reached its published canonical form"
+      },
+      {
+        "name": "schema",
+        "kind": "choice",
+        "values": [
+          "none",
+          "admits",
+          "rejects"
+        ],
+        "means": "what a pinned schema says, if one is pinned"
+      }
+    ],
+    "outcomes": [
+      "labeled",
+      "schema",
+      "refused"
+    ],
+    "meanings": {
+      "labeled": "a sha256 label of the canonical bytes",
+      "schema": "the same label, admitted by the pinned schema",
+      "refused": "no label"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "canonical",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "refused",
+        "why": "no canonical form, no label"
+      },
+      {
+        "when": [
+          {
+            "field": "schema",
+            "op": "is",
+            "value": "rejects"
+          }
+        ],
+        "then": "refused",
+        "why": "a pinned schema's admission predicate failed"
+      },
+      {
+        "when": [
+          {
+            "field": "schema",
+            "op": "is",
+            "value": "admits"
+          }
+        ],
+        "then": "schema",
+        "why": "admitted by the pinned schema"
+      }
+    ],
+    "otherwise": "labeled",
+    "otherwiseWhy": "canonical with no schema pinned",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "canonical",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "labeled",
+        "why": "a label always names canonical bytes"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "schema",
+            "op": "is",
+            "value": "rejects"
+          }
+        ],
+        "then": "schema",
+        "why": "a rejecting schema never admits"
+      }
+    ],
+    "examples": [
+      {
+        "request": "json yes none",
+        "response": "labeled"
+      },
+      {
+        "request": "xml yes admits",
+        "response": "schema"
+      },
+      {
+        "request": "sexp no none",
+        "response": "refused"
+      },
+      {
+        "request": "asn1 yes rejects",
+        "response": "refused"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Integrator",
+      "text": "Passes data across system boundaries and needs a label only for canonical, admitted values.",
+      "concerns": [
+        "Proved guarantees",
+        "Correct answers"
+      ]
+    }
+  ]
+}

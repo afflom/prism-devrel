@@ -1,0 +1,143 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether Prism-DevRel publishes its catalog, so a developer never reads a page that misstates the subject model.",
+  "app": {
+    "name": "devrel-gate",
+    "title": "Publish gate",
+    "purpose": "Decide whether the learning catalog is published, regenerated, or refused, from the records no page covers, the covers that name an undeclared resource, and whether the catalog matches the pinned subject commit.",
+    "fields": [
+      {
+        "name": "uncovered",
+        "kind": "number",
+        "min": 0,
+        "means": "subject records no resource covers"
+      },
+      {
+        "name": "undeclared",
+        "kind": "number",
+        "min": 0,
+        "means": "covers that name an undeclared resource"
+      },
+      {
+        "name": "pin",
+        "kind": "choice",
+        "values": [
+          "current",
+          "stale"
+        ],
+        "means": "whether the committed catalog is the pinned commit's"
+      }
+    ],
+    "outcomes": [
+      "publish",
+      "regenerate",
+      "refuse"
+    ],
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "undeclared",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "refuse",
+        "why": "a cover may not name what does not exist"
+      },
+      {
+        "when": [
+          {
+            "field": "uncovered",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "refuse",
+        "why": "every record is taught"
+      },
+      {
+        "when": [
+          {
+            "field": "pin",
+            "op": "is",
+            "value": "stale"
+          }
+        ],
+        "then": "regenerate",
+        "why": "the catalog follows its pin"
+      }
+    ],
+    "otherwise": "publish",
+    "otherwiseWhy": "complete, declared and current",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "uncovered",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "publish",
+        "why": "no record goes untaught"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "undeclared",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "publish",
+        "why": "no fabricated coverage"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "pin",
+            "op": "is",
+            "value": "stale"
+          }
+        ],
+        "then": "publish",
+        "why": "no stale catalog"
+      }
+    ],
+    "examples": [
+      {
+        "request": "0 0 current",
+        "response": "publish"
+      },
+      {
+        "request": "0 0 stale",
+        "response": "regenerate"
+      },
+      {
+        "request": "3 0 current",
+        "response": "refuse"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Developer",
+      "text": "Learns Prism from the catalog and needs every page to state only what the subject declares.",
+      "concerns": [
+        "Proved guarantees",
+        "Correct answers"
+      ]
+    },
+    {
+      "name": "DevRel author",
+      "text": "Writes the pages and needs a publish to fail while any record is untaught.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    }
+  ]
+}

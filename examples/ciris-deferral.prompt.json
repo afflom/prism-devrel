@@ -1,0 +1,190 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether an agent may act, must defer to a person, or must refuse, so its ethical pipeline can be audited decision by decision.",
+  "app": {
+    "name": "ciris-deferral",
+    "title": "Wise deferral",
+    "purpose": "Decide whether an agent proceeds, defers to a wise authority, or refuses an action, from the harm it risks, how certain it is and whether consent was given.",
+    "fields": [
+      {
+        "name": "harm",
+        "kind": "number",
+        "min": 0,
+        "max": 10,
+        "means": "the harm the action risks, 0 none to 10 severe"
+      },
+      {
+        "name": "certainty",
+        "kind": "number",
+        "min": 0,
+        "max": 100,
+        "means": "how certain the agent is of its assessment, in percent"
+      },
+      {
+        "name": "consent",
+        "kind": "choice",
+        "values": [
+          "given",
+          "absent"
+        ],
+        "means": "whether the person affected consented"
+      }
+    ],
+    "outcomes": [
+      "proceed",
+      "defer",
+      "refuse"
+    ],
+    "meanings": {
+      "proceed": "the agent acts",
+      "defer": "a wise authority decides",
+      "refuse": "the agent does not act"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "harm",
+            "op": ">=",
+            "value": 8
+          }
+        ],
+        "then": "refuse",
+        "why": "severe harm is never taken on"
+      },
+      {
+        "when": [
+          {
+            "field": "consent",
+            "op": "is",
+            "value": "absent"
+          },
+          {
+            "field": "harm",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "defer",
+        "why": "harm without consent needs a person"
+      },
+      {
+        "when": [
+          {
+            "field": "certainty",
+            "op": "<",
+            "value": 80
+          }
+        ],
+        "then": "defer",
+        "why": "uncertainty defers to wisdom"
+      },
+      {
+        "when": [
+          {
+            "field": "harm",
+            "op": ">=",
+            "value": 5
+          }
+        ],
+        "then": "defer",
+        "why": "material harm defers even with consent"
+      }
+    ],
+    "otherwise": "proceed",
+    "otherwiseWhy": "low harm, certain, consented",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "harm",
+            "op": ">=",
+            "value": 8
+          }
+        ],
+        "then": "proceed",
+        "why": "severe harm is never acted on alone"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "consent",
+            "op": "is",
+            "value": "absent"
+          },
+          {
+            "field": "harm",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "proceed",
+        "why": "no harm without consent"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "certainty",
+            "op": "<",
+            "value": 80
+          }
+        ],
+        "then": "proceed",
+        "why": "the agent does not act on a guess"
+      }
+    ],
+    "examples": [
+      {
+        "request": "0 95 absent",
+        "response": "proceed"
+      },
+      {
+        "request": "9 100 given",
+        "response": "refuse"
+      },
+      {
+        "request": "2 90 absent",
+        "response": "defer"
+      },
+      {
+        "request": "2 50 given",
+        "response": "defer"
+      },
+      {
+        "request": "3 90 given",
+        "response": "proceed"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Agent operator",
+      "text": "Runs an agent and needs every action it takes to be one the covenant allows.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Affected person",
+      "text": "Is affected by what the agent does and needs harm without consent to reach a person first.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "threats": [
+    {
+      "name": "Consent spoofed",
+      "text": "A caller claims consent was given when it was not, to make the agent proceed.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "accepted": "The app decides from the request it is given; establishing consent belongs to the system that sends it, which the app's answer names."
+    }
+  ]
+}

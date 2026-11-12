@@ -1,0 +1,134 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether a new result replaces the incumbent in a kappa-keyed register, so a register only ever improves.",
+  "app": {
+    "name": "kappa-dominance",
+    "title": "Register dominance",
+    "purpose": "Decide whether a new measured result replaces the incumbent for its kappa, is kept as a tie, or is rejected, from both measures and whether the new one was reproduced.",
+    "fields": [
+      {
+        "name": "incumbent",
+        "kind": "number",
+        "min": 0,
+        "means": "the incumbent's measure, lower is better"
+      },
+      {
+        "name": "candidate",
+        "kind": "number",
+        "min": 0,
+        "means": "the new result's measure"
+      },
+      {
+        "name": "reproduced",
+        "kind": "choice",
+        "values": [
+          "yes",
+          "no"
+        ],
+        "means": "whether an independent run reproduced the new result"
+      }
+    ],
+    "outcomes": [
+      "replace",
+      "tie",
+      "reject"
+    ],
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "reproduced",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "reject",
+        "why": "an unreproduced measure is not evidence"
+      },
+      {
+        "when": [
+          {
+            "field": "candidate",
+            "op": "<",
+            "value": {
+              "field": "incumbent"
+            }
+          }
+        ],
+        "then": "replace",
+        "why": "strict dominance replaces"
+      },
+      {
+        "when": [
+          {
+            "field": "candidate",
+            "op": "=",
+            "value": {
+              "field": "incumbent"
+            }
+          }
+        ],
+        "then": "tie",
+        "why": "an equal measure is recorded, not promoted"
+      }
+    ],
+    "otherwise": "reject",
+    "otherwiseWhy": "a worse measure never replaces",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "candidate",
+            "op": ">=",
+            "value": {
+              "field": "incumbent"
+            }
+          }
+        ],
+        "then": "replace",
+        "why": "the register is monotone"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "reproduced",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "replace",
+        "why": "only reproduced results count"
+      }
+    ],
+    "examples": [
+      {
+        "request": "100 90 yes",
+        "response": "replace"
+      },
+      {
+        "request": "100 100 yes",
+        "response": "tie"
+      },
+      {
+        "request": "100 90 no",
+        "response": "reject"
+      },
+      {
+        "request": "100 120 yes",
+        "response": "reject"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Maintainer",
+      "text": "Keeps the register and needs it to improve only on reproduced, strictly better results.",
+      "concerns": [
+        "Proved guarantees",
+        "Correct answers"
+      ]
+    }
+  ]
+}

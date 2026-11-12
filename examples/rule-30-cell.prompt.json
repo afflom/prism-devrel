@@ -1,0 +1,172 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide the next state of one Rule 30 cell from its neighbourhood, so every row of the automaton can be replayed and checked.",
+  "app": {
+    "name": "rule-thirty-cell",
+    "title": "Rule 30 cell",
+    "purpose": "Decide the next state of a Rule 30 cell from its left neighbour, itself and its right neighbour.",
+    "fields": [
+      {
+        "name": "left",
+        "kind": "choice",
+        "values": [
+          "off",
+          "on"
+        ],
+        "means": "the left neighbour now"
+      },
+      {
+        "name": "center",
+        "kind": "choice",
+        "values": [
+          "off",
+          "on"
+        ],
+        "means": "the cell now"
+      },
+      {
+        "name": "right",
+        "kind": "choice",
+        "values": [
+          "off",
+          "on"
+        ],
+        "means": "the right neighbour now"
+      }
+    ],
+    "outcomes": [
+      "off",
+      "on"
+    ],
+    "meanings": {
+      "on": "the cell is black in the next row",
+      "off": "the cell is white in the next row"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "left",
+            "op": "is",
+            "value": "on"
+          },
+          {
+            "field": "center",
+            "op": "is",
+            "value": "off"
+          },
+          {
+            "field": "right",
+            "op": "is",
+            "value": "off"
+          }
+        ],
+        "then": "on",
+        "why": "Rule 30 maps 100 to 1"
+      },
+      {
+        "when": [
+          {
+            "field": "left",
+            "op": "is",
+            "value": "off"
+          },
+          {
+            "field": "center",
+            "op": "is",
+            "value": "on"
+          }
+        ],
+        "then": "on",
+        "why": "Rule 30 maps 010 and 011 to 1"
+      },
+      {
+        "when": [
+          {
+            "field": "left",
+            "op": "is",
+            "value": "off"
+          },
+          {
+            "field": "right",
+            "op": "is",
+            "value": "on"
+          }
+        ],
+        "then": "on",
+        "why": "Rule 30 maps 001 to 1"
+      }
+    ],
+    "otherwise": "off",
+    "otherwiseWhy": "Rule 30 maps 000, 101, 110 and 111 to 0",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "left",
+            "op": "is",
+            "value": "on"
+          },
+          {
+            "field": "center",
+            "op": "is",
+            "value": "on"
+          }
+        ],
+        "then": "on",
+        "why": "Rule 30 maps 110 and 111 to 0"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "left",
+            "op": "is",
+            "value": "off"
+          },
+          {
+            "field": "center",
+            "op": "is",
+            "value": "off"
+          },
+          {
+            "field": "right",
+            "op": "is",
+            "value": "off"
+          }
+        ],
+        "then": "off",
+        "why": "a white row stays white"
+      }
+    ],
+    "examples": [
+      {
+        "request": "on off off",
+        "response": "on"
+      },
+      {
+        "request": "on on on",
+        "response": "off"
+      },
+      {
+        "request": "off off on",
+        "response": "on"
+      },
+      {
+        "request": "on off on",
+        "response": "off"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Researcher",
+      "text": "Studies the Rule 30 sequence and needs every cell of every row to be the one the rule gives.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    }
+  ]
+}

@@ -41,3 +41,45 @@ Feature: devrel
     Given the catalog, DevRel::dispatch and the workbench frames
     When it is asked for a record index, an index past the end, or a request that is empty, too long or not decimal, plainly or framed by the workbench
     Then it answers record, facet and page lines, refused unknown-record, or error invalid-request, and a framed request gets that answer as the page's JSON
+
+  @DR-07 @build
+  Scenario: A prompt is checked as prism-code checks a drafted spec, and every facet it adds is checked too; each refusal is typed and names its reason
+    Given a prism/prompt/1 prompt, bare or as a tools/call of prism_prompt
+    When builder/test.mjs DR-07 derives the model from the Rule 30 prompt and from prompts with one planted defect each
+    Then the good prompt is accepted, and an example the rules contradict, a property with a counterexample, a spec with no field, an uncontrolled threat, an unknown STRIDE category, a misplaced ISO/IEC 25010 subcharacteristic, a journey step naming no rule, an undeclared concern and a call of another tool are each refused with a SpecError naming why
+
+  @DR-08 @build
+  Scenario: Every example prompt becomes every Prism facet, each facet module with the validity theorem the Lean kernel checks
+    Given each prompt in examples/
+    When builder/test.mjs DR-08 builds it
+    Then its Architecture, Quality and Compliance modules prove their validity theorems, Design has OPM and UML views with a transition per rule, Features has a feature per rule and property and a journey per stakeholder, every threat is controlled or accepted, every property is a control's proof evidence, the request bound is a quality threshold, and records are numbered by identifier
+
+  @DR-09 @build
+  Scenario: A prompt becomes a whole repository created from UOR-Foundation/template: the app, its register rows, scenarios, tests, conformance table, page description and lock
+    Given the Rule 30 prompt
+    When builder/test.mjs DR-09 builds it
+    Then every template file the app owns is written and the template's example is removed, each claim has a register row, a scenario, a test and a CONFORMANCE.md row, lexlean.lock binds lexlean.toml and the Lake files by SHA-256, and every module is an entrypoint
+
+  @DR-10 @build
+  Scenario: The same prompt and instant write the same bytes, and the download is a valid ZIP of them
+    Given the Rule 30 prompt and one instant
+    When builder/test.mjs DR-10 builds it twice and archives both
+    Then the files and the archives are equal, the archive opens with a local file header and its end record counts every file, CRC-32 gives its check value, and another instant dates the control set differently
+
+  @DR-11 @build
+  Scenario: Every example is built from its prompt into a template instance whose own gate passes in the locked SDK before its page is published
+    Given examples/gallery.json listing every prompt in examples/
+    When pages.yml runs one job per example
+    Then the builder writes the app into UOR-Foundation/template at the commit frame.lock pins, just vv passes there in the SDK prismpm.lock selects, and the page is written from that verified holo, or the run fails
+
+  @DR-12 @build
+  Scenario: The builder's vendored and packed copies equal their sources
+    Given builder/assets/, the vendored prism-code journey and its VENDOR.md
+    When builder/test.mjs DR-12 compares them
+    Then assets.mjs is packed from assets/, each vendored file has the SHA-256 VENDOR.md records, and the app input of prism_prompt is the prism_spec input prism-code declares
+
+  @DR-13 @build
+  Scenario: An example page shows every record the prompt becomes, and prompt text is escaped in the page and quoted as data in its twin
+    Given a Rule 30 prompt whose goal and stakeholder carry markup, a code fence and Markdown
+    When builder/test.mjs DR-13 writes its page and twin
+    Then no prompt text becomes markup, the twin's fence outruns every backtick run in the prompt, and every rule, property, stakeholder, concern, component, view, feature, threat, requirement, standard, claim and module is on the page

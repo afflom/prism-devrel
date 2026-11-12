@@ -26,10 +26,116 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  examples:
+    name: list the builder's examples
+    if: github.repository != 'UOR-Foundation/template'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      names: ${{ steps.list.outputs.names }}
+    steps:
+      - name: Check out the exact event revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Read examples/gallery.json
+        id: list
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "names=$(node builder/cli.mjs list)" >>"$GITHUB_OUTPUT"
+
+  example:
+    # DR-11: every example is built from its prompt into a repository created
+    # from UOR-Foundation/template at the commit frame.lock pins, and that
+    # instance's own acceptance gate, `just vv`, passes in the locked SDK: the
+    # Lean kernel checks every theorem and the guest replays every acceptance
+    # vector before the example's page offers its holo.
+    name: build ${{ matrix.example }} from its prompt and pass the template gate
+    needs: examples
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        example: ${{ fromJSON(needs.examples.outputs.names) }}
+    steps:
+      - name: Check out the exact event revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Write the app into a template instance
+        shell: bash
+        env:
+          EXAMPLE: ${{ matrix.example }}
+        run: |
+          set -euo pipefail
+          field() { node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync("frame.lock", "utf8")).source[process.argv[1]])' "$1"; }
+          instance="$RUNNER_TEMP/instance"
+          git init -q "$instance"
+          git -C "$instance" fetch -q --depth 1 "https://github.com/$(field repository)" "$(field commit)"
+          git -C "$instance" checkout -q --detach FETCH_HEAD
+          test "$(git -C "$instance" rev-parse HEAD)" = "$(field commit)"
+          node builder/cli.mjs build "examples/$EXAMPLE.prompt.json" --out "$instance"
+          echo "instance=$instance" >>"$GITHUB_ENV"
+      - name: Pass the instance's gate through the locked SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          image=$(sed -n 's/.*"sdk_image":"\([^"]*\)".*/\1/p' prismpm.lock)
+          if [[ ! $image =~ ^[a-z0-9.-]+(:[0-9]{1,5})?/[a-z0-9./_-]+@sha256:[0-9a-f]{64}$ ]]; then
+            printf '%s\n' 'prismpm.lock does not select an immutable SDK image' >&2
+            exit 64
+          fi
+          docker_config=$(mktemp -d)
+          trap 'rm -rf "$docker_config"' EXIT
+          printf '{}\n' >"$docker_config/config.json"
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            --group-add "$(stat -c '%g' /var/run/docker.sock)" \
+            --tmpfs /tmp:rw,exec,nosuid,size=2g \
+            --volume "$instance:$instance" \
+            --volume /var/run/docker.sock:/var/run/docker.sock \
+            --volume "$docker_config:/tmp/prismpm-home/.docker:ro" \
+            --workdir "$instance" \
+            --env DOCKER_CONFIG=/tmp/prismpm-home/.docker \
+            --env BUILDX_CONFIG=/tmp/prismpm-buildx \
+            --env HOME=/tmp/prismpm-home \
+            --env PRISMPM_EPHEMERAL_HOME=1 \
+            "$image" just vv
+      - name: Collect the verified holo and its rendered design views
+        shell: bash
+        env:
+          EXAMPLE: ${{ matrix.example }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          holos=("$instance"/app/.prism/build/*/*.holo)
+          if [[ ${#holos[@]} -ne 1 ]]; then
+            printf 'expected one holo, found %d\n' "${#holos[@]}" >&2
+            exit 64
+          fi
+          build=$(dirname "${holos[0]}")
+          out="$RUNNER_TEMP/built/$EXAMPLE"
+          mkdir -p "$out"
+          cp "${holos[0]}" "$out/app.holo"
+          cp "$build/application/holo-identities.json" "$out/"
+          cp -r "$build/design" "$out/design"
+          echo "built=$RUNNER_TEMP/built" >>"$GITHUB_ENV"
+      - name: Keep it for the page
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: example-${{ matrix.example }}
+          path: ${{ env.built }}
+          if-no-files-found: error
+
   build:
     name: build and verify the holo, sign its provenance, assemble the page
     # The template repository publishes its try page instead (try-page.yml).
     if: github.repository != 'UOR-Foundation/template'
+    needs: example
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
@@ -65,6 +171,21 @@ jobs:
           git -C "$subject" checkout -q --detach FETCH_HEAD
           test "$(git -C "$subject" rev-parse HEAD)" = "$(field commit)"
           cargo run -q --locked -p devrel-catalog -- --config devrel/subject.json --subject "$subject/$(field path)" --lean app/src/Catalog.lex.tex --check --site site
+      - name: Fetch every example's verified build
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: example-*
+          path: ${{ runner.temp }}/built
+          merge-multiple: true
+      - name: Write the start page, the builder and the example pages
+        # Every example in examples/gallery.json gets a page from its prompt,
+        # with the holo the example job verified; the builder runs in the
+        # browser from site/builder/ (DR-13).
+        shell: bash
+        run: |
+          set -euo pipefail
+          node builder/pack.mjs --check
+          node builder/site.mjs --site site --built "$RUNNER_TEMP/built"
       - name: Build and verify the holo through the locked SDK
         shell: bash
         run: |

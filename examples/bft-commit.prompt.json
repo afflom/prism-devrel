@@ -1,0 +1,121 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether a consensus round commits, so a validator's step can be checked against the quorum rule.",
+  "app": {
+    "name": "bft-commit",
+    "title": "Quorum commit",
+    "purpose": "Decide whether a round commits, waits, or moves to the next round, from the precommits seen, the quorum the validator set requires and whether the round timed out.",
+    "fields": [
+      {
+        "name": "precommits",
+        "kind": "number",
+        "min": 0,
+        "max": 1000,
+        "means": "precommit votes seen, by voting power"
+      },
+      {
+        "name": "quorum",
+        "kind": "number",
+        "min": 1,
+        "max": 1000,
+        "means": "voting power a commit needs, more than two thirds"
+      },
+      {
+        "name": "timeout",
+        "kind": "choice",
+        "values": [
+          "no",
+          "yes"
+        ],
+        "means": "whether the round's precommit timeout fired"
+      }
+    ],
+    "outcomes": [
+      "commit",
+      "wait",
+      "next"
+    ],
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "precommits",
+            "op": ">=",
+            "value": {
+              "field": "quorum"
+            }
+          }
+        ],
+        "then": "commit",
+        "why": "a quorum of precommits commits the block"
+      },
+      {
+        "when": [
+          {
+            "field": "timeout",
+            "op": "is",
+            "value": "yes"
+          }
+        ],
+        "then": "next",
+        "why": "without a quorum a timeout moves to the next round"
+      }
+    ],
+    "otherwise": "wait",
+    "otherwiseWhy": "no quorum yet and time remains",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "precommits",
+            "op": "<",
+            "value": {
+              "field": "quorum"
+            }
+          }
+        ],
+        "then": "commit",
+        "why": "safety: no commit without a quorum"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "precommits",
+            "op": ">=",
+            "value": {
+              "field": "quorum"
+            }
+          }
+        ],
+        "then": "commit",
+        "why": "a quorum always commits"
+      }
+    ],
+    "examples": [
+      {
+        "request": "14 14 no",
+        "response": "commit"
+      },
+      {
+        "request": "13 14 yes",
+        "response": "next"
+      },
+      {
+        "request": "13 14 no",
+        "response": "wait"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Validator",
+      "text": "Runs a validator and needs a block committed only on a quorum, and always on one.",
+      "concerns": [
+        "Proved guarantees",
+        "Correct answers"
+      ]
+    }
+  ]
+}

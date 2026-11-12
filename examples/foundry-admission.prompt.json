@@ -1,0 +1,142 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether a router proposal is admitted into the composition, so an ambiguous or unproved proposal never becomes part of an app.",
+  "app": {
+    "name": "proposal-admission",
+    "title": "Proposal admission",
+    "purpose": "Decide whether a router's proposal is admitted, refused, or recorded as an open claim, from whether it is ambiguous, whether its obligations are proved and how many admitted records it conflicts with.",
+    "fields": [
+      {
+        "name": "ambiguity",
+        "kind": "choice",
+        "values": [
+          "none",
+          "ambiguous"
+        ],
+        "means": "whether the proposal has more than one reading"
+      },
+      {
+        "name": "proofs",
+        "kind": "choice",
+        "values": [
+          "proved",
+          "missing"
+        ],
+        "means": "whether its obligations are discharged"
+      },
+      {
+        "name": "conflicts",
+        "kind": "number",
+        "min": 0,
+        "means": "admitted records it contradicts"
+      }
+    ],
+    "outcomes": [
+      "admit",
+      "refuse",
+      "open"
+    ],
+    "meanings": {
+      "open": "recorded as an open claim with its typed reason"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "conflicts",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "refuse",
+        "why": "a contradiction is never admitted"
+      },
+      {
+        "when": [
+          {
+            "field": "ambiguity",
+            "op": "is",
+            "value": "ambiguous"
+          }
+        ],
+        "then": "open",
+        "why": "ambiguity becomes an open claim, never a default"
+      },
+      {
+        "when": [
+          {
+            "field": "proofs",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "open",
+        "why": "an unproved obligation stays open"
+      }
+    ],
+    "otherwise": "admit",
+    "otherwiseWhy": "unambiguous, proved and consistent",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "ambiguity",
+            "op": "is",
+            "value": "ambiguous"
+          }
+        ],
+        "then": "admit",
+        "why": "no silent defaults"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "proofs",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "admit",
+        "why": "nothing unproved is admitted"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "conflicts",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "admit",
+        "why": "the composition stays consistent"
+      }
+    ],
+    "examples": [
+      {
+        "request": "none proved 0",
+        "response": "admit"
+      },
+      {
+        "request": "ambiguous proved 0",
+        "response": "open"
+      },
+      {
+        "request": "none missing 2",
+        "response": "refuse"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "App builder",
+      "text": "Describes an app in plain words and needs only proved, unambiguous parts to reach it.",
+      "concerns": [
+        "Proved guarantees",
+        "Correct answers"
+      ]
+    }
+  ]
+}

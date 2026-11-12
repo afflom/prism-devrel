@@ -28,6 +28,13 @@ model does not sanction.
 | `DR-04` | `build` | Every page shows every record the catalog says it covers, and its Markdown twin quotes the same records |
 | `DR-05` | `build` | Subject text is escaped in every page and quoted as data in every twin |
 | `DR-06` | `build` | The lookup answers a record index with the record identifier, its facet and the pages that cover it, refuses malformed requests, and frames the workbench's answers as JSON |
+| `DR-07` | `build` | A prompt is checked as prism-code checks a drafted spec, and every facet it adds is checked too; each refusal is typed and names its reason |
+| `DR-08` | `build` | Every example prompt becomes every Prism facet, each facet module with the validity theorem the Lean kernel checks |
+| `DR-09` | `build` | A prompt becomes a whole repository created from UOR-Foundation/template: the app, its register rows, scenarios, tests, conformance table, page description and lock |
+| `DR-10` | `build` | The same prompt and instant write the same bytes, and the download is a valid ZIP of them |
+| `DR-11` | `build` | Every example is built from its prompt into a template instance whose own gate passes in the locked SDK before its page is published |
+| `DR-12` | `build` | The builder's vendored and packed copies equal their sources |
+| `DR-13` | `build` | An example page shows every record the prompt becomes, and prompt text is escaped in the page and quoted as data in its twin |
 
 ## Cited authorities
 

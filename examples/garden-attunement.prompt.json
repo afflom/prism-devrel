@@ -1,0 +1,201 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether a plant answers the player in Verdant Resonance, so the soundscape responds the same way to the same walk.",
+  "app": {
+    "name": "garden-attunement",
+    "title": "Plant attunement",
+    "purpose": "Decide whether a plant attunes, stays dormant, or is out of reach, from its biome, the hour of the in-game sky and how far the player stands from it.",
+    "fields": [
+      {
+        "name": "biome",
+        "kind": "choice",
+        "values": [
+          "meadow",
+          "grove",
+          "marsh",
+          "dunes",
+          "canopy"
+        ],
+        "means": "the acoustic biome the plant grows in"
+      },
+      {
+        "name": "hour",
+        "kind": "number",
+        "min": 0,
+        "max": 23,
+        "means": "the hour of the in-game sky"
+      },
+      {
+        "name": "distance",
+        "kind": "number",
+        "min": 0,
+        "max": 100,
+        "means": "how far the player stands, in metres"
+      }
+    ],
+    "outcomes": [
+      "attuned",
+      "dormant",
+      "distant"
+    ],
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "distance",
+            "op": ">",
+            "value": 8
+          }
+        ],
+        "then": "distant",
+        "why": "plants hear the player within eight metres"
+      },
+      {
+        "when": [
+          {
+            "field": "biome",
+            "op": "is",
+            "value": "marsh"
+          },
+          {
+            "field": "hour",
+            "op": "<",
+            "value": 6
+          }
+        ],
+        "then": "attuned",
+        "why": "marsh reeds sing before dawn"
+      },
+      {
+        "when": [
+          {
+            "field": "biome",
+            "op": "is",
+            "value": "dunes"
+          },
+          {
+            "field": "hour",
+            "op": ">=",
+            "value": 18
+          }
+        ],
+        "then": "attuned",
+        "why": "dune grass sings at dusk"
+      },
+      {
+        "when": [
+          {
+            "field": "biome",
+            "op": "is",
+            "value": "canopy"
+          },
+          {
+            "field": "hour",
+            "op": ">=",
+            "value": 6
+          },
+          {
+            "field": "hour",
+            "op": "<",
+            "value": 12
+          }
+        ],
+        "then": "attuned",
+        "why": "the canopy sings in the morning"
+      },
+      {
+        "when": [
+          {
+            "field": "biome",
+            "op": "is",
+            "value": "meadow"
+          },
+          {
+            "field": "hour",
+            "op": ">=",
+            "value": 6
+          },
+          {
+            "field": "hour",
+            "op": "<",
+            "value": 18
+          }
+        ],
+        "then": "attuned",
+        "why": "meadow flowers sing by day"
+      },
+      {
+        "when": [
+          {
+            "field": "biome",
+            "op": "is",
+            "value": "grove"
+          }
+        ],
+        "then": "attuned",
+        "why": "the grove always answers"
+      }
+    ],
+    "otherwise": "dormant",
+    "otherwiseWhy": "outside its hours the plant rests",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "distance",
+            "op": ">",
+            "value": 8
+          }
+        ],
+        "then": "attuned",
+        "why": "no plant answers a player out of reach"
+      }
+    ],
+    "examples": [
+      {
+        "request": "marsh 4 3",
+        "response": "attuned"
+      },
+      {
+        "request": "marsh 7 3",
+        "response": "dormant"
+      },
+      {
+        "request": "grove 23 9",
+        "response": "distant"
+      },
+      {
+        "request": "meadow 12 0",
+        "response": "attuned"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Player",
+      "text": "Wanders the garden and needs each plant to answer the same way to the same walk.",
+      "concerns": [
+        "Correct answers"
+      ]
+    },
+    {
+      "name": "Sound designer",
+      "text": "Places plants and their hours and needs out-of-reach plants to stay silent.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Interaction capability",
+      "subcharacteristic": "User engagement",
+      "requirement": "Every biome answers",
+      "text": "Each of the five biomes has at least one hour in which its plants attune.",
+      "measure": "Silent biomes",
+      "measureText": "Biomes with no hour in which a plant attunes.",
+      "threshold": 0
+    }
+  ]
+}

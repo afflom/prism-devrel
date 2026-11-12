@@ -1,0 +1,135 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide how UORust routes a Rust function by the effect it reaches, so every capability becomes a modeled threat and nothing is silently pure.",
+  "app": {
+    "name": "capability-route",
+    "title": "Capability route",
+    "purpose": "Decide whether a Rust function is routed as pure, as a granted capability, or as a threat to model, from the effect it reaches and whether its crate forbids unsafe code.",
+    "fields": [
+      {
+        "name": "effect",
+        "kind": "choice",
+        "values": [
+          "none",
+          "fs",
+          "net",
+          "process",
+          "env",
+          "unsafe",
+          "ffi"
+        ],
+        "means": "the first operating-system effect the function reaches"
+      },
+      {
+        "name": "forbid",
+        "kind": "choice",
+        "values": [
+          "yes",
+          "no"
+        ],
+        "means": "whether the crate has forbid(unsafe_code)"
+      }
+    ],
+    "outcomes": [
+      "pure",
+      "capability",
+      "threat"
+    ],
+    "meanings": {
+      "pure": "lifted as pure behavior",
+      "capability": "a capability and its threat",
+      "threat": "an unsafe or foreign effect, a threat with no control"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "effect",
+            "op": "is",
+            "value": "unsafe"
+          }
+        ],
+        "then": "threat",
+        "why": "unsafe code is a threat the borrow checker does not control"
+      },
+      {
+        "when": [
+          {
+            "field": "effect",
+            "op": "is",
+            "value": "ffi"
+          }
+        ],
+        "then": "threat",
+        "why": "a foreign call is outside the model"
+      },
+      {
+        "when": [
+          {
+            "field": "effect",
+            "op": "is",
+            "value": "none"
+          }
+        ],
+        "then": "pure",
+        "why": "no effect, no capability"
+      }
+    ],
+    "otherwise": "capability",
+    "otherwiseWhy": "fs, net, process and env are capabilities with threats",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "effect",
+            "op": "is not",
+            "value": "none"
+          }
+        ],
+        "then": "pure",
+        "why": "an effect is never routed as pure"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "effect",
+            "op": "is",
+            "value": "unsafe"
+          }
+        ],
+        "then": "threat",
+        "why": "unsafe is always a threat"
+      }
+    ],
+    "examples": [
+      {
+        "request": "none yes",
+        "response": "pure"
+      },
+      {
+        "request": "fs yes",
+        "response": "capability"
+      },
+      {
+        "request": "unsafe no",
+        "response": "threat"
+      },
+      {
+        "request": "ffi yes",
+        "response": "threat"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Rust developer",
+      "text": "Models a Cargo workspace with UORust and needs every effect in it to show up as a capability or a threat.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether a UORC compressed candidate is admitted, stored raw, or refused, so losslessness is never traded for a smaller number.",
+  "app": {
+    "name": "uorc-admission",
+    "title": "Compression admission",
+    "purpose": "Decide whether a compressed candidate is admitted, the object is stored raw, or the candidate is refused, from its round trip, the original size and the encoded size.",
+    "fields": [
+      {
+        "name": "roundtrip",
+        "kind": "choice",
+        "values": [
+          "exact",
+          "differs"
+        ],
+        "means": "whether decoding reproduces the original bytes"
+      },
+      {
+        "name": "original",
+        "kind": "number",
+        "min": 0,
+        "means": "original size, in bytes"
+      },
+      {
+        "name": "encoded",
+        "kind": "number",
+        "min": 0,
+        "means": "encoded size with its accounting, in bytes"
+      }
+    ],
+    "outcomes": [
+      "admit",
+      "raw",
+      "refuse"
+    ],
+    "meanings": {
+      "admit": "the candidate replaces the object",
+      "raw": "the object is stored as it is",
+      "refuse": "the candidate is not lossless"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "roundtrip",
+            "op": "is",
+            "value": "differs"
+          }
+        ],
+        "then": "refuse",
+        "why": "losslessness is the first obligation"
+      },
+      {
+        "when": [
+          {
+            "field": "encoded",
+            "op": ">=",
+            "value": {
+              "field": "original"
+            }
+          }
+        ],
+        "then": "raw",
+        "why": "a candidate that is not smaller is not admitted"
+      }
+    ],
+    "otherwise": "admit",
+    "otherwiseWhy": "exact and strictly smaller",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "roundtrip",
+            "op": "is",
+            "value": "differs"
+          }
+        ],
+        "then": "admit",
+        "why": "a lossy candidate is never admitted"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "encoded",
+            "op": ">=",
+            "value": {
+              "field": "original"
+            }
+          }
+        ],
+        "then": "admit",
+        "why": "admission always compresses"
+      }
+    ],
+    "examples": [
+      {
+        "request": "exact 1000 640",
+        "response": "admit"
+      },
+      {
+        "request": "exact 640 640",
+        "response": "raw"
+      },
+      {
+        "request": "differs 1000 10",
+        "response": "refuse"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Compression researcher",
+      "text": "Searches for smaller references and needs every admitted one to be exact and strictly smaller.",
+      "concerns": [
+        "Proved guarantees",
+        "Correct answers"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether a block header carries the work its target asks for, so a node's acceptance can be replayed from the header alone.",
+  "app": {
+    "name": "header-work",
+    "title": "Header work",
+    "purpose": "Decide whether a block header is accepted, from the leading zero bits of its double SHA-256 hash, the leading zero bits its target requires, and its version.",
+    "fields": [
+      {
+        "name": "zeros",
+        "kind": "number",
+        "min": 0,
+        "max": 256,
+        "means": "leading zero bits of the header's sha256d hash"
+      },
+      {
+        "name": "target",
+        "kind": "number",
+        "min": 0,
+        "max": 256,
+        "means": "leading zero bits the compact target requires"
+      },
+      {
+        "name": "version",
+        "kind": "choice",
+        "values": [
+          "current",
+          "stale"
+        ],
+        "means": "whether the header version is one the node accepts"
+      }
+    ],
+    "outcomes": [
+      "accepted",
+      "rejected"
+    ],
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "version",
+            "op": "is",
+            "value": "stale"
+          }
+        ],
+        "then": "rejected",
+        "why": "a stale version is never accepted"
+      },
+      {
+        "when": [
+          {
+            "field": "zeros",
+            "op": ">=",
+            "value": {
+              "field": "target"
+            }
+          }
+        ],
+        "then": "accepted",
+        "why": "enough work for the target"
+      }
+    ],
+    "otherwise": "rejected",
+    "otherwiseWhy": "not enough work",
+    "limits": [
+      "Leading zero bits approximate the target comparison; equal zero counts are treated as meeting it."
+    ],
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "zeros",
+            "op": "<",
+            "value": {
+              "field": "target"
+            }
+          }
+        ],
+        "then": "accepted",
+        "why": "a header without the work is never accepted"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "version",
+            "op": "is",
+            "value": "stale"
+          }
+        ],
+        "then": "accepted",
+        "why": "stale versions are refused"
+      }
+    ],
+    "examples": [
+      {
+        "request": "76 76 current",
+        "response": "accepted"
+      },
+      {
+        "request": "75 76 current",
+        "response": "rejected"
+      },
+      {
+        "request": "90 76 stale",
+        "response": "rejected"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Node operator",
+      "text": "Runs a node and needs every accepted header to carry the work its target requires.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    }
+  ]
+}

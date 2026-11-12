@@ -1,0 +1,202 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Resolve one die of a Karst: Zero Horizon strike pool against the target's cover, so every roll in a skirmish can be replayed.",
+  "app": {
+    "name": "karst-strike",
+    "title": "Strike die",
+    "purpose": "Decide what one d6 of a strike pool does against a target behind no cover, low cover or a solid bulkhead.",
+    "fields": [
+      {
+        "name": "die",
+        "kind": "number",
+        "min": 1,
+        "max": 6,
+        "means": "the face the d6 shows"
+      },
+      {
+        "name": "cover",
+        "kind": "choice",
+        "values": [
+          "none",
+          "low",
+          "solid"
+        ],
+        "means": "the cover between the striker and the target"
+      },
+      {
+        "name": "momentum",
+        "kind": "number",
+        "min": 0,
+        "max": 4,
+        "means": "momentum charges spent on the strike"
+      }
+    ],
+    "outcomes": [
+      "critical",
+      "hit",
+      "miss",
+      "blocked"
+    ],
+    "meanings": {
+      "critical": "a hit that also ruptures a subsystem",
+      "hit": "one hit",
+      "miss": "no hit",
+      "blocked": "line of sight is blocked"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "solid"
+          }
+        ],
+        "then": "blocked",
+        "why": "a solid bulkhead blocks line of sight"
+      },
+      {
+        "when": [
+          {
+            "field": "die",
+            "op": "=",
+            "value": 6
+          }
+        ],
+        "then": "critical",
+        "why": "a natural 6 is a critical"
+      },
+      {
+        "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "low"
+          },
+          {
+            "field": "die",
+            "op": ">=",
+            "value": 5
+          }
+        ],
+        "then": "hit",
+        "why": "low cover adds one to the evasion target"
+      },
+      {
+        "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "low"
+          },
+          {
+            "field": "momentum",
+            "op": ">=",
+            "value": 1
+          },
+          {
+            "field": "die",
+            "op": ">=",
+            "value": 4
+          }
+        ],
+        "then": "hit",
+        "why": "a momentum charge buys back the cover penalty"
+      },
+      {
+        "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "none"
+          },
+          {
+            "field": "die",
+            "op": ">=",
+            "value": 4
+          }
+        ],
+        "then": "hit",
+        "why": "the strike pool hits on 4+"
+      }
+    ],
+    "otherwise": "miss",
+    "otherwiseWhy": "every other face misses",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "solid"
+          }
+        ],
+        "then": "hit",
+        "why": "nothing hits through a solid bulkhead"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "die",
+            "op": "<",
+            "value": 4
+          }
+        ],
+        "then": "hit",
+        "why": "a face below 4 never hits"
+      }
+    ],
+    "examples": [
+      {
+        "request": "6 none 0",
+        "response": "critical"
+      },
+      {
+        "request": "4 low 0",
+        "response": "miss"
+      },
+      {
+        "request": "4 low 1",
+        "response": "hit"
+      },
+      {
+        "request": "6 solid 4",
+        "response": "blocked"
+      },
+      {
+        "request": "3 none 4",
+        "response": "miss"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Player",
+      "text": "Rolls the strike pool and needs every die resolved by the rules, the same on every screen.",
+      "concerns": [
+        "Correct answers"
+      ]
+    },
+    {
+      "name": "Game designer",
+      "text": "Tunes cover and momentum and needs the never-hit guarantees to survive every change.",
+      "concerns": [
+        "Proved guarantees",
+        "Correct answers"
+      ]
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Interaction capability",
+      "subcharacteristic": "Self-descriptiveness",
+      "requirement": "Every face named",
+      "text": "Each answer names what the die did: critical, hit, miss or blocked.",
+      "measure": "Unnamed answers",
+      "measureText": "Answers that are not one of the four outcome words.",
+      "threshold": 0
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether Holo Search opens an app it fetched, so nothing runs unless its bytes match its address and its examples replay.",
+  "app": {
+    "name": "holo-open",
+    "title": "Open policy",
+    "purpose": "Decide whether a fetched holo is opened, warned about, or refused, from whether its digest matches the address, how many acceptance vectors failed, and its assurance level.",
+    "fields": [
+      {
+        "name": "digest",
+        "kind": "choice",
+        "values": [
+          "match",
+          "mismatch"
+        ],
+        "means": "whether the bytes hash to the address"
+      },
+      {
+        "name": "failed",
+        "kind": "number",
+        "min": 0,
+        "means": "acceptance vectors that did not replay"
+      },
+      {
+        "name": "assurance",
+        "kind": "choice",
+        "values": [
+          "p0",
+          "p1",
+          "p2"
+        ],
+        "means": "the assurance level the policy reached"
+      }
+    ],
+    "outcomes": [
+      "open",
+      "warn",
+      "refuse"
+    ],
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "digest",
+            "op": "is",
+            "value": "mismatch"
+          }
+        ],
+        "then": "refuse",
+        "why": "the bytes are not the app the address names"
+      },
+      {
+        "when": [
+          {
+            "field": "failed",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "refuse",
+        "why": "an example that does not replay is a broken app"
+      },
+      {
+        "when": [
+          {
+            "field": "assurance",
+            "op": "is",
+            "value": "p0"
+          }
+        ],
+        "then": "warn",
+        "why": "no signed provenance or proof"
+      }
+    ],
+    "otherwise": "open",
+    "otherwiseWhy": "matched, replayed, and signed",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "digest",
+            "op": "is",
+            "value": "mismatch"
+          }
+        ],
+        "then": "open",
+        "why": "substituted bytes never run"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "failed",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "open",
+        "why": "a failing app never runs"
+      }
+    ],
+    "examples": [
+      {
+        "request": "match 0 p2",
+        "response": "open"
+      },
+      {
+        "request": "match 0 p0",
+        "response": "warn"
+      },
+      {
+        "request": "mismatch 0 p2",
+        "response": "refuse"
+      },
+      {
+        "request": "match 3 p1",
+        "response": "refuse"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Visitor",
+      "text": "Pastes an address and needs nothing to run unless it is the app the address names.",
+      "concerns": [
+        "Proved guarantees",
+        "Correct answers"
+      ]
+    }
+  ]
+}

@@ -56,3 +56,45 @@ id = "DR-06"
 level = "build"
 suite = "devrel"
 statement = "The lookup answers a record index with the record identifier, its facet and the pages that cover it, refuses malformed requests, and frames the workbench's answers as JSON"
+
+[[id]]
+id = "DR-07"
+level = "build"
+suite = "devrel"
+statement = "A prompt is checked as prism-code checks a drafted spec, and every facet it adds is checked too; each refusal is typed and names its reason"
+
+[[id]]
+id = "DR-08"
+level = "build"
+suite = "devrel"
+statement = "Every example prompt becomes every Prism facet, each facet module with the validity theorem the Lean kernel checks"
+
+[[id]]
+id = "DR-09"
+level = "build"
+suite = "devrel"
+statement = "A prompt becomes a whole repository created from UOR-Foundation/template: the app, its register rows, scenarios, tests, conformance table, page description and lock"
+
+[[id]]
+id = "DR-10"
+level = "build"
+suite = "devrel"
+statement = "The same prompt and instant write the same bytes, and the download is a valid ZIP of them"
+
+[[id]]
+id = "DR-11"
+level = "build"
+suite = "devrel"
+statement = "Every example is built from its prompt into a template instance whose own gate passes in the locked SDK before its page is published"
+
+[[id]]
+id = "DR-12"
+level = "build"
+suite = "devrel"
+statement = "The builder's vendored and packed copies equal their sources"
+
+[[id]]
+id = "DR-13"
+level = "build"
+suite = "devrel"
+statement = "An example page shows every record the prompt becomes, and prompt text is escaped in the page and quoted as data in its twin"
