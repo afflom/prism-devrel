@@ -10,6 +10,11 @@ export const CODE = '⁣';
 
 /** Sentences of a block of prose: split after . ! ? or : before a capital, a digit or the end. */
 export function sentences(text) {
+  // A line break is a block boundary: it ends a sentence too.
+  return String(text).split(/\n+/).flatMap(line);
+}
+
+function line(text) {
   const clean = String(text).replace(/\s+/g, ' ').trim();
   if (!clean) return [];
   // Abbreviations and dotted names do not end a sentence.

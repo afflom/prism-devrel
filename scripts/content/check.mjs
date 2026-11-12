@@ -64,20 +64,33 @@ const playwright = await import('playwright').catch(() =>
   import(pathToFileURL(join(execSync('npm root -g').toString().trim(), 'playwright', 'index.mjs')).href));
 const browser = await playwright.chromium.launch();
 const context = await browser.newContext({ viewport: { width: M.compact.width, height: M.compact.height }, serviceWorkers: 'block' });
-await context.route(/^https?:\/\/(?!127\.0\.0\.1)/, (route) => route.abort());
+// A page may wear a shared stylesheet from another site; it is read as a reader gets it. Nothing else leaves the machine.
+await context.route(/^https?:\/\/(?!127\.0\.0\.1)/, (route) => (['stylesheet', 'font'].includes(route.request().resourceType()) ? route.continue() : route.abort()));
 
 /** Everything the rules read, taken from the rendered page. */
 function observe({ terms, vague, personas, sel }) {
   const main = document.querySelector('main');
   const skip = sel.NOT_PROSE;
+  // An element's prose: its text, with code spans as one word, nested lists and
+  // data left out, and a line break wherever a block of its own begins.
+  const blockOf = (n, root) => { for (let e = n.parentElement; e && e !== root; e = e.parentElement) if (getComputedStyle(e).display !== 'inline') return e; return root; };
   const proseOf = (el) => {
-    const c = el.cloneNode(true);
-    c.querySelectorAll('ul, ol, dl, table, pre, figure, details, .cs-data').forEach((n) => n.remove());
-    c.querySelectorAll('code, kbd, samp').forEach((n) => n.replaceWith(document.createTextNode('\u2063')));
-    return c.textContent.replace(/\s+/g, ' ').trim();
+    let out = '';
+    let last = null;
+    const walk = document.createTreeWalker(el, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, { acceptNode: (n) => (n !== el && n.nodeType === 1 && n.matches('ul, ol, dl, table, pre, figure, details, .cs-data, [data-prose="data"]') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
+    for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+      if (n.nodeType === 1) { if (n.matches('code, kbd, samp')) { out += '\u2063'; } continue; }
+      if (n.parentElement.closest('code, kbd, samp')) continue;
+      const b = blockOf(n, el);
+      if (last && b !== last) out += '\n';
+      last = b;
+      out += n.textContent;
+    }
+    return out.replace(/[ \t\r\f]+/g, ' ').trim();
   };
   const prose = [...main.querySelectorAll('p, li, dd, figcaption, blockquote, summary, h1, h2, h3, h4')]
-    .filter((el) => !el.closest(skip) && !el.closest('details:not([open]) > :not(summary)'))
+    // Folded text is still read when it is opened, so it is measured too.
+    .filter((el) => !el.closest(skip))
     .map((el) => ({ tag: el.tagName.toLowerCase(), text: proseOf(el), heading: /^H\d$/.test(el.tagName) }))
     .filter((b) => b.text);
   // CS-01

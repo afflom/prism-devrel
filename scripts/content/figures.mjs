@@ -161,8 +161,13 @@ function graph(spec, palette) {
   const desc = `${nodes.length} nodes and ${edges.length} links. ${edges.map((e) => `${nodes.find((n) => n.id === e.from)?.label} ${e.label ? e.label : 'to'} ${nodes.find((n) => n.id === e.to)?.label}`).join('; ')}.`;
 
   // Wide: columns.
-  const W = WIDE;
-  const colGap = L > 1 ? Math.max(56, Math.min(120, (W - L * 140) / (L - 1))) : 0;
+  // A node is at least as wide as its longest word, so no label spills out;
+  // when the columns need more than the article width, the drawing widens
+  // and scales down to fit, keeping each label inside its box.
+  const word = Math.max(...nodes.flatMap((n) => String(n.label).split(/\s+/).map((w) => textWidth(w, 13) + 24)));
+  const minGap = 56;
+  const W = Math.max(WIDE, L * word + minGap * (L - 1));
+  const colGap = L > 1 ? Math.max(minGap, Math.min(120, (W - L * Math.max(140, word)) / (L - 1))) : 0;
   const nw = (W - colGap * (L - 1)) / L;
   const chars = Math.max(8, Math.floor((nw - 20) / (13 * ADVANCE.sans)));
   const nh = (n) => 22 + wrap(n.label, chars).length * 16 + (n.sub ? wrap(n.sub, Math.round(chars * 1.15)).length * 14 : 0);

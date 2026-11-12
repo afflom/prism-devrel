@@ -74,7 +74,8 @@ const playwright = await import('playwright').catch(() =>
   import(pathToFileURL(join(execSync('npm root -g').toString().trim(), 'playwright', 'index.mjs')).href));
 const browser = await playwright.chromium.launch();
 const context = await browser.newContext({ viewport: { width: M.compact.width, height: M.compact.height }, javaScriptEnabled: false, serviceWorkers: 'block' });
-await context.route(/^https?:\/\/(?!127\.0\.0\.1)/, (route) => route.abort());
+// A page may wear a shared stylesheet from another site; it is read as a reader gets it. Nothing else leaves the machine.
+await context.route(/^https?:\/\/(?!127\.0\.0\.1)/, (route) => (['stylesheet', 'font'].includes(route.request().resourceType()) ? route.continue() : route.abort()));
 const tab = await context.newPage();
 
 const app = existsSync(join(SITE, 'app.json')) ? JSON.parse(readFileSync(join(SITE, 'app.json'), 'utf8')) : {};
