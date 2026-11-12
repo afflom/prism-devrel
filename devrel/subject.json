@@ -1,7 +1,7 @@
 {
   "name": "UORust",
   "repository": "https://github.com/afflom/uorust",
-  "commit": "8995c01d9e14ec96cdf10c4ea4d6e320d800a631",
+  "commit": "c68b112255277bd85537f5a9983fcc28663978a5",
   "path": "app",
   "tutorial": {
     "recipe": "uorust",
