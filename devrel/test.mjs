@@ -34,6 +34,7 @@ function fixture(edit = () => {}) {
   put('app.json', JSON.stringify({ live: LIVE }));
   put('index.html', '<!doctype html><html><head><title>App</title></head><body><header class="head"><a id="open-spec" class="spec-link" href="#spec"><span>View spec</span></a></header><aside id="spec"></aside></body></html>');
   put('own.css', '');
+  put('spec.html', '<section><h2>Spec</h2></section>');
   put('favicon.svg', '<svg xmlns="http://www.w3.org/2000/svg"/>');
   put('own.mjs', '');
   put('learn/own.css', '');

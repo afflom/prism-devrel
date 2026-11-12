@@ -90,6 +90,20 @@ Feature: devrel
     When builder/test.mjs DR-14 writes the site and reads every page it wrote
     Then each page declares exactly one type and one stage, the tutorial, reference, explanation and how-to guides are separate pages, and the reference documents every member of prism_prompt and of its app spec
 
+  @DR-15 @build
+  Scenario: The tutorial runs the subject's tool on the subject's fixture with the commands its gate runs, and shows the committed projection's records, frontier and first lifted function; the CLI reference is the tool's clap declaration
+    Given devrel/subject.json naming a Justfile recipe, a fixture workspace, the tool's source and the register rows the tutorial rests on
+    When devrel-catalog reads the subject's checkout at the pinned commit
+    Then the tutorial's commands are the recipe's lines for that fixture, its numbers are read from the committed projection and lift register, and its example is the first lifted function beside its definition
+    And a checkout without the recipe, the fixture's check line, a claimed row or the clap declaration is refused rather than rendered
+
+  @DR-16 @build
+  Scenario: Every record value is shown as data: list and record literals as nested lists, and identifiers of records the catalog teaches as links to the page that teaches them; every page carries its Diátaxis type and journey stage
+    Given a catalog whose records hold list literals, nested record literals and record identifiers
+    When devrel-catalog renders the pages and their twins
+    Then no list literal is shown as Lean source, each identifier links to its record's home page, and the twins nest the same values
+    And every page names one Diátaxis type and one developer journey stage with the identifiers builder/site.mjs uses
+
   @DR-30 @build
   Scenario: Every documentation page shares one uor.foundation header, Diátaxis tabs and footer, grouped by journey stage, and no link between pages lands nowhere
     Given a site as the catalog and the builder write it, with devrel/site.json naming the Diátaxis types of diataxis.fr, the journey stages of Lewko and Parton and the uor.foundation brand

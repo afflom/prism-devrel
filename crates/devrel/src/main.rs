@@ -12,6 +12,7 @@
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
+use devrel_catalog::tutorial::Tutorial;
 use devrel_catalog::{lean, site, Catalog, SubjectConfig};
 
 fn main() -> ExitCode {
@@ -56,6 +57,9 @@ fn run(
 ) -> Result<(), String> {
     let text = std::fs::read_to_string(config).map_err(|e| format!("{}: {e}", config.display()))?;
     let config = SubjectConfig::parse(&text).map_err(|e| e.to_string())?;
+    let checkout = config.checkout(subject);
+    let tutorial =
+        Tutorial::build(&config, &config.tutorial, &checkout).map_err(|e| e.to_string())?;
     let catalog = Catalog::build(config, subject).map_err(|e| e.to_string())?;
     if let Some(path) = lean_out {
         let generated = lean::catalog(&catalog);
@@ -77,7 +81,7 @@ fn run(
         }
     }
     if let Some(dir) = site_out {
-        let pages = site::write(&catalog, &dir).map_err(|e| e.to_string())?;
+        let pages = site::write(&catalog, &tutorial, &dir).map_err(|e| e.to_string())?;
         println!("wrote {pages} catalog pages under {}", dir.display());
     }
     let covered = catalog.covers.iter().filter(|c| !c.is_empty()).count();

@@ -270,6 +270,11 @@ jobs:
             writeFileSync("site/app.json", `${JSON.stringify(app, null, 2)}\n`);
           ' "$FINGERPRINT" "$ATTESTATION_URL"
           node bootstrap/page.mjs site
+          # One header, navigation and footer for every documentation page,
+          # the docs hub, llms.txt by type and sitemap.xml; refuses a page
+          # with no Diátaxis type or journey stage and any link that lands
+          # nowhere (devrel/shell.mjs).
+          node devrel/shell.mjs site
           node bootstrap/precache.mjs site
       - name: Lighthouse at 100 on mobile, before anything is deployed
         shell: bash

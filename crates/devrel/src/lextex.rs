@@ -248,6 +248,44 @@ pub fn quote(text: &str) -> String {
     out
 }
 
+/// The items of a list literal, `(cons a (cons b (nil T)))`, as source text;
+/// `None` for any value that is not one.
+pub fn list_items(value: &str) -> Option<Vec<String>> {
+    let mut items = Vec::new();
+    let mut rest = value.trim();
+    loop {
+        if rest.starts_with("(nil ")
+            && rest.ends_with(')')
+            && matching(rest, 0) == Some(rest.len() - 1)
+        {
+            return Some(items);
+        }
+        let inner = rest.strip_prefix("(cons ")?;
+        if matching(rest, 0) != Some(rest.len() - 1) {
+            return None;
+        }
+        let inner = inner[..inner.len() - 1].trim_start();
+        let head_end = match inner.chars().next()? {
+            '"' => {
+                let mut escaped = false;
+                inner
+                    .char_indices()
+                    .skip(1)
+                    .find(|&(_, c)| {
+                        let end = !escaped && c == '"';
+                        escaped = !escaped && c == '\\';
+                        end
+                    })
+                    .map(|(i, _)| i + 1)?
+            }
+            '(' => matching(inner, 0)? + 1,
+            _ => inner.find(char::is_whitespace)?,
+        };
+        items.push(inner[..head_end].to_string());
+        rest = inner[head_end..].trim();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -60,7 +60,9 @@ function walk(dir, out = []) {
 function parse(site, file) {
   const rel = relative(site, file).split('\\').join('/');
   const html = readFileSync(file, 'utf8');
-  const head = html.match(/<head>([\s\S]*?)<\/head>/)?.[1] ?? refuse(`${rel}: no <head>`);
+  // A fragment outside the documentation directories (the app's spec.html)
+  // is not a page; one inside them is refused below for its missing metas.
+  const head = html.match(/<head>([\s\S]*?)<\/head>/)?.[1] ?? (DOCS_DIRS.some((d) => rel.startsWith(d)) ? refuse(`${rel}: no <head>`) : '');
   const diataxis = meta(head, 'diataxis');
   const journey = meta(head, 'developer-journey');
   return { rel, file, html, head, diataxis, journey };

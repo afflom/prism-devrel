@@ -106,6 +106,18 @@ suite = "devrel"
 statement = "Every builder page is one Diátaxis documentation type and one stage of the developer journey, and the prompt reference is the MCP tool's own input schema"
 
 [[id]]
+id = "DR-15"
+level = "build"
+suite = "devrel"
+statement = "The tutorial runs the subject's tool on the subject's fixture with the commands its gate runs, and shows the committed projection's records, frontier and first lifted function; the CLI reference is the tool's clap declaration"
+
+[[id]]
+id = "DR-16"
+level = "build"
+suite = "devrel"
+statement = "Every record value is shown as data: list and record literals as nested lists, and identifiers of records the catalog teaches as links to the page that teaches them; every page carries its Diátaxis type and journey stage"
+
+[[id]]
 id = "DR-30"
 level = "build"
 suite = "devrel"

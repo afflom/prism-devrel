@@ -1,6 +1,15 @@
 {
   "name": "UORust",
   "repository": "https://github.com/afflom/uorust",
-  "commit": "2c6f84dfd90b5b01dfd7854010472efc08f002c9",
-  "path": "app"
+  "commit": "c68b112255277bd85537f5a9983fcc28663978a5",
+  "path": "app",
+  "tutorial": {
+    "recipe": "uorust",
+    "workspace": "crates/uorust/tests/fixtures/thermostat",
+    "cli": "crates/uorust/src/main.rs",
+    "claims": [
+      "UE-01",
+      "UE-16"
+    ]
+  }
 }

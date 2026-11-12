@@ -1,0 +1,13 @@
+spec = "template/1"
+
+[[id]]
+id = "T-01"
+level = "build"
+suite = "tool"
+statement = "The tool projects the fixture into exactly the committed project"
+
+[[id]]
+id = "T-02"
+level = "build"
+suite = "tool"
+statement = "A lifted function never turns unlifted"

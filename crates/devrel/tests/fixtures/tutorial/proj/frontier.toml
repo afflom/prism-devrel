@@ -1,0 +1,21 @@
+spec = "uorust/frontier/1"
+
+[[residue]]
+status = "open"
+kappa = "11"
+function = "core::later"
+span = "core/src/lib.rs:1"
+reason = "form"
+detail = "outside"
+
+[[lifted]]
+kappa = "22"
+function = "core::twice"
+span = "core/src/lib.rs:4"
+definition = "Behavior::twice"
+
+[[lifted]]
+kappa = "33"
+function = "core::other"
+span = "core/src/lib.rs:4"
+definition = "Behavior::other"
