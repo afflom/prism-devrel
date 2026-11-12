@@ -1,0 +1,6 @@
+# The brand, design-system and context-of-use facets (scripts/experience):
+# what product they describe. Everything else they read from the brand
+# authority (brand/foundation.lock) and from this model's own facet modules.
+spec = "prism/experience/1"
+product = "Prism-DevRel"
+repository = "https://github.com/afflom/prism-devrel"

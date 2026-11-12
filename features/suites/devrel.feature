@@ -133,3 +133,17 @@ Feature: devrel
     Given every example prompt and the door machine
     When builder/test.mjs DR-20 writes the gallery and the door's page
     Then each example is in its pattern's group only, in the order the patterns are declared, and the door's page shows every transition and a run seeded from its examples that feeds each answer back as the next state and stops at a refused step
+
+  @DR-40 @build
+  Scenario: Prism-DevRel's brand identity and design system are read from uor.foundation: every Wheeler brand element and every W3C design token of the pinned site, each with its source span, and every text and focus colour the site sets on a surface meets its WCAG 2.2 contrast criterion
+    Given uor.foundation as brand/foundation.lock pins it and the model in app/src/Brand.lex.tex
+    When the suite exercises DR-40
+    Then every brand element kind and every --fd- token of the site is a sourced record
+    And every contrast's ratio, recomputed from the token colours, meets its WCAG 2.2 criterion
+
+  @DR-41 @build
+  Scenario: Prism-DevRel's context of use (ISO 9241-11) is read from its own model: every journey's actor is a user group, every journey a goal whose tasks are its steps in order and each accepted, every user-facing component a technical environment, and every goal's usability measured or recorded open
+    Given the journeys, features and components of app/src and the model in app/src/Users.lex.tex
+    When the suite exercises DR-41
+    Then every journey is a goal of its actor's user group, with its steps as tasks in order
+    And every goal has an effectiveness, an efficiency and a satisfaction measure

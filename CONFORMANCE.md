@@ -43,6 +43,8 @@ model does not sanction.
 | `DR-18` | `build` | Every app names the established pattern its behavior follows, a DMN 1.5 decision table, an XACML 3.0 policy decision or a UML 2.5.1 state machine, as a compliance obligation, and a policy decision answers exactly the four XACML decisions |
 | `DR-19` | `build` | The Prism source page shows every Foundation, Production and language module every built app carries, with each declaration and the word that denotes it, served byte for byte with its recorded upstream source |
 | `DR-20` | `build` | The how-to guides are grouped by pattern, and a state machine's page runs it from its initial state through the verified holo, each answer the next state |
+| `DR-40` | `build` | Prism-DevRel's brand identity and design system are read from uor.foundation: every Wheeler brand element and every W3C design token of the pinned site, each with its source span, and every text and focus colour the site sets on a surface meets its WCAG 2.2 contrast criterion |
+| `DR-41` | `build` | Prism-DevRel's context of use (ISO 9241-11) is read from its own model: every journey's actor is a user group, every journey a goal whose tasks are its steps in order and each accepted, every user-facing component a technical environment, and every goal's usability measured or recorded open |
 
 ## Cited authorities
 

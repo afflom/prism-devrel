@@ -8,7 +8,7 @@
 default: vv
 
 # The whole gate.
-vv: fmt-check model template-check lint test deny app
+vv: fmt-check model template-check experience-check lint test deny app
     @echo "vv: the acceptance gate passed"
 
 fmt-check:
@@ -81,9 +81,21 @@ repin:
 catalog:
     scripts/catalog.sh
 
+# The brand, design and context-of-use facets (DR-40, DR-41): Brand and Users
+# in app/src, read from uor.foundation as brand/foundation.lock pins it and from
+# the model's own stakeholders, journeys, features and components, then locked
+# and formatted. The check regenerates them in a scratch copy and compares.
+experience:
+    python3 -I scripts/experience/authority.py . --check
+    python3 -I scripts/experience/experience.py .
+    cd app && lexlean lock && lexlean fmt
+
+experience-check:
+    scripts/experience/check.sh
+
 # Every writer: CONFORMANCE.md, the builder's packed assets, and the catalog.
 # `generate.yml` runs `repin` and this on every push to main and on a schedule,
 # and commits what changed, so no generated file is stale and DevRel follows
 # UORust without anyone re-pinning it.
-generate: model-write catalog
+generate: model-write catalog experience
     node builder/pack.mjs
