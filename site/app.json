@@ -92,5 +92,24 @@
     }
   },
   "repository": "https://github.com/afflom/prism-devrel",
-  "report": "https://github.com/afflom/prism-devrel/blob/main/CONFORMANCE.md"
+  "report": "https://github.com/afflom/prism-devrel/blob/main/CONFORMANCE.md",
+  "tagline": "Learn to build apps that prove what they do. Try one here.",
+  "hint": "Every part of a Prism model is a numbered record. Enter a number to see the lessons that teach it.",
+  "links": [
+    {
+      "label": "Start building",
+      "href": "./start/"
+    },
+    {
+      "label": "Examples",
+      "href": "./examples/"
+    },
+    {
+      "label": "Docs",
+      "href": "./docs/"
+    }
+  ],
+  "answerLinks": {
+    "page": "./learn/{}/"
+  }
 }

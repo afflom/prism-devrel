@@ -32,7 +32,7 @@ function fixture(edit = () => {}) {
     writeFileSync(join(site, rel), text);
   };
   put('app.json', JSON.stringify({ live: LIVE }));
-  put('index.html', '<!doctype html><html><head><title>App</title></head><body><header class="head"><div class="ident"><h1 id="name">App</h1><p id="lede" class="lede">An app.</p></div><a id="open-spec" class="spec-link" href="#spec"><span>View spec</span></a></header><aside id="spec"></aside></body></html>');
+  put('index.html', '<!doctype html><html><head><title>App</title></head><body><header class="head"><div class="ident"><h1 id="name">App</h1><p id="lede" class="lede">An app.</p><nav class="head-nav" aria-label="Where to go">' + SITE.app.links.map((l) => `<a class="go-link" href="./${l.path}">${l.label}</a>`).join('') + '</nav></div><a id="open-spec" class="spec-link" href="#spec"><span>View spec</span></a></header><aside id="spec"></aside></body></html>');
   put('own.css', '');
   put('spec.html', '<section><h2>Spec</h2></section>');
   put('favicon.svg', '<svg xmlns="http://www.w3.org/2000/svg"/>');
@@ -95,9 +95,6 @@ const cases = {
       const feed = read('feed.xml');
       ok((feed.match(/<item>/g) ?? []).length === 4 && feed.includes('<category>tutorial</category>'), 'feed.xml gains every page it lacked, once');
       ok(read('sitemap.xml').includes(`<loc>${LIVE}learn/walk/</loc>`), 'sitemap.xml lists the pages');
-      ok(read('index.html').includes('id="open-docs"') && read('index.html').includes('href="./docs/"'), 'the app page links to the docs');
-      ok(read('index.html').includes('href="./start/"') && read('index.html').includes('href="./examples/"'), 'the app page links to Start building and Examples');
-      ok(read('index.html').includes('id="explain"'), 'the app page says what the site and its app are');
       ok(run(site).status !== 0, 'a site already wrapped is refused rather than wrapped twice');
     } finally {
       rmSync(site, { recursive: true, force: true });
@@ -116,7 +113,8 @@ const cases = {
     refused('a documentation page with neither', (put) => put('learn/walk/index.html', page('Walkthrough', '', '')), 'learn/walk/index.html');
     refused('a link to nothing', (put) => put('start/index.html', page('First app', 'tutorial', 'learn', '<a href="../learn/gone/">gone</a>')), '../learn/gone/');
     refused('a fragment that names no id', (put) => put('start/index.html', page('First app', 'tutorial', 'learn', '<a href="../learn/#nowhere">x</a>')), '#nowhere');
-    refused('an app page without its spec link', (put) => put('index.html', '<!doctype html><html><head><title>App</title></head><body></body></html>'), 'View spec');
+    refused('an app page without its ways on', (put) => put('index.html', '<!doctype html><html><head><title>App</title></head><body></body></html>'), 'app.json "links"');
+    refused('an app page missing a way on', (put) => put('index.html', '<!doctype html><html><body><nav class="head-nav"><a href="./docs/">Docs</a></nav></body></html>'), 'devrel/site.json names');
   },
 };
 

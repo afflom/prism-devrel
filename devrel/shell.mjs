@@ -342,25 +342,18 @@ function checkLinks(site, pages) {
  *  app's own description it says what the site is and what the app on it does,
  *  and beside "View spec" it links to where to go next (devrel/site.json app). */
 function linkApp(site) {
+  // The frame draws the app page's ways on (app.json "links", a row under
+  // the description); this checks the row is the one devrel/site.json names
+  // and that each link lands on a page the site has.
   const at = join(site, 'index.html');
   if (!existsSync(at)) return;
   const html = readFileSync(at, 'utf8');
-  if (html.includes('id="open-docs"')) return;
-  const anchor = /(<a id="open-spec" class="spec-link"[^>]*>[\s\S]*?<\/a>)/;
-  const lede = /(<p id="lede" class="lede">[\s\S]*?<\/p>)/;
-  if (!anchor.test(html)) refuse('index.html: the app page has no "View spec" link to put the docs link beside');
-  if (!lede.test(html)) refuse('index.html: the app page has no description to explain it under');
-  for (const l of SITE.app.links) if (!existsSync(join(site, l.path))) refuse(`index.html: the app page would link to ${l.path}, which the site does not have`);
-  const icons = {
-    'docs/': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>',
-    'start/': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l14 9-14 9z"/></svg>',
-    'examples/': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
-  };
-  const id = (path) => (path === `${SITE.hub.path}` ? 'open-docs' : `open-${path.replace(/\/$/, '')}`);
-  const links = SITE.app.links.map((l) => `<a id="${id(l.path)}" class="spec-link" href="./${l.path}">${icons[l.path] ?? ''}<span>${esc(l.label)}</span></a>`).join('');
-  writeFileSync(at, html
-    .replace(lede, `$1<p id="explain" class="lede">${esc(SITE.app.explain)}</p>`)
-    .replace(anchor, `<span class="head-links">${links}$1</span>`));
+  const nav = html.match(/<nav class="head-nav"[^>]*>([\s\S]*?)<\/nav>/);
+  if (!nav) refuse('index.html: the app page has no row of links under its description (app.json "links")');
+  const hrefs = [...nav[1].matchAll(/href="([^"]*)"/g)].map((m) => m[1]);
+  const want = SITE.app.links.map((l) => `./${l.path}`);
+  if (hrefs.join(' ') !== want.join(' ')) refuse(`index.html: the app page links to ${hrefs.join(', ') || 'nothing'}, devrel/site.json names ${want.join(', ')}`);
+  for (const l of SITE.app.links) if (!existsSync(join(site, l.path, 'index.html'))) refuse(`index.html: the app page links to ${l.path}, which the site does not have`);
 }
 
 export function shell(site) {

@@ -8,7 +8,13 @@
     "authority": {
       "repository": "https://github.com/UOR-Foundation/website",
       "commit": "037d44c60d0579e8e09e4219992bd330559ae8e1",
-      "files": ["src/index.css", "src/site/copy.ts", "src/site/links.ts", "src/site/SiteHeader.tsx", "src/docs/Docs.tsx"]
+      "files": [
+        "src/index.css",
+        "src/site/copy.ts",
+        "src/site/links.ts",
+        "src/site/SiteHeader.tsx",
+        "src/docs/Docs.tsx"
+      ]
     }
   },
   "hub": {
@@ -21,12 +27,20 @@
     "start": "Start building"
   },
   "app": {
-    "about": "The app page at the root, as a newcomer meets it: what the site is, what the verified app on it does, and where to go next. devrel/shell.mjs writes it under the app's own description.",
-    "explain": "New to Prism? This site teaches you to build apps that prove what they do.",
+    "about": "The app page at the root, as a newcomer meets it: what the site is (app.json tagline), the ways on (app.json links, drawn by the frame under the description), and a verified app to try. devrel/shell.mjs checks the links are these and land on pages.",
     "links": [
-      { "label": "Start building", "path": "start/" },
-      { "label": "Examples", "path": "examples/" },
-      { "label": "Docs", "path": "docs/" }
+      {
+        "label": "Start building",
+        "path": "start/"
+      },
+      {
+        "label": "Examples",
+        "path": "examples/"
+      },
+      {
+        "label": "Docs",
+        "path": "docs/"
+      }
     ]
   },
   "links": {
@@ -39,20 +53,68 @@
   "diataxis": {
     "authority": "Daniele Procida, Diátaxis, https://diataxis.fr",
     "types": [
-      { "id": "tutorial", "tab": "Tutorials", "label": "tutorial", "orientation": "learning-oriented", "what": "Lessons that take you by the hand through building something, so you gain skill and confidence.", "href": "https://diataxis.fr/tutorials/" },
-      { "id": "howToGuide", "tab": "How-to guides", "label": "how-to guide", "orientation": "goal-oriented", "what": "Directions that take you through the steps of a real task you already want to do.", "href": "https://diataxis.fr/how-to-guides/" },
-      { "id": "reference", "tab": "Reference", "label": "reference", "orientation": "information-oriented", "what": "Technical descriptions of the machinery and how to operate it, to consult while you work.", "href": "https://diataxis.fr/reference/" },
-      { "id": "explanation", "tab": "Explanation", "label": "explanation", "orientation": "understanding-oriented", "what": "Discussion that gives context and reasons, so you understand why Prism is the way it is.", "href": "https://diataxis.fr/explanation/" }
+      {
+        "id": "tutorial",
+        "tab": "Tutorials",
+        "label": "tutorial",
+        "orientation": "learning-oriented",
+        "what": "Lessons that take you by the hand through building something, so you gain skill and confidence.",
+        "href": "https://diataxis.fr/tutorials/"
+      },
+      {
+        "id": "howToGuide",
+        "tab": "How-to guides",
+        "label": "how-to guide",
+        "orientation": "goal-oriented",
+        "what": "Directions that take you through the steps of a real task you already want to do.",
+        "href": "https://diataxis.fr/how-to-guides/"
+      },
+      {
+        "id": "reference",
+        "tab": "Reference",
+        "label": "reference",
+        "orientation": "information-oriented",
+        "what": "Technical descriptions of the machinery and how to operate it, to consult while you work.",
+        "href": "https://diataxis.fr/reference/"
+      },
+      {
+        "id": "explanation",
+        "tab": "Explanation",
+        "label": "explanation",
+        "orientation": "understanding-oriented",
+        "what": "Discussion that gives context and reasons, so you understand why Prism is the way it is.",
+        "href": "https://diataxis.fr/explanation/"
+      }
     ]
   },
   "journey": {
     "authority": "Caroline Lewko and James Parton, Developer Relations: How to Build and Grow a Successful Developer Program, Apress, 2021, the developer journey",
     "stages": [
-      { "id": "discover", "label": "Discover", "question": "What is Prism, and is it for me?" },
-      { "id": "evaluate", "label": "Evaluate", "question": "Does Prism solve my problem, and can I trust what it claims?" },
-      { "id": "learn", "label": "Learn", "question": "How do I build my first working app?" },
-      { "id": "build", "label": "Build", "question": "How do I make my app do what I need?" },
-      { "id": "scale", "label": "Scale", "question": "How do I ship, maintain and grow what I built?" }
+      {
+        "id": "discover",
+        "label": "Discover",
+        "question": "What is Prism, and is it for me?"
+      },
+      {
+        "id": "evaluate",
+        "label": "Evaluate",
+        "question": "Does Prism solve my problem, and can I trust what it claims?"
+      },
+      {
+        "id": "learn",
+        "label": "Learn",
+        "question": "How do I build my first working app?"
+      },
+      {
+        "id": "build",
+        "label": "Build",
+        "question": "How do I make my app do what I need?"
+      },
+      {
+        "id": "scale",
+        "label": "Scale",
+        "question": "How do I ship, maintain and grow what I built?"
+      }
     ]
   }
 }
