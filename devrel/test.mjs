@@ -45,8 +45,10 @@ function fixture(edit = () => {}) {
   put('learn/walk/index.html', page('Walkthrough', 'reference', 'build').replace(/\.\.\/own/g, '../../learn/own'));
   put('learn/walk/index.md', '# Walkthrough');
   put('start/index.html', page('First app', 'tutorial', 'learn'));
-  put('start/index.md', '# First app');
   put('llms.txt', `# X\n\n> y\n\nSubject: z.\n\n## Pages\n\n- [Walkthrough](${LIVE}learn/walk/index.md): w\n- [Catalog](${LIVE}learn/index.md): c\n\n## Data\n\n- [records.json](${LIVE}learn/records.json): data\n\n## More\n\n- [First app](start/index.md): t\n`);
+  put('llms-full.txt', `---\ntitle: "Catalog"\nurl: ${LIVE}learn/\n---\n\n# Catalog\n`);
+  put('feed.xml', `<?xml version="1.0"?>\n<rss version="2.0"><channel><title>t</title>\n<item><title>Catalog</title><link>${LIVE}learn/</link></item>\n</channel></rss>\n`);
+  put('start/index.md', '# First app\n\nSee [the catalog](../learn/index.md) and [a part](#first-part).\n');
   edit(put, site);
   return site;
 }
@@ -84,6 +86,11 @@ const cases = {
       ok(llms.includes(`(${LIVE}start/index.md)`) && !llms.includes('](start/index.md)'), 'llms.txt links every page absolutely');
       ok(llms.includes('## Data') && llms.includes('records.json') && !llms.includes('## Pages') && !llms.includes('## More'), 'llms.txt keeps data links and drops emptied sections');
       ok(llms.includes('Subject: z.'), 'llms.txt keeps the generators\' preamble');
+      const full = read('llms-full.txt');
+      ok((full.match(/^url: /gm) ?? []).length === 3 && full.includes(`url: ${LIVE}start/`), 'llms-full.txt gains every page it lacked, once');
+      ok(full.includes(`](${LIVE}learn/index.md)`) && full.includes('](#first-part)'), 'llms-full.txt links absolutely and keeps fragments');
+      const feed = read('feed.xml');
+      ok((feed.match(/<item>/g) ?? []).length === 3 && feed.includes('<category>tutorial</category>'), 'feed.xml gains every page it lacked, once');
       ok(read('sitemap.xml').includes(`<loc>${LIVE}learn/walk/</loc>`), 'sitemap.xml lists the pages');
       ok(read('index.html').includes('id="open-docs"') && read('index.html').includes('href="./docs/"'), 'the app page links to the docs');
       ok(run(site).status !== 0, 'a site already wrapped is refused rather than wrapped twice');

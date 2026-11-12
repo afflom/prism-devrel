@@ -17,7 +17,8 @@
  * in llms.txt, then path order for any they leave out; the llms.txt written
  * here lists every page.
  *
- * It then writes the docs hub (docs/), rewrites llms.txt by type, writes
+ * It then writes the docs hub (docs/), rewrites llms.txt by type, adds the
+ * pages a generator left out of llms-full.txt and feed.xml, writes
  * sitemap.xml, and links the app page to the hub. It exits non-zero, so
  * pages.yml deploys nothing, when a page has an unknown type or stage, when
  * a page in a documentation directory carries neither, or when a link or
@@ -254,6 +255,33 @@ function llms(pages, live, lines) {
   return `${out.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd()}\n`;
 }
 
+/** Markdown links made absolute against the twin's own URL, so the text reads the same anywhere. */
+const absolute = (md, base) => md.replace(/\]\(([^)\s]+)\)/g, (all, u) => (/^(?:[a-z][a-z0-9+.-]*:|#)/i.test(u) ? all : `](${new URL(u, base).href})`));
+
+/** llms-full.txt and feed.xml gain every page their generators left out. */
+function fullText(site, pages, live) {
+  const out = new Map();
+  const fullAt = join(site, 'llms-full.txt');
+  let full = existsSync(fullAt) ? readFileSync(fullAt, 'utf8') : '';
+  const there = new Set([...full.matchAll(/^url: (\S+)$/gm)].map((m) => m[1]));
+  const ordered = TABS.flatMap((t) => t.flat);
+  for (const p of ordered) {
+    if (there.has(`${live}${p.url}`)) continue;
+    const md = readFileSync(join(site, p.twin), 'utf8').replace(/^---\n[\s\S]*?\n---\n+/, '');
+    full += `${full && !full.endsWith('\n') ? '\n' : ''}${full ? '\n' : ''}---\ntitle: ${JSON.stringify(p.title)}\nurl: ${live}${p.url}\ndiataxis: ${p.diataxis}\ndeveloper-journey: ${p.journey}\n---\n\n${absolute(md, `${live}${p.twin}`).trimEnd()}\n`;
+  }
+  out.set('llms-full.txt', full);
+  const feedAt = join(site, 'feed.xml');
+  if (existsSync(feedAt)) {
+    const feed = readFileSync(feedAt, 'utf8');
+    const listed = new Set([...feed.matchAll(/<link>([^<]+)<\/link>/g)].map((m) => unesc(m[1])));
+    const items = ordered.filter((p) => !listed.has(`${live}${p.url}`)).map((p) => `<item><title>${esc(p.title)}</title><link>${esc(`${live}${p.url}`)}</link><guid>${esc(`${live}${p.url}`)}</guid><category>${esc(typeOf[p.diataxis].label)}</category><description>${esc(p.summary)}</description></item>\n`).join('');
+    if (!feed.includes('</channel>')) refuse('feed.xml has no </channel>');
+    out.set('feed.xml', feed.replace('</channel>', `${items}</channel>`));
+  }
+  return out;
+}
+
 /** Every link between pages, and every fragment, must land. */
 function checkLinks(site, pages) {
   const files = walk(site).map((f) => relative(site, f).split('\\').join('/'));
@@ -309,6 +337,7 @@ export function shell(site) {
   out.set(`${SITE.hub.path}index.html`, h.html);
   out.set(`${SITE.hub.path}index.md`, h.md);
   out.set('llms.txt', llms(pages, live, lines));
+  for (const [rel, body] of fullText(site, pages, live)) out.set(rel, body);
   const urls = ['', SITE.hub.path, ...TABS.flatMap((t) => t.flat.map((p) => p.url))];
   out.set('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${esc(`${live}${u}`)}</loc></url>`).join('\n')}\n</urlset>\n`);
   for (const [rel, body] of out) {
