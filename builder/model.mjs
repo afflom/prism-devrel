@@ -16,11 +16,11 @@
  * pages that show an application (the DevRel site) are both written from it,
  * so a page cannot show a record the model does not declare.
  */
-import { SpecError, counterexample, describeConditions, judge, requestLimits, respond, validateSpec } from './vendor/prism-code/src/journey/spec.mjs';
+import { SpecError, counterexample, describeConditions, encodeRequest, judge, requestLimits, respond, sampleRequests, validateSpec } from './vendor/prism-code/src/journey/spec.mjs';
 import { answersFromSpec, compile } from './vendor/prism-code/src/journey/session.mjs';
 import { acceptanceVectors, declarations, names, proofDeclarations } from './vendor/prism-code/src/journey/render.mjs';
 import { claims, idPrefix, suiteOf } from './vendor/prism-code/src/journey/template.mjs';
-import { ISO25010, MODEL_KINDS, readPrompt } from './prompt.mjs';
+import { ISO25010, MODEL_KINDS, PATTERNS, readPrompt } from './prompt.mjs';
 
 const pascal = (s) =>
   String(s)
@@ -78,9 +78,71 @@ export function checkedSpec(app) {
   return spec;
 }
 
+/** How many requests the machine's successor relation is read from; past it the sample is not every request. */
+const SAMPLE_LIMIT = 200000;
+
+/**
+ * A stateMachine's spec: the prompt's app, with the properties that make the
+ * machine's invariants theorems appended to the ones the prompt states.
+ *
+ * Each derived property is about one step, and a run is a sequence of steps
+ * from the initial state, so a property that holds for every step holds over
+ * every run, by induction on its length:
+ *
+ * - a final state f is never left: `always f when state is f`;
+ * - the states reachable from the initial state are closed under a step: for
+ *   every reachable r and every other state u, `never u when state is r`.
+ *
+ * The reachable states are read off the successor relation over every request
+ * the spec's sample covers. When the sample does not cover every request, no
+ * state is claimed unreachable, so a sample can never make a property false;
+ * and whatever is claimed, the Lean kernel proves for every request.
+ */
+export function machineSpec(prompt) {
+  if (prompt.pattern !== 'stateMachine') return { app: prompt.app, machine: null };
+  const base = validateSpec(prompt.app);
+  const { state, initial, final } = prompt.machine;
+  const field = base.fields.find((f) => f.name === state);
+  if (!field || field.kind !== 'choice') throw new SpecError(`machine.state \`${state}\` is not a choice field; the state is one.`, 'machine');
+  const states = field.values;
+  if (!states.includes(initial)) throw new SpecError(`machine.initial \`${initial}\` is not a state; the states are ${states.join(', ')}.`, 'machine');
+  for (const f of final) if (!states.includes(f)) throw new SpecError(`machine.final names \`${f}\`, which is not a state.`, 'machine');
+  if (base.outcomes.length !== states.length || !states.every((s) => base.outcomes.includes(s))) throw new SpecError(`A state machine answers the next state: its answers are exactly the states ${states.join(', ')}.`, 'machine');
+
+  const step = new Map(states.map((s) => [s, new Map()]));
+  let sampled = 0;
+  for (const request of sampleRequests(base, SAMPLE_LIMIT)) {
+    sampled++;
+    const { outcome, rule } = judge(base, request);
+    const from = request[state];
+    if (final.includes(from) && outcome !== from) throw new SpecError(`${from} is final, but \`${encodeRequest(base, request)}\` leaves it for ${outcome}.`, 'machine');
+    const out = step.get(from);
+    if (!out.has(outcome)) out.set(outcome, new Set());
+    out.get(outcome).add(rule ?? 'otherwise');
+  }
+  const exhaustive = sampled < SAMPLE_LIMIT;
+  const reachable = new Set([initial]);
+  for (const queue = [initial]; queue.length; ) for (const next of step.get(queue.shift()).keys()) if (!reachable.has(next) && reachable.add(next)) queue.push(next);
+  const closed = exhaustive ? states.filter((s) => reachable.has(s)) : states;
+  const outside = states.filter((s) => !closed.includes(s));
+  const is = (value) => [{ field: state, op: 'is', value }];
+  const derived = [
+    ...final.map((f) => ({ kind: 'always', when: is(f), then: f, why: `${f} is a final state (UML 2.5.1 FinalState): a run that reaches it stays there` })),
+    ...closed.flatMap((r) => outside.map((u) => ({ kind: 'never', when: is(r), then: u, why: `no step from a state reachable from ${initial} reaches ${u}, so no run from ${initial} does` }))),
+  ];
+  const given = base.properties.length;
+  const transitions = closed.flatMap((from) => [...step.get(from)].flatMap(([to, rules]) => [...rules].sort().map((rule) => ({ from, to, rule }))));
+  return {
+    app: { ...prompt.app, properties: [...(prompt.app.properties ?? []), ...derived] },
+    machine: { state, initial, final, states, reachable: closed, unreachable: outside, exhaustive, sampled, transitions, derived: derived.map((_, i) => `INV-${String(given + i + 1).padStart(3, '0')}`) },
+  };
+}
+
 export function deriveModel(input) {
   const prompt = readPrompt(input);
-  const spec = checkedSpec(prompt.app);
+  const { app, machine } = machineSpec(prompt);
+  const spec = checkedSpec(app);
+  if (new Set(spec.properties.map((p) => p.id)).size !== spec.properties.length) throw new SpecError('Two properties share an id; leave the ids to the builder.', 'properties');
   const n = names(spec);
   const declared = new Set([...declarations(spec, n), ...(spec.properties.length ? proofDeclarations(spec, n) : [])].map((d) => d.name));
   for (const name of Object.keys(prompt.axioms)) if (!declared.has(name)) throw new SpecError(`axioms names \`${name}\`, which the app does not declare.`, 'axioms');
@@ -173,7 +235,11 @@ export function deriveModel(input) {
   const vComponents = { decl: design('view', 'Uml components'), title: `Components of ${title}`, viewpoint: viewpointFor('Integrity of the published app'), diagram: 'umlComponent' };
   const vSequence = { decl: design('view', 'Uml request'), title: `Answering a ${title} request`, viewpoint: viewpointFor('Correct answers'), diagram: 'umlSequence' };
   const vStates = { decl: design('view', 'Uml states'), title: `States of the ${title} guest`, viewpoint: viewpointFor('Refused malformed requests'), diagram: 'umlStateMachine' };
-  const designViews = [vOpm, vComponents, vSequence, vStates];
+  // A state machine's own states, beside the guest's: one per state, each step a transition triggered by the rule that takes it.
+  const vMachine = machine && { decl: design('view', 'Uml machine'), title: `The ${title} state machine`, viewpoint: viewpointFor('Correct answers'), diagram: 'umlStateMachine' };
+  const machineStates = machine ? Object.fromEntries(machine.states.map((s) => [s, state(`Machine ${s}`, comp('guest'), `${machine.final.includes(s) ? 'Final state' : s === machine.initial ? 'Initial state' : 'State'} ${s}${spec.meanings?.[s] ? `: ${spec.meanings[s]}` : '.'}`)])) : {};
+  if (machine) states.push(...Object.values(machineStates));
+  const designViews = [vOpm, vComponents, vSequence, vStates, ...(machine ? [vMachine] : [])];
 
   const opmThings = [
     { decl: design('opm', 'Browser'), view: vOpm, kind: 'object', subject: a(comp('browser')) },
@@ -196,7 +262,10 @@ export function deriveModel(input) {
     { decl: design('seq', 'Request'), view: vSequence, kind: 'synchronous', order: 0, source: a(comp('browser')), target: a(comp('guest')), process: d(pDecide.decl) },
     { decl: design('seq', 'Reply'), view: vSequence, kind: 'reply', order: 1, source: a(comp('guest')), target: a(comp('browser')), process: d(pDecide.decl) },
   ];
-  const umlStates = states.map((s) => ({ decl: design('st', s.name), view: vStates, state: d(s.decl), initial: s === sIdle }));
+  const umlStates = [
+    ...[sIdle, sDeciding, sRefused, ...Object.values(sAnswered)].map((s) => ({ decl: design('st', s.name), view: vStates, state: d(s.decl), initial: s === sIdle })),
+    ...Object.entries(machineStates).map(([v, s]) => ({ decl: design('st', s.name), view: vMachine, state: d(s.decl), initial: v === machine.initial })),
+  ];
   let order = 0;
   const transitions = [
     { decl: design('tr', 'Accept'), source: sIdle, target: sDeciding, trigger: pParse },
@@ -206,6 +275,11 @@ export function deriveModel(input) {
     ...spec.outcomes.map((o) => ({ decl: design('tr', `Reset ${o}`), source: sAnswered[o], target: sIdle, trigger: pEncode })),
     { decl: design('tr', 'Reset refused'), source: sRefused, target: sIdle, trigger: pEncode },
   ].map((t) => ({ ...t, view: vStates, order: order++ }));
+  if (machine) {
+    order = 0;
+    const trigger = (rule) => (rule === 'otherwise' ? pOtherwise : pRules.find((p) => p.rule.id === rule));
+    for (const t of machine.transitions) transitions.push({ decl: design('tr', `Machine ${t.from} to ${t.to} by ${t.rule}`), source: machineStates[t.from], target: machineStates[t.to], trigger: trigger(t.rule), view: vMachine, order: order++ });
+  }
 
   // ---- Features and journeys ---------------------------------------------
   const feat = namer();
@@ -333,6 +407,7 @@ export function deriveModel(input) {
     { standard: 'ISO/PAS 19450:2015 and OMG UML 2.5.1', subject: 'Design views', text: 'Every design view is checked by the SDK against the system model before it is rendered.', evidence: designViews.map((v) => d(v.decl)) },
     { standard: 'ISO/IEC 25010:2023', subject: 'Product quality', text: 'Characteristics, subcharacteristics, requirements and measures are numbered and their parents resolve.', evidence: ['Quality::qualityModelHolds'] },
     { standard: 'ISO/IEC 27034-1:2011 and ISO/IEC 27005:2022', subject: 'Application security and risk', text: 'Every threat has a STRIDE category and a mapped control with evidence, or an accepted risk with its rationale.', evidence: ['Security::controlSet'] },
+    patternObligation(prompt, spec, machine, M, P, n),
     { standard: 'OpenSpec', subject: 'Requirements', text: 'Every rule and property of the spec is a requirement with a scenario in openspec/specs.', evidence: [`${M}::application`] },
     { standard: `SPDX ${prompt.license}`, subject: 'Licensing', text: `The application and its model are offered under ${prompt.license}.`, evidence: [`${M}::application`] },
   ];
@@ -340,6 +415,8 @@ export function deriveModel(input) {
   return {
     prompt,
     spec,
+    pattern: { key: prompt.pattern, ...PATTERNS[prompt.pattern] },
+    machine,
     names: n,
     limits,
     vectors,
@@ -358,6 +435,22 @@ export function deriveModel(input) {
     compliance: obligations,
     judge: (request) => judge(spec, request),
   };
+}
+
+/** The obligation the app's pattern places on it, with the declarations that discharge it. */
+function patternObligation(prompt, spec, machine, M, P, n) {
+  const { standard } = PATTERNS[prompt.pattern];
+  if (prompt.pattern === 'stateMachine') {
+    const proofs = machine.derived.map((id) => `${P}::${n.properties[id].theorem}`);
+    const parts = [
+      `The answer to a state and an event is the next state, one of ${machine.states.join(', ')}; every run starts in ${machine.initial}.`,
+      machine.final.length ? `The final state${machine.final.length === 1 ? '' : 's'} ${machine.final.join(', ')} ${machine.final.length === 1 ? 'is' : 'are'} never left.` : '',
+      machine.unreachable.length ? `No run from ${machine.initial} reaches ${machine.unreachable.join(', ')}.` : '',
+    ];
+    return { standard, subject: 'State machine', text: parts.filter(Boolean).join(' '), evidence: [`${M}::judge`, ...proofs] };
+  }
+  if (prompt.pattern === 'policyDecision') return { standard, subject: 'Policy decision', text: `Every well-formed request is answered with exactly one decision: ${spec.outcomes.join(', ')}; a malformed one is invalid, never a decision.`, evidence: [`${M}::judge`, `${M}::encodeAnswer`] };
+  return { standard, subject: 'Decision table', text: `The ${spec.rules.length} rules are tried in order and the first that matches gives the answer; otherwise ${spec.otherwise}.`, evidence: [`${M}::judge`] };
 }
 
 export { ISO25010 };

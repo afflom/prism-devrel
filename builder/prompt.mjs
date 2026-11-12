@@ -32,6 +32,31 @@ export const ASSET_KEYS = ['request', 'answer', 'holo', 'source'];
 export const AXIOMS = ['Classical.choice', 'Quot.sound', 'propext'];
 
 /**
+ * The established pattern an app's behavior follows. All three are one
+ * function from a request to one answer, which is what a `prism/spec/1` guest
+ * computes; they differ in what the answer means and so in what the builder
+ * checks and proves about it.
+ *
+ * - `decisionTable`: an OMG DMN 1.5 decision table with hit policy FIRST
+ *   (section 8.2.11): the rules are tried in order and the first that matches
+ *   gives the output.
+ * - `policyDecision`: an OASIS XACML 3.0 policy decision point (section 7.11,
+ *   7.14): the answer is exactly one of the four decisions.
+ * - `stateMachine`: an OMG UML 2.5.1 behavioral state machine (clause 14) as a
+ *   pure transition function, the next state of the current state and an
+ *   event. The state travels in the request, so the answer is fed back as the
+ *   next request's state, and the invariants the builder derives hold over
+ *   every run, by induction on its length.
+ */
+export const PATTERNS = {
+  decisionTable: { name: 'Decision table', standard: 'OMG DMN 1.5, hit policy FIRST', url: 'https://www.omg.org/spec/DMN/1.5/' },
+  policyDecision: { name: 'Policy decision', standard: 'OASIS XACML 3.0 policy decision point', url: 'https://docs.oasis-open.org/xacml/3.0/xacml-3.0-core-spec-os-en.html' },
+  stateMachine: { name: 'State machine', standard: 'OMG UML 2.5.1 behavioral state machine', url: 'https://www.omg.org/spec/UML/2.5.1/' },
+};
+/** The four decisions of XACML 3.0 section 7.11, as answer words. */
+export const XACML_DECISIONS = ['permit', 'deny', 'not-applicable', 'indeterminate'];
+
+/**
  * ISO/IEC 25010:2023 product quality: each characteristic with its
  * subcharacteristics. A quality row in the prompt names one pair.
  */
@@ -102,6 +127,17 @@ export function inputSchema(specInput) {
         },
       },
       journeys: { type: 'array', description: 'Ordered steps a stakeholder takes. A step is a rule ID (REQ-001), a property ID (INV-001), otherwise or refuse.', items: { type: 'object', properties: { stakeholder: text, steps: { type: 'array', items: text } }, required: ['stakeholder', 'steps'] } },
+      pattern: { enum: Object.keys(PATTERNS), description: 'The pattern the behavior follows: decisionTable (OMG DMN 1.5, hit policy FIRST, the default), policyDecision (OASIS XACML 3.0: the answers are exactly permit, deny, not-applicable and indeterminate) or stateMachine (OMG UML 2.5.1: the answer is the next state, and machine is required).' },
+      machine: {
+        type: 'object',
+        description: 'For a stateMachine: which choice field carries the current state, the initial state, and the final states. The answers are exactly the state values. The builder proves that a final state is never left and that no run from the initial state reaches a state outside the reachable set.',
+        properties: {
+          state: { type: 'string', description: 'The choice field whose values are the states.' },
+          initial: { type: 'string', description: 'The state every run starts in.' },
+          final: { type: 'array', items: text, uniqueItems: true, description: 'States a run never leaves once it reaches them (UML FinalState).' },
+        },
+        required: ['state', 'initial'],
+      },
       license: { type: 'string', description: 'The SPDX license expression; MIT OR Apache-2.0 when left out.' },
       repository: { type: 'string', description: 'owner/name of the repository the app will live in, for its page and links.' },
       axioms: {
@@ -195,6 +231,17 @@ export function readPrompt(input) {
         return [name, [...set].sort()];
       }),
   );
+  prompt.pattern = oneOf(prompt.pattern ?? (prompt.machine ? 'stateMachine' : 'decisionTable'), Object.keys(PATTERNS), 'pattern');
+  if (prompt.pattern === 'stateMachine') {
+    const m = prompt.machine;
+    if (!m || typeof m !== 'object' || Array.isArray(m)) refuse('A stateMachine names its machine: the state field and the initial state.', 'machine');
+    if (m.final !== undefined && !Array.isArray(m.final)) refuse('machine.final is a list of states.', 'machine');
+    prompt.machine = { state: words(m.state), initial: words(m.initial), final: [...new Set((m.final ?? []).map(words))] };
+  } else if (prompt.machine !== undefined) refuse(`machine belongs to a stateMachine; this prompt is a ${prompt.pattern}.`, 'machine');
+  if (prompt.pattern === 'policyDecision') {
+    const outcomes = prompt.app.outcomes ?? [];
+    if (outcomes.length !== XACML_DECISIONS.length || !XACML_DECISIONS.every((d) => outcomes.includes(d))) refuse(`A policyDecision answers exactly the XACML 3.0 decisions ${XACML_DECISIONS.join(', ')}.`, 'pattern');
+  }
   if (prompt.repository !== undefined && !/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(prompt.repository)) refuse('repository is owner/name.', 'repository');
   return prompt;
 }

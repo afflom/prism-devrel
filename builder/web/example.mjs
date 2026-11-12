@@ -34,3 +34,28 @@ $('try').addEventListener('submit', async (event) => {
     $('answer').textContent = `Refused: ${error.message}`;
   }
 });
+
+// A state machine: each step's answer is the next step's state, from the
+// initial state, through the same verified guest.
+$('run')?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = $('run');
+  const at = Number(form.dataset.state);
+  const trace = $('trace');
+  trace.replaceChildren();
+  const line = (text) => trace.appendChild(Object.assign(document.createElement('li'), { textContent: text }));
+  try {
+    const a = await ready();
+    let state = form.dataset.initial;
+    for (const step of $('steps').value.split('\n').map((s) => s.trim()).filter(Boolean)) {
+      const words = step.split(/\s+/);
+      words.splice(at, 0, state);
+      const answer = new TextDecoder().decode(await a.dispatch(new TextEncoder().encode(words.join(' '))));
+      line(`${words.join(' ')} → ${answer}`);
+      if (answer === 'invalid') break;
+      state = answer;
+    }
+  } catch (error) {
+    line(`Refused: ${error.message}`);
+  }
+});

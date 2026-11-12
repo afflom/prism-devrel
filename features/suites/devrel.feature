@@ -95,3 +95,27 @@ Feature: devrel
     Given a site as the catalog and the builder write it, with devrel/site.json naming the Diátaxis types of diataxis.fr, the journey stages of Lewko and Parton and the uor.foundation brand
     When devrel/test.mjs DR-30 runs devrel/shell.mjs over it
     Then every page has the one header, tabs and footer, its own content, styles and scripts, a side navigation by journey stage and a list of its sections; the docs hub, llms.txt by type, the pages llms-full.txt and feed.xml lacked, sitemap.xml and the app page's docs link are written; and an unknown type or stage, an unclassified documentation page, a link or fragment that lands nowhere and a site already wrapped are each refused
+
+  @DR-17 @build
+  Scenario: A state-machine prompt is checked as an OMG UML 2.5.1 state machine, and its final states and reachable states become invariants of every run that the Lean kernel proves
+    Given a door machine whose kick breaks it from any state and which never reaches welded from closed
+    When builder/test.mjs DR-17 builds it
+    Then the reachable states are read from every request, a final state is never left and no reachable state steps to welded as derived properties, each a theorem, a claim and the UML obligation's evidence, the machine has its own UML state-machine view with a transition per step, a partial sample claims no state unreachable, and answers that are not the states, an unknown initial state, a final state a step leaves, a missing machine and a number state are refused
+
+  @DR-18 @build
+  Scenario: Every app names the established pattern its behavior follows, a DMN 1.5 decision table, an XACML 3.0 policy decision or a UML 2.5.1 state machine, as a compliance obligation, and a policy decision answers exactly the four XACML decisions
+    Given the Rule 30 prompt, a door policy and every example prompt
+    When builder/test.mjs DR-18 derives their models
+    Then a policy decision with other answers and an unknown pattern are refused, a prompt without a pattern is a decision table, and every example has exactly one obligation for its pattern's standard
+
+  @DR-19 @build
+  Scenario: The Prism source page shows every Foundation, Production and language module every built app carries, with each declaration and the word that denotes it, served byte for byte with its recorded upstream source
+    Given builder/assets/ and builder/assets/provenance.json
+    When builder/test.mjs DR-19 writes the site
+    Then every carried file has a recorded source at a full commit and its SHA-256, every module is served as carried with every declaration listed, every language entry names what it denotes, and every vendored prism-code module is served with the digest VENDOR.md records
+
+  @DR-20 @build
+  Scenario: The how-to guides are grouped by pattern, and a state machine's page runs it from its initial state through the verified holo, each answer the next state
+    Given every example prompt and the door machine
+    When builder/test.mjs DR-20 writes the gallery and the door's page
+    Then each example is in its pattern's group only, in the order the patterns are declared, and the door's page shows every transition and a run seeded from its examples that feeds each answer back as the next state and stops at a refused step

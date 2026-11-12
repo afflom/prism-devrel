@@ -14,8 +14,9 @@ import { fileURLToPath } from 'node:url';
 import { buildApp } from './build.mjs';
 import { deriveModel } from './model.mjs';
 import { render as renderAssets } from './pack.mjs';
-import { DIATAXIS, JOURNEY, examplePage, page, writeSite } from './site.mjs';
-import { readPrompt } from './prompt.mjs';
+import { DIATAXIS, JOURNEY, PATTERN_TEXT, examplePage, page, prismSource, writeSite } from './site.mjs';
+import { PATTERNS, XACML_DECISIONS, readPrompt } from './prompt.mjs';
+import { ASSETS } from './assets.mjs';
 import { SPEC_INPUT, TOOL } from './tool.mjs';
 import { zip, crc32 } from './zip.mjs';
 import { SpecError } from './vendor/prism-code/src/journey/spec.mjs';
@@ -45,7 +46,162 @@ const rule30 = () => JSON.parse(readFileSync(join(examples, 'rule-30-cell.prompt
 const module = (files, name) => files[`app/src/${name}.lex.tex`];
 const sha = (text) => createHash('sha256').update(text).digest('hex');
 
+/**
+ * A door: closed, open, locked, broken (final, entered by a kick from any
+ * state) and welded, which nothing reaches from closed. The machine the
+ * state-machine checks exercise.
+ */
+const door = () => {
+  const is = (field, value) => ({ field, op: 'is', value });
+  return {
+    goal: 'Step a door.',
+    pattern: 'stateMachine',
+    machine: { state: 'door', initial: 'closed', final: ['broken'] },
+    app: {
+      name: 'door-step',
+      purpose: 'The next state of a door.',
+      fields: [
+        { name: 'door', kind: 'choice', values: ['closed', 'open', 'locked', 'broken', 'welded'] },
+        { name: 'event', kind: 'choice', values: ['push', 'pull', 'lock', 'unlock', 'kick'] },
+      ],
+      outcomes: ['closed', 'open', 'locked', 'broken', 'welded'],
+      rules: [
+        { when: [is('door', 'broken')], then: 'broken' },
+        { when: [is('event', 'kick')], then: 'broken' },
+        { when: [is('door', 'closed'), is('event', 'push')], then: 'open' },
+        { when: [is('door', 'open'), is('event', 'pull')], then: 'closed' },
+        { when: [is('door', 'closed'), is('event', 'lock')], then: 'locked' },
+        { when: [is('door', 'locked'), is('event', 'unlock')], then: 'closed' },
+        { when: [is('door', 'open')], then: 'open' },
+        { when: [is('door', 'locked')], then: 'locked' },
+        { when: [is('door', 'welded')], then: 'welded' },
+      ],
+      otherwise: 'closed',
+      examples: [{ request: 'closed push', response: 'open' }, { request: 'broken push', response: 'broken' }],
+    },
+  };
+};
+
 const CASES = {
+  // A state machine is checked as a UML 2.5.1 state machine, and its invariants over every run become theorems.
+  async 'DR-17'() {
+    const { files, model: m, claims } = await buildApp(door(), { lastModified: AT });
+    const mc = m.machine;
+    eq(mc.reachable, ['closed', 'open', 'locked', 'broken'], 'the reachable states are read off the successor relation from the initial state');
+    eq(mc.unreachable, ['welded'], 'a state no step from a reachable state enters is unreachable');
+    ok(mc.exhaustive && mc.sampled === 25, 'the successor relation is read from every request');
+    eq(mc.derived, ['INV-001', 'INV-002', 'INV-003', 'INV-004', 'INV-005'], 'one property per final state and one per reachable and unreachable pair');
+    const says = m.spec.properties.map((p) => p.says);
+    ok(says[0] === 'It always answers broken when door is broken.', 'a final state is never left');
+    ok(['closed', 'open', 'locked', 'broken'].every((r, i) => says[i + 1] === `It never answers welded when door is ${r}.`), 'no step from a reachable state reaches the unreachable one');
+    for (const id of mc.derived) ok(module(files, m.proofs).includes(`name: ${m.names.properties[id].theorem},`) && claims.some((c) => c.id.endsWith(id.slice(-2)) || c.statement), `${id} is a theorem and a claim`);
+    ok(claims.filter((c) => c.kind === 'property').length === mc.derived.length, 'every derived property is a registered claim');
+    const view = m.design.views.find((v) => v.title === `The ${m.title} state machine`);
+    ok(view && view.diagram === 'umlStateMachine', 'a UML state-machine view of the machine itself');
+    eq(m.design.umlStates.filter((s) => s.view === view).map((s) => s.initial), [true, false, false, false, false], 'one UML state per machine state, the initial one marked');
+    eq(m.design.transitions.filter((t) => t.view === view).length, mc.transitions.length, 'one UML transition per step a reachable state takes');
+    ok(m.design.transitions.filter((t) => t.view === view).every((t) => t.trigger && t.source && t.target), 'every machine transition is triggered by the rule that takes it');
+    const obligation = m.compliance.find((o) => o.subject === 'State machine');
+    ok(obligation.standard === PATTERNS.stateMachine.standard && mc.derived.every((id) => obligation.evidence.includes(`${m.proofs}::${m.names.properties[id].theorem}`)), 'the UML obligation names every invariant theorem as its evidence');
+    // Without an exhaustive sample no state is called unreachable, so a sample can never make a property false.
+    const wide = door();
+    wide.app.fields.push({ name: 'force', kind: 'number' });
+    for (let k = 0; k < 5; k++) wide.app.fields.push({ name: `x${k}`, kind: 'choice', values: Array.from({ length: 8 }, (_, i) => `v${i}`) });
+    wide.app.examples = [{ request: `closed push 0 ${'v0 '.repeat(5).trim()}`, response: 'open' }];
+    const wm = deriveModel(wide).machine;
+    ok(!wm.exhaustive && wm.unreachable.length === 0 && wm.derived.length === 1, 'a partial sample claims only the final state');
+    const d = door();
+    await refused(async () => deriveModel({ ...d, app: { ...d.app, outcomes: [...d.app.outcomes, 'ajar'] } }), /answers are exactly the states/, 'answers that are not the states are refused');
+    await refused(async () => deriveModel({ ...d, machine: { ...d.machine, initial: 'ajar' } }), /not a state/, 'an initial state that is not a state is refused');
+    await refused(async () => deriveModel({ ...d, machine: { ...d.machine, final: ['open'] } }), /open is final, but/, 'a final state a step leaves is refused, naming the step');
+    await refused(async () => deriveModel({ ...d, machine: undefined }), /names its machine/, 'a stateMachine without its machine is refused');
+    await refused(async () => deriveModel({ ...rule30(), machine: d.machine, pattern: 'decisionTable' }), /machine belongs to a stateMachine/, 'a machine on another pattern is refused');
+    await refused(async () => deriveModel({ ...d, machine: { ...d.machine, state: 'force' }, app: { ...d.app, fields: [...d.app.fields, { name: 'force', kind: 'number' }] } }), /not a choice field/, 'a number field cannot be the state');
+  },
+  // A policy decision answers exactly the XACML 3.0 decisions, and every app's pattern is a compliance obligation with its standard.
+  async 'DR-18'() {
+    const r = rule30();
+    await refused(async () => deriveModel({ ...r, pattern: 'policyDecision' }), /XACML 3.0 decisions/, 'a policy decision with other answers is refused');
+    await refused(async () => deriveModel({ ...r, pattern: 'flowchart' }), /pattern/, 'an unknown pattern is refused');
+    const is = (field, value) => ({ field, op: 'is', value });
+    const policy = {
+      pattern: 'policyDecision',
+      app: {
+        name: 'door-policy',
+        purpose: 'Who may open the door.',
+        fields: [{ name: 'role', kind: 'choice', values: ['owner', 'guest', 'unknown'] }, { name: 'resource', kind: 'choice', values: ['door', 'safe', 'other'] }],
+        outcomes: [...XACML_DECISIONS],
+        rules: [{ when: [is('role', 'unknown')], then: 'indeterminate' }, { when: [is('resource', 'other')], then: 'not-applicable' }, { when: [is('role', 'owner')], then: 'permit' }],
+        otherwise: 'deny',
+        properties: [{ kind: 'never', when: [is('role', 'guest'), is('resource', 'safe')], then: 'permit' }],
+        examples: [{ request: 'owner safe', response: 'permit' }, { request: 'guest safe', response: 'deny' }],
+      },
+    };
+    const m = deriveModel(policy);
+    ok(m.pattern.key === 'policyDecision' && m.compliance.some((o) => o.subject === 'Policy decision' && o.standard === PATTERNS.policyDecision.standard), 'a policy decision is an XACML obligation');
+    ok(deriveModel(r).compliance.some((o) => o.subject === 'Decision table' && o.standard === PATTERNS.decisionTable.standard), 'a prompt without a pattern is a DMN decision table');
+    for (const { file, prompt } of prompts()) {
+      const pm = deriveModel(prompt);
+      ok(Object.hasOwn(PATTERNS, pm.pattern.key) && pm.compliance.filter((o) => o.standard === PATTERNS[pm.pattern.key].standard).length === 1, `${file}: one obligation for its pattern, ${pm.pattern.key}`);
+      if (pm.pattern.key === 'policyDecision') eq([...pm.spec.outcomes].sort(), [...XACML_DECISIONS].sort(), `${file}: answers exactly the four decisions`);
+      if (pm.pattern.key === 'stateMachine') ok(pm.machine.derived.every((id) => pm.spec.properties.some((p) => p.id === id)), `${file}: its invariants are properties`);
+    }
+    eq(Object.keys(PATTERN_TEXT), Object.keys(PATTERNS), 'every pattern is explained');
+  },
+  // The Prism source page shows every module and language entry every built app carries, from the bytes the builder carries.
+  async 'DR-19'() {
+    const provenance = JSON.parse(readFileSync(join(here, 'assets/provenance.json'), 'utf8'));
+    eq(provenance.files.map((f) => f.path).sort(), Object.keys(ASSETS).map((p) => `app/${p}`).sort(), 'every carried file has a recorded source, and every recorded file is carried');
+    for (const f of provenance.files) ok(sha(ASSETS[f.path.slice('app/'.length)]) === f.sha256 && /^[0-9a-f]{40}$/.test(f.source.commit) && /^UOR-Foundation\//.test(f.source.repository), `${f.path} has the SHA-256 its source records, at a full commit`);
+    const { modules, packages, journey } = prismSource();
+    ok(modules.length === Object.keys(ASSETS).filter((p) => p.endsWith('.lex.tex')).length, 'every LexLean module is on the page');
+    const site = mkdtempSync(join(tmpdir(), 'devrel-source-'));
+    try {
+      await writeSite(site, null);
+      const html = readFileSync(join(site, 'start/source/index.html'), 'utf8');
+      const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      for (const m of modules) {
+        ok(readFileSync(join(site, 'start/source/files', m.path), 'utf8') === m.text, `${m.path} is served as carried`);
+        for (const d of m.declarations) ok(html.includes(`<code>${esc(`${m.name}::${d.name}`)}</code>`), `${m.name}::${d.name} is listed`);
+      }
+      ok(modules.reduce((n, m) => n + m.declarations.length, 0) > 0, 'the modules declare something');
+      for (const p of packages) for (const e of p.entries) ok(html.includes(`<code>${esc(e.entry)}</code>`) && html.includes(`<code>${esc(e.denotes)}</code>`), `${p.name} ${e.entry} names what it denotes`);
+      for (const j of journey) ok(/^[0-9a-f]{64}$/.test(j.sha256) && sha(readFileSync(join(site, 'start/source/files', j.path))) === j.sha256, `${j.name} is served with the digest VENDOR.md records`);
+      ok(html.includes('<meta name="diataxis" content="reference">'), 'the Prism source page is reference');
+    } finally {
+      rmSync(site, { recursive: true, force: true });
+    }
+  },
+  // The how-to guides are grouped by pattern, and a state machine's page runs it through the verified holo.
+  async 'DR-20'() {
+    const site = mkdtempSync(join(tmpdir(), 'devrel-gallery-'));
+    try {
+      await writeSite(site, null);
+      const index = readFileSync(join(site, 'examples/index.html'), 'utf8');
+      const listed = JSON.parse(readFileSync(join(site, 'examples/prompts/index.json'), 'utf8'));
+      let last = -1;
+      for (const key of Object.keys(PATTERNS).filter((k) => listed.some((e) => e.pattern === k))) {
+        const at = index.indexOf(`<h2 id="${key}">`);
+        ok(at > last, `the ${key} group follows the one before it`);
+        last = at;
+        const next = index.slice(at + 1).search(/<h2 id="/);
+        const group = next < 0 ? index.slice(at) : index.slice(at, at + 1 + next);
+        for (const e of listed) ok(group.includes(`href="${e.name}/"`) === (e.pattern === key), `${e.name} is in its own group only`);
+      }
+      ok(listed.length === prompts().length, 'every example is listed');
+    } finally {
+      rmSync(site, { recursive: true, force: true });
+    }
+    const { files, model: m, claims } = await buildApp(door(), { lastModified: AT });
+    const verified = { fingerprint: 'f'.repeat(64) };
+    const { html, twin } = examplePage({ name: 'door', repository: 'afflom/prism-devrel', summary: 'A door.' }, null, m, files, claims, 'x.zip', verified);
+    ok(html.body.includes('<form id="run" class="run" data-state="0" data-initial="closed">'), 'the run starts from the initial state, and the page knows which field is the state');
+    ok(html.body.includes('<textarea id="steps" rows="4" spellcheck="false">push</textarea>'), 'the run is seeded from the examples that start in the initial state');
+    for (const t of m.machine.transitions) ok(html.body.includes(`<td>${t.from}</td><td>${t.to}</td><td>${t.rule}</td>`), `the transition ${t.from} to ${t.to} by ${t.rule} is shown`);
+    ok(twin.includes('Pattern: State machine, OMG UML 2.5.1 behavioral state machine.'), 'the twin names the pattern');
+    const script = readFileSync(join(here, 'web/example.mjs'), 'utf8');
+    ok(script.includes("words.splice(at, 0, state)") && script.includes('state = answer;') && script.includes("if (answer === 'invalid') break;"), 'each answer is the next state, and a refused step ends the run');
+  },
   // A prompt is checked as prism-code's journey checks a drafted spec, and every refusal is typed.
   async 'DR-07'() {
     const good = rule30();
@@ -71,7 +227,7 @@ const CASES = {
       const { files, model: m } = await buildApp(prompt, { lastModified: AT });
       for (const [name, theorem] of [['Architecture', 'architectureDescriptionHolds'], ['Quality', 'qualityModelHolds'], ['Compliance', 'everyObligationEvidenced']]) ok(module(files, name).includes(`name: ${theorem},`), `${file}: ${name} proves ${theorem}`);
       ok(module(files, 'Design').includes('DesignDiagram.opmObjectProcess') && module(files, 'Design').includes('DesignDiagram.umlStateMachine'), `${file}: OPM and UML views`);
-      ok(m.design.transitions.filter((t) => t.trigger.rule).length === m.spec.rules.length, `${file}: one state-machine transition per rule`);
+      ok(m.design.transitions.filter((t) => t.trigger.rule && t.view === m.design.views[3]).length === m.spec.rules.length, `${file}: one guest state-machine transition per rule`);
       ok(m.features.features.length === m.spec.rules.length + m.spec.properties.length + 2, `${file}: a feature per rule and property, plus otherwise and refuse`);
       ok(m.features.journeys.length === m.architecture.stakeholders.length, `${file}: a journey per stakeholder`);
       ok(m.security.threats.every((t) => t.control || t.accepted), `${file}: every threat is controlled or accepted`);
@@ -203,7 +359,7 @@ const CASES = {
       await writeSite(site, null);
       const walk = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(dir, e.name)) : e.name === 'index.html' ? [join(dir, e.name)] : []));
       const pages = walk(site);
-      ok(pages.length === prompts().length + 4, 'a page per example, the gallery, the tutorial, the reference and the explanation');
+      ok(pages.length === prompts().length + 5, 'a page per example, the gallery, the tutorial, the reference, the Prism source and the explanation');
       const kinds = {};
       for (const path of pages) {
         const html = readFileSync(path, 'utf8');

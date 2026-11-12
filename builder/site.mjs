@@ -19,6 +19,8 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildApp } from './build.mjs';
 import { TOOL } from './tool.mjs';
+import { PATTERNS, XACML_DECISIONS } from './prompt.mjs';
+import { ASSETS } from './assets.mjs';
 import { zip } from './zip.mjs';
 import { describeConditions } from './vendor/prism-code/src/journey/spec.mjs';
 
@@ -74,9 +76,17 @@ const FACET_MAP = [
   ['journeys', 'Features and journeys', 'a feature per rule and property, a journey per stakeholder', 'PrismPM features (PP2014 to PP2018)'],
   ['threats', 'Security and threat model', 'assets, STRIDE threats, risks, controls with evidence, accepted risks', 'ISO/IEC 27034, 27005 (PP2019 to PP2022)'],
   ['quality', 'Quality', 'characteristics, subcharacteristics, requirements, measures with thresholds', 'ISO/IEC 25010:2023'],
+  ['pattern, machine', 'Behavior and compliance', 'the pattern\'s obligation; for a state machine its states and transitions, a UML state-machine view, and theorems that final states are never left and no run leaves the reachable states', 'OMG DMN 1.5, OASIS XACML 3.0, OMG UML 2.5.1'],
   ['license', 'Compliance', 'an obligation per standard, each naming its evidence', 'the standards above, SPDX'],
   ['repository', 'System and release', 'prism.toml granting nothing, site/app.json, register rows, scenarios, tests, OpenSpec', 'UOR-Foundation/template gate and Pages'],
 ];
+
+/** What each pattern means for an app, shown with its standard. */
+export const PATTERN_TEXT = {
+  decisionTable: 'The rules are tried in order and the first that matches gives the answer, as a DMN decision table with hit policy FIRST does; otherwise the default answer applies.',
+  policyDecision: `The answer is exactly one XACML 3.0 decision, ${XACML_DECISIONS.join(', ')}: permit or deny when a policy applies, not-applicable when none does, indeterminate when the request cannot be evaluated.`,
+  stateMachine: 'The answer is the next state of the current state and an event, a UML behavioral state machine as a pure transition function. The state travels in the request, so the guest keeps nothing between requests, and the builder proves the invariants of every run.',
+};
 
 function facetSections(m) {
   const A = m.architecture;
@@ -90,10 +100,17 @@ function facetSections(m) {
     html.push(`<h2 id="${id}">${esc(title)}</h2><p>${esc(intro)}</p>${table(head, rows.map((r) => r.map((c) => esc(c))))}`);
     text.push(`## ${title}\n\n${intro}\n\n${mdTable(head, rows)}`);
   };
+  section('pattern', 'Pattern', `${m.pattern.name}: ${m.pattern.standard}. ${PATTERN_TEXT[m.pattern.key]}`, ['Pattern', 'Standard', 'Answers'], [[m.pattern.name, m.pattern.standard, m.spec.outcomes.join(', ')]]);
   section('behavior', 'Behavior', `A request is ${m.spec.fields.map((f) => f.name).join(', ')}, separated by spaces; the first rule that matches decides, otherwise ${m.spec.otherwise}. Requests over ${m.limits.requestMaximum} bytes, or not in that form, are answered invalid.`, ['Rule', 'When', 'Answer', 'Why'], [
     ...m.spec.rules.map((r) => [r.id, describeConditions(r.when), r.then, r.why ?? '']),
     ['otherwise', 'no rule matches', m.spec.otherwise, m.spec.otherwiseWhy ?? ''],
   ]);
+  if (m.machine) {
+    const mc = m.machine;
+    const kind = (s) => [s === mc.initial ? 'initial' : '', mc.final.includes(s) ? 'final' : '', mc.reachable.includes(s) ? 'reachable' : 'unreachable'].filter(Boolean).join(', ');
+    section('machine', 'State machine', `The state is ${mc.state}, and the answer is the next state, so a run feeds each answer back as the next request's ${mc.state}, starting from ${mc.initial} (OMG UML 2.5.1, clause 14). ${mc.exhaustive ? `Every one of the ${mc.sampled} requests of the spec's sample was stepped to find the reachable states.` : `The spec's sample of ${mc.sampled} requests is not every request, so no state is claimed unreachable.`} ${mc.derived.length ? `The invariants are ${mc.derived.join(', ')}: each is one step, and by induction on the length of a run each holds over every run.` : 'Every state is reachable and no state is final, so the reachable-state invariant is every state.'}`, ['State', 'Kind', 'Meaning'], mc.states.map((st) => [st, kind(st), m.spec.meanings?.[st] ?? '']));
+    section('transitions', 'Transitions', 'Every step a reachable state can take, and the rule that takes it.', ['From', 'To', 'By'], mc.transitions.map((t) => [t.from, t.to, t.rule]));
+  }
   if (m.spec.properties.length) section('properties', 'Properties Lean proves', 'Each property is a theorem about the very definitions the guest is built from, proved for every request.', ['Property', 'Statement', 'Theorem', 'Why'], m.spec.properties.map((p) => [p.id, p.says, `${m.proofs}::${m.names.properties[p.id].theorem}`, p.why ?? '']));
   section('architecture', 'Architecture', 'Stakeholders and the concerns each one views the app through (ISO/IEC/IEEE 42010).', ['Stakeholder', 'Who they are', 'Concerns'], A.stakeholders.map((s) => [s.name, s.text, s.concerns.join(', ')]));
   section('concerns', 'Concerns', 'What the stakeholders care about, and the model each is viewed in.', ['Concern', 'What it means', 'Model'], A.concerns.map((c) => [c.name, c.text, c.model]));
@@ -115,15 +132,24 @@ function sources(files) {
   return shown.map((p) => `<details class="source"><summary>${code(p)} <span class="dim">${files[p].split('\n').length} lines</span></summary><pre><code>${esc(files[p])}</code></pre></details>`).join('');
 }
 
+/** A run of a state machine: the steps, one per line, each the fields after the state; the page feeds every answer back as the next state. */
+function runForm(m) {
+  const mc = m.machine;
+  const rest = m.spec.fields.filter((f) => f.name !== mc.state);
+  const position = m.spec.fields.findIndex((f) => f.name === mc.state);
+  const sample = m.spec.examples.filter((e) => e.request.split(' ')[position] === mc.initial).map((e) => e.request.split(' ').filter((_, i) => i !== position).join(' '));
+  return `<form id="run" class="run" data-state="${position}" data-initial="${esc(mc.initial)}"><label for="steps">Run from ${esc(mc.initial)}: one step per line, each ${esc(rest.map((f) => f.name).join(' '))}</label><textarea id="steps" rows="4" spellcheck="false">${esc(sample.join('\n'))}</textarea><button type="submit">Run the machine</button><ol id="trace" class="trace" aria-live="polite"></ol></form>`;
+}
+
 export function examplePage(entry, built, m, files, claims, zipName, verified) {
   const v = verified;
   const repoUrl = `https://github.com/${entry.repository}`;
   const facets = facetSections(m);
   const status = v
-    ? `<div class="verified" data-holo="app.holo" data-vectors="${m.vectors.length}"><dl class="stats"><div><dt>Fingerprint</dt><dd class="fp">${code(v.fingerprint)}</dd></div><div><dt>Acceptance vectors</dt><dd>${m.vectors.length}</dd></div><div><dt>Claims</dt><dd>${claims.length}</dd></div></dl><p>Verified by <code>prismpm verify</code> in the pinned SDK when this site was built. <button type="button" id="replay">Verify and replay in this browser</button> <output id="replayed" aria-live="polite"></output></p><form id="try" class="try"><label for="request">Request: ${esc(m.spec.fields.map((f) => f.name).join(' '))}</label><input id="request" name="request" autocomplete="off" spellcheck="false" value="${esc(m.spec.examples[0]?.request ?? '')}"><button type="submit">Ask the app</button><output id="answer" aria-live="polite"></output></form></div>`
+    ? `<div class="verified" data-holo="app.holo" data-vectors="${m.vectors.length}"><dl class="stats"><div><dt>Fingerprint</dt><dd class="fp">${code(v.fingerprint)}</dd></div><div><dt>Acceptance vectors</dt><dd>${m.vectors.length}</dd></div><div><dt>Claims</dt><dd>${claims.length}</dd></div></dl><p>Verified by <code>prismpm verify</code> in the pinned SDK when this site was built. <button type="button" id="replay">Verify and replay in this browser</button> <output id="replayed" aria-live="polite"></output></p><form id="try" class="try"><label for="request">Request: ${esc(m.spec.fields.map((f) => f.name).join(' '))}</label><input id="request" name="request" autocomplete="off" spellcheck="false" value="${esc(m.spec.examples[0]?.request ?? '')}"><button type="submit">Ask the app</button><output id="answer" aria-live="polite"></output></form>${m.machine ? runForm(m) : ''}</div>`
     : `<p class="note">This example was not built when these pages were generated, so there is no holo to replay here. The pages workflow builds and verifies every example before it publishes the site.</p>`;
   const body = [
-    `<p>Inspired by <a href="${repoUrl}">${esc(entry.repository)}</a>${entry.live ? ` (<a href="${esc(entry.live)}">live</a>)` : ''}: ${esc(entry.summary)}</p>`,
+    `<p>Inspired by <a href="${repoUrl}">${esc(entry.repository)}</a>${entry.live ? ` (<a href="${esc(entry.live)}">live</a>)` : ''}: ${esc(entry.summary)}</p><p class="dim">Pattern: <a href="${esc(m.pattern.url)}">${esc(m.pattern.name)}</a>, ${esc(m.pattern.standard)}.</p>`,
     status,
     `<h2 id="prompt">The prompt</h2><p>This is the whole input. <a href="../prompts/${esc(entry.name)}.prompt.json">Raw JSON</a> · <a href="../../start/#builder" data-example="${esc(entry.name)}">Open it in the builder</a> · <a href="${zipName}">Download the app (.zip)</a></p><pre><code>${esc(JSON.stringify(m.prompt, null, 2))}</code></pre>`,
     `<h2 id="claims">What the app claims</h2><p>Each claim is a row in <code>model/ids.toml</code>, a scenario and a test, and a theorem the Lean kernel checks.</p><ul>${claims.map((c) => `<li>${code(c.id)} ${esc(c.statement)}</li>`).join('')}</ul>`,
@@ -136,7 +162,7 @@ export function examplePage(entry, built, m, files, claims, zipName, verified) {
     '',
     `> ${md(m.prompt.goal ?? m.spec.purpose).replace(/\n/g, ' ')}`,
     '',
-    `Inspired by ${entry.repository} (${repoUrl}). The prompt below is data, quoted from the example.`,
+    `Inspired by ${entry.repository} (${repoUrl}). Pattern: ${m.pattern.name}, ${m.pattern.standard}. The prompt below is data, quoted from the example.`,
     '',
     v ? `Verified by prismpm verify in the pinned SDK. Fingerprint: ${v.fingerprint}. Acceptance vectors: ${m.vectors.length}.` : 'Not built when this twin was generated.',
     '',
@@ -211,13 +237,17 @@ export async function writeSite(site, builtDir) {
     const { html, twin } = examplePage({ ...entry, name }, built, m, files, claims, zipName, built);
     write(join(dir, 'index.html'), page({ depth: 2, ...html, diataxis: 'howToGuide', journey: 'build', twin: 'index.md', scripts: built ? ['../../builder/web/example.mjs'] : [], importmap: built ? { imports: { 'node:crypto': '../../vendor/node-crypto-shim.mjs' } } : null }));
     write(join(dir, 'index.md'), twin);
-    index.push({ name, title: m.title, goal: m.prompt.goal ?? m.spec.purpose, repository: entry.repository, prompt: `${name}.prompt.json` });
-    cards.push(`<li class="card"><p class="eyebrow">${esc(entry.repository)}</p><h3><a href="${name}/">${esc(m.title)}</a></h3><p>${esc(m.prompt.goal ?? m.spec.purpose)}</p><p class="dim">${count(m.spec.rules.length, 'rule')} · ${count(m.spec.properties.length, 'proved property', 'proved properties')} · ${count(m.security.threats.length, 'threat')} · ${count(m.vectors.length, 'vector')}${built ? ' · verified' : ''}</p></li>`);
-    twins.push(`- [${m.title}](examples/${name}/index.md): ${md(m.prompt.goal ?? m.spec.purpose)} Inspired by ${entry.repository}.`);
+    index.push({ name, title: m.title, goal: m.prompt.goal ?? m.spec.purpose, repository: entry.repository, pattern: m.pattern.key, prompt: `${name}.prompt.json` });
+    cards.push({ pattern: m.pattern.key, html: `<li class="card"><p class="eyebrow">${esc(entry.repository)}</p><h3><a href="${name}/">${esc(m.title)}</a></h3><p>${esc(m.prompt.goal ?? m.spec.purpose)}</p><p class="dim">${count(m.spec.rules.length, 'rule')} · ${count(m.spec.properties.length, 'proved property', 'proved properties')} · ${count(m.security.threats.length, 'threat')} · ${count(m.vectors.length, 'vector')}${m.machine ? ` · ${count(m.machine.states.length, 'state')}` : ''}${built ? ' · verified' : ''}</p></li>`, twin: `- [${m.title}](examples/${name}/index.md): ${md(m.prompt.goal ?? m.spec.purpose)} Inspired by ${entry.repository}.` });
+    twins.push(cards.at(-1).twin);
   }
   write(join(site, 'examples/prompts/index.json'), `${JSON.stringify(index, null, 2)}\n`);
-  write(join(site, 'examples/index.html'), page({ depth: 1, title: 'How-to guides', diataxis: 'howToGuide', journey: 'build', summary: gallery.about, twin: 'index.md', body: `<ul class="cards">${cards.join('')}</ul>` }));
-  write(join(site, 'examples/index.md'), `# How-to guides\n\n${gallery.about}\n\n${twins.map((t) => t.replace('(examples/', '(')).join('\n')}\n`);
+  // Grouped by pattern, in the order PATTERNS declares, each group introduced by its standard.
+  const groups = Object.entries(PATTERNS).map(([key, p]) => ({ key, ...p, cards: cards.filter((c) => c.pattern === key) })).filter((g) => g.cards.length);
+  const groupHtml = groups.map((g) => `<h2 id="${g.key}">${esc(g.name)}s</h2><p>${esc(PATTERN_TEXT[g.key])} <a href="${esc(g.url)}">${esc(g.standard)}</a>.</p><ul class="cards">${g.cards.map((c) => c.html).join('')}</ul>`).join('');
+  const groupNav = `<p class="dim">${count(cards.length, 'example')}: ${groups.map((g) => `<a href="#${g.key}">${count(g.cards.length, g.name.toLowerCase())}</a>`).join(' · ')}.</p>`;
+  write(join(site, 'examples/index.html'), page({ depth: 1, title: 'Example apps', diataxis: 'howToGuide', journey: 'build', summary: gallery.about, twin: 'index.md', body: `${groupNav}${groupHtml}` }));
+  write(join(site, 'examples/index.md'), `# Example apps\n\n${gallery.about}\n\n${groups.map((g) => `## ${g.name}s\n\n${PATTERN_TEXT[g.key]} ${g.standard} (${g.url}).\n\n${g.cards.map((c) => c.twin.replace('(examples/', '(')).join('\n')}`).join('\n\n')}\n`);
 
   const sample = JSON.parse(readFileSync(join(repo, 'examples', gallery.examples[0].prompt), 'utf8'));
   const call = { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: TOOL.name, arguments: sample } };
@@ -237,15 +267,17 @@ export async function writeSite(site, builtDir) {
     `<ol class="steps">${tutorialSteps.map(([t, d]) => `<li><strong>${esc(t)}</strong> ${d}</li>`).join('')}</ol>`,
     `<h2 id="builder">Build an app</h2><div id="app-builder" class="builder"><div class="row"><label for="example">Start from</label><select id="example"><option value="">Loading examples…</option></select></div><label for="prompt" class="sr">Prompt (JSON)</label><textarea id="prompt" spellcheck="false" rows="18"></textarea><div class="row"><button type="button" id="build">Build the app</button><button type="button" id="download" disabled>Download .zip</button><output id="status" aria-live="polite"></output></div><div id="result"></div></div><noscript><p class="note">The builder needs JavaScript. Without it, run <code>node builder/cli.mjs build prompt.json --out my-app</code> from a clone of <a href="${REPOSITORY}">prism-devrel</a>.</p></noscript>`,
     `<h2 id="ship">Ship</h2><pre><code>${esc(ship)}</code></pre><p>Set <code>repository</code> in the prompt to <code>OWNER/prism-NAME</code> first, so the page links to the right place.</p>`,
-    `<h2 id="next">Next</h2><ul><li><a href="../examples/">How-to guides</a>: ${gallery.examples.length} apps in the spirit of real Prism projects, each built from one prompt and verified.</li><li><a href="reference/">Reference</a>: every member of a prompt, the CLI and the MCP tool.</li><li><a href="explanation/">Explanation</a>: how one prompt becomes every facet, and what checks each.</li></ul>`,
+    `<h2 id="next">Next</h2><ul><li><a href="../examples/">Example apps</a>: ${gallery.examples.length} how-to guides in the spirit of real Prism projects, each built from one prompt and verified.</li><li><a href="reference/">Reference</a>: every member of a prompt, the patterns, the CLI and the MCP tool.</li><li><a href="source/">Prism source</a>: the Foundation modules and language every app is written in.</li><li><a href="explanation/">Explanation</a>: how one prompt becomes every facet, and what checks each.</li></ul>`,
   ].join('');
-  const tutorialTwin = ['# Build your first Prism app', '', 'In this tutorial you build, check and ship one Prism app from one prompt.', '', ...tutorialSteps.map(([t, d], i) => `${i + 1}. ${t} ${d.replace(/<[^>]+>/g, '')}`), '', '## Ship', '', fence(ship), ship, fence(ship), '', '## Next', '', '- [How-to guides](../examples/index.md)', '- [Reference](reference/index.md)', '- [Explanation](explanation/index.md)', ''].join('\n');
+  const tutorialTwin = ['# Build your first Prism app', '', 'In this tutorial you build, check and ship one Prism app from one prompt.', '', ...tutorialSteps.map(([t, d], i) => `${i + 1}. ${t} ${d.replace(/<[^>]+>/g, '')}`), '', '## Ship', '', fence(ship), ship, fence(ship), '', '## Next', '', '- [Example apps](../examples/index.md)', '- [Prism source](source/index.md)', '- [Reference](reference/index.md)', '- [Explanation](explanation/index.md)', ''].join('\n');
 
   // Reference (Build): the prompt's members, read from the tool's own schema.
   const members = (schema) => Object.entries(schema.properties).filter(([k]) => k !== 'schema').map(([k, v]) => [k, v.type ?? (v.enum ? 'one of' : 'value'), (schema.required ?? []).includes(k) ? 'required' : 'optional', v.description ?? '']);
   // `app` is prism_spec's input as prism-code declares it; its own description speaks of that tool, so the row says what it is here.
   const promptRows = members(TOOL.inputSchema).map((r) => (r[0] === 'app' ? [r[0], r[1], r[2], 'The whole app as a prism/spec/1 spec, the input of prism-code\'s prism_spec. Its members are below.'] : r));
   const appRows = members(TOOL.inputSchema.properties.app);
+  const patternRows = Object.entries(PATTERNS).map(([k, p]) => [k, p.name, p.standard, PATTERN_TEXT[k]]);
+  const machineRows = members(TOOL.inputSchema.properties.machine);
   const cliRows = [
     ['build <prompt.json> --out <dir>', 'Write every file of the app into a template instance, removing the template\'s example app.'],
     ['check <prompt.json>', 'Check the prompt and print what the app will claim, writing nothing.'],
@@ -257,10 +289,12 @@ export async function writeSite(site, builtDir) {
   const reference = [
     `<h2 id="prompt">Prompt members</h2><p>A prompt is the <code>arguments</code> of one call to <code>${TOOL.name}</code>; this table is its <a href="../../builder/tool-schema.json">input schema</a>.</p>${table(head, promptRows.map((r) => r.map(esc)))}`,
     `<h2 id="app">app: the prism/spec/1 spec</h2><p>The same input prism-code's MCP tool <code>prism_spec</code> takes.</p>${table(head, appRows.map((r) => r.map(esc)))}`,
+    `<h2 id="patterns">Patterns</h2><p>The <code>pattern</code> member names the established pattern the behavior follows. Each is one function from a request to one answer; they differ in what the answer means and what is checked and proved.</p>${table(['pattern', 'Name', 'Standard', 'What the builder checks and proves'], patternRows.map((r) => r.map(esc)))}`,
+    `<h2 id="machine">machine: the state machine</h2>${table(head, machineRows.map((r) => r.map(esc)))}`,
     `<h2 id="cli">Command line</h2>${table(['node builder/cli.mjs', 'Does'], cliRows.map((r) => r.map(esc)))}<p>Exit codes: 0 done, 2 the prompt was refused (the reason is printed), 64 usage.</p>`,
     `<h2 id="mcp">MCP tool call</h2><pre><code>${esc(JSON.stringify(call, null, 2))}</code></pre>`,
   ].join('');
-  const referenceTwin = ['# Prompt reference', '', `A prompt is the arguments of one call to the MCP tool ${TOOL.name}.`, '', '## Prompt members', '', mdTable(head, promptRows), '', '## app: the prism/spec/1 spec', '', mdTable(head, appRows), '', '## Command line', '', mdTable(['node builder/cli.mjs', 'Does'], cliRows), '', '## MCP tool call', '', fence(JSON.stringify(call, null, 2)) + 'json', JSON.stringify(call, null, 2), fence(JSON.stringify(call, null, 2)), ''].join('\n');
+  const referenceTwin = ['# Prompt reference', '', `A prompt is the arguments of one call to the MCP tool ${TOOL.name}.`, '', '## Prompt members', '', mdTable(head, promptRows), '', '## app: the prism/spec/1 spec', '', mdTable(head, appRows), '', '## Patterns', '', mdTable(['pattern', 'Name', 'Standard', 'What the builder checks and proves'], patternRows), '', '## machine: the state machine', '', mdTable(head, machineRows), '', '## Command line', '', mdTable(['node builder/cli.mjs', 'Does'], cliRows), '', '## MCP tool call', '', fence(JSON.stringify(call, null, 2)) + 'json', JSON.stringify(call, null, 2), fence(JSON.stringify(call, null, 2)), ''].join('\n');
 
   // Explanation (Evaluate): why one prompt is enough, and what checks each part.
   const why = 'A Prism app is one model with several facets, each with its own standard. Every facet but behavior has records that follow from the behavior by fixed rules: a rule is a feature, a property is a control with proof evidence, the request bound is a quality threshold. So a prompt that states the behavior, and only what cannot be derived from it, determines the whole app, and the builder writes it the same way every time.';
@@ -276,12 +310,92 @@ export async function writeSite(site, builtDir) {
   write(join(site, 'start/explanation/index.html'), page({ depth: 2, title: 'How one prompt becomes every facet', diataxis: 'explanation', journey: 'evaluate', summary: 'Why the behavior and a few choices determine a whole Prism app, and what checks each facet.', twin: 'index.md', body: explanation }));
   write(join(site, 'start/explanation/index.md'), explanationTwin);
   write(join(site, 'builder/tool-schema.json'), `${JSON.stringify(TOOL, null, 2)}\n`);
+  sourcePage(site);
   const llms = join(site, 'llms.txt');
   if (existsSync(llms)) {
-    const section = ['', '## Build an app from one prompt', '', `- [Build your first Prism app](start/index.md): tutorial, one prompt to a verified app.`, `- [Prompt reference](start/reference/index.md): every member of a prompt, the CLI and the MCP tool.`, `- [How one prompt becomes every facet](start/explanation/index.md): explanation.`, `- [MCP tool ${TOOL.name}](builder/tool-schema.json): its input schema.`, ...twins, ''].join('\n');
+    const section = ['', '## Build an app from one prompt', '', `- [Build your first Prism app](start/index.md): tutorial, one prompt to a verified app.`, `- [Prompt reference](start/reference/index.md): every member of a prompt, the CLI and the MCP tool.`, `- [How one prompt becomes every facet](start/explanation/index.md): explanation.`, `- [MCP tool ${TOOL.name}](builder/tool-schema.json): its input schema.`, `- [Prism source](start/source/index.md): the Foundation and Production modules, language packages and prism-code modules every built app carries.`, ...twins, ''].join('\n');
     writeFileSync(llms, `${readFileSync(llms, 'utf8').replace(/\n*$/, '\n')}${section}`);
   }
   return { examples: gallery.examples.length };
+}
+
+/**
+ * The Prism source every built app carries unchanged, read from the builder's
+ * own assets: each LexLean module with what it declares and imports, each
+ * language package with the words that denote those declarations, and the
+ * vendored prism-code modules that write an app's behavior. The bytes shown
+ * and served are the bytes an app is built from (DR-19).
+ */
+export function prismSource() {
+  const lexicon = {};
+  for (const [path, text] of Object.entries(ASSETS)) {
+    if (!/^language\/[^/]+\/entries\/.+\.toml$/.test(path)) continue;
+    const module = text.match(/^module = "([^"]+)"$/m)?.[1];
+    const component = text.match(/^component = "([^"]+)"$/m)?.[1];
+    const surface = text.match(/^surface = "([^"]+)"$/m)?.[1];
+    if (module && component && surface) lexicon[`${module}::${component}`] = { surface, entry: text.match(/^id = "([^"]+)"$/m)?.[1], package: path.split('/')[1] };
+  }
+  const modules = Object.entries(ASSETS)
+    .filter(([path]) => path.endsWith('.lex.tex'))
+    .map(([path, text]) => {
+      const name = text.match(/\\begin\{lexlean\}\{([^}]+)\}/)?.[1] ?? path;
+      const declarations = [...text.matchAll(/^([a-z]+)\{\n {2}name: ([A-Za-z0-9_.]+),/gm)].map((d) => ({ kind: d[1], name: d[2], word: lexicon[`${name}::${d[2]}`]?.surface ?? '' }));
+      return { path: `app/${path}`, name, title: text.match(/\\title\{([^}]*)\}/)?.[1] ?? '', imports: [...text.matchAll(/\\importmodule\{([^}]+)\}/g)].map((x) => x[1]), glossaries: [...text.matchAll(/\\useglossary\{([^}]+)\}/g)].map((x) => x[1]), declarations, text };
+    });
+  const packages = Object.entries(ASSETS)
+    .filter(([path]) => /^language\/[^/]+\/lexicon\.toml$/.test(path))
+    .map(([path, text]) => {
+      const pkg = path.split('/')[1];
+      return { path: `app/${path}`, name: pkg, version: text.match(/^version = "([^"]+)"$/m)?.[1] ?? '', entries: Object.entries(lexicon).filter(([, e]) => e.package === pkg).map(([denotes, e]) => ({ ...e, denotes })).sort((a, b) => (a.entry < b.entry ? -1 : 1)), text };
+    });
+  const provenance = JSON.parse(readFileSync(join(here, 'assets/provenance.json'), 'utf8'));
+  for (const f of provenance.files) Object.assign(f, { repository: f.source.repository, commit: f.source.commit, url: `https://github.com/${f.source.repository}/blob/${f.source.commit}/${f.source.path}` });
+  const from = Object.fromEntries(provenance.files.map((f) => [f.path, f]));
+  for (const x of [...modules, ...packages]) x.from = from[x.path];
+  const vendor = readFileSync(join(here, 'vendor/prism-code/VENDOR.md'), 'utf8');
+  const journey = ['spec.mjs', 'render.mjs', 'session.mjs', 'template.mjs', 'mcp.mjs'].map((f) => {
+    const text = readFileSync(join(here, 'vendor/prism-code/src/journey', f), 'utf8');
+    return { path: `builder/vendor/prism-code/src/journey/${f}`, name: f, summary: text.match(/^\/\*\*\n((?: \*.*\n)+?) \*\//)?.[1].replace(/^ \* ?/gm, '').split('\n\n')[0].replace(/\s+/g, ' ').trim() ?? '', sha256: vendor.match(new RegExp(`src/journey/${f.replace('.', '\\.')}\` \\| \`([0-9a-f]{64})\``))?.[1] ?? '', text };
+  });
+  return { modules, packages, journey, provenance };
+}
+
+function sourcePage(site) {
+  const { modules, packages, journey, provenance } = prismSource();
+  const kinds = (m) => Object.entries(m.declarations.reduce((a, d) => ({ ...a, [d.kind]: (a[d.kind] ?? 0) + 1 }), {})).map(([k, n]) => count(n, k, k.endsWith('s') ? `${k}es` : `${k}s`)).join(', ');
+  const origin = (f) => `<a href="${esc(f.url)}">${esc(f.repository)}@${esc(f.commit.slice(0, 8))}</a>`;
+  const repos = [...new Set(provenance.files.map((f) => f.repository))];
+  const html = [
+    `<p>Every app the builder writes carries these ${provenance.files.length} files unchanged beside its own model: the Foundation and Production modules its facet modules are typed by, and the LexLean language packages whose words denote them. Each is byte for byte a file of ${repos.map((r) => `<a href="https://github.com/${esc(r)}">${esc(r)}</a>`).join(' or ')} at a pinned commit, recorded with its SHA-256 in <code>builder/assets/provenance.json</code>. The behavior is written by the prism-code modules at the end, vendored byte for byte.</p>`,
+    `<h2 id="modules">LexLean modules</h2>${table(['Module', 'Declares', 'Imports', 'From'], modules.map((m) => [`<a href="#${esc(m.name)}">${code(m.name)}</a>`, esc(kinds(m)), esc([...m.imports, ...m.glossaries].join(', ')), origin(m.from)]))}`,
+    ...modules.map((m) => `<h3 id="${esc(m.name)}">${esc(m.name)}</h3><p><a href="files/${esc(m.path)}">${code(m.path)}</a>, ${m.text.split('\n').length} lines, from ${origin(m.from)}.</p>${table(['Declaration', 'Kind', 'Word'], m.declarations.map((d) => [code(`${m.name}::${d.name}`), esc(d.kind), esc(d.word)]))}<details class="source"><summary>Source</summary><pre><code>${esc(m.text)}</code></pre></details>`),
+    `<h2 id="language">Language packages</h2><p>Each entry is a word of the controlled vocabulary an app's facet records are written in, and the declaration it denotes.</p>`,
+    ...packages.map((p) => `<h3 id="${esc(p.name)}">${esc(p.name)} ${esc(p.version)}</h3><p><a href="files/${esc(p.path)}">${code(p.path)}</a>, from ${origin(p.from)}.</p>${table(['Entry', 'Word', 'Denotes'], p.entries.map((e) => [code(e.entry), esc(e.surface), code(e.denotes)]))}`),
+    `<h2 id="journey">prism-code journey</h2><p>The modules that check a <code>prism/spec/1</code> spec and render it into the LexLean model the guest is built from, from the npm package prism-code 0.7.2, each with the SHA-256 <code>VENDOR.md</code> records.</p>${table(['Module', 'What it does', 'SHA-256'], journey.map((j) => [`<a href="files/${esc(j.path)}">${code(j.name)}</a>`, esc(j.summary), code(j.sha256)]))}`,
+  ].join('');
+  const twin = [
+    '# Prism source',
+    '',
+    `Every app the builder writes carries these ${provenance.files.length} files unchanged beside its own model, each byte for byte a file of ${repos.join(' or ')} at a pinned commit (builder/assets/provenance.json).`,
+    '',
+    '## LexLean modules',
+    '',
+    mdTable(['Module', 'File', 'Declares', 'Imports', 'From'], modules.map((m) => [m.name, m.path, kinds(m), [...m.imports, ...m.glossaries].join(', '), m.from.url])),
+    ...modules.flatMap((m) => ['', `### ${m.name}`, '', `Source: files/${m.path}, from ${m.from.url}`, '', mdTable(['Declaration', 'Kind', 'Word'], m.declarations.map((d) => [`${m.name}::${d.name}`, d.kind, d.word]))]),
+    '',
+    '## Language packages',
+    ...packages.flatMap((p) => ['', `### ${p.name} ${p.version}`, '', mdTable(['Entry', 'Word', 'Denotes'], p.entries.map((e) => [e.entry, e.surface, e.denotes]))]),
+    '',
+    '## prism-code journey',
+    '',
+    mdTable(['Module', 'What it does', 'SHA-256'], journey.map((j) => [j.name, j.summary, j.sha256])),
+    '',
+  ].join('\n');
+  for (const f of [...modules, ...packages, ...journey]) write(join(site, 'start/source/files', f.path), f.text);
+  for (const [path, text] of Object.entries(ASSETS)) if (path.startsWith('language/')) write(join(site, 'start/source/files/app', path), text);
+  write(join(site, 'start/source/index.html'), page({ depth: 2, title: 'Prism source', diataxis: 'reference', journey: 'build', summary: 'The Foundation and Production modules, language packages and prism-code modules every built app carries, as the builder carries them.', twin: 'index.md', body: html }));
+  write(join(site, 'start/source/index.md'), twin);
+  return modules.length;
 }
 
 function mkdirp(dir) {

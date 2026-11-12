@@ -85,7 +85,9 @@ try {
     const prompt = JSON.parse(readFileSync(file, 'utf8'));
     const built = await buildApp(prompt, { lastModified: flag('--last-modified') ?? committed(file) });
     if (verb === 'check') {
-      console.log(`${built.model.title}: ${Object.keys(built.files).length} files, ${built.model.vectors.length} acceptance vectors`);
+      console.log(`${built.model.title}: ${built.model.pattern.name} (${built.model.pattern.standard}), ${Object.keys(built.files).length} files, ${built.model.vectors.length} acceptance vectors`);
+      const mc = built.model.machine;
+      if (mc) console.log(`machine: ${mc.states.length} states from ${mc.initial}; reachable ${mc.reachable.join(', ')}${mc.final.length ? `; final ${mc.final.join(', ')}` : ''}; derived ${mc.derived.join(', ') || 'none'}${mc.exhaustive ? '' : ` (sample of ${mc.sampled} requests is not every request, so no state is claimed unreachable)`}`);
       for (const line of claimLines(built.claims)) console.log(line);
     } else {
       const out = flag('--out');
