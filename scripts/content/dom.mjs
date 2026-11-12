@@ -4,8 +4,8 @@
  * (check.mjs), so the two always agree on what counts.
  */
 
-/** Text that is not prose: code, data, navigation and the standard's own parts. */
-export const NOT_PROSE = 'pre, code, kbd, samp, table, nav, svg, script, style, template, button, label, .cs-data, .cs-guide, .cs-terms, .dc-meta, .dc-pager, .dc-crumbs, .dc-mnav, [data-prose="data"]';
+/** Text that is not prose: code, data, navigation, form controls (a script may refill them after the page is enriched) and the standard's own parts. */
+export const NOT_PROSE = 'pre, code, kbd, samp, table, nav, svg, script, style, template, button, label, select, textarea, output, .cs-data, .cs-guide, .cs-terms, .dc-meta, .dc-pager, .dc-crumbs, .dc-mnav, [data-prose="data"]';
 
 /** Where a term's first use is not looked for: headings, links, code and the same chrome. */
 export const NOT_TERMS = `${NOT_PROSE}, a, h1, h2, h3, h4, h5, h6, summary, dt`;
