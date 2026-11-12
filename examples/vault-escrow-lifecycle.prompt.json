@@ -1,0 +1,411 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide the next status of one escrow in the PrismPM Vault studio from the operation applied to it, so locking, release and refund can be replayed step by step.",
+  "pattern": "stateMachine",
+  "machine": {
+    "state": "state",
+    "initial": "none",
+    "final": [
+      "released",
+      "refunded"
+    ]
+  },
+  "repository": "afflom/aistudio-experiment",
+  "license": "Apache-2.0",
+  "app": {
+    "name": "vault-escrow-lifecycle",
+    "title": "Vault escrow lifecycle",
+    "purpose": "Decide the next status of one escrow agreement from its status, the operation, the depositor funds, the preimage and the epochs.",
+    "fields": [
+      {
+        "name": "state",
+        "kind": "choice",
+        "values": [
+          "none",
+          "active",
+          "released",
+          "refunded"
+        ],
+        "means": "the escrow status now; none means it has not been locked"
+      },
+      {
+        "name": "event",
+        "kind": "choice",
+        "values": [
+          "lock",
+          "release",
+          "refund"
+        ],
+        "means": "the Vault operation applied: LockEscrow, ReleaseEscrow or RefundEscrow"
+      },
+      {
+        "name": "funds",
+        "kind": "choice",
+        "values": [
+          "sufficient",
+          "insufficient"
+        ],
+        "means": "whether the depositor balance covers a positive amount"
+      },
+      {
+        "name": "preimage",
+        "kind": "choice",
+        "values": [
+          "given",
+          "empty"
+        ],
+        "means": "whether a condition preimage is supplied with a release"
+      },
+      {
+        "name": "epoch",
+        "kind": "number",
+        "means": "the current ledger epoch"
+      },
+      {
+        "name": "timeout",
+        "kind": "number",
+        "means": "the epoch at which the escrow expires"
+      }
+    ],
+    "outcomes": [
+      "none",
+      "active",
+      "released",
+      "refunded"
+    ],
+    "meanings": {
+      "none": "no escrow is locked and no funds are held",
+      "active": "the amount is locked and counted in totalEscrowLocked",
+      "released": "the amount went to the beneficiary; the escrow is settled",
+      "refunded": "the amount went back to the depositor after timeout; the escrow is settled"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "released"
+          }
+        ],
+        "then": "released",
+        "why": "src/model/engine.ts: an escrow whose status is not active answers already released"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "refunded"
+          }
+        ],
+        "then": "refunded",
+        "why": "src/model/engine.ts: an escrow whose status is not active answers already refunded"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "none"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "lock"
+          },
+          {
+            "field": "funds",
+            "op": "is",
+            "value": "sufficient"
+          }
+        ],
+        "then": "active",
+        "why": "src/model/engine.ts LockEscrow: a positive amount within the depositor balance is locked as active"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "none"
+          }
+        ],
+        "then": "none",
+        "why": "src/model/engine.ts: release and refund answer escrow-not-found; a lock without funds answers insufficient-funds or invalid-amount"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "active"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "release"
+          },
+          {
+            "field": "preimage",
+            "op": "is",
+            "value": "given"
+          }
+        ],
+        "then": "released",
+        "why": "src/model/engine.ts ReleaseEscrow: conditionMatch holds for any non-empty preimage"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "active"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "refund"
+          },
+          {
+            "field": "epoch",
+            "op": ">=",
+            "value": {
+              "field": "timeout"
+            }
+          }
+        ],
+        "then": "refunded",
+        "why": "src/model/engine.ts RefundEscrow: currentEpoch below timeoutEpoch answers escrow-not-expired"
+      }
+    ],
+    "otherwise": "active",
+    "otherwiseWhy": "an empty preimage is a condition mismatch, an early refund is escrow-not-expired, and a lock creates a separate escrow",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "active"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "refund"
+          },
+          {
+            "field": "epoch",
+            "op": "<",
+            "value": {
+              "field": "timeout"
+            }
+          }
+        ],
+        "then": "refunded",
+        "why": "src/model/engine.ts: refund is unavailable until timeout"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "active"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "release"
+          },
+          {
+            "field": "preimage",
+            "op": "is",
+            "value": "empty"
+          }
+        ],
+        "then": "released",
+        "why": "src/model/engine.ts: an empty preimage does not satisfy the condition hash"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "none"
+          },
+          {
+            "field": "funds",
+            "op": "is",
+            "value": "insufficient"
+          }
+        ],
+        "then": "active",
+        "why": "src/model/vaultSource.ts balanceNonNegativity: no lock exceeds the balance"
+      }
+    ],
+    "examples": [
+      {
+        "request": "none lock sufficient empty 104 112",
+        "response": "active"
+      },
+      {
+        "request": "active release sufficient given 105 110",
+        "response": "released"
+      },
+      {
+        "request": "active refund sufficient empty 105 110",
+        "response": "active"
+      },
+      {
+        "request": "active refund sufficient empty 110 110",
+        "response": "refunded"
+      },
+      {
+        "request": "released refund sufficient empty 120 110",
+        "response": "released"
+      },
+      {
+        "request": "none lock insufficient empty 104 112",
+        "response": "none"
+      },
+      {
+        "request": "active release insufficient empty 105 110",
+        "response": "active"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Depositor",
+      "text": "Locks funds for a beneficiary and needs them back after timeout, and never twice.",
+      "concerns": [
+        "Correct answers",
+        "Settled once"
+      ]
+    },
+    {
+      "name": "Beneficiary",
+      "text": "Receives the escrow on release and needs a refund impossible before the timeout epoch.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Settled once",
+      "text": "A released or refunded escrow is never released or refunded again.",
+      "model": "quality"
+    }
+  ],
+  "components": [
+    {
+      "name": "PrismPM Model and Runtime Studio",
+      "kind": "staticSite",
+      "text": "The Vite studio that runs the Vault engine, the simulated build pipeline and the proof verifier in the browser."
+    },
+    {
+      "name": "PrismPM toolchain",
+      "kind": "cliAdapter",
+      "text": "The prismpm check, lexlean build, codegen and holo compose stages the studio simulates for the Vault model."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Any preimage releases",
+      "text": "A caller releases an escrow with any non-empty preimage, since the engine does not compare it with the condition hash.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "high",
+      "impact": "critical",
+      "accepted": "This mirrors src/model/engine.ts as it is: conditionMatch holds for any non-empty preimage. The studio is a simulation, and a real hash check belongs to the LexLean Vault source it models."
+    },
+    {
+      "name": "Early refund",
+      "text": "A depositor refunds an active escrow before its timeout epoch.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Timeout guard",
+        "text": "Refund leaves active only at or after the timeout epoch.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "VaultEscrowLifecycleProofs::inv001Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "src/model/engine.ts RefundEscrow"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Double settlement",
+      "text": "A settled escrow is released or refunded again, paying its amount twice.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Final states",
+        "text": "Released and refunded are final and never left; the builder derives and proves both invariants from machine.final.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "VaultEscrowLifecycleProofs::inv004Holds"
+          },
+          {
+            "kind": "proof",
+            "reference": "VaultEscrowLifecycleProofs::inv005Holds"
+          }
+        ]
+      }
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "No refund before timeout",
+      "text": "An active escrow is refunded only when the epoch has reached its timeout.",
+      "measure": "Early refunds",
+      "measureText": "Requests with epoch below timeout that refund an active escrow.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Reliability",
+      "subcharacteristic": "Faultlessness",
+      "requirement": "Settled escrows stay settled",
+      "text": "No event moves a released or refunded escrow to another status.",
+      "measure": "Transitions out of a final state",
+      "measureText": "Requests in a final state that answer a different state.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Depositor",
+      "steps": [
+        "REQ-003",
+        "otherwise",
+        "REQ-006",
+        "INV-005"
+      ]
+    },
+    {
+      "stakeholder": "Beneficiary",
+      "steps": [
+        "REQ-003",
+        "REQ-005",
+        "INV-001",
+        "INV-004"
+      ]
+    }
+  ]
+}

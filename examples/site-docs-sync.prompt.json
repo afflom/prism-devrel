@@ -1,0 +1,364 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "decisionTable",
+  "goal": "Decide what the scheduled Prism docs sync does to uor.foundation, so the site never overwrites its docs with an empty tree or an unverified prism-code release.",
+  "repository": "UOR-Foundation/website",
+  "license": "NOASSERTION",
+  "app": {
+    "name": "site-docs-sync",
+    "title": "Docs sync",
+    "purpose": "Decide whether one run of the Prism docs sync keeps the current docs, refuses to overwrite them, finds nothing changed, or commits and redeploys the site, from the docs-site branch, the seed flag, the pages found, the prism-code package check and whether the generated files changed.",
+    "fields": [
+      {
+        "name": "branch",
+        "kind": "choice",
+        "values": [
+          "present",
+          "absent"
+        ],
+        "means": "whether the docs-site branch of UOR-Foundation/PrismPM exists"
+      },
+      {
+        "name": "seed",
+        "kind": "choice",
+        "values": [
+          "no",
+          "yes"
+        ],
+        "means": "whether the run passes --seed, the one-time import from main's docs/generated"
+      },
+      {
+        "name": "pages",
+        "kind": "number",
+        "min": 0,
+        "max": 10000,
+        "means": "Markdown pages found under get-started, guides, api, reference, sdks, concepts, examples or migration"
+      },
+      {
+        "name": "package",
+        "kind": "choice",
+        "values": [
+          "verified",
+          "no-release",
+          "mismatch",
+          "no-skill"
+        ],
+        "means": "the prism-code npm latest check: verified, no latest release, tarball not matching its registry integrity, or no skill/SKILL.md in it"
+      },
+      {
+        "name": "changed",
+        "kind": "choice",
+        "values": [
+          "yes",
+          "no"
+        ],
+        "means": "whether the generated prism, npm and requests files differ from main"
+      }
+    ],
+    "outcomes": [
+      "keep",
+      "refuse",
+      "unchanged",
+      "redeploy"
+    ],
+    "meanings": {
+      "keep": "exit 0 keeping the current docs",
+      "refuse": "the sync throws and the current docs are not overwritten",
+      "unchanged": "No changes, nothing committed",
+      "redeploy": "commit the generated files and run deploy.yml on main"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "branch",
+            "op": "is",
+            "value": "absent"
+          },
+          {
+            "field": "seed",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "keep",
+        "why": "scripts/sync-prism-docs.mjs: docs-site branch not found; keeping current docs"
+      },
+      {
+        "when": [
+          {
+            "field": "pages",
+            "op": "=",
+            "value": 0
+          }
+        ],
+        "then": "refuse",
+        "why": "scripts/sync-prism-docs.mjs: No pages found; refusing to overwrite the current docs"
+      },
+      {
+        "when": [
+          {
+            "field": "package",
+            "op": "is",
+            "value": "no-release"
+          }
+        ],
+        "then": "refuse",
+        "why": "scripts/sync-prism-docs.mjs: npm registry gave no prism-code latest release; refusing to overwrite the current docs"
+      },
+      {
+        "when": [
+          {
+            "field": "package",
+            "op": "is",
+            "value": "mismatch"
+          }
+        ],
+        "then": "refuse",
+        "why": "scripts/sync-prism-docs.mjs: the prism-code tarball does not match its registry integrity"
+      },
+      {
+        "when": [
+          {
+            "field": "package",
+            "op": "is",
+            "value": "no-skill"
+          }
+        ],
+        "then": "refuse",
+        "why": "scripts/sync-prism-docs.mjs: the site publishes the package's skill/SKILL.md byte for byte, and refuses a release without one"
+      },
+      {
+        "when": [
+          {
+            "field": "changed",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "unchanged",
+        "why": ".github/workflows/sync-prism-docs.yml: git diff --quiet on the generated files, then No changes"
+      }
+    ],
+    "otherwise": "redeploy",
+    "otherwiseWhy": ".github/workflows/sync-prism-docs.yml: commit the generated files, push, and gh workflow run deploy.yml --ref main",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "pages",
+            "op": "=",
+            "value": 0
+          }
+        ],
+        "then": "redeploy",
+        "why": "an empty docs tree never replaces the published docs"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "package",
+            "op": "is",
+            "value": "mismatch"
+          }
+        ],
+        "then": "redeploy",
+        "why": "a tarball that fails its integrity never sets the versions or skill the site states"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "changed",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "redeploy",
+        "why": "the site is redeployed only when the docs changed"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "branch",
+            "op": "is",
+            "value": "absent"
+          },
+          {
+            "field": "seed",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "keep",
+        "why": "without the branch, and without --seed, the docs are kept"
+      }
+    ],
+    "examples": [
+      {
+        "request": "present no 42 verified yes",
+        "response": "redeploy"
+      },
+      {
+        "request": "present no 42 verified no",
+        "response": "unchanged"
+      },
+      {
+        "request": "absent no 0 no-release yes",
+        "response": "keep"
+      },
+      {
+        "request": "absent yes 12 verified yes",
+        "response": "redeploy"
+      },
+      {
+        "request": "present no 0 verified yes",
+        "response": "refuse"
+      },
+      {
+        "request": "present no 42 mismatch yes",
+        "response": "refuse"
+      },
+      {
+        "request": "present no 42 no-skill yes",
+        "response": "refuse"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Site visitor",
+      "text": "Reads the Prism SDK docs and their Markdown twins on uor.foundation and needs them to be the current docs-site release, never an empty or unverified one.",
+      "concerns": [
+        "Correct answers",
+        "Integrity of the published app"
+      ]
+    },
+    {
+      "name": "Site maintainer",
+      "text": "Owns the scheduled sync and needs it to redeploy only on a real change and to fail loudly instead of overwriting.",
+      "concerns": [
+        "Proved guarantees",
+        "Refused malformed requests"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "PrismPM docs-site branch",
+      "kind": "externalSystem",
+      "text": "The branch of UOR-Foundation/PrismPM the docs are pulled from."
+    },
+    {
+      "name": "npm registry",
+      "kind": "externalSystem",
+      "text": "Serves prism-code latest, its tarball and its integrity."
+    },
+    {
+      "name": "uor.foundation",
+      "kind": "staticSite",
+      "text": "The React, Vite and Tailwind site deploy.yml publishes to GitHub Pages."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Docs wiped by an empty tree",
+      "text": "A reorganized or empty docs-site branch overwrites every docs page with nothing.",
+      "stride": "denialOfService",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "No pages, no overwrite",
+        "text": "Zero pages is refused.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "SiteDocsSyncProofs::inv001Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "UOR-Foundation/website scripts/sync-prism-docs.mjs"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tampered prism-code tarball",
+      "text": "A tarball that differs from its registry integrity sets the published versions and agent skill.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "critical",
+      "control": {
+        "name": "Registry integrity",
+        "text": "An integrity mismatch is refused.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "SiteDocsSyncProofs::inv002Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "UOR-Foundation/website scripts/sync-prism-docs.mjs integrity check"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Compromised docs-site branch",
+      "text": "Someone with push access to the PrismPM docs-site branch publishes misleading docs.",
+      "stride": "spoofing",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "The site trusts the PrismPM repository as the docs authority; the generated files are committed, so every change is reviewable in history."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Reliability",
+      "subcharacteristic": "Fault tolerance",
+      "requirement": "Every failed check refuses",
+      "text": "Each of the four refusals the sync script throws is a rule answering refuse.",
+      "measure": "Refusal checks",
+      "measureText": "Refusal checks of the sync script the app models.",
+      "threshold": 4
+    },
+    {
+      "characteristic": "Performance efficiency",
+      "subcharacteristic": "Resource utilization",
+      "requirement": "No needless redeploy",
+      "text": "A run that changes no generated file does not redeploy.",
+      "measure": "Needless redeploys",
+      "measureText": "Acceptance vectors with no change answered redeploy.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Site visitor",
+      "steps": [
+        "otherwise",
+        "REQ-002",
+        "INV-001",
+        "INV-002"
+      ]
+    },
+    {
+      "stakeholder": "Site maintainer",
+      "steps": [
+        "REQ-001",
+        "REQ-003",
+        "REQ-004",
+        "REQ-005",
+        "REQ-006",
+        "INV-003",
+        "refuse"
+      ]
+    }
+  ]
+}

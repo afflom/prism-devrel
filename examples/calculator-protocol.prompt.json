@@ -1,0 +1,339 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "decisionTable",
+  "goal": "Classify a Calculator protocol request into its answer kind, so a malformed, unsupported or out-of-range request is never answered with a number.",
+  "repository": "UOR-Foundation/calculator-example",
+  "app": {
+    "name": "calculator-protocol",
+    "title": "Calculator protocol",
+    "purpose": "Classify one Calculator protocol request, from its protocol version, its operation, whether the right operand is zero and whether the exact result fits a signed 64-bit integer, as ok or as the typed error the reference product answers.",
+    "fields": [
+      {
+        "name": "version",
+        "kind": "number",
+        "min": 0,
+        "max": 9,
+        "means": "the protocol version the request names; the product speaks version 1"
+      },
+      {
+        "name": "operation",
+        "kind": "choice",
+        "values": [
+          "add",
+          "subtract",
+          "multiply",
+          "divide",
+          "other"
+        ],
+        "means": "the operation name; other is any name the protocol does not define, such as mod"
+      },
+      {
+        "name": "right",
+        "kind": "choice",
+        "values": [
+          "zero",
+          "nonzero"
+        ],
+        "means": "whether the right operand is 0"
+      },
+      {
+        "name": "range",
+        "kind": "choice",
+        "values": [
+          "within",
+          "beyond"
+        ],
+        "means": "whether the exact mathematical result lies within the signed 64-bit range"
+      }
+    ],
+    "outcomes": [
+      "ok",
+      "overflow",
+      "division-by-zero",
+      "unsupported-version",
+      "unknown-operation"
+    ],
+    "meanings": {
+      "ok": "1 ok and the exact result",
+      "overflow": "1 error overflow: the CalculatorError Overflow",
+      "division-by-zero": "1 error division-by-zero: the CalculatorError DivisionByZero",
+      "unsupported-version": "1 error unsupported-version: the ProtocolError UnsupportedVersion",
+      "unknown-operation": "1 error unknown-operation: the ProtocolError UnknownOperation"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "version",
+            "op": "!=",
+            "value": 1
+          }
+        ],
+        "then": "unsupported-version",
+        "why": "src/Calculator.lex.tex: decodeRequest refuses any version but 1 with ProtocolError UnsupportedVersion (vector 2 add 1 2)"
+      },
+      {
+        "when": [
+          {
+            "field": "operation",
+            "op": "is",
+            "value": "other"
+          }
+        ],
+        "then": "unknown-operation",
+        "why": "src/Calculator.lex.tex: parseOperation knows only Add, Subtract, Multiply and Divide; anything else is ProtocolError UnknownOperation (vector 1 mod 1 2)"
+      },
+      {
+        "when": [
+          {
+            "field": "operation",
+            "op": "is",
+            "value": "divide"
+          },
+          {
+            "field": "right",
+            "op": "is",
+            "value": "zero"
+          }
+        ],
+        "then": "division-by-zero",
+        "why": "src/Calculator.lex.tex: calculate answers CalculatorError DivisionByZero for a zero divisor (vector 1 divide 1 0)"
+      },
+      {
+        "when": [
+          {
+            "field": "range",
+            "op": "is",
+            "value": "beyond"
+          }
+        ],
+        "then": "overflow",
+        "why": "src/Calculator.lex.tex: checkedResult answers CalculatorError Overflow outside the i64 range (vectors at 9223372036854775807 and -9223372036854775808)"
+      }
+    ],
+    "otherwise": "ok",
+    "otherwiseWhy": "src/Calculator.lex.tex: calculate_correct proves the exact result is returned when it is in range",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "operation",
+            "op": "is",
+            "value": "divide"
+          },
+          {
+            "field": "right",
+            "op": "is",
+            "value": "zero"
+          }
+        ],
+        "then": "ok",
+        "why": "a division by zero has no result"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "range",
+            "op": "is",
+            "value": "beyond"
+          }
+        ],
+        "then": "ok",
+        "why": "a result outside i64 is never wrapped or truncated"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "version",
+            "op": "!=",
+            "value": 1
+          }
+        ],
+        "then": "ok",
+        "why": "an unsupported version is never interpreted as version 1"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "version",
+            "op": "=",
+            "value": 1
+          },
+          {
+            "field": "operation",
+            "op": "is",
+            "value": "other"
+          }
+        ],
+        "then": "unknown-operation",
+        "why": "an undefined operation is a typed protocol error"
+      }
+    ],
+    "examples": [
+      {
+        "request": "1 add nonzero within",
+        "response": "ok"
+      },
+      {
+        "request": "1 add nonzero beyond",
+        "response": "overflow"
+      },
+      {
+        "request": "1 divide zero within",
+        "response": "division-by-zero"
+      },
+      {
+        "request": "1 divide nonzero beyond",
+        "response": "overflow"
+      },
+      {
+        "request": "2 add nonzero within",
+        "response": "unsupported-version"
+      },
+      {
+        "request": "1 other nonzero within",
+        "response": "unknown-operation"
+      },
+      {
+        "request": "1 multiply zero within",
+        "response": "ok"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Calculator user",
+      "text": "Enters two operands and an operation in the Pages view and needs an exact result or a typed error, never a wrapped number.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Service operator",
+      "text": "Runs the A/B service releases and needs every protocol error typed and covered by a negative vector.",
+      "concerns": [
+        "Refused malformed requests",
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "Calculator Pages view",
+      "kind": "staticSite",
+      "text": "The portable Pages application at https://uor-foundation.github.io/calculator-example/."
+    },
+    {
+      "name": "Calculator service release",
+      "kind": "service",
+      "text": "The A and B service releases prismpm pushes, deploys and rolls back."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Silent overflow",
+      "text": "An out-of-range sum or product is wrapped and answered as ok.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Checked result",
+        "text": "A result beyond i64 is answered overflow.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "CalculatorProtocolProofs::inv002Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "UOR-Foundation/calculator-example src/Calculator.lex.tex acceptance vectors at the i64 bounds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Division by zero answered",
+      "text": "A zero divisor yields a number or a trap instead of a typed error.",
+      "stride": "denialOfService",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Typed division error",
+        "text": "A zero divisor is answered division-by-zero.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "CalculatorProtocolProofs::inv001Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Version downgrade",
+      "text": "A client sends another protocol version hoping it is read as version 1.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Only version 1",
+        "text": "Any version but 1 is unsupported-version.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "CalculatorProtocolProofs::inv003Holds"
+          }
+        ]
+      }
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every operation modeled",
+      "text": "Each of the four Operation constructors is a value of the operation field.",
+      "measure": "Operations modeled",
+      "measureText": "Operation constructors of src/Calculator.lex.tex the app distinguishes.",
+      "threshold": 4
+    },
+    {
+      "characteristic": "Reliability",
+      "subcharacteristic": "Fault tolerance",
+      "requirement": "Every error typed",
+      "text": "Every CalculatorError and every ProtocolError but MalformedRequest, which the decoder answers invalid, is an answer.",
+      "measure": "Untyped errors",
+      "measureText": "Error constructors with no answer and no invalid refusal.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Calculator user",
+      "steps": [
+        "otherwise",
+        "REQ-003",
+        "REQ-004",
+        "INV-001",
+        "INV-002"
+      ]
+    },
+    {
+      "stakeholder": "Service operator",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "INV-003",
+        "INV-004",
+        "refuse"
+      ]
+    }
+  ]
+}

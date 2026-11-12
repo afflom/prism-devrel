@@ -319,6 +319,22 @@ export function deriveModel(input) {
   const assets = indexed(assetsIn.map((x) => ({ ...x, decl: sec('asset', x.name) })));
   const asset = (key) => assets.find((x) => x.key === key);
   const gate = (reference) => ({ kind: 'gate', reference });
+  // Proof evidence names a property (INV-001), which becomes its theorem, or a theorem as Module::name; a theorem of this app's proofs module must be one it declares.
+  const theorems = new Set(spec.properties.map((p) => `${P}::${proofOf[p.id].theorem}`));
+  const promptThreats = prompt.threats.map((t) => {
+    if (!t.control) return t;
+    const evidence = t.control.evidence.map((e) => {
+      if (e.kind !== 'proof') return e;
+      if (/^INV-\d{3}$/.test(e.reference)) {
+        if (!proofOf[e.reference]) throw new SpecError(`Proof evidence \`${e.reference}\` names no property; the properties are ${spec.properties.map((p) => p.id).join(', ') || 'none'}.`, 'threat');
+        return { ...e, reference: `${P}::${proofOf[e.reference].theorem}` };
+      }
+      if (!/^[A-Za-z][A-Za-z0-9.]*::[A-Za-z][A-Za-z0-9]*$/.test(e.reference)) throw new SpecError(`Proof evidence \`${e.reference}\` is not a property id or Module::theorem.`, 'threat');
+      if (e.reference.startsWith(`${P}::`) && !theorems.has(e.reference)) throw new SpecError(`Proof evidence \`${e.reference}\` is not a theorem of ${P}.`, 'threat');
+      return e;
+    });
+    return { ...t, control: { ...t.control, evidence } };
+  });
   const threatsIn = [
     {
       name: 'Oversized request',
@@ -375,9 +391,8 @@ export function deriveModel(input) {
       control: { name: `Proof of ${p.id}`, text: `${p.says} The Lean kernel proves it for every request.`, evidence: [{ kind: 'proof', reference: `${P}::${proofOf[p.id].theorem}` }] },
     })),
     { name: 'Substituted host', text: 'Something other than the repository Pages workflow serves pages under its address.', stride: 'spoofing', asset: 'holo', likelihood: 'low', impact: 'critical', accepted: 'A page cannot defend against its own host. The holo carries signed build provenance a visitor can check, and the app can be rebuilt from its prompt.' },
-    ...prompt.threats,
+    ...promptThreats,
   ];
-  for (const t of prompt.threats) if (t.control) for (const e of t.control.evidence) if (e.kind === 'proof' && !/^[A-Za-z][A-Za-z0-9.]*::[A-Za-z][A-Za-z0-9]*$/.test(e.reference)) throw new SpecError(`Proof evidence \`${e.reference}\` is not Module::theorem.`, 'threat');
   const threats = indexed(threatsIn.map((t) => ({ ...t, decl: sec('threat', t.name), assetRecord: asset(t.asset) })));
   const risks = indexed(threats.map((t) => ({ threat: t, decl: sec('risk', t.name) })));
   const controls = indexed(risks.filter((r) => r.threat.control).map((r) => ({ risk: r, ...r.threat.control, decl: sec('control', r.threat.control.name) })));

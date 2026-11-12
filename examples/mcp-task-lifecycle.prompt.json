@@ -1,0 +1,715 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "stateMachine",
+  "machine": {
+    "state": "state",
+    "initial": "working",
+    "final": [
+      "completed",
+      "failed",
+      "cancelled"
+    ]
+  },
+  "goal": "Step an MCP tasks-extension task to its next state, so a client polling tasks/get, tasks/update and tasks/cancel always sees the state the protocol core would write.",
+  "repository": "UOR-Foundation/MCP",
+  "app": {
+    "name": "mcp-task-lifecycle",
+    "title": "MCP task lifecycle",
+    "purpose": "Give the next state of an io.modelcontextprotocol/tasks task from its current state, the step applied to it (settle, answer or cancel), what its plan still asks, the clock and how many input keys remain unanswered.",
+    "limits": [
+      "It does not create a task: a task starts working, as the seed of its tool's plan, when tools/call decides to answer a task.",
+      "It does not expire a task: a task past its ttlMs is dropped from the host's table by the next request, outside this step.",
+      "It does not check the host's clock or table; the host owes the core exactly the table it was given."
+    ],
+    "fields": [
+      {
+        "name": "state",
+        "kind": "choice",
+        "values": [
+          "working",
+          "input-required",
+          "completed",
+          "failed",
+          "cancelled"
+        ],
+        "means": "the task's current status, as DetailedTask in src/Tasks.lex.tex"
+      },
+      {
+        "name": "event",
+        "kind": "choice",
+        "values": [
+          "settle",
+          "answer",
+          "cancel"
+        ],
+        "means": "the step: settle (tasks/get), answer (tasks/update with every given key) or cancel (tasks/cancel)"
+      },
+      {
+        "name": "asks",
+        "kind": "choice",
+        "values": [
+          "yes",
+          "no"
+        ],
+        "means": "whether the task's plan still holds input requests to park on (parkedPlan empties them once it parks)"
+      },
+      {
+        "name": "elapsed",
+        "kind": "number",
+        "min": 0,
+        "means": "milliseconds since the task was created, now_ms less createdMs"
+      },
+      {
+        "name": "deadline",
+        "kind": "number",
+        "min": 0,
+        "means": "milliseconds after creation the plan's next step is due: parkAfterMs when it asks, finishAfterMs otherwise"
+      },
+      {
+        "name": "outcome",
+        "kind": "choice",
+        "values": [
+          "completes",
+          "fails"
+        ],
+        "means": "how the plan concludes: PlanOutcome.completes with a result or PlanOutcome.fails with a JSON-RPC error"
+      },
+      {
+        "name": "remaining",
+        "kind": "number",
+        "min": 0,
+        "means": "input keys still unanswered after this answer"
+      }
+    ],
+    "outcomes": [
+      "working",
+      "input-required",
+      "completed",
+      "failed",
+      "cancelled"
+    ],
+    "meanings": {
+      "working": "the task is running; tasks/get answers status working",
+      "input-required": "the task waits for the client to answer its inputRequests through tasks/update",
+      "completed": "terminal: the plan's result is the task's result",
+      "failed": "terminal: the task carries the plan's JSON-RPC error",
+      "cancelled": "terminal: the client cancelled the task before it finished"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "completed"
+          }
+        ],
+        "then": "completed",
+        "why": "src/Tasks.lex.tex: settle, answer and cancel keep a completed entry (kept entry)"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "failed"
+          }
+        ],
+        "then": "failed",
+        "why": "src/Tasks.lex.tex: a failed task is terminal (isTerminal), and every step keeps it"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "cancelled"
+          }
+        ],
+        "then": "cancelled",
+        "why": "src/Tasks.lex.tex: a cancelled task is terminal, and every step keeps it"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "cancel"
+          },
+          {
+            "field": "state",
+            "op": "is",
+            "value": "working"
+          },
+          {
+            "field": "asks",
+            "op": "is",
+            "value": "no"
+          },
+          {
+            "field": "elapsed",
+            "op": ">=",
+            "value": {
+              "field": "deadline"
+            }
+          },
+          {
+            "field": "outcome",
+            "op": "is",
+            "value": "completes"
+          }
+        ],
+        "then": "completed",
+        "why": "Tasks.cancel settles first: work that finished before the cancel stays completed (TASKS.md, What a task does)"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "cancel"
+          },
+          {
+            "field": "state",
+            "op": "is",
+            "value": "working"
+          },
+          {
+            "field": "asks",
+            "op": "is",
+            "value": "no"
+          },
+          {
+            "field": "elapsed",
+            "op": ">=",
+            "value": {
+              "field": "deadline"
+            }
+          },
+          {
+            "field": "outcome",
+            "op": "is",
+            "value": "fails"
+          }
+        ],
+        "then": "failed",
+        "why": "Tasks.cancel settles first: work that failed before the cancel stays failed"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "cancel"
+          }
+        ],
+        "then": "cancelled",
+        "why": "Tasks.cancelSettled: a working or input_required task becomes cancelled"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "settle"
+          },
+          {
+            "field": "state",
+            "op": "is",
+            "value": "working"
+          },
+          {
+            "field": "asks",
+            "op": "is",
+            "value": "yes"
+          },
+          {
+            "field": "elapsed",
+            "op": ">=",
+            "value": {
+              "field": "deadline"
+            }
+          }
+        ],
+        "then": "input-required",
+        "why": "Tasks.settleWorking: a plan that parks moves to input_required once parkAfterMs has passed"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "settle"
+          },
+          {
+            "field": "state",
+            "op": "is",
+            "value": "working"
+          },
+          {
+            "field": "elapsed",
+            "op": ">=",
+            "value": {
+              "field": "deadline"
+            }
+          },
+          {
+            "field": "outcome",
+            "op": "is",
+            "value": "completes"
+          }
+        ],
+        "then": "completed",
+        "why": "Tasks.settleWorking: with nothing to ask, the task concludes once finishAfterMs has passed (Tasks.due)"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "settle"
+          },
+          {
+            "field": "state",
+            "op": "is",
+            "value": "working"
+          },
+          {
+            "field": "elapsed",
+            "op": ">=",
+            "value": {
+              "field": "deadline"
+            }
+          },
+          {
+            "field": "outcome",
+            "op": "is",
+            "value": "fails"
+          }
+        ],
+        "then": "failed",
+        "why": "Tasks.concluded: a plan that fails gives a failed task with its JSON-RPC error"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "answer"
+          },
+          {
+            "field": "state",
+            "op": "is",
+            "value": "input-required"
+          },
+          {
+            "field": "remaining",
+            "op": "=",
+            "value": 0
+          },
+          {
+            "field": "asks",
+            "op": "is",
+            "value": "yes"
+          },
+          {
+            "field": "elapsed",
+            "op": ">=",
+            "value": {
+              "field": "deadline"
+            }
+          }
+        ],
+        "then": "input-required",
+        "why": "Tasks.resume settles at once: a plan that still asks parks again"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "answer"
+          },
+          {
+            "field": "state",
+            "op": "is",
+            "value": "input-required"
+          },
+          {
+            "field": "remaining",
+            "op": "=",
+            "value": 0
+          },
+          {
+            "field": "elapsed",
+            "op": ">=",
+            "value": {
+              "field": "deadline"
+            }
+          },
+          {
+            "field": "outcome",
+            "op": "is",
+            "value": "completes"
+          }
+        ],
+        "then": "completed",
+        "why": "Tasks.answerInput: the last key answered resumes the task, which settles at once and completes if due"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "answer"
+          },
+          {
+            "field": "state",
+            "op": "is",
+            "value": "input-required"
+          },
+          {
+            "field": "remaining",
+            "op": "=",
+            "value": 0
+          },
+          {
+            "field": "elapsed",
+            "op": ">=",
+            "value": {
+              "field": "deadline"
+            }
+          },
+          {
+            "field": "outcome",
+            "op": "is",
+            "value": "fails"
+          }
+        ],
+        "then": "failed",
+        "why": "Tasks.answerInput: the last key answered resumes the task, which settles at once and fails if due"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "answer"
+          },
+          {
+            "field": "state",
+            "op": "is",
+            "value": "input-required"
+          },
+          {
+            "field": "remaining",
+            "op": "=",
+            "value": 0
+          }
+        ],
+        "then": "working",
+        "why": "Tasks.resume: with every key answered and nothing due, the task returns to working"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "input-required"
+          }
+        ],
+        "then": "input-required",
+        "why": "Tasks.settle keeps an input_required task, and answerInput keeps it while any key remains"
+      }
+    ],
+    "otherwise": "working",
+    "otherwiseWhy": "src/Tasks.lex.tex: a working task whose next step is not yet due, or that is answered, is kept as it is",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "cancel"
+          }
+        ],
+        "then": "working",
+        "why": "TASKS.md: a cancel never leaves a task running"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "cancel"
+          }
+        ],
+        "then": "input-required",
+        "why": "a cancel never leaves a task waiting for input"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "working"
+          },
+          {
+            "field": "elapsed",
+            "op": "<",
+            "value": {
+              "field": "deadline"
+            }
+          }
+        ],
+        "then": "completed",
+        "why": "Tasks.due: no work concludes before finishAfterMs has passed"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "working"
+          },
+          {
+            "field": "elapsed",
+            "op": "<",
+            "value": {
+              "field": "deadline"
+            }
+          }
+        ],
+        "then": "failed",
+        "why": "Tasks.due: no work fails before finishAfterMs has passed"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "input-required"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "answer"
+          },
+          {
+            "field": "remaining",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "working",
+        "why": "Tasks.answerInput: a task resumes only once every key is answered"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "input-required"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "settle"
+          }
+        ],
+        "then": "input-required",
+        "why": "Tasks.settle: settling a task that waits for input changes nothing"
+      }
+    ],
+    "examples": [
+      {
+        "request": "working settle no 1500 1000 completes 0",
+        "response": "completed"
+      },
+      {
+        "request": "working settle yes 500 1000 completes 0",
+        "response": "working"
+      },
+      {
+        "request": "working settle yes 1000 1000 completes 0",
+        "response": "input-required"
+      },
+      {
+        "request": "working settle no 2000 1000 fails 0",
+        "response": "failed"
+      },
+      {
+        "request": "input-required answer no 2000 5000 completes 1",
+        "response": "input-required"
+      },
+      {
+        "request": "input-required answer no 2000 5000 completes 0",
+        "response": "working"
+      },
+      {
+        "request": "input-required answer no 6000 5000 fails 0",
+        "response": "failed"
+      },
+      {
+        "request": "working cancel no 2000 1000 completes 0",
+        "response": "completed"
+      },
+      {
+        "request": "working cancel yes 10 1000 completes 0",
+        "response": "cancelled"
+      },
+      {
+        "request": "completed cancel no 0 0 completes 0",
+        "response": "completed"
+      },
+      {
+        "request": "working settle",
+        "response": "invalid"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "MCP client author",
+      "text": "Polls a task through tasks/get, answers it through tasks/update and cancels it through tasks/cancel, and needs every answer to be the state the protocol allows.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Host adapter author",
+      "text": "Holds the task table between requests for the stateless core (PrismPM issue 216) and needs a finished task to stay finished whatever arrives next.",
+      "concerns": [
+        "Terminal tasks stay terminal",
+        "Refused malformed requests"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Terminal tasks stay terminal",
+      "text": "A completed, failed or cancelled task is never moved again by settle, answer or cancel.",
+      "model": "quality"
+    }
+  ],
+  "components": [
+    {
+      "name": "MCP client",
+      "kind": "externalSystem",
+      "text": "The client that declares io.modelcontextprotocol/tasks in its request _meta and calls tasks/get, tasks/update and tasks/cancel."
+    },
+    {
+      "name": "Host adapter",
+      "kind": "service",
+      "text": "PrismPM's adapter (issue 216): it sends now_ms, the fresh task id and the task table in every request frame and stores the table the core returns."
+    },
+    {
+      "name": "MCP conformance suite",
+      "kind": "externalSystem",
+      "text": "modelcontextprotocol/conformance at cf022cbb, whose tasks scenarios drive the conformance build."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Terminal task revived",
+      "text": "A step moves a completed, failed or cancelled task back to working, so a client sees finished work run again.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "critical",
+      "control": {
+        "name": "Final states proved",
+        "text": "The machine declares completed, failed and cancelled final; the builder checks every sampled step keeps them and Lean proves it for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "McpTaskLifecycleProofs::inv007Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "MCP src/TaskLaws.lex.tex"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cancel hides finished work",
+      "text": "A cancel that arrives after the work finished reports cancelled, and the client loses a result it was owed.",
+      "stride": "repudiation",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Settle before cancel",
+        "text": "tasks/cancel settles first, so work already due concludes and the cancel leaves it.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "McpTaskLifecycleProofs::inv001Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "MCP crates/lifecycle-oracle/tests/tasks.rs TK-01 to TK-16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Host clock or table substituted",
+      "text": "The host sends a clock that runs backward or a table other than the one it was given, so a task concludes early or reappears.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "The core keeps no state by design; TASKS.md puts the clock and the table in the host's custody, and the host owes the core exactly what it was given."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "Every step matches the core",
+      "text": "Each acceptance vector answers the state Tasks.settle, Tasks.answer or Tasks.cancel writes.",
+      "measure": "Vectors that disagree",
+      "measureText": "Acceptance vectors whose replayed answer differs from the expected next state.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Reliability",
+      "subcharacteristic": "Faultlessness",
+      "requirement": "No final state is left",
+      "text": "No step takes a completed, failed or cancelled task to another state.",
+      "measure": "Final states left",
+      "measureText": "Sampled steps from a final state whose answer is another state.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "MCP client author",
+      "steps": [
+        "otherwise",
+        "REQ-007",
+        "REQ-013",
+        "REQ-008",
+        "INV-005"
+      ]
+    },
+    {
+      "stakeholder": "Host adapter author",
+      "steps": [
+        "REQ-001",
+        "REQ-006",
+        "INV-007",
+        "refuse"
+      ]
+    }
+  ]
+}

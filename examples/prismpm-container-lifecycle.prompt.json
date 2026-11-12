@@ -1,0 +1,537 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "stateMachine",
+  "machine": {
+    "state": "state",
+    "initial": "created",
+    "final": [
+      "removed"
+    ]
+  },
+  "goal": "Step a PrismPM holo container through Docker's lifecycle, so a holo that check refuses never runs and a running container is never removed under it.",
+  "repository": "UOR-Foundation/PrismPM",
+  "app": {
+    "name": "prismpm-container-lifecycle",
+    "title": "Container lifecycle",
+    "purpose": "Give the next state of a prism.containers container from its state, the event (start, finish or remove), the check verdict, whether allowUnverified was given and whether it was created with rm.",
+    "limits": [
+      "It does not open the image: a holo that cannot be opened makes no container, and create rejects.",
+      "It does not model a container read back from its store, which cannot be started again because the store keeps no input.",
+      "Exit codes are not states; the EXIT_CODES table gives them."
+    ],
+    "fields": [
+      {
+        "name": "state",
+        "kind": "choice",
+        "values": [
+          "created",
+          "running",
+          "exited",
+          "removed"
+        ],
+        "means": "the container's state.status, or removed once its record is dropped"
+      },
+      {
+        "name": "event",
+        "kind": "choice",
+        "values": [
+          "start",
+          "finish",
+          "remove"
+        ],
+        "means": "start(), the guest returning or throwing (finish), or remove()"
+      },
+      {
+        "name": "verdict",
+        "kind": "choice",
+        "values": [
+          "passed",
+          "refused"
+        ],
+        "means": "whether check passed the holo under the container's policy"
+      },
+      {
+        "name": "unverified",
+        "kind": "choice",
+        "values": [
+          "allowed",
+          "denied"
+        ],
+        "means": "whether the container was created with allowUnverified"
+      },
+      {
+        "name": "rm",
+        "kind": "choice",
+        "values": [
+          "yes",
+          "no"
+        ],
+        "means": "whether the container was created with rm: true (--rm)"
+      }
+    ],
+    "outcomes": [
+      "created",
+      "running",
+      "exited",
+      "removed"
+    ],
+    "meanings": {
+      "created": "create opened the image; the guest has not run",
+      "running": "check passed, or allowUnverified, and the guest is running; startedAt is set",
+      "exited": "the run is over: the guest returned or threw, or check refused the holo and startedAt stays null",
+      "removed": "the record is dropped; inspect and remove reject with container.missing"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "removed"
+          }
+        ],
+        "then": "removed",
+        "why": "sdk/npm/prism-code/src/containers.mjs: every call on a removed container fails container.missing"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "running"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "start"
+          }
+        ],
+        "then": "running",
+        "why": "containers.mjs start: a second call while it runs joins that run (inFlight)"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "running"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "remove"
+          }
+        ],
+        "then": "running",
+        "why": "containers.mjs remove: a running container is refused with container.running, as Docker refuses it"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "running"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "finish"
+          },
+          {
+            "field": "rm",
+            "op": "is",
+            "value": "yes"
+          }
+        ],
+        "then": "removed",
+        "why": "containers.mjs exit: rm removes the container on exit whatever its code"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "running"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "finish"
+          }
+        ],
+        "then": "exited",
+        "why": "proposal 348: running to exited when the guest returned or threw"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "remove"
+          }
+        ],
+        "then": "removed",
+        "why": "containers.mjs remove: a created or exited container is dropped from its store"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "start"
+          },
+          {
+            "field": "verdict",
+            "op": "is",
+            "value": "refused"
+          },
+          {
+            "field": "unverified",
+            "op": "is",
+            "value": "denied"
+          },
+          {
+            "field": "rm",
+            "op": "is",
+            "value": "yes"
+          }
+        ],
+        "then": "removed",
+        "why": "containers.mjs run: a refused holo exits at once, and rm then drops it"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "start"
+          },
+          {
+            "field": "verdict",
+            "op": "is",
+            "value": "refused"
+          },
+          {
+            "field": "unverified",
+            "op": "is",
+            "value": "denied"
+          }
+        ],
+        "then": "exited",
+        "why": "proposal 348: created to exited when check refused the holo; the guest never ran"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "start"
+          }
+        ],
+        "then": "running",
+        "why": "proposal 348: created or exited to running when check passed or allowUnverified, as docker start runs it again"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "exited"
+          }
+        ],
+        "then": "exited",
+        "why": "an exited container has no guest to finish"
+      }
+    ],
+    "otherwise": "created",
+    "otherwiseWhy": "a created container has not started, so no guest can finish",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "created"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "start"
+          },
+          {
+            "field": "verdict",
+            "op": "is",
+            "value": "refused"
+          },
+          {
+            "field": "unverified",
+            "op": "is",
+            "value": "denied"
+          }
+        ],
+        "then": "running",
+        "why": "issue 282: run is gated on check, so a refused holo never runs without allowUnverified"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "exited"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "start"
+          },
+          {
+            "field": "verdict",
+            "op": "is",
+            "value": "refused"
+          },
+          {
+            "field": "unverified",
+            "op": "is",
+            "value": "denied"
+          }
+        ],
+        "then": "running",
+        "why": "a start again is gated on check as the first start is"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "running"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "remove"
+          }
+        ],
+        "then": "removed",
+        "why": "a running container cannot be removed without force"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "running"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "finish"
+          },
+          {
+            "field": "rm",
+            "op": "is",
+            "value": "yes"
+          }
+        ],
+        "then": "exited",
+        "why": "with rm, the record does not outlive the run"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "created"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "finish"
+          }
+        ],
+        "then": "running",
+        "why": "only start runs a guest"
+      }
+    ],
+    "examples": [
+      {
+        "request": "created start passed denied no",
+        "response": "running"
+      },
+      {
+        "request": "created start refused denied no",
+        "response": "exited"
+      },
+      {
+        "request": "created start refused allowed no",
+        "response": "running"
+      },
+      {
+        "request": "running finish passed denied no",
+        "response": "exited"
+      },
+      {
+        "request": "running finish passed denied yes",
+        "response": "removed"
+      },
+      {
+        "request": "running remove passed denied no",
+        "response": "running"
+      },
+      {
+        "request": "exited start passed denied no",
+        "response": "running"
+      },
+      {
+        "request": "exited remove passed denied no",
+        "response": "removed"
+      },
+      {
+        "request": "removed start passed denied no",
+        "response": "removed"
+      },
+      {
+        "request": "created start passed",
+        "response": "invalid"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Holo developer",
+      "text": "Runs holos through prism.containers or prism-code run and needs each container's state to say what happened to the guest.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Holo operator",
+      "text": "Runs holos from others and needs a holo that check refuses never to reach the guest unless they said allowUnverified.",
+      "concerns": [
+        "Refused holos never run",
+        "Integrity of the published app"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Refused holos never run",
+      "text": "A container whose holo check refuses moves to exited with startedAt null unless allowUnverified was given.",
+      "model": "security"
+    }
+  ],
+  "components": [
+    {
+      "name": "prism-code SDK",
+      "kind": "service",
+      "text": "The npm package prism-code in PrismPM sdk/npm, whose containers namespace has run, create, start, get and remove."
+    },
+    {
+      "name": "Container store",
+      "kind": "database",
+      "text": "fileContainerStore: one JSON record per container in PRISM_HOME/containers, mode 0600, written by rename."
+    },
+    {
+      "name": "prism-code CLI",
+      "kind": "cliAdapter",
+      "text": "prism-code run, inspect and rm: the same lifecycle with the record on disk."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Refused holo runs",
+      "text": "A holo whose check fails reaches the guest, so unverified code runs.",
+      "stride": "elevationOfPrivilege",
+      "asset": "holo",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Run gated on check",
+        "text": "A start with a refused verdict and no allowUnverified never answers running, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "PrismpmContainerLifecycleProofs::inv001Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "PrismPM sdk/npm/prism-code/test/containers.test.mjs"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Removed container revived",
+      "text": "A start on a removed container runs it again from an input the store no longer holds.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Removed is final",
+        "text": "removed is a final state: every step keeps it, as every call rejects container.missing.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "PrismpmContainerLifecycleProofs::inv006Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Stale running record",
+      "text": "A process that dies mid-run leaves a record that says running, and nothing acts on it yet.",
+      "stride": "denialOfService",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "minor",
+      "accepted": "Proposal 348 leaves it to issue 350, whose ps has to account for a record left running."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Resistance",
+      "requirement": "No refused holo runs",
+      "text": "No start of a refused holo without allowUnverified answers running.",
+      "measure": "Unverified runs",
+      "measureText": "Acceptance vectors answered running from a start with verdict refused and unverified denied.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "Every transition matches proposal 348",
+      "text": "Each vector answers the state containers.mjs leaves the container in.",
+      "measure": "Vectors that disagree",
+      "measureText": "Acceptance vectors whose replayed state differs from the expected one.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Holo developer",
+      "steps": [
+        "REQ-009",
+        "REQ-005",
+        "REQ-002",
+        "REQ-006",
+        "INV-006"
+      ]
+    },
+    {
+      "stakeholder": "Holo operator",
+      "steps": [
+        "REQ-008",
+        "INV-001",
+        "REQ-004",
+        "refuse"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,273 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "decisionTable",
+  "goal": "Classify how the MNIST network's 32-bit fixed-point requantization clamps a scaled accumulator into a uint8 activation code, so no activation ever leaves 0 to 255.",
+  "repository": "UOR-Foundation/MNIST",
+  "app": {
+    "name": "mnist-requant-clamp",
+    "title": "Requantization clamp",
+    "purpose": "Classify the scaled accumulator q of one requantized activation, from its sign and magnitude, as clamped to the floor 0, passed through unchanged, or clamped to the ceiling 255.",
+    "fields": [
+      {
+        "name": "sign",
+        "kind": "choice",
+        "values": [
+          "negative",
+          "nonnegative"
+        ],
+        "means": "the sign of q = ((acc + bias) * M + 2^31 + Z * 2^32) quot 2^32"
+      },
+      {
+        "name": "q",
+        "kind": "number",
+        "min": 0,
+        "max": 2147483648,
+        "means": "the magnitude of q, bounded by the 32-bit fixed-point range"
+      }
+    ],
+    "outcomes": [
+      "floor",
+      "passed",
+      "ceiling"
+    ],
+    "meanings": {
+      "floor": "q is below 0 and the code is 0, the uint8 zero point",
+      "passed": "q is already a uint8 code and is kept",
+      "ceiling": "q is above 255 and the code is 255"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "sign",
+            "op": "is",
+            "value": "negative"
+          },
+          {
+            "field": "q",
+            "op": ">",
+            "value": 0
+          }
+        ],
+        "then": "floor",
+        "why": "src/Mnist/Core.lex.tex requant: lo = if q < 0 then 0 else q"
+      },
+      {
+        "when": [
+          {
+            "field": "q",
+            "op": ">",
+            "value": 255
+          }
+        ],
+        "then": "ceiling",
+        "why": "src/Mnist/Core.lex.tex requant: hi = if 255 < lo then 255 else lo"
+      }
+    ],
+    "otherwise": "passed",
+    "otherwiseWhy": "src/Mnist/Core.lex.tex requant: a q in 0..255 is returned as the activation code; README.md: uint8 activations with zero point 0",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "sign",
+            "op": "is",
+            "value": "negative"
+          },
+          {
+            "field": "q",
+            "op": ">",
+            "value": 0
+          }
+        ],
+        "then": "passed",
+        "why": "a negative accumulator never becomes a positive code"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "sign",
+            "op": "is",
+            "value": "nonnegative"
+          },
+          {
+            "field": "q",
+            "op": ">",
+            "value": 255
+          }
+        ],
+        "then": "passed",
+        "why": "no activation exceeds 255"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "q",
+            "op": "<=",
+            "value": 255
+          },
+          {
+            "field": "sign",
+            "op": "is",
+            "value": "nonnegative"
+          }
+        ],
+        "then": "passed",
+        "why": "an in-range code is never altered"
+      }
+    ],
+    "examples": [
+      {
+        "request": "nonnegative 0",
+        "response": "passed"
+      },
+      {
+        "request": "nonnegative 7",
+        "response": "passed"
+      },
+      {
+        "request": "nonnegative 255",
+        "response": "passed"
+      },
+      {
+        "request": "nonnegative 256",
+        "response": "ceiling"
+      },
+      {
+        "request": "negative 1",
+        "response": "floor"
+      },
+      {
+        "request": "negative 0",
+        "response": "passed"
+      },
+      {
+        "request": "negative 4096",
+        "response": "floor"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Model auditor",
+      "text": "Checks that the LexLean network computes exactly what mnist-12-int8.onnx computes, layer by layer.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Package integrator",
+      "text": "Embeds the certified rust-std mnist package and needs every activation to be a uint8 code.",
+      "concerns": [
+        "Proved guarantees",
+        "Refused malformed requests"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "onnxruntime",
+      "kind": "externalSystem",
+      "text": "onnxruntime 1.29.0, whose class on all 10,000 test images is the authority (MN-05)."
+    },
+    {
+      "name": "mnist package",
+      "kind": "releaseBinary",
+      "text": "The certified rust-std package in dist/ exporting run(Bytes)."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Activation wraps past 255",
+      "text": "A large accumulator is truncated to 8 bits instead of saturating, changing the class.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Saturating ceiling",
+        "text": "q above 255 is clamped to 255.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "MnistRequantClampProofs::inv002Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "UOR-Foundation/MNIST MN-05: class equal to onnxruntime on 10,000 images"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Negative activation",
+      "text": "A negative accumulator passes as a large unsigned code.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Floor at the zero point",
+        "text": "Negative q is clamped to 0.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "MnistRequantClampProofs::inv001Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Accumulator overflow",
+      "text": "The accumulator itself overflows before requantization.",
+      "stride": "denialOfService",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "README.md says so: that the accumulators never overflow is not a theorem; the overflow effect stays declared and checked at every operation."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "Codes fit uint8",
+      "text": "Every activation code lies in 0..255.",
+      "measure": "Largest activation code",
+      "measureText": "The largest code any request is answered with.",
+      "threshold": 255
+    },
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional appropriateness",
+      "requirement": "Class agrees with the authority",
+      "text": "The package returns onnxruntime's class on every test image, as MN-05 gates.",
+      "measure": "Class disagreements",
+      "measureText": "Test images whose class differs from onnxruntime 1.29.0.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Model auditor",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "otherwise",
+        "INV-003"
+      ]
+    },
+    {
+      "stakeholder": "Package integrator",
+      "steps": [
+        "INV-001",
+        "INV-002",
+        "refuse"
+      ]
+    }
+  ]
+}

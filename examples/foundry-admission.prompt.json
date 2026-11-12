@@ -1,11 +1,22 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a router proposal is admitted into the composition, so an ambiguous or unproved proposal never becomes part of an app.",
+  "goal": "Decide whether a router proposal is admitted into the composition, so a stale, ambiguous or conflicting proposal never becomes part of an app.",
+  "pattern": "decisionTable",
+  "repository": "UOR-Foundation/foundry",
   "app": {
     "name": "proposal-admission",
     "title": "Proposal admission",
-    "purpose": "Decide whether a router's proposal is admitted, refused, or recorded as an open claim, from whether it is ambiguous, whether its obligations are proved and how many admitted records it conflicts with.",
+    "purpose": "Decide whether a router's proposal is admitted, refused, or returned with an open issue, from whether its intent and registry revision are current, whether it is ambiguous, whether its constraints are resolved and how many selected features conflict.",
     "fields": [
+      {
+        "name": "revision",
+        "kind": "choice",
+        "values": [
+          "current",
+          "stale"
+        ],
+        "means": "whether the intent and registry revision match the expected ones"
+      },
       {
         "name": "ambiguity",
         "kind": "choice",
@@ -13,22 +24,22 @@
           "none",
           "ambiguous"
         ],
-        "means": "whether the proposal has more than one reading"
+        "means": "whether the proposal lists an unresolved ambiguity"
       },
       {
-        "name": "proofs",
+        "name": "constraints",
         "kind": "choice",
         "values": [
-          "proved",
-          "missing"
+          "resolved",
+          "unresolved"
         ],
-        "means": "whether its obligations are discharged"
+        "means": "whether the proposal lists an unresolved constraint"
       },
       {
         "name": "conflicts",
         "kind": "number",
         "min": 0,
-        "means": "admitted records it contradicts"
+        "means": "selected features that conflict with another"
       }
     ],
     "outcomes": [
@@ -37,19 +48,21 @@
       "open"
     ],
     "meanings": {
-      "open": "recorded as an open claim with its typed reason"
+      "admit": "the selected features join the composition",
+      "refuse": "refused: stale, or the composition is rejected",
+      "open": "refused with an unresolved issue, ambiguity or constraint, to resolve and propose again"
     },
     "rules": [
       {
         "when": [
           {
-            "field": "conflicts",
-            "op": ">=",
-            "value": 1
+            "field": "revision",
+            "op": "is",
+            "value": "stale"
           }
         ],
         "then": "refuse",
-        "why": "a contradiction is never admitted"
+        "why": "app/src/ProposalAdmission.lex.tex admitProposal: staleIntent and staleRegistry are checked first (staleIntentRefused, staleRegistryRefused)"
       },
       {
         "when": [
@@ -60,22 +73,33 @@
           }
         ],
         "then": "open",
-        "why": "ambiguity becomes an open claim, never a default"
+        "why": "admitProposal: any ambiguity is unresolvedAmbiguity, never a default (ambiguityRefused)"
       },
       {
         "when": [
           {
-            "field": "proofs",
+            "field": "constraints",
             "op": "is",
-            "value": "missing"
+            "value": "unresolved"
           }
         ],
         "then": "open",
-        "why": "an unproved obligation stays open"
+        "why": "admitProposal: an unresolved constraint is unresolvedConstraint (constraintRefused)"
+      },
+      {
+        "when": [
+          {
+            "field": "conflicts",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "refuse",
+        "why": "app/src/FeatureComposition.lex.tex hasConflict: admitComposition rejects conflicting features (compositionRejected)"
       }
     ],
     "otherwise": "admit",
-    "otherwiseWhy": "unambiguous, proved and consistent",
+    "otherwiseWhy": "current, unambiguous, resolved and consistent: admitProposal returns the features",
     "properties": [
       {
         "kind": "never",
@@ -93,13 +117,13 @@
         "kind": "never",
         "when": [
           {
-            "field": "proofs",
+            "field": "constraints",
             "op": "is",
-            "value": "missing"
+            "value": "unresolved"
           }
         ],
         "then": "admit",
-        "why": "nothing unproved is admitted"
+        "why": "unresolved issues refuse acceptance"
       },
       {
         "kind": "never",
@@ -112,30 +136,154 @@
         ],
         "then": "admit",
         "why": "the composition stays consistent"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "revision",
+            "op": "is",
+            "value": "stale"
+          }
+        ],
+        "then": "admit",
+        "why": "a proposal against an old registry or intent is never admitted"
       }
     ],
     "examples": [
       {
-        "request": "none proved 0",
+        "request": "current none resolved 0",
         "response": "admit"
       },
       {
-        "request": "ambiguous proved 0",
+        "request": "current ambiguous resolved 0",
         "response": "open"
       },
       {
-        "request": "none missing 2",
+        "request": "current none unresolved 2",
+        "response": "open"
+      },
+      {
+        "request": "current none resolved 2",
         "response": "refuse"
+      },
+      {
+        "request": "stale none resolved 0",
+        "response": "refuse"
+      },
+      {
+        "request": "current ambiguous resolved 3",
+        "response": "open"
       }
     ]
   },
   "stakeholders": [
     {
       "name": "App builder",
-      "text": "Describes an app in plain words and needs only proved, unambiguous parts to reach it.",
+      "text": "Describes an app in plain words and needs only current, unambiguous, consistent parts to reach it.",
       "concerns": [
         "Proved guarantees",
         "Correct answers"
+      ]
+    },
+    {
+      "name": "Registry maintainer",
+      "text": "Publishes versioned feature contracts and needs a proposal made against an older registry revision to be refused.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "Router",
+      "kind": "externalSystem",
+      "text": "The model that reads the description and proposes versioned feature references with a confidence; inference belongs to the runner, not the kernel."
+    },
+    {
+      "name": "Feature registry",
+      "kind": "database",
+      "text": "The registry of canonical versioned feature contracts that admission resolves references against."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Confidence as permission",
+      "text": "A router's high confidence is taken as a grant, budget or evidence for a proposal.",
+      "stride": "elevationOfPrivilege",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Confidence grants nothing",
+        "text": "Admission never reads confidence to decide, and the kernel proves confidence cannot grant a permission or raise a budget.",
+        "evidence": [
+          {
+            "kind": "review",
+            "reference": "app/src/ProposalAdmission.lex.tex confidenceCannotGrantPermission"
+          },
+          {
+            "kind": "review",
+            "reference": "app/src/ProposalAdmission.lex.tex confidenceCannotIncreaseBudget"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Stale registry",
+      "text": "A proposal written against an older registry revision is admitted with contracts that changed.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Revision match proved",
+        "text": "A stale proposal is never admitted, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "ProposalAdmissionProofs::inv004Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Router-authored contract",
+      "text": "A router supplies its own contract text in place of the registered one.",
+      "stride": "spoofing",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "Admission resolves canonical contracts from the supplied registry by key and version and never accepts router-authored contracts (proposalBoundary); the app sees only the outcome of that resolution."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Interaction capability",
+      "subcharacteristic": "User error protection",
+      "requirement": "Ambiguity returned, never guessed",
+      "text": "Every ambiguous or unresolved proposal is answered open, so the builder resolves it.",
+      "measure": "Guessed proposals",
+      "measureText": "Requests with an ambiguity or unresolved constraint answered admit.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "App builder",
+      "steps": [
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Registry maintainer",
+      "steps": [
+        "REQ-001",
+        "INV-004",
+        "INV-003"
       ]
     }
   ]

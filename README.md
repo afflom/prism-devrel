@@ -72,12 +72,29 @@ site documents it as [Diátaxis](https://diataxis.fr) documentation along the
 developer journey of Lewko and Parton, *Developer Relations* (Apress, 2021):
 the [tutorial](https://afflom.github.io/prism-devrel/start/) (Learn) runs the
 builder in the browser; the [how-to guides](https://afflom.github.io/prism-devrel/examples/)
-(Build) are fourteen apps in the spirit of real Prism projects, each built from
-one prompt and verified; the [reference](https://afflom.github.io/prism-devrel/start/reference/)
-(Build) is the MCP tool's own input schema; and the
+(Build) are 33 example apps, each grounded in a real afflom or UOR-Foundation
+repository, built from one prompt and verified; the [reference](https://afflom.github.io/prism-devrel/start/reference/)
+(Build) is the MCP tool's own input schema, and the
+[Prism source](https://afflom.github.io/prism-devrel/start/source/) (Build) is
+every Foundation, Production and language module each app carries, with its
+recorded upstream source (`DR-19`); and the
 [explanation](https://afflom.github.io/prism-devrel/start/explanation/)
 (Evaluate) says why one prompt determines every facet. Every page declares its
 type and stage (`DR-14`), with the identifiers the DevRel model uses.
+
+Every prompt names the established pattern its behavior follows (`DR-18`): an
+OMG DMN 1.5 decision table (hit policy FIRST, the default), an OASIS XACML 3.0
+policy decision (exactly permit, deny, not-applicable or indeterminate), or an
+OMG UML 2.5.1 state machine. A state machine is a pure transition function:
+the state travels in the request and the answer is the next state, so the
+guest keeps nothing between requests. From its `machine` member (the state
+field, the initial state, the final states) the builder reads the reachable
+states off the successor relation and adds the properties that make the
+machine's invariants theorems: a final state is never left, and no step from a
+reachable state leaves the reachable set. Each is one step, so by induction it
+holds over every run (`DR-17`). The machine gets its own UML state-machine
+view, and its example page runs it through the verified holo, feeding each
+answer back as the next state (`DR-20`).
 
 A prompt is `prism/prompt/1`. Its `app` member is the `prism/spec/1` spec that
 prism-code's MCP tool `prism_spec` takes; stakeholders, concerns, components,

@@ -1,0 +1,459 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "decisionTable",
+  "goal": "Decide whether LexLean MCP admits a draft an LLM submits, so no path escapes the source roots and no draft exceeds the owner-set limits before LexLean sees it.",
+  "repository": "UOR-Foundation/lexlean-mcp",
+  "app": {
+    "name": "lexlean-mcp-draft-admission",
+    "title": "Draft admission",
+    "purpose": "Decide whether a draft is admitted or which refusal it gets, in the order admitDraft decides: the first path refusal among its rows, too many files, too many content bytes, then a duplicate path.",
+    "limits": [
+      "It does not read the rows: the path field is the refusal of the first row whose path admitPath refuses, or clean.",
+      "The limits are the owner values draft.max_files 256 and draft.max_bytes 8388608 of OWNER-VALUES.md."
+    ],
+    "fields": [
+      {
+        "name": "path",
+        "kind": "choice",
+        "values": [
+          "clean",
+          "non-utf8",
+          "non-nfc",
+          "absolute",
+          "empty-component",
+          "dot-component",
+          "dotdot-component",
+          "outside-roots",
+          "non-lex-tex"
+        ],
+        "means": "the first row's path refusal in admitPath's order: UTF-8, NFC, relative, no empty, . or .. component, under a source root, .lex.tex suffix; clean when every row passes"
+      },
+      {
+        "name": "files",
+        "kind": "number",
+        "min": 0,
+        "means": "rows in the draft"
+      },
+      {
+        "name": "bytes",
+        "kind": "number",
+        "min": 0,
+        "means": "content bytes of all rows, not counting path bytes"
+      },
+      {
+        "name": "repeats",
+        "kind": "number",
+        "min": 0,
+        "means": "paths that occur more than once among the rows, compared as octets"
+      }
+    ],
+    "outcomes": [
+      "admitted",
+      "path-refused",
+      "too-many-files",
+      "too-many-bytes",
+      "duplicate-path"
+    ],
+    "meanings": {
+      "admitted": "Verdict.Admitted: the draft reaches LexLean",
+      "path-refused": "Verdict.Refused with the row's path refusal, NotUtf8 to NotLexTex",
+      "too-many-files": "Verdict.Refused TooManyFiles",
+      "too-many-bytes": "Verdict.Refused TooManyBytes",
+      "duplicate-path": "Verdict.Refused DuplicatePath"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "non-utf8"
+          }
+        ],
+        "then": "path-refused",
+        "why": "src/Admission.lex.tex admitPath: a path that is not UTF-8 is NotUtf8"
+      },
+      {
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "non-nfc"
+          }
+        ],
+        "then": "path-refused",
+        "why": "Admission.admitPath: a path not in NFC under Unicode 17.0.0 is NotNfc, decided by src/Nfc.lex.tex"
+      },
+      {
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "absolute"
+          }
+        ],
+        "then": "path-refused",
+        "why": "Admission.admitPath: an absolute path is AbsolutePath"
+      },
+      {
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "empty-component"
+          }
+        ],
+        "then": "path-refused",
+        "why": "Admission.classifyBits: an empty component is EmptyComponent"
+      },
+      {
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "dot-component"
+          }
+        ],
+        "then": "path-refused",
+        "why": "Admission.classifyBits: a . component is DotComponent"
+      },
+      {
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "dotdot-component"
+          }
+        ],
+        "then": "path-refused",
+        "why": "Admission.classifyBits: a .. component is DotDotComponent (admittedPathHasNoDotDot)"
+      },
+      {
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "outside-roots"
+          }
+        ],
+        "then": "path-refused",
+        "why": "Admission.rootsStage: a path under no source root is OutsideRoots"
+      },
+      {
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "non-lex-tex"
+          }
+        ],
+        "then": "path-refused",
+        "why": "Admission.hasSuffix: a path without the .lex.tex suffix is NotLexTex"
+      },
+      {
+        "when": [
+          {
+            "field": "files",
+            "op": ">",
+            "value": 256
+          }
+        ],
+        "then": "too-many-files",
+        "why": "Admission.filesStage: more rows than draft.max_files (OwnerValues.draftMaxFiles 256) is TooManyFiles"
+      },
+      {
+        "when": [
+          {
+            "field": "bytes",
+            "op": ">",
+            "value": 8388608
+          }
+        ],
+        "then": "too-many-bytes",
+        "why": "Admission.bytesStage: more content bytes than draft.max_bytes (OwnerValues.draftMaxBytes 8388608) is TooManyBytes"
+      },
+      {
+        "when": [
+          {
+            "field": "repeats",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "duplicate-path",
+        "why": "Admission.admitDraft: the duplicate scan runs last, on a draft the limits admit, and a repeated path is DuplicatePath"
+      }
+    ],
+    "otherwise": "admitted",
+    "otherwiseWhy": "Admission.admitDraft: every row's path is admitted, the draft is within both limits and no path repeats",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "dotdot-component"
+          }
+        ],
+        "then": "admitted",
+        "why": "Admission.admittedPathHasNoDotDot: an admitted path has no .. component"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "outside-roots"
+          }
+        ],
+        "then": "admitted",
+        "why": "risk R5 (path escape): no path outside the source roots is admitted"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "files",
+            "op": ">",
+            "value": 256
+          }
+        ],
+        "then": "admitted",
+        "why": "Admission: an admitted draft never has more rows than max_files"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "bytes",
+            "op": ">",
+            "value": 8388608
+          }
+        ],
+        "then": "admitted",
+        "why": "Admission: an admitted draft never has more content bytes than max_bytes"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "path",
+            "op": "is",
+            "value": "clean"
+          },
+          {
+            "field": "files",
+            "op": ">",
+            "value": 256
+          }
+        ],
+        "then": "duplicate-path",
+        "why": "the duplicate scan runs only on a draft the limits admit"
+      }
+    ],
+    "examples": [
+      {
+        "request": "clean 3 4200 0",
+        "response": "admitted"
+      },
+      {
+        "request": "dotdot-component 3 4200 0",
+        "response": "path-refused"
+      },
+      {
+        "request": "outside-roots 1 10 0",
+        "response": "path-refused"
+      },
+      {
+        "request": "clean 257 4200 0",
+        "response": "too-many-files"
+      },
+      {
+        "request": "clean 148 8388609 0",
+        "response": "too-many-bytes"
+      },
+      {
+        "request": "clean 148 5413010 1",
+        "response": "duplicate-path"
+      },
+      {
+        "request": "non-nfc 300 9000000 2",
+        "response": "path-refused"
+      },
+      {
+        "request": "clean 256 8388608 0",
+        "response": "admitted"
+      },
+      {
+        "request": "clean 3",
+        "response": "invalid"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "LLM client",
+      "text": "Submits drafts of LexLean modules through the MCP tools and needs each refusal to name what to fix.",
+      "concerns": [
+        "Correct answers",
+        "Refused malformed requests"
+      ]
+    },
+    {
+      "name": "Server owner",
+      "text": "Runs LexLean MCP on loopback and needs no draft to escape the source roots or exceed the owner-set limits.",
+      "concerns": [
+        "No path escapes the roots",
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "No path escapes the roots",
+      "text": "No admitted draft has an absolute path, a .. component or a path outside the source roots.",
+      "model": "security"
+    }
+  ],
+  "components": [
+    {
+      "name": "LexLean MCP gateway",
+      "kind": "service",
+      "text": "The gateway that serves the LexLean tools over MCP and admits a draft before the engine reads it."
+    },
+    {
+      "name": "LexLean engine",
+      "kind": "externalSystem",
+      "text": "LexLean v0.4.0, which checks, snapshots, formats and builds an admitted draft."
+    },
+    {
+      "name": "Draft store",
+      "kind": "database",
+      "text": "The store of lexlean-mcp/store/1, which keeps drafts for store.draft_retention."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Path escape",
+      "text": "A draft row names ../ or an absolute path to write or read outside the source roots (risk R5).",
+      "stride": "elevationOfPrivilege",
+      "asset": "request",
+      "likelihood": "high",
+      "impact": "critical",
+      "control": {
+        "name": "Path admission",
+        "text": "Absolute paths, .. components and paths outside the roots are refused, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "LexleanMcpDraftAdmissionProofs::inv001Holds"
+          },
+          {
+            "kind": "proof",
+            "reference": "LexleanMcpDraftAdmissionProofs::inv002Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "lexlean-mcp crates/nfc-oracle admitRun SM-01"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Oversized draft",
+      "text": "A draft with very many rows or bytes exhausts the engine or the store.",
+      "stride": "denialOfService",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Owner-set limits",
+        "text": "More than 256 rows or 8388608 content bytes is refused before the engine sees the draft.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "LexleanMcpDraftAdmissionProofs::inv003Holds"
+          },
+          {
+            "kind": "proof",
+            "reference": "LexleanMcpDraftAdmissionProofs::inv004Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "lexlean-mcp OWNER-VALUES.md OV-03"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Look-alike path",
+      "text": "Two paths that look the same but differ in Unicode normalization name two files a reviewer reads as one.",
+      "stride": "spoofing",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "NFC required",
+        "text": "A path not in NFC under Unicode 17.0.0 is refused, so equal-looking paths compare as equal octets.",
+        "evidence": [
+          {
+            "kind": "gate",
+            "reference": "lexlean-mcp crates/nfc-oracle NF-01 to NF-15"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Symbolic link escape",
+      "text": "A row's path is clean but resolves through a symbolic link outside the roots once materialized.",
+      "stride": "elevationOfPrivilege",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "The symlink clause of control K5 is pending until materialization (issue 9) builds it; path admission is pure and sees no file system."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Resistance",
+      "requirement": "No escaping path admitted",
+      "text": "No request whose path is absolute, has a .. component or is outside the roots is admitted.",
+      "measure": "Escaping admissions",
+      "measureText": "Acceptance vectors answered admitted with path absolute, dotdot-component or outside-roots.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "Every verdict matches admitDraft",
+      "text": "Each vector answers the verdict admitDraftRun gives.",
+      "measure": "Vectors that disagree",
+      "measureText": "Acceptance vectors whose replayed verdict differs from the expected one.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "LLM client",
+      "steps": [
+        "REQ-002",
+        "REQ-009",
+        "REQ-011",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Server owner",
+      "steps": [
+        "REQ-006",
+        "REQ-007",
+        "INV-001",
+        "INV-002",
+        "refuse"
+      ]
+    }
+  ]
+}

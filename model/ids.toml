@@ -111,6 +111,7 @@ level = "build"
 suite = "devrel"
 statement = "Every documentation page shares one uor.foundation header, Diátaxis tabs and footer, grouped by journey stage, and no link between pages lands nowhere"
 
+[[id]]
 id = "DR-17"
 level = "build"
 suite = "devrel"

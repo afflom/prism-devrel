@@ -1,6 +1,9 @@
 {
   "schema": "prism/prompt/1",
   "goal": "Decide whether a value gets a UOR-ADDR content address, so two values with one meaning share a label and a malformed one gets none.",
+  "pattern": "decisionTable",
+  "repository": "UOR-Foundation/uor-addr",
+  "license": "Apache-2.0",
   "app": {
     "name": "addr-admission",
     "title": "Address admission",
@@ -57,7 +60,7 @@
           }
         ],
         "then": "refused",
-        "why": "no canonical form, no label"
+        "why": "README: each format is routed through its canonical form, JCS, canonical S-expressions, XML-C14N 1.1 or DER, and only canonical bytes are hashed"
       },
       {
         "when": [
@@ -68,7 +71,23 @@
           }
         ],
         "then": "refused",
-        "why": "a pinned schema's admission predicate failed"
+        "why": "crates/uor-addr/src/schema: a failed admission predicate is AddressFailure::SchemaViolation"
+      },
+      {
+        "when": [
+          {
+            "field": "schema",
+            "op": "is",
+            "value": "admits"
+          },
+          {
+            "field": "format",
+            "op": "is",
+            "value": "json"
+          }
+        ],
+        "then": "schema",
+        "why": "README: schema.org Photograph and Article and in-toto Statement v1 add admission without changing the label"
       },
       {
         "when": [
@@ -78,12 +97,12 @@
             "value": "admits"
           }
         ],
-        "then": "schema",
-        "why": "admitted by the pinned schema"
+        "then": "refused",
+        "why": "crates/uor-addr/src/schema: the schema wrappers are JSON descendants, so no schema is pinned to another format"
       }
     ],
     "otherwise": "labeled",
-    "otherwiseWhy": "canonical with no schema pinned",
+    "otherwiseWhy": "canonical with no schema pinned: the sha256 label of the canonical bytes",
     "properties": [
       {
         "kind": "never",
@@ -108,6 +127,18 @@
         ],
         "then": "schema",
         "why": "a rejecting schema never admits"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "format",
+            "op": "is not",
+            "value": "json"
+          }
+        ],
+        "then": "schema",
+        "why": "schema admission exists only for JSON values"
       }
     ],
     "examples": [
@@ -116,8 +147,16 @@
         "response": "labeled"
       },
       {
-        "request": "xml yes admits",
+        "request": "xml yes none",
+        "response": "labeled"
+      },
+      {
+        "request": "json yes admits",
         "response": "schema"
+      },
+      {
+        "request": "xml yes admits",
+        "response": "refused"
       },
       {
         "request": "sexp no none",
@@ -136,6 +175,109 @@
       "concerns": [
         "Proved guarantees",
         "Correct answers"
+      ]
+    },
+    {
+      "name": "Binding maintainer",
+      "text": "Ships the npm, PyPI, C and WebAssembly bindings and needs each to produce the same label byte for byte.",
+      "concerns": [
+        "One label in every language"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "One label in every language",
+      "text": "Every binding produces the same 71-byte sha256 label for the same value.",
+      "model": "component"
+    }
+  ],
+  "components": [
+    {
+      "name": "Language bindings",
+      "kind": "releaseBinary",
+      "text": "uor-addr-c, uor-addr-wasm and the npm and PyPI packages, which wrap the same Rust core."
+    },
+    {
+      "name": "Value producers",
+      "kind": "externalSystem",
+      "text": "The systems on each side of a boundary that produce JSON, S-expression, XML and ASN.1 values."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Non-canonical bytes labeled",
+      "text": "A value is hashed before reaching its canonical form, so two values with one meaning get two labels.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Canonical first",
+        "text": "A value that did not reach its canonical form is never labeled, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "AddrAdmissionProofs::inv001Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Schema pinned to the wrong format",
+      "text": "A schema admission is claimed for an XML or ASN.1 value, which no schema wrapper reads.",
+      "stride": "spoofing",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "minor",
+      "control": {
+        "name": "JSON schemas only",
+        "text": "Only a JSON value is answered schema, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "AddrAdmissionProofs::inv003Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Label collision",
+      "text": "Two values with different meanings get the same label.",
+      "stride": "spoofing",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "critical",
+      "accepted": "Different canonical bytes give different labels up to the SHA-256 sensitivity bound, which the README states as the guarantee."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Compatibility",
+      "subcharacteristic": "Interoperability",
+      "requirement": "Same label in every binding",
+      "text": "The Rust, C, WebAssembly, npm and PyPI surfaces produce the same label byte for byte.",
+      "measure": "Disagreeing bindings",
+      "measureText": "Bindings whose label for an example differs from the Rust core.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Integrator",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Binding maintainer",
+      "steps": [
+        "REQ-004",
+        "INV-001",
+        "INV-003"
       ]
     }
   ]

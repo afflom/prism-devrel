@@ -1,6 +1,9 @@
 {
   "schema": "prism/prompt/1",
   "goal": "Decide the next state of one Rule 30 cell from its neighbourhood, so every row of the automaton can be replayed and checked.",
+  "pattern": "decisionTable",
+  "repository": "afflom/rule30",
+  "license": "MIT",
   "app": {
     "name": "rule-thirty-cell",
     "title": "Rule 30 cell",
@@ -62,7 +65,7 @@
           }
         ],
         "then": "on",
-        "why": "Rule 30 maps 100 to 1"
+        "why": "rule30-lexlean/src/Core.lex.tex: rule a b c = bxor a (b || c), so 100 gives 1"
       },
       {
         "when": [
@@ -78,7 +81,7 @@
           }
         ],
         "then": "on",
-        "why": "Rule 30 maps 010 and 011 to 1"
+        "why": "rule30-lexlean/src/Core.lex.tex: with a off, rule is b || c, so 010 and 011 give 1"
       },
       {
         "when": [
@@ -94,11 +97,11 @@
           }
         ],
         "then": "on",
-        "why": "Rule 30 maps 001 to 1"
+        "why": "rule30-lexlean/src/Core.lex.tex: with a off, rule is b || c, so 001 gives 1"
       }
     ],
     "otherwise": "off",
-    "otherwiseWhy": "Rule 30 maps 000, 101, 110 and 111 to 0",
+    "otherwiseWhy": "rule30-lexlean/src/Core.lex.tex: bxor a (b || c) is 0 for 000, 101, 110 and 111",
     "properties": [
       {
         "kind": "never",
@@ -115,7 +118,7 @@
           }
         ],
         "then": "on",
-        "why": "Rule 30 maps 110 and 111 to 0"
+        "why": "Core.lex.tex: with a and b on, bxor true true is false, so 110 and 111 give 0"
       },
       {
         "kind": "always",
@@ -137,16 +140,12 @@
           }
         ],
         "then": "off",
-        "why": "a white row stays white"
+        "why": "a white neighbourhood stays white, the background of the Rule 30 diagram"
       }
     ],
     "examples": [
       {
-        "request": "on off off",
-        "response": "on"
-      },
-      {
-        "request": "on on on",
+        "request": "off off off",
         "response": "off"
       },
       {
@@ -154,7 +153,27 @@
         "response": "on"
       },
       {
+        "request": "off on off",
+        "response": "on"
+      },
+      {
+        "request": "off on on",
+        "response": "on"
+      },
+      {
+        "request": "on off off",
+        "response": "on"
+      },
+      {
         "request": "on off on",
+        "response": "off"
+      },
+      {
+        "request": "on on off",
+        "response": "off"
+      },
+      {
+        "request": "on on on",
         "response": "off"
       }
     ]
@@ -162,10 +181,116 @@
   "stakeholders": [
     {
       "name": "Researcher",
-      "text": "Studies the Rule 30 sequence and needs every cell of every row to be the one the rule gives.",
+      "text": "Studies the Rule 30 sequence for Prize Problem 1 and needs every cell of every row to be the one the rule gives.",
       "concerns": [
         "Correct answers",
         "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Proof engineer",
+      "text": "Extends the LexLean and Lean 4 formalization and needs the cell rule to stay the one Core.lex.tex and the prize kit define.",
+      "concerns": [
+        "Agreement with the prize kit",
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Agreement with the prize kit",
+      "text": "The local rule is the one Rule30PrizeKit defines, as rule30-bridge/Rule30Bridge.lean connects every paper theorem to Ruliology.CellularAutomata.Rule30Prize.",
+      "model": "component"
+    }
+  ],
+  "components": [
+    {
+      "name": "Rule30PrizeKit",
+      "kind": "externalSystem",
+      "text": "The Rule 30 Prize kit, Ruliology.CellularAutomata.Rule30Prize, whose definitions the bridge module ties the LexLean theorems to."
+    },
+    {
+      "name": "r30 command surface",
+      "kind": "cliAdapter",
+      "text": "bin/r30: status, frontier, theorem add, check, verify and axioms, also served as an MCP server."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Rule drifts from the prize kit",
+      "text": "The cell table differs from the Rule 30 the prize kit defines, so a replayed row is not the automaton the prize asks about.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "critical",
+      "control": {
+        "name": "Bridged to the prize kit",
+        "text": "Rule30Bridge.lean proves every LexLean paper theorem against the kit definition, and all eight neighbourhoods are acceptance examples.",
+        "evidence": [
+          {
+            "kind": "review",
+            "reference": "rule30-bridge/Rule30Bridge.lean"
+          },
+          {
+            "kind": "gate",
+            "reference": "make check-research"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Classical choice in a proof",
+      "text": "A proof of the rule depends on Classical.choice, which the repository forbids in its authored proof surfaces.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Choice forbidden",
+        "text": "The kernel axiom audit accepts only propext and Quot.sound, and a source check rejects classical constants.",
+        "evidence": [
+          {
+            "kind": "gate",
+            "reference": "scripts/check_no_choice.py"
+          },
+          {
+            "kind": "gate",
+            "reference": "make check-research"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Boundary cells guessed",
+      "text": "A caller asks about a cell at the edge of a finite row and supplies a neighbour that is not in the row.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "minor",
+      "accepted": "The app answers one neighbourhood exactly; the convention for cells beyond a finite row belongs to the caller that builds the row."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Maintainability",
+      "subcharacteristic": "Testability",
+      "requirement": "Whole truth table pinned",
+      "text": "Each of the eight neighbourhoods of three cells is an acceptance example, so the table is checked row by row against Core.lex.tex.",
+      "measure": "Neighbourhoods without an example",
+      "measureText": "Of the eight three-cell neighbourhoods, those no example states.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Researcher",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "otherwise",
+        "INV-001",
+        "INV-002"
       ]
     }
   ]

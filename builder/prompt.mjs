@@ -103,7 +103,7 @@ export function inputSchema(specInput) {
             asset: { enum: ASSET_KEYS },
             likelihood: { enum: LIKELIHOOD },
             impact: { enum: IMPACT },
-            control: named('The control that answers it.', { evidence: { type: 'array', items: { type: 'object', properties: { kind: { enum: EVIDENCE_KINDS }, reference: text }, required: ['kind', 'reference'] } } }, ['name', 'text', 'evidence']),
+            control: named('The control that answers it.', { evidence: { type: 'array', items: { type: 'object', properties: { kind: { enum: EVIDENCE_KINDS }, reference: { type: 'string', description: 'For proof evidence, a property id such as INV-001 (its theorem) or Module::theorem; otherwise the gate or file that is the evidence.' } }, required: ['kind', 'reference'] } } }, ['name', 'text', 'evidence']),
             accepted: { type: 'string', description: 'Instead of a control: why the risk is accepted.' },
           },
           required: ['name', 'text', 'stride', 'asset'],

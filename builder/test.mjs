@@ -217,6 +217,10 @@ const CASES = {
     await refused(async () => readPrompt({ jsonrpc: '2.0', method: 'tools/call', params: { name: 'prism_spec', arguments: good } }), /prism_prompt/, 'a tools/call of another tool is refused');
     await refused(async () => deriveModel({ ...good, axioms: { noSuchDeclaration: ['propext'] } }), /does not declare/, 'an axiom set for a declaration the app does not have is refused');
     await refused(async () => deriveModel({ ...good, axioms: { inv001Holds: ['Classical.em'] } }), /axiom of inv001Holds/, 'an axiom outside the policy vocabulary is refused');
+    const proofThreat = (reference) => ({ ...good, threats: [{ name: 'x', text: 'y', stride: 'repudiation', asset: 'answer', control: { name: 'c', text: 't', evidence: [{ kind: 'proof', reference }] } }] });
+    ok(deriveModel(proofThreat('INV-001')).security.controls.some((c) => c.evidence.some((e) => e.reference === 'RuleThirtyCellProofs::inv001Holds')), 'a property id as proof evidence becomes its theorem');
+    await refused(async () => deriveModel(proofThreat('INV-009')), /names no property/, 'proof evidence naming no property is refused');
+    await refused(async () => deriveModel(proofThreat('RuleThirtyCellProofs::inv009Holds')), /is not a theorem of RuleThirtyCellProofs/, 'proof evidence naming a theorem the app does not declare is refused');
     ok(readPrompt({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'prism_prompt', arguments: good } }).app.name === 'rule-thirty-cell', 'a prompt arrives as the tools/call of prism_prompt');
     await assert.rejects(() => buildApp(good, {}), TypeError);
     made++;

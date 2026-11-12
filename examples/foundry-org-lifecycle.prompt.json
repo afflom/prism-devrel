@@ -1,0 +1,454 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "stateMachine",
+  "machine": {
+    "state": "state",
+    "initial": "provisional",
+    "final": [
+      "retired"
+    ]
+  },
+  "goal": "Step a Foundry organization through its modeled lifecycle, so it is activated, suspended or retired only by its own distinct administrators with full coverage.",
+  "repository": "UOR-Foundation/uor-foundry",
+  "app": {
+    "name": "foundry-org-lifecycle",
+    "title": "Organization lifecycle",
+    "purpose": "Give the next lifecycle state of a Foundry organization from its current state, the requested transition, whose administrators approve it, how many distinct administrators approve and whether they cover every part.",
+    "fields": [
+      {
+        "name": "state",
+        "kind": "choice",
+        "values": [
+          "provisional",
+          "activated",
+          "suspended",
+          "retired"
+        ],
+        "means": "the organization's lifecycle state now"
+      },
+      {
+        "name": "event",
+        "kind": "choice",
+        "values": [
+          "activate",
+          "suspend",
+          "reactivate",
+          "retire"
+        ],
+        "means": "the lifecycle transition requested"
+      },
+      {
+        "name": "scope",
+        "kind": "choice",
+        "values": [
+          "own",
+          "other"
+        ],
+        "means": "whether the approving administrators belong to this organization or another one"
+      },
+      {
+        "name": "administrators",
+        "kind": "number",
+        "min": 0,
+        "max": 64,
+        "means": "distinct users approving; aliases, extra keys and duplicate approvals count once"
+      },
+      {
+        "name": "coverage",
+        "kind": "choice",
+        "values": [
+          "complete",
+          "partial"
+        ],
+        "means": "whether administrators cover every part of the organization"
+      }
+    ],
+    "outcomes": [
+      "provisional",
+      "activated",
+      "suspended",
+      "retired"
+    ],
+    "meanings": {
+      "provisional": "created by any enrolled user, with only the creator's provisional grants",
+      "activated": "policy-compliant active operation",
+      "suspended": "operation suspended by its administrators",
+      "retired": "retired with its audit logs kept, the final state"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "provisional"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "activate"
+          },
+          {
+            "field": "scope",
+            "op": "is",
+            "value": "own"
+          },
+          {
+            "field": "administrators",
+            "op": ">=",
+            "value": 2
+          },
+          {
+            "field": "coverage",
+            "op": "is",
+            "value": "complete"
+          }
+        ],
+        "then": "activated",
+        "why": "model/organization_lifecycle.toml: provisional to activated only after distinct-user multi-admin quorum coverage (activation_minimum_distinct_administrators = 2); SPEC.md: complete administrative coverage"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "activated"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "suspend"
+          },
+          {
+            "field": "scope",
+            "op": "is",
+            "value": "own"
+          },
+          {
+            "field": "administrators",
+            "op": ">=",
+            "value": 2
+          }
+        ],
+        "then": "suspended",
+        "why": "model/organization_lifecycle.toml: an activated organization may be suspended by authorized distinct administrators (minimum 2)"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "suspended"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "reactivate"
+          },
+          {
+            "field": "scope",
+            "op": "is",
+            "value": "own"
+          },
+          {
+            "field": "administrators",
+            "op": ">=",
+            "value": 2
+          }
+        ],
+        "then": "activated",
+        "why": "model/organization_lifecycle.toml: a suspended organization may be reactivated (minimum 2 distinct administrators)"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "activated"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "retire"
+          },
+          {
+            "field": "scope",
+            "op": "is",
+            "value": "own"
+          },
+          {
+            "field": "administrators",
+            "op": ">=",
+            "value": 2
+          }
+        ],
+        "then": "retired",
+        "why": "model/organization_lifecycle.toml: an activated organization may be retired, keeping its audit logs (minimum 2 distinct administrators)"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "activated"
+          }
+        ],
+        "then": "activated",
+        "why": "model/organization_lifecycle.toml: allowed_transitions lists no other move out of activated"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "suspended"
+          }
+        ],
+        "then": "suspended",
+        "why": "model/organization_lifecycle.toml: allowed_transitions lists only reactivation out of suspended"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "retired"
+          }
+        ],
+        "then": "retired",
+        "why": "model/organization_lifecycle.toml: allowed_transitions lists no move out of retired"
+      }
+    ],
+    "otherwise": "provisional",
+    "otherwiseWhy": "model/organization_lifecycle.toml: allow_sole_founding_admin_in_provisional; a provisional organization without quorum and coverage stays provisional",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "provisional"
+          },
+          {
+            "field": "administrators",
+            "op": "<",
+            "value": 2
+          }
+        ],
+        "then": "activated",
+        "why": "a sole founding administrator is a bootstrap condition, not accepted redundancy"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "provisional"
+          },
+          {
+            "field": "coverage",
+            "op": "is",
+            "value": "partial"
+          }
+        ],
+        "then": "activated",
+        "why": "activation needs complete administrative coverage of the organization's parts"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "scope",
+            "op": "is",
+            "value": "other"
+          },
+          {
+            "field": "state",
+            "op": "is",
+            "value": "activated"
+          }
+        ],
+        "then": "retired",
+        "why": "creation never gives authority over another organization"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "suspended"
+          }
+        ],
+        "then": "retired",
+        "why": "retirement is allowed only from activated"
+      }
+    ],
+    "examples": [
+      {
+        "request": "provisional activate own 2 complete",
+        "response": "activated"
+      },
+      {
+        "request": "provisional activate own 1 complete",
+        "response": "provisional"
+      },
+      {
+        "request": "provisional activate own 3 partial",
+        "response": "provisional"
+      },
+      {
+        "request": "activated suspend own 2 complete",
+        "response": "suspended"
+      },
+      {
+        "request": "suspended reactivate own 2 complete",
+        "response": "activated"
+      },
+      {
+        "request": "activated retire other 5 complete",
+        "response": "activated"
+      },
+      {
+        "request": "activated retire own 2 complete",
+        "response": "retired"
+      },
+      {
+        "request": "retired reactivate own 9 complete",
+        "response": "retired"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Organization founder",
+      "text": "Enrolls, creates an organization with any display name and needs it to activate once a second administrator covers every part.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Organization administrator",
+      "text": "Approves suspension, reactivation and retirement and needs no single user or other organization to move the organization alone.",
+      "concerns": [
+        "Proved guarantees",
+        "Refused malformed requests"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "Foundry portal",
+      "kind": "staticSite",
+      "text": "The browser portal whose Views request lifecycle transitions."
+    },
+    {
+      "name": "Foundry authority model",
+      "kind": "externalSystem",
+      "text": "model/authority.toml, the scoped multi-administrator policy that counts distinct approvers."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Single-owner activation",
+      "text": "The sole founding administrator activates the organization without a second distinct user.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "high",
+      "impact": "major",
+      "control": {
+        "name": "Distinct-user quorum",
+        "text": "Activation needs two distinct administrators and complete coverage.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "FoundryOrgLifecycleProofs::inv001Holds"
+          },
+          {
+            "kind": "proof",
+            "reference": "FoundryOrgLifecycleProofs::inv002Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "UOR-Foundation/uor-foundry model/organization_lifecycle.toml"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cross-organization retirement",
+      "text": "Administrators of another organization, possibly one with an identical display name, retire this one.",
+      "stride": "spoofing",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Organization isolation",
+        "text": "Only this organization's administrators move it.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "FoundryOrgLifecycleProofs::inv003Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "UOR-Foundation/uor-foundry SPEC.md: names confer no privileges"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Duplicate approvals counted",
+      "text": "Aliases or extra keys of one user are counted as several administrators.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "accepted": "The app is given the count of distinct users; deduplicating aliases and keys belongs to the authority model that sends it, per SPEC.md."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Authenticity",
+      "requirement": "Two distinct administrators per transition",
+      "text": "Every transition out of a state needs at least the minimum_distinct_administrators of model/organization_lifecycle.toml.",
+      "measure": "Administrators per transition",
+      "measureText": "Fewest distinct administrators any allowed transition accepts.",
+      "threshold": 2
+    },
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every allowed transition modeled",
+      "text": "Each of the four allowed_transitions rows is one rule of the machine.",
+      "measure": "Unmodeled transitions",
+      "measureText": "allowed_transitions rows with no rule.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Organization founder",
+      "steps": [
+        "otherwise",
+        "INV-001",
+        "REQ-001"
+      ]
+    },
+    {
+      "stakeholder": "Organization administrator",
+      "steps": [
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "INV-003",
+        "INV-004",
+        "refuse"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,418 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "decisionTable",
+  "goal": "Give the one stable UOR-JCS-NFC refusal code, or admission to the digest, for a JSON document's findings, so every implementation refuses one malformed input with one code.",
+  "repository": "UOR-Foundation/uor-jcs-nfc",
+  "license": "Apache-2.0",
+  "app": {
+    "name": "jcs-nfc-admission",
+    "title": "JCS NFC admission",
+    "purpose": "Give the UOR-JCS-NFC answer for one document from what admission and canonicalization find in it: the first refusal code by the section 3.9 precedence and the NFC collision check, or addressed when it receives its sha256 digest.",
+    "fields": [
+      {
+        "name": "bom",
+        "kind": "choice",
+        "values": [
+          "absent",
+          "present"
+        ],
+        "means": "whether the bytes start with EF BB BF"
+      },
+      {
+        "name": "utf8",
+        "kind": "choice",
+        "values": [
+          "valid",
+          "invalid"
+        ],
+        "means": "whether the bytes are well-formed UTF-8, raw surrogates included as invalid"
+      },
+      {
+        "name": "parse",
+        "kind": "choice",
+        "values": [
+          "ok",
+          "json",
+          "number-token",
+          "number-range",
+          "constant",
+          "trailing"
+        ],
+        "means": "the first parse-time finding in input order, then trailing content after the top-level value"
+      },
+      {
+        "name": "names",
+        "kind": "choice",
+        "values": [
+          "distinct",
+          "duplicate",
+          "colliding"
+        ],
+        "means": "member names: distinct, duplicate after escape decoding, or distinct but colliding after NFC"
+      },
+      {
+        "name": "surrogate",
+        "kind": "choice",
+        "values": [
+          "none",
+          "lone"
+        ],
+        "means": "whether an escaped unpaired surrogate is reached"
+      }
+    ],
+    "outcomes": [
+      "addressed",
+      "e-bom",
+      "e-utf8",
+      "e-json",
+      "e-num-token",
+      "e-num-range",
+      "e-constant",
+      "e-trailing",
+      "e-dup-name",
+      "e-surrogate",
+      "e-nfc-collision"
+    ],
+    "meanings": {
+      "addressed": "admitted, canonicalized and digested as sha256:<hex>",
+      "e-bom": "E_BOM, leading byte-order mark",
+      "e-utf8": "E_UTF8, not well-formed UTF-8",
+      "e-json": "E_JSON, malformed JSON",
+      "e-num-token": "E_NUM_TOKEN, number token outside -?(0|[1-9][0-9]*)",
+      "e-num-range": "E_NUM_RANGE, integer outside plus or minus 9007199254740991",
+      "e-constant": "E_CONSTANT, NaN, Infinity or another non-standard constant",
+      "e-trailing": "E_TRAILING, content after the top-level value",
+      "e-dup-name": "E_DUP_NAME, duplicate member name",
+      "e-surrogate": "E_SURROGATE, escaped lone surrogate",
+      "e-nfc-collision": "E_NFC_COLLISION, member names collide after NFC, never merged"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "bom",
+            "op": "is",
+            "value": "present"
+          }
+        ],
+        "then": "e-bom",
+        "why": "SPEC.md 3.2 and 3.9: E_BOM is a byte-level check before parsing and comes first"
+      },
+      {
+        "when": [
+          {
+            "field": "utf8",
+            "op": "is",
+            "value": "invalid"
+          }
+        ],
+        "then": "e-utf8",
+        "why": "SPEC.md 3.1 and 3.9: E_UTF8 follows E_BOM"
+      },
+      {
+        "when": [
+          {
+            "field": "parse",
+            "op": "is",
+            "value": "json"
+          }
+        ],
+        "then": "e-json",
+        "why": "SPEC.md 3.9: parse-time codes fire in input order"
+      },
+      {
+        "when": [
+          {
+            "field": "parse",
+            "op": "is",
+            "value": "number-token"
+          }
+        ],
+        "then": "e-num-token",
+        "why": "SPEC.md 3.5: tokens such as 1.0 and 1e0 are refused as text"
+      },
+      {
+        "when": [
+          {
+            "field": "parse",
+            "op": "is",
+            "value": "number-range"
+          }
+        ],
+        "then": "e-num-range",
+        "why": "SPEC.md 3.5: values outside the safe-integer bound are refused"
+      },
+      {
+        "when": [
+          {
+            "field": "parse",
+            "op": "is",
+            "value": "constant"
+          }
+        ],
+        "then": "e-constant",
+        "why": "SPEC.md 3.6: NaN and Infinity are refused"
+      },
+      {
+        "when": [
+          {
+            "field": "parse",
+            "op": "is",
+            "value": "trailing"
+          }
+        ],
+        "then": "e-trailing",
+        "why": "SPEC.md 3.3 and 3.9: the remainder check follows the parse-time codes"
+      },
+      {
+        "when": [
+          {
+            "field": "names",
+            "op": "is",
+            "value": "duplicate"
+          }
+        ],
+        "then": "e-dup-name",
+        "why": "SPEC.md 3.4 and 3.9: duplicates after escape decoding, a post-parse scan"
+      },
+      {
+        "when": [
+          {
+            "field": "surrogate",
+            "op": "is",
+            "value": "lone"
+          }
+        ],
+        "then": "e-surrogate",
+        "why": "SPEC.md 3.7 and 3.9: E_SURROGATE follows E_DUP_NAME"
+      },
+      {
+        "when": [
+          {
+            "field": "names",
+            "op": "is",
+            "value": "colliding"
+          }
+        ],
+        "then": "e-nfc-collision",
+        "why": "SPEC.md 4.1 and 4.3: NFC precedes member sort, and post-normalization collisions are refused in canonicalization, after admission"
+      }
+    ],
+    "otherwise": "addressed",
+    "otherwiseWhy": "SPEC.md 5 and uor_jcs_nfc_ref.py address_json: an admitted, canonicalized document is digested",
+    "properties": [
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "bom",
+            "op": "is",
+            "value": "present"
+          }
+        ],
+        "then": "e-bom",
+        "why": "one malformed input receives one code, and E_BOM has precedence"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "names",
+            "op": "is",
+            "value": "colliding"
+          }
+        ],
+        "then": "addressed",
+        "why": "a collision is never resolved by last-write-wins, first-write-wins or merging"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "parse",
+            "op": "is",
+            "value": "number-token"
+          }
+        ],
+        "then": "addressed",
+        "why": "an integral value such as 1.0 is still refused"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "surrogate",
+            "op": "is",
+            "value": "lone"
+          }
+        ],
+        "then": "addressed",
+        "why": "a lone escaped surrogate is never digested"
+      }
+    ],
+    "examples": [
+      {
+        "request": "absent valid ok distinct none",
+        "response": "addressed"
+      },
+      {
+        "request": "present invalid json duplicate lone",
+        "response": "e-bom"
+      },
+      {
+        "request": "absent invalid ok distinct none",
+        "response": "e-utf8"
+      },
+      {
+        "request": "absent valid number-token distinct none",
+        "response": "e-num-token"
+      },
+      {
+        "request": "absent valid trailing duplicate none",
+        "response": "e-trailing"
+      },
+      {
+        "request": "absent valid ok duplicate lone",
+        "response": "e-dup-name"
+      },
+      {
+        "request": "absent valid ok colliding lone",
+        "response": "e-surrogate"
+      },
+      {
+        "request": "absent valid ok colliding none",
+        "response": "e-nfc-collision"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Context implementer",
+      "text": "Writes an implementation of the digest context and needs the same refusal code as every other implementation for every input.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Registry maintainer",
+      "text": "Cites the context's final corpus in a registry entry and needs no inadmissible document to receive an address.",
+      "concerns": [
+        "Proved guarantees",
+        "Refused malformed requests"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "Reference implementation",
+      "kind": "cliAdapter",
+      "text": "uor_jcs_nfc_ref.py, admit and canonicalize written from SPEC.md."
+    },
+    {
+      "name": "Conformance corpus",
+      "kind": "externalSystem",
+      "text": "conformance/uor-jcs-nfc-vectors-v0.1-rc5.json and its mutation suite run_mutants.py."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Merged colliding names",
+      "text": "An implementation merges members whose names collide after NFC, giving two documents one address.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Collision refusal",
+        "text": "Colliding names are refused, never addressed.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "JcsNfcAdmissionProofs::inv002Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "UOR-Foundation/uor-jcs-nfc conformance/run_mutants.py"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Integral float admitted",
+      "text": "A type-based guard admits 1.0 or 2^53 as a float with an integral value.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Lexical number admission",
+        "text": "Number tokens are validated as text.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "JcsNfcAdmissionProofs::inv003Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "UOR-Foundation/uor-jcs-nfc SPEC.md 8 mutation probes"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Different Unicode database",
+      "text": "NFC under a Unicode version other than 15.0.0 normalizes differently and yields another digest.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "medium",
+      "impact": "major",
+      "accepted": "The app takes the collision finding as given; SPEC.md 1.3 pins Unicode 15.0.0, and gen_vectors.py refuses any other runtime."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Compatibility",
+      "subcharacteristic": "Interoperability",
+      "requirement": "One code per input",
+      "text": "Every malformed combination receives exactly one of the ten refusal codes SPEC.md 3.8 and 4.3 define.",
+      "measure": "Refusal codes",
+      "measureText": "Distinct refusal codes the app answers.",
+      "threshold": 10
+    },
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Integrity",
+      "requirement": "No refused document addressed",
+      "text": "No document with any refusal finding receives an address.",
+      "measure": "Addressed refusals",
+      "measureText": "Acceptance vectors with a refusal finding answered addressed.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Context implementer",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-007",
+        "REQ-008",
+        "REQ-009",
+        "REQ-010",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Registry maintainer",
+      "steps": [
+        "INV-001",
+        "INV-002",
+        "INV-003",
+        "INV-004",
+        "refuse"
+      ]
+    }
+  ]
+}

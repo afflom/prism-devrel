@@ -1,0 +1,470 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "stateMachine",
+  "machine": {
+    "state": "state",
+    "initial": "built",
+    "final": [
+      "accepted"
+    ]
+  },
+  "goal": "Step a template product release through build, candidate, plan, deploy, verify and accept, so no release is accepted without passing every protected job in order.",
+  "repository": "UOR-Foundation/template",
+  "app": {
+    "name": "template-release-lifecycle",
+    "title": "Release lifecycle",
+    "purpose": "Give the next lifecycle state of a template product release from its current state, the pipeline event, whether the ref is protected and whether the attached evidence is complete.",
+    "fields": [
+      {
+        "name": "state",
+        "kind": "choice",
+        "values": [
+          "built",
+          "candidate",
+          "planned",
+          "deployed",
+          "verified",
+          "accepted"
+        ],
+        "means": "the lifecycle state the release is in now"
+      },
+      {
+        "name": "event",
+        "kind": "choice",
+        "values": [
+          "promote",
+          "plan",
+          "deploy",
+          "verify",
+          "accept"
+        ],
+        "means": "the prismpm.yml job that runs next"
+      },
+      {
+        "name": "ref",
+        "kind": "choice",
+        "values": [
+          "protected",
+          "unprotected"
+        ],
+        "means": "whether the triggering branch or tag is protected"
+      },
+      {
+        "name": "evidence",
+        "kind": "choice",
+        "values": [
+          "complete",
+          "missing"
+        ],
+        "means": "whether the deployment state and release evidence the job requires are attached"
+      }
+    ],
+    "outcomes": [
+      "built",
+      "candidate",
+      "planned",
+      "deployed",
+      "verified",
+      "accepted"
+    ],
+    "meanings": {
+      "built": "built once by the build job, without publication credentials",
+      "candidate": "signed, promoted to candidate and pushed to the registry",
+      "planned": "bound to observed target state by a deployment plan",
+      "deployed": "deployed from the exact plan with deployment evidence attached",
+      "verified": "post-deployment state and release evidence verified after a clean pull",
+      "accepted": "conformance attached and promoted to accepted, the final state"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "built"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "promote"
+          },
+          {
+            "field": "ref",
+            "op": "is",
+            "value": "protected"
+          }
+        ],
+        "then": "candidate",
+        "why": "prismpm.yml: authorize-release requires branch or tag protection, then promote keyless-signs the development-to-candidate transition and pushes the candidate graph"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "candidate"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "plan"
+          }
+        ],
+        "then": "planned",
+        "why": "prismpm.yml plan job: binds the immutable candidate release to observed target state without rebuilding"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "planned"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "deploy"
+          }
+        ],
+        "then": "deployed",
+        "why": "prismpm.yml deploy job: deploys the exact release and exact plan, then attaches deployment evidence"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "deployed"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "verify"
+          },
+          {
+            "field": "evidence",
+            "op": "is",
+            "value": "complete"
+          }
+        ],
+        "then": "verified",
+        "why": "prismpm.yml verify-deployment: require observed deployment state and complete attached release evidence"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "verified"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "accept"
+          },
+          {
+            "field": "evidence",
+            "op": "is",
+            "value": "complete"
+          }
+        ],
+        "then": "accepted",
+        "why": "prismpm.yml conformance then accept: every public feature case is attached before the candidate-to-accepted transition is signed"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "candidate"
+          }
+        ],
+        "then": "candidate",
+        "why": "prismpm.yml: a job runs only when the jobs it needs succeeded, so any other event leaves a candidate release where it is"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "planned"
+          }
+        ],
+        "then": "planned",
+        "why": "prismpm.yml: a job runs only when the jobs it needs succeeded, so any other event leaves a planned release where it is"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "deployed"
+          }
+        ],
+        "then": "deployed",
+        "why": "prismpm.yml: a job runs only when the jobs it needs succeeded, so any other event leaves a deployed release where it is"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "verified"
+          }
+        ],
+        "then": "verified",
+        "why": "prismpm.yml: a job runs only when the jobs it needs succeeded, so any other event leaves a verified release where it is"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "accepted"
+          }
+        ],
+        "then": "accepted",
+        "why": "prismpm.yml: a job runs only when the jobs it needs succeeded, so any other event leaves a accepted release where it is"
+      }
+    ],
+    "otherwise": "built",
+    "otherwiseWhy": "prismpm.yml: without a protected ref the promote job never requests credentials, so a built release stays built",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "built"
+          },
+          {
+            "field": "ref",
+            "op": "is",
+            "value": "unprotected"
+          }
+        ],
+        "then": "candidate",
+        "why": "authorize-release rejects publication from an unprotected ref"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "deployed"
+          },
+          {
+            "field": "evidence",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "verified",
+        "why": "verify-deployment requires observed state and complete attached evidence"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "verified"
+          },
+          {
+            "field": "evidence",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "accepted",
+        "why": "accept needs the conformance-bearing graph"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "built"
+          }
+        ],
+        "then": "accepted",
+        "why": "accept needs promote, deploy, verify-deployment and conformance first"
+      }
+    ],
+    "examples": [
+      {
+        "request": "built promote protected complete",
+        "response": "candidate"
+      },
+      {
+        "request": "built promote unprotected complete",
+        "response": "built"
+      },
+      {
+        "request": "candidate plan protected complete",
+        "response": "planned"
+      },
+      {
+        "request": "planned deploy protected complete",
+        "response": "deployed"
+      },
+      {
+        "request": "deployed verify protected missing",
+        "response": "deployed"
+      },
+      {
+        "request": "verified accept protected complete",
+        "response": "accepted"
+      },
+      {
+        "request": "accepted promote unprotected missing",
+        "response": "accepted"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Template adopter",
+      "text": "Creates a repository from the template and needs prismpm.yml to take a release from build to accepted with nothing skipped.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Release approver",
+      "text": "Guards the protected release and deployment environments and needs no unprotected ref or missing evidence to reach accepted.",
+      "concerns": [
+        "Proved guarantees",
+        "Refused malformed requests"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "PrismPM product pipeline",
+      "kind": "cliAdapter",
+      "text": "The reusable prismpm.yml workflow whose jobs are the lifecycle events."
+    },
+    {
+      "name": "GHCR",
+      "kind": "externalSystem",
+      "text": "The registry the candidate and accepted graphs are pushed to and pulled from."
+    },
+    {
+      "name": "Sigstore",
+      "kind": "externalSystem",
+      "text": "Keyless signing of the development-to-candidate and candidate-to-accepted transitions."
+    },
+    {
+      "name": "Deployment target",
+      "kind": "externalSystem",
+      "text": "The modeled target, kubernetes-production by default, whose observed state the plan binds."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Publication from an unprotected ref",
+      "text": "A push to an unprotected branch obtains release credentials and promotes a candidate.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Protected ref before promotion",
+        "text": "Only a protected ref moves a built release to candidate.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "TemplateReleaseLifecycleProofs::inv001Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "authorize-release job in .github/workflows/prismpm.yml"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Acceptance without evidence",
+      "text": "A deployed release is marked verified or accepted while its deployment state or conformance evidence is missing.",
+      "stride": "repudiation",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Evidence before verification and acceptance",
+        "text": "Missing evidence keeps the release where it is.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "TemplateReleaseLifecycleProofs::inv002Holds"
+          },
+          {
+            "kind": "proof",
+            "reference": "TemplateReleaseLifecycleProofs::inv003Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "verify-deployment and conformance jobs in .github/workflows/prismpm.yml"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Rebuilt release between steps",
+      "text": "A step rebuilds the product so the accepted digest differs from the built one.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "The app decides lifecycle states, not digests; prismpm.yml passes one immutable-reference from promote to every later job and never rebuilds."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every pipeline job modeled",
+      "text": "Each of the five prismpm.yml jobs after build (promote, plan, deploy, verify-deployment with conformance, accept) is one transition of the machine.",
+      "measure": "Steps from built to accepted",
+      "measureText": "Transitions on the shortest run from built to accepted.",
+      "threshold": 5
+    },
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Accountability",
+      "requirement": "No skipped job",
+      "text": "No single step takes a release past a job it needs.",
+      "measure": "Skipping transitions",
+      "measureText": "Transitions that move a release more than one lifecycle state forward.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Template adopter",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "REQ-005",
+        "REQ-010"
+      ]
+    },
+    {
+      "stakeholder": "Release approver",
+      "steps": [
+        "INV-001",
+        "INV-002",
+        "INV-003",
+        "INV-004",
+        "refuse"
+      ]
+    }
+  ]
+}
