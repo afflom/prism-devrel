@@ -1,0 +1,9 @@
+# The tutorial fixture: a checkout whose recipe runs a tool on a workspace.
+
+other:
+    echo not this one
+
+tool:
+    cargo run -q --locked -p tool -- check ws --out proj --name ws --last-modified 2026-01-01T00:00:00Z
+    cd proj && lexlean verify && prismpm check
+    cargo run -q --locked -p tool -- check . --out target/self --name tool --last-modified 2026-01-01T00:00:00Z --register register.toml

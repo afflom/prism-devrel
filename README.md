@@ -35,25 +35,39 @@ records. The Lean kernel checks, over the generated catalog, that:
 
 The subject is [UORust](https://github.com/afflom/uorust), the tool that
 maps a Cargo workspace onto a complete Prism model, read from its own
-self-model in `app/` at the commit `devrel/subject.json` pins
-(`a4dfa2270bcb`). All 309 of its facet records are covered: 108 security, 73
-design, 61 architecture, 38 quality, 15 features, 11 behavior, 2 system and 1
-application record.
+self-model in `app/` at the commit `devrel/subject.json` pins. Every one of
+its facet records is covered; the [learning hub](https://afflom.github.io/prism-devrel/learn/)
+states the pinned commit and the count per facet, generated from that commit
+rather than restated here.
 
 ## What is published
 
-The Pages site has the app at its root and the catalog under `learn/`:
+The Pages site has the app at its root and the catalog under `learn/`. Each
+page is one [Diátaxis](https://diataxis.fr) type and one stage of the
+developer journey, with the identifiers the builder pages use (`DR-16`):
 
-| Resource | Modality |
-| --- | --- |
-| Model your Rust project with UORust | walkthrough |
-| How UORust was modeled | walkthrough (case study) |
-| Architecture, Features and journeys, Security and threat model, System and release | walkthroughs |
-| Design views in OPM and UML | diagrams, drawn from the design records |
-| Quality (ISO/IEC 25010), Behavior and proofs, Extension facets | reference |
-| Slides and video script | one slide per facet with a script |
-| Record explorer | interactive search over `learn/records.json` |
-| llms.txt and Markdown twins | `llms.txt`, `llms-full.txt`, `feed.xml` and a `.md` twin of every page |
+| Resource | Diátaxis type | Journey stage |
+| --- | --- | --- |
+| Model your Rust project with UORust | tutorial | Learn |
+| How UORust was modeled | explanation (case study, with UORust's lift register) | Evaluate |
+| Architecture, Design views, Features and journeys | explanation | Learn |
+| Security and threat model | explanation | Evaluate |
+| Quality (ISO/IEC 25010) | reference | Evaluate |
+| Behavior and proofs, Extension facets, UORust command reference | reference | Build |
+| System and release | explanation | Scale |
+| Slides and video script | explanation, one slide per facet with a script | Discover |
+| Record explorer | reference, interactive search over `learn/records.json` | Build |
+| llms.txt and Markdown twins | reference: `llms.txt`, `llms-full.txt`, `feed.xml` and a `.md` twin of every page | Build |
+
+The tutorial runs UORust on the fixture workspace UORust's own gate projects,
+with the lines of that gate's `uorust` recipe, and shows the committed
+projection's records, its `frontier.toml` and its first lifted function beside
+the LexLean definition it became. The command reference is read from the
+`clap` declaration of the `uorust` binary. Both are read from the pinned
+checkout, and a checkout that no longer holds what they show is refused
+(`DR-15`). Record values are shown as data: list and record literals as nested
+lists, and record identifiers as links to the page that teaches the record
+(`DR-16`).
 
 The app is a text/3 workbench. It answers a record index (decimal) with
 `record <id>`, `facet <facet>` and one `page <slug>` line per page that
@@ -120,8 +134,9 @@ removed from the example page, `DR-13` fails on its first assertion.
 
 ## How the catalog is made
 
-1. `devrel/subject.json` pins the subject: repository, full commit and project
-   path.
+1. `devrel/subject.json` pins the subject: repository, full commit, project
+   path, and for the tutorial the `Justfile` recipe, fixture workspace, CLI
+   source and register rows it rests on.
 2. `devrel-catalog` (`crates/devrel`) reads every `.lex.tex` module of the
    subject, takes its facet records (definitions whose result is a
    `Foundation.Arch`, `Foundation.Sec`, `Foundation.Qual`, `Production.*` or

@@ -17,7 +17,7 @@ every facet and the record lookup in `app/`.
 Each check runs once per `just vv`. `just bdd` runs only the meta-gate while a
 scenario is being written; `just test` already includes it.
 
-The register holds `DR-01` to `DR-06` (suite `devrel`), so the meta-gate checks
+The register holds the `DR` rows (suite `devrel`), so the meta-gate checks
 real rows, real scenarios and real tests. `DR-03` is also enforced by
 `pages.yml`, which regenerates the catalog from the pinned subject with
 `devrel-catalog --check`. It becomes an error as soon as an ID, scenario,
@@ -38,6 +38,8 @@ or test is added without the other two.
 | `pinned_subject_dr_03` | `pages.yml` without `devrel-catalog --check` | rejected |
 | `pages_teach_their_records_dr_04` | facet pages render no record cards | rejected |
 | `escapes_subject_markup_dr_05` | `<` written unescaped into pages | rejected |
+| `tutorial_from_the_subject_dr_15` | the CLI reader looking for a derive the subject does not declare; a recipe that does not check the fixture; a claim the subject does not register | each refused with `CatalogError::Tutorial` |
+| `record_values_and_page_types_dr_16` | list literals left unread in record cards | rejected (a page shows `(cons` as source) |
 | `prismpm verify` | an acceptance vector set without the exact guest-allocation boundary | rejected (PP2009) |
 | `audit-bootstrap` | a floating/copied action, mutable SDK tag, changed universal file, narrowed boundary, shallow/credential-retaining checkout, copied project renderer, omitted standards lock, acceptance bypass, deploy-job signing privilege, incomplete release lifecycle, or a bootstrap that drops a native architecture from main or tags, cancels or replaces a main run, or skips runs by path, condition or matrix exclusion | all rejected |
 

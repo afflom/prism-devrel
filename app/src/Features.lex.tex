@@ -77,6 +77,13 @@ definition{
 }
 
 definition{
+  name: featureCli,
+  parameters: [],
+  result: Foundation.Arch::Feature,
+  body: (record Foundation.Arch::Feature {statement := "A developer looks up every command and option of the subject's tool, read from its source, and the commands the subject's own gate runs.", calls := (cons "Catalog::resourceCli" (nil String)), acceptance := (cons "Catalog::resourceCli" (nil String))})
+}
+
+definition{
   name: featureSlides,
   parameters: [],
   result: Foundation.Arch::Feature,
@@ -129,7 +136,7 @@ definition{
   name: journeyNewcomer,
   parameters: [],
   result: Foundation.Arch::Journey,
-  body: (record Foundation.Arch::Journey {actor := "Architecture::stakeholderRustNewcomer", steps := (cons "Features::featureGettingStarted" (cons "Features::featureArchitecture" (cons "Features::featureDesign" (cons "Features::featureFeatures" (cons "Features::featureSecurity" (cons "Features::featureQuality" (cons "Features::featureBehavior" (cons "Features::featureSystem" (nil String)))))))))})
+  body: (record Foundation.Arch::Journey {actor := "Architecture::stakeholderRustNewcomer", steps := (cons "Features::featureGettingStarted" (cons "Features::featureCli" (cons "Features::featureArchitecture" (cons "Features::featureDesign" (cons "Features::featureFeatures" (cons "Features::featureSecurity" (cons "Features::featureQuality" (cons "Features::featureBehavior" (cons "Features::featureSystem" (nil String))))))))))})
 }
 
 definition{

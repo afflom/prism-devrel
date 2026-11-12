@@ -4,7 +4,7 @@
 
 use crate::frame::{self, ERROR_TEXT, FOUND_TEXT, LOOKUP_PREFIX, OVERFLOW_TEXT, RAW_PREFIX};
 use crate::lextex::quote;
-use crate::{Catalog, Facet, Scope, INVALID};
+use crate::{Catalog, Facet, INVALID};
 
 const MODEL: &str = "Foundation.DevRel.V1.Model";
 const V3: &str = "Foundation.View.Text.V3.Model";
@@ -408,16 +408,16 @@ pub fn catalog(c: &Catalog) -> String {
             quote(crate::UNKNOWN)
         ),
     ));
-    for r in c.resources.iter().filter(|r| r.scope != Scope::Index) {
+    for r in c.resources.iter().filter(|r| r.scope.teaches()) {
         let name = resource_name(r.slug);
         decls.push(definition(
             &format!("{name}Teaches"),
             "Bool",
             &format!("({MODEL}::teaches {} (covers))", r.index),
         ));
-        // A subject with no record in a resource's scope (no extension facet,
-        // say) leaves that page with nothing to teach: the definition still
-        // names it, and no theorem claims otherwise.
+        // A resource whose rule selects none of the subject's records
+        // (facet pages without records are not published) leaves it nothing
+        // to teach: the definition still names it, and no theorem claims otherwise.
         if c.covers.iter().any(|rs| rs.contains(&r.index)) {
             decls.push(theorem(
                 &format!("{name}TeachesHolds"),

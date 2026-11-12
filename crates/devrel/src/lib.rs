@@ -22,6 +22,7 @@ pub mod frame;
 pub mod lean;
 pub mod lextex;
 pub mod site;
+pub mod tutorial;
 
 /// Why the catalog could not be built.
 #[derive(Debug)]
@@ -34,6 +35,8 @@ pub enum CatalogError {
     Empty(PathBuf),
     /// The subject configuration is not what `devrel/subject.json` must hold.
     Config(String),
+    /// The subject's checkout no longer holds what the tutorial shows.
+    Tutorial(String),
 }
 
 impl fmt::Display for CatalogError {
@@ -47,6 +50,7 @@ impl fmt::Display for CatalogError {
                 path.display()
             ),
             Self::Config(why) => write!(f, "devrel/subject.json: {why}"),
+            Self::Tutorial(why) => write!(f, "the subject's tutorial: {why}"),
         }
     }
 }
@@ -180,12 +184,99 @@ pub enum Scope {
     /// An index of every record, kept apart from coverage so that coverage
     /// is earned by the pages that explain a record, not by a list of them.
     Index,
+    /// The subject's tool as its source declares it: commands and options,
+    /// which are not facet records, so the page covers none.
+    Tool,
+}
+
+impl Scope {
+    /// Whether a resource of this scope teaches facet records, so that its
+    /// coverage is a claim the catalog decides.
+    pub fn teaches(self) -> bool {
+        !matches!(self, Scope::Index | Scope::Tool)
+    }
+}
+
+/// A Diátaxis documentation type (Procida, diataxis.fr): the identifiers
+/// `builder/site.mjs` gives its pages, so the whole site is one taxonomy.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Diataxis {
+    /// Learning-oriented: a lesson the reader follows to a result.
+    Tutorial,
+    /// Task-oriented: steps to a goal the reader already has.
+    HowToGuide,
+    /// Information-oriented: a description to look things up in.
+    Reference,
+    /// Understanding-oriented: why things are as they are.
+    Explanation,
+}
+
+impl Diataxis {
+    /// The identifier, as `<meta name="diataxis">` carries it.
+    pub fn id(self) -> &'static str {
+        match self {
+            Diataxis::Tutorial => "tutorial",
+            Diataxis::HowToGuide => "howToGuide",
+            Diataxis::Reference => "reference",
+            Diataxis::Explanation => "explanation",
+        }
+    }
+
+    /// The type in prose.
+    pub fn label(self) -> &'static str {
+        match self {
+            Diataxis::Tutorial => "tutorial",
+            Diataxis::HowToGuide => "how-to guide",
+            Diataxis::Reference => "reference",
+            Diataxis::Explanation => "explanation",
+        }
+    }
+}
+
+/// A stage of the developer journey (Lewko and Parton, *Developer
+/// Relations*), with `builder/site.mjs`'s identifiers.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Journey {
+    /// Finding out the product exists and what it is for.
+    Discover,
+    /// Deciding whether it fits.
+    Evaluate,
+    /// Getting to a first result.
+    Learn,
+    /// Making something real with it.
+    Build,
+    /// Running it at scale and contributing back.
+    Scale,
+}
+
+impl Journey {
+    /// The identifier, as `<meta name="developer-journey">` carries it.
+    pub fn id(self) -> &'static str {
+        match self {
+            Journey::Discover => "discover",
+            Journey::Evaluate => "evaluate",
+            Journey::Learn => "learn",
+            Journey::Build => "build",
+            Journey::Scale => "scale",
+        }
+    }
+
+    /// The stage in prose.
+    pub fn label(self) -> &'static str {
+        match self {
+            Journey::Discover => "Discover",
+            Journey::Evaluate => "Evaluate",
+            Journey::Learn => "Learn",
+            Journey::Build => "Build",
+            Journey::Scale => "Scale",
+        }
+    }
 }
 
 /// A learning resource: one page of the catalog.
 #[derive(Clone, Debug)]
 pub struct Resource {
-    /// Position in [`RESOURCES`].
+    /// Position in the subject's catalog.
     pub index: usize,
     /// The page's path under `learn/`, and the stem of its declaration.
     pub slug: &'static str,
@@ -195,49 +286,55 @@ pub struct Resource {
     pub modality: Modality,
     /// What it teaches.
     pub scope: Scope,
+    /// Its Diátaxis type.
+    pub diataxis: Diataxis,
+    /// The journey stage it serves.
+    pub journey: Journey,
     /// One sentence on what a reader gets from it.
     pub summary: &'static str,
 }
 
 macro_rules! resources {
-    ($( $slug:literal, $title:literal, $modality:ident, $scope:expr, $summary:literal; )*) => {
+    ($( $slug:literal, $title:literal, $modality:ident, $scope:expr, $diataxis:ident, $journey:ident, $summary:literal; )*) => {
         /// Every resource the catalog publishes, in declaration order.
         pub fn resources() -> Vec<Resource> {
-            [$( ($slug, $title, Modality::$modality, $scope, $summary) ),*]
+            [$( ($slug, $title, Modality::$modality, $scope, Diataxis::$diataxis, Journey::$journey, $summary) ),*]
                 .into_iter()
                 .enumerate()
-                .map(|(index, (slug, title, modality, scope, summary))| Resource { index, slug, title, modality, scope, summary })
+                .map(|(index, (slug, title, modality, scope, diataxis, journey, summary))| Resource { index, slug, title, modality, scope, diataxis, journey, summary })
                 .collect()
         }
     };
 }
 
 resources! {
-    "getting-started", "Model your Rust project with UORust", Walkthrough, Scope::GettingStarted,
-        "From a Cargo workspace to a checked Prism model in every facet, and the application record it ends in.";
-    "case-study", "How UORust was modeled", Walkthrough, Scope::CaseStudy,
-        "Who the model is for, what they care about, and how those concerns became facets.";
-    "architecture", "Architecture walkthrough", Walkthrough, Scope::Facet(Facet::Architecture),
+    "getting-started", "Model your Rust project with UORust", Walkthrough, Scope::GettingStarted, Tutorial, Learn,
+        "Run UORust on its own fixture workspace, check what it writes with the SDK, and read a Rust function beside the LexLean definition it lifted to.";
+    "case-study", "How UORust was modeled", Walkthrough, Scope::CaseStudy, Explanation, Evaluate,
+        "Who the model is for, what they care about, how those concerns became facets, and how far the lift reaches.";
+    "architecture", "Architecture walkthrough", Walkthrough, Scope::Facet(Facet::Architecture), Explanation, Learn,
         "Stakeholders, concerns, components, edges, viewpoints and views, as ISO/IEC/IEEE 42010 records.";
-    "design", "Design views in OPM and UML", Diagram, Scope::Facet(Facet::Design),
+    "design", "Design views in OPM and UML", Diagram, Scope::Facet(Facet::Design), Explanation, Learn,
         "Every design view drawn: object-process, component, sequence and state machine diagrams.";
-    "features", "Features and journeys", Walkthrough, Scope::Facet(Facet::Features),
+    "features", "Features and journeys", Walkthrough, Scope::Facet(Facet::Features), Explanation, Learn,
         "What the product does, the calls that realize it, the rows that accept it, and the paths people take.";
-    "security", "Security and threat model", Walkthrough, Scope::Facet(Facet::Security),
+    "security", "Security and threat model", Walkthrough, Scope::Facet(Facet::Security), Explanation, Evaluate,
         "Assets, STRIDE threats, risks, controls with evidence, and the risks accepted on purpose.";
-    "quality", "Quality model (ISO/IEC 25010)", Reference, Scope::Facet(Facet::Quality),
+    "quality", "Quality model (ISO/IEC 25010)", Reference, Scope::Facet(Facet::Quality), Reference, Evaluate,
         "Characteristics, subcharacteristics, requirements and measured thresholds.";
-    "behavior", "Behavior and proofs", Reference, Scope::Facet(Facet::Behavior),
+    "behavior", "Behavior and proofs", Reference, Scope::Facet(Facet::Behavior), Reference, Build,
         "Every theorem the Lean kernel checks, with its statement and proof method.";
-    "system", "System and release", Walkthrough, Scope::Facet(Facet::System),
+    "system", "System and release", Walkthrough, Scope::Facet(Facet::System), Explanation, Scale,
         "The production system model, the release manifest and how a holo is published.";
-    "extensions", "Extension facets", Reference, Scope::Facet(Facet::Extension),
+    "extensions", "Extension facets", Reference, Scope::Facet(Facet::Extension), Reference, Build,
         "Domain records the subject adds beside the standard facets.";
-    "slides", "Slides and video script", VideoScript, Scope::FirstOfEachFacet,
+    "cli", "UORust command reference", Reference, Scope::Tool, Reference, Build,
+        "Every command and option of the uorust CLI, read from its source, and the commands its own gate runs.";
+    "slides", "Slides and video script", VideoScript, Scope::FirstOfEachFacet, Explanation, Discover,
         "One slide per facet with a script to read over it.";
-    "explorer", "Record explorer", InteractiveExplorer, Scope::Index,
+    "explorer", "Record explorer", InteractiveExplorer, Scope::Index, Reference, Build,
         "Search every facet record by identifier, facet or text, and open the pages that teach it.";
-    "agents", "llms.txt and Markdown twins", AgentTwin, Scope::Index,
+    "agents", "llms.txt and Markdown twins", AgentTwin, Scope::Index, Reference, Build,
         "The catalog as plain text for agents: llms.txt, a Markdown twin of every page, and a feed.";
 }
 
@@ -314,6 +411,8 @@ pub struct SubjectConfig {
     pub commit: String,
     /// The Prism project's directory inside the repository.
     pub path: String,
+    /// What the tutorial runs, in the subject's checkout.
+    pub tutorial: tutorial::TutorialConfig,
 }
 
 impl SubjectConfig {
@@ -333,6 +432,11 @@ impl SubjectConfig {
             repository: get("repository")?,
             commit: get("commit")?,
             path: get("path")?,
+            tutorial: tutorial::TutorialConfig::parse(
+                value
+                    .get("tutorial")
+                    .ok_or_else(|| CatalogError::Config("tutorial is missing".into()))?,
+            )?,
         };
         if config.commit.len() != 40 || !config.commit.bytes().all(|b| b.is_ascii_hexdigit()) {
             return Err(CatalogError::Config(
@@ -345,6 +449,21 @@ impl SubjectConfig {
             ));
         }
         Ok(config)
+    }
+
+    /// The checkout a subject project at `project` sits in: `project` with
+    /// one directory taken off for each component of `path`.
+    pub fn checkout(&self, project: &Path) -> PathBuf {
+        let mut root = project.to_path_buf();
+        for _ in Path::new(self.path.trim_matches('/')).components() {
+            root.pop();
+        }
+        root
+    }
+
+    /// A file of the checkout on GitHub, at the pinned commit.
+    pub fn repo_blob(&self, path: &str) -> String {
+        format!("{}/blob/{}/{}", self.repository, self.commit, path)
     }
 
     /// The subject's file at `path` on GitHub, at the pinned commit.
@@ -431,6 +550,17 @@ impl Catalog {
         })
     }
 
+    /// The resources published as pages for this subject: every one, except
+    /// a facet page for a facet the subject has no record of, which would
+    /// teach nothing. The catalog still declares it, as the program's
+    /// capability, and claims nothing for it.
+    pub fn published(&self) -> Vec<&Resource> {
+        self.resources
+            .iter()
+            .filter(|r| !matches!(r.scope, Scope::Facet(f) if self.facet(f).is_empty()))
+            .collect()
+    }
+
     /// The records a resource teaches, in index order.
     pub fn covered_by(&self, resource: usize) -> Vec<&Record> {
         self.records
@@ -495,7 +625,7 @@ fn covers(scope: Scope, record: &Record, all: &[Record]) -> bool {
             .iter()
             .find(|r| r.facet == record.facet)
             .is_some_and(|first| first.id == record.id),
-        Scope::Index => false,
+        Scope::Index | Scope::Tool => false,
     }
 }
 

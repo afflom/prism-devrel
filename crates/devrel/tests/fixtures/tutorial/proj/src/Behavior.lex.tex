@@ -1,0 +1,19 @@
+\begin{lexlean}{Behavior}
+\useglossary{lexlean.std.nat@1.2.0}
+\title{Behavior}
+\begin{semanticmodule}
+definition{
+  name: twice,
+  parameters: [x : Nat],
+  result: Nat,
+  body: (if (x <? 10) then (x + x) else x)
+}
+
+theorem{
+  name: twiceSmall,
+  parameters: [],
+  statement: ((twice 1) = 2),
+  proof: decide{}
+}
+\end{semanticmodule}
+\end{lexlean}

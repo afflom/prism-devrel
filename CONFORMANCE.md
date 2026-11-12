@@ -36,6 +36,8 @@ model does not sanction.
 | `DR-12` | `build` | The builder's vendored and packed copies equal their sources |
 | `DR-13` | `build` | An example page shows every record the prompt becomes, and prompt text is escaped in the page and quoted as data in its twin |
 | `DR-14` | `build` | Every builder page is one Diátaxis documentation type and one stage of the developer journey, and the prompt reference is the MCP tool's own input schema |
+| `DR-15` | `build` | The tutorial runs the subject's tool on the subject's fixture with the commands its gate runs, and shows the committed projection's records, frontier and first lifted function; the CLI reference is the tool's clap declaration |
+| `DR-16` | `build` | Every record value is shown as data: list and record literals as nested lists, and identifiers of records the catalog teaches as links to the page that teaches them; every page carries its Diátaxis type and journey stage |
 | `DR-30` | `build` | Every documentation page shares one uor.foundation header, Diátaxis tabs and footer, grouped by journey stage, and no link between pages lands nowhere |
 
 ## Cited authorities

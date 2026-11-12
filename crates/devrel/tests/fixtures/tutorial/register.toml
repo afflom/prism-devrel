@@ -1,0 +1,24 @@
+spec = "uorust/register/1"
+
+[[residue]]
+kappa = "44"
+function = "tool::a"
+reason = "call"
+detail = "x"
+
+[[residue]]
+kappa = "55"
+function = "tool::b"
+reason = "form"
+detail = "x"
+
+[[residue]]
+kappa = "66"
+function = "tool::c"
+reason = "call"
+detail = "x"
+
+[[lifted]]
+kappa = "77"
+function = "tool::d"
+definition = "Behavior::d"
