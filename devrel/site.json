@@ -22,7 +22,7 @@
   },
   "app": {
     "about": "The app page at the root, as a newcomer meets it: what the site is, what the verified app on it does, and where to go next. devrel/shell.mjs writes it under the app's own description.",
-    "explain": "New to Prism? This site teaches you to build apps that prove what they do. The box below is one: a Prism app, proved in Lean and checked in your browser. Type a record number of the UORust model, such as 0, and it names the pages that teach that record.",
+    "explain": "New to Prism? This site teaches you to build apps that prove what they do.",
     "links": [
       { "label": "Start building", "path": "start/" },
       { "label": "Examples", "path": "examples/" },
