@@ -32,7 +32,7 @@ function fixture(edit = () => {}) {
     writeFileSync(join(site, rel), text);
   };
   put('app.json', JSON.stringify({ live: LIVE }));
-  put('index.html', '<!doctype html><html><head><title>App</title></head><body><header class="head"><a id="open-spec" class="spec-link" href="#spec"><span>View spec</span></a></header><aside id="spec"></aside></body></html>');
+  put('index.html', '<!doctype html><html><head><title>App</title></head><body><header class="head"><div class="ident"><h1 id="name">App</h1><p id="lede" class="lede">An app.</p></div><a id="open-spec" class="spec-link" href="#spec"><span>View spec</span></a></header><aside id="spec"></aside></body></html>');
   put('own.css', '');
   put('spec.html', '<section><h2>Spec</h2></section>');
   put('favicon.svg', '<svg xmlns="http://www.w3.org/2000/svg"/>');
@@ -46,6 +46,8 @@ function fixture(edit = () => {}) {
   put('learn/walk/index.html', page('Walkthrough', 'reference', 'build').replace(/\.\.\/own/g, '../../learn/own'));
   put('learn/walk/index.md', '# Walkthrough');
   put('start/index.html', page('First app', 'tutorial', 'learn'));
+  put('examples/index.html', page('Examples', 'howToGuide', 'build'));
+  put('examples/index.md', '# Examples');
   put('llms.txt', `# X\n\n> y\n\nSubject: z.\n\n## Pages\n\n- [Walkthrough](${LIVE}learn/walk/index.md): w\n- [Catalog](${LIVE}learn/index.md): c\n\n## Data\n\n- [records.json](${LIVE}learn/records.json): data\n\n## More\n\n- [First app](start/index.md): t\n`);
   put('llms-full.txt', `---\ntitle: "Catalog"\nurl: ${LIVE}learn/\n---\n\n# Catalog\n`);
   put('feed.xml', `<?xml version="1.0"?>\n<rss version="2.0"><channel><title>t</title>\n<item><title>Catalog</title><link>${LIVE}learn/</link></item>\n</channel></rss>\n`);
@@ -88,12 +90,14 @@ const cases = {
       ok(llms.includes('## Data') && llms.includes('records.json') && !llms.includes('## Pages') && !llms.includes('## More'), 'llms.txt keeps data links and drops emptied sections');
       ok(llms.includes('Subject: z.'), 'llms.txt keeps the generators\' preamble');
       const full = read('llms-full.txt');
-      ok((full.match(/^url: /gm) ?? []).length === 3 && full.includes(`url: ${LIVE}start/`), 'llms-full.txt gains every page it lacked, once');
+      ok((full.match(/^url: /gm) ?? []).length === 4 && full.includes(`url: ${LIVE}start/`) && full.includes(`url: ${LIVE}examples/`), 'llms-full.txt gains every page it lacked, once');
       ok(full.includes(`](${LIVE}learn/index.md)`) && full.includes('](#first-part)'), 'llms-full.txt links absolutely and keeps fragments');
       const feed = read('feed.xml');
-      ok((feed.match(/<item>/g) ?? []).length === 3 && feed.includes('<category>tutorial</category>'), 'feed.xml gains every page it lacked, once');
+      ok((feed.match(/<item>/g) ?? []).length === 4 && feed.includes('<category>tutorial</category>'), 'feed.xml gains every page it lacked, once');
       ok(read('sitemap.xml').includes(`<loc>${LIVE}learn/walk/</loc>`), 'sitemap.xml lists the pages');
       ok(read('index.html').includes('id="open-docs"') && read('index.html').includes('href="./docs/"'), 'the app page links to the docs');
+      ok(read('index.html').includes('href="./start/"') && read('index.html').includes('href="./examples/"'), 'the app page links to Start building and Examples');
+      ok(read('index.html').includes('id="explain"'), 'the app page says what the site and its app are');
       ok(run(site).status !== 0, 'a site already wrapped is refused rather than wrapped twice');
     } finally {
       rmSync(site, { recursive: true, force: true });
