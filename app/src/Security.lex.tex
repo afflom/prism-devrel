@@ -299,7 +299,7 @@ definition{
   name: modeledControlRequestBound,
   parameters: [],
   result: Production.ThreatModel::ModeledControl,
-  body: (record Production.ThreatModel::ModeledControl {control := "Security::controlRequestBound", name := "Bounded lookup request", text := "The lookup refuses an empty request or one longer than six bytes before parsing it.", evidence := (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.gate), reference := "lookup acceptance vectors replayed in the compiled guest"}) (nil Production.ThreatModel::Evidence))})
+  body: (record Production.ThreatModel::ModeledControl {control := "Security::controlRequestBound", name := "Bounded lookup request", text := "The lookup refuses an empty request or one longer than the digits of the subject's record count (Catalog::indexDigits) before parsing it.", evidence := (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.gate), reference := "lookup acceptance vectors replayed in the compiled guest"}) (nil Production.ThreatModel::Evidence))})
 }
 
 definition{

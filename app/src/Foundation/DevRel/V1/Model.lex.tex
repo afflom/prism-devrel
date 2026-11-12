@@ -358,21 +358,22 @@ definition{
 
 definition{
   name: requestIndex,
-  parameters: [value : Bytes],
+  parameters: [value : Bytes, digits : Nat],
   result: (Option Nat),
-  body: (if (((prim length value : Nat) =? 0) || (6 <? (prim length value : Nat))) then (ctor Option.none [Nat]) else (digitsValue value 0 (prim length value : Nat) 0))
+  body: (if (((prim length value : Nat) =? 0) || (digits <? (prim length value : Nat))) then (ctor Option.none [Nat]) else (digitsValue value 0 (prim length value : Nat) 0))
 }
 
 definition{
   name: lookup,
   parameters: [
     value : Bytes,
+    digits : Nat,
     records : (List SubjectRecord),
     resources : (List Resource),
     rows : (List Covers)
   ],
   result: String,
-  body: (match (requestIndex value)
+  body: (match (requestIndex value digits)
     | Option.none => "error invalid-request"
     | Option.some position => (answerFor position records resources rows)),
   axioms: [propext]

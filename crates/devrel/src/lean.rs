@@ -9,11 +9,31 @@ use crate::{Catalog, Facet, INVALID};
 const MODEL: &str = "Foundation.DevRel.V1.Model";
 const V3: &str = "Foundation.View.Text.V3.Model";
 
-/// The longest request the guest reads (`requestMaximum`): a framed lookup
-/// is at most 16 bytes, a raw one as long as the page lets it be.
-pub const REQUEST_MAXIMUM: usize = 64;
+/// `Catalog::indexDigits`: the decimal digits of the subject's record count,
+/// the longest index the lookup parses. Every record's index has at most that
+/// many digits, and so does the first index past the end, which is refused as
+/// unknown rather than as invalid.
+pub fn index_digits(c: &Catalog) -> usize {
+    c.records.len().to_string().len()
+}
+
+/// The longest request the guest reads (`requestMaximum` of
+/// `app/src/DevRel.lex.tex`): the longer of the two framed forms, a prefix,
+/// the separator and an index of `index_digits` digits. A bare index is
+/// shorter still.
+pub fn request_maximum(c: &Catalog) -> usize {
+    request_maximum_for(index_digits(c))
+}
+
+/// `request_maximum` for an index of `digits` digits.
+pub fn request_maximum_for(digits: usize) -> usize {
+    LOOKUP_PREFIX.len().max(RAW_PREFIX.len()) + 1 + digits
+}
+
 /// `guestAllocationMaximum`, one byte past the request bound.
-pub const ALLOCATION_MAXIMUM: usize = REQUEST_MAXIMUM + 1;
+pub fn allocation_maximum(c: &Catalog) -> usize {
+    request_maximum(c) + 1
+}
 
 /// The declaration name of a resource: `resource` and its slug in camel case.
 pub fn resource_name(slug: &str) -> String {
@@ -98,7 +118,8 @@ fn theorem(name: &str, statement: &str) -> String {
 
 /// The acceptance vectors of the lookup, replayed in the compiled guest:
 /// the first, middle and last record, the first index past the end, two
-/// malformed requests and one exactly as long as the guest allocation bound,
+/// malformed requests, one a digit longer than any index and one exactly as
+/// long as the guest allocation bound,
 /// then the workbench's framed requests, answered with the page's JSON.
 pub fn vectors(c: &Catalog) -> Vec<(Vec<u8>, Vec<u8>)> {
     let n = c.records.len();
@@ -108,7 +129,11 @@ pub fn vectors(c: &Catalog) -> Vec<(Vec<u8>, Vec<u8>)> {
         .collect();
     out.push((b"7x".to_vec(), INVALID.as_bytes().to_vec()));
     out.push((Vec::new(), INVALID.as_bytes().to_vec()));
-    out.push((vec![b'1'; ALLOCATION_MAXIMUM], INVALID.as_bytes().to_vec()));
+    out.push((vec![b'1'; index_digits(c) + 1], INVALID.as_bytes().to_vec()));
+    out.push((
+        vec![b'1'; allocation_maximum(c)],
+        INVALID.as_bytes().to_vec(),
+    ));
     // Every workbench example is bound to the framed vector of its request,
     // and the raw editor is replayed once.
     for (_, _, _, value, report) in examples(c) {
@@ -156,7 +181,7 @@ pub fn examples(c: &Catalog) -> Vec<(String, String, String, String, String)> {
     out.push((
         "not-a-number".into(),
         "Not a number".into(),
-        "An index is one to six decimal digits.".into(),
+        format!("An index is one to {} decimal digits.", index_digits(c)),
         "x".into(),
         INVALID.into(),
     ));
@@ -173,7 +198,7 @@ pub fn sections(c: &Catalog) -> Vec<(String, String, Vec<String>)> {
             "record ID: the facet record at that index, by its Module::declaration identifier.".to_string(),
             "facet NAME: the facet the record belongs to.".to_string(),
             "page SLUG: one line per page that teaches the record, at learn/SLUG/.".to_string(),
-            format!("refused unknown-record: the index is {n} or more. error invalid-request: the request is not one to six decimal digits."),
+            format!("refused unknown-record: the index is {n} or more. error invalid-request: the request is not one to {} decimal digits.", index_digits(c)),
         ],
     )];
     out.push((
@@ -262,6 +287,11 @@ fn tree(decls: &mut Vec<String>, low: usize, high: usize) -> String {
 /// `app/src/Catalog.lex.tex` for this catalog.
 pub fn catalog(c: &Catalog) -> String {
     let mut decls: Vec<String> = Vec::new();
+    decls.push(definition(
+        "indexDigits",
+        "Nat",
+        &index_digits(c).to_string(),
+    ));
     decls.push(definition(
         "subject",
         &format!("{MODEL}::Subject"),

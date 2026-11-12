@@ -609,7 +609,8 @@ impl Catalog {
 
 /// The answer past the last record.
 pub const UNKNOWN: &str = "refused unknown-record";
-/// The answer to a request that is not one to six decimal digits.
+/// The answer to a request that is not one to `lean::index_digits` decimal
+/// digits.
 pub const INVALID: &str = "error invalid-request";
 
 fn covers(scope: Scope, record: &Record, all: &[Record]) -> bool {

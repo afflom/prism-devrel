@@ -3,6 +3,7 @@
 \useglossary{lexlean.std.nat@1.2.0}
 \useglossary{prism.arch@1.0.0}
 \useglossary{prism.qual@1.0.0}
+\importmodule{Catalog}
 \importmodule{Foundation.Qual}
 \title{DevRel quality model}
 \begin{semanticmodule}
@@ -150,7 +151,7 @@ definition{
   name: measureRequestBytes,
   parameters: [],
   result: Foundation.Qual::QualityMeasure,
-  body: (record Foundation.Qual::QualityMeasure {index := 3, requirementIndex := 3, threshold := 6})
+  body: (record Foundation.Qual::QualityMeasure {index := 3, requirementIndex := 3, threshold := 3})
 }
 
 definition{
@@ -185,7 +186,7 @@ definition{
   name: requirementNames,
   parameters: [],
   result: (List Named),
-  body: (cons (record Named {index := 0, name := "AccessiblePages", text := "Every page scores 100 for accessibility on mobile and meets WCAG 2.2 AA."}) (cons (record Named {index := 1, name := "EveryRecordCovered", text := "Every facet record of the subject is covered by at least one resource."}) (cons (record Named {index := 2, name := "LearningPath", text := "Every stakeholder has at least one journey through the catalog."}) (cons (record Named {index := 3, name := "LookupBounded", text := "The lookup refuses any request longer than six bytes before parsing it."}) (cons (record Named {index := 4, name := "NoUndeclaredReference", text := "No resource covers a record the subject does not declare, and no cover names an undeclared resource."}) (cons (record Named {index := 5, name := "Regenerable", text := "Regenerating the catalog from the pinned subject reproduces the committed catalog byte for byte."}) (nil Named)))))))
+  body: (cons (record Named {index := 0, name := "AccessiblePages", text := "Every page meets WCAG 2.2 AA and scores the most Lighthouse gives for accessibility on mobile, the minScore 1 that lighthouserc.json asserts."}) (cons (record Named {index := 1, name := "EveryRecordCovered", text := "Every facet record of the subject is covered by at least one resource."}) (cons (record Named {index := 2, name := "LearningPath", text := "Every stakeholder has at least one journey through the catalog."}) (cons (record Named {index := 3, name := "LookupBounded", text := "The lookup refuses, before parsing it, any request longer than the decimal digits of the subject's record count (Catalog::indexDigits, generated from the pinned subject)."}) (cons (record Named {index := 4, name := "NoUndeclaredReference", text := "No resource covers a record the subject does not declare, and no cover names an undeclared resource."}) (cons (record Named {index := 5, name := "Regenerable", text := "Regenerating the catalog from the pinned subject reproduces the committed catalog byte for byte."}) (nil Named)))))))
 }
 
 definition{
@@ -288,9 +289,9 @@ theorem{
 }
 
 theorem{
-  name: requestBudgetIsSix,
+  name: requestBudgetIsTheIndexDigits,
   parameters: [],
-  statement: ((thresholdOf 3 (measureRecords)) = 6),
+  statement: ((thresholdOf 3 (measureRecords)) = (Catalog::indexDigits)),
   proof: decide{}
 }
 \end{semanticmodule}

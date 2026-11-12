@@ -270,7 +270,10 @@ fn lookup_dr_06() {
     assert!(vectors.iter().any(|(q, a)| q == b"7x" && a == invalid));
     assert!(vectors
         .iter()
-        .any(|(q, a)| q.len() == lean::ALLOCATION_MAXIMUM && a == invalid));
+        .any(|(q, a)| q.len() == lean::allocation_maximum(&catalog) && a == invalid));
+    assert!(vectors
+        .iter()
+        .any(|(q, a)| q.len() == lean::index_digits(&catalog) + 1 && a == invalid));
     // Each workbench example is bound to a framed vector whose answer is the
     // frame of the generator's answer.
     for (_, _, _, value, report) in lean::examples(&catalog) {
@@ -283,9 +286,15 @@ fn lookup_dr_06() {
         .expect("the DevRel facet");
     let bound = declaration(&rules, "requestIndex");
     assert!(
-        bound.contains("(6 <? (prim length value : Nat))"),
-        "the request bound is not six bytes"
+        bound.contains("(digits <? (prim length value : Nat))"),
+        "the request bound is not the digits the catalog passes"
     );
+    // The bound is derived: the digits of the subject's record count.
+    let digits = lean::index_digits(&catalog);
+    assert_eq!(digits, catalog.records.len().to_string().len());
+    assert!(lean::catalog(&catalog).contains(&format!(
+        "definition{{name: indexDigits, parameters: [], result: Nat, body: {digits}}}"
+    )));
     // Every answer the guest serves is the generator's answer for that record,
     // and a branch of the tree reaches each of them.
     let generated = lean::catalog(&catalog);
@@ -313,14 +322,28 @@ fn lookup_dr_06() {
     let app =
         std::fs::read_to_string(root().join("app/src/DevRel.lex.tex")).expect("the application");
     let text = declaration(&app, "textDispatch");
-    assert!(text.contains("(Foundation.DevRel.V1.Model::requestIndex request)"));
+    assert!(
+        text.contains("(Foundation.DevRel.V1.Model::requestIndex request (Catalog::indexDigits))")
+    );
     assert!(text.contains("(Catalog::answerAt position)"));
     let dispatch = declaration(&app, "dispatch");
     assert!(dispatch.contains("(Frame::answer framed (textDispatch"));
     let application = declaration(&app, "application");
+    // The application's byte bounds are derived from the committed catalog
+    // of the pinned subject: its index digits, framed.
+    let committed =
+        std::fs::read_to_string(root().join("app/src/Catalog.lex.tex")).expect("the catalog");
+    let digits: usize = committed
+        .split("definition{name: indexDigits, parameters: [], result: Nat, body: ")
+        .nth(1)
+        .and_then(|rest| rest.split('}').next())
+        .and_then(|d| d.parse().ok())
+        .expect("Catalog::indexDigits");
+    let request = lean::request_maximum_for(digits);
+    assert!(application.contains(&format!("requestMaximum := ({request} : UInt32)")));
     assert!(application.contains(&format!(
         "guestAllocationMaximum := ({} : UInt32)",
-        lean::ALLOCATION_MAXIMUM
+        request + 1
     )));
     assert!(application.contains(&format!(
         "responseMaximum := ({} : UInt32)",
