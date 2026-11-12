@@ -1,0 +1,48 @@
+{
+  "spec": "prism-devrel/site/1",
+  "about": "The information architecture and brand of every documentation page. devrel/shell.mjs reads it to wrap the pages that crates/devrel (learn/) and builder/site.mjs (start/, examples/) write, and to write the docs hub, llms.txt and sitemap.xml. Pages carry their own Diátaxis type and journey stage; this file only names the allowed values, their order and their authorities.",
+  "name": "Prism-DevRel",
+  "brand": {
+    "primary": "Prism",
+    "secondary": "DevRel",
+    "authority": {
+      "repository": "https://github.com/UOR-Foundation/website",
+      "commit": "037d44c60d0579e8e09e4219992bd330559ae8e1",
+      "files": ["src/index.css", "src/site/copy.ts", "src/site/links.ts", "src/site/SiteHeader.tsx", "src/docs/Docs.tsx"]
+    }
+  },
+  "hub": {
+    "path": "docs/",
+    "eyebrow": "Build with Prism SDK",
+    "title": "Learn Prism by building with it",
+    "lead": "Prism is an open SDK that seamlessly enables you to build, ship and run self-verifying AI applications. From edge to cloud, and beyond.",
+    "body": "Prism-DevRel is the developer relations program for Prism, written as a Prism model. Every page here is one Diátaxis documentation type and serves one stage of the developer journey, and the pages that teach a model cover every one of its records, a claim the Lean kernel checks.",
+    "start": "Start building"
+  },
+  "links": {
+    "foundation": "https://uor.foundation/",
+    "prismDocs": "https://uor.foundation/docs/",
+    "github": "https://github.com/UOR-Foundation",
+    "discord": "https://discord.gg/U7EAUXFTVF",
+    "source": "https://github.com/afflom/prism-devrel"
+  },
+  "diataxis": {
+    "authority": "Daniele Procida, Diátaxis, https://diataxis.fr",
+    "types": [
+      { "id": "tutorial", "tab": "Tutorials", "label": "tutorial", "orientation": "learning-oriented", "what": "Lessons that take you by the hand through building something, so you gain skill and confidence.", "href": "https://diataxis.fr/tutorials/" },
+      { "id": "howToGuide", "tab": "How-to guides", "label": "how-to guide", "orientation": "goal-oriented", "what": "Directions that take you through the steps of a real task you already want to do.", "href": "https://diataxis.fr/how-to-guides/" },
+      { "id": "reference", "tab": "Reference", "label": "reference", "orientation": "information-oriented", "what": "Technical descriptions of the machinery and how to operate it, to consult while you work.", "href": "https://diataxis.fr/reference/" },
+      { "id": "explanation", "tab": "Explanation", "label": "explanation", "orientation": "understanding-oriented", "what": "Discussion that gives context and reasons, so you understand why Prism is the way it is.", "href": "https://diataxis.fr/explanation/" }
+    ]
+  },
+  "journey": {
+    "authority": "Caroline Lewko and James Parton, Developer Relations: How to Build and Grow a Successful Developer Program, Apress, 2021, the developer journey",
+    "stages": [
+      { "id": "discover", "label": "Discover", "question": "What is Prism, and is it for me?" },
+      { "id": "evaluate", "label": "Evaluate", "question": "Does Prism solve my problem, and can I trust what it claims?" },
+      { "id": "learn", "label": "Learn", "question": "How do I build my first working app?" },
+      { "id": "build", "label": "Build", "question": "How do I make my app do what I need?" },
+      { "id": "scale", "label": "Scale", "question": "How do I ship, maintain and grow what I built?" }
+    ]
+  }
+}

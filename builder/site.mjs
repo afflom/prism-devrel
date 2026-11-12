@@ -30,11 +30,12 @@ const TEMPLATE_REPO = 'UOR-Foundation/template';
 /**
  * Every page is one Diátaxis documentation type (https://diataxis.fr) and
  * serves one stage of the developer journey of Lewko and Parton, Developer
- * Relations (Apress, 2021). The identifiers are the ones the DevRel model's
- * extension facet uses, so pages and catalog resources read with one table.
+ * Relations (Apress, 2021). Both lists are devrel/site.json's, which
+ * devrel/shell.mjs reads to wrap every page in one header and navigation.
  */
-export const DIATAXIS = { tutorial: 'tutorial', howToGuide: 'how-to guide', reference: 'reference', explanation: 'explanation' };
-export const JOURNEY = { discover: 'Discover', evaluate: 'Evaluate', learn: 'Learn', build: 'Build', scale: 'Scale' };
+const IA = JSON.parse(readFileSync(join(repo, 'devrel/site.json'), 'utf8'));
+export const DIATAXIS = Object.fromEntries(IA.diataxis.types.map((t) => [t.id, t.label]));
+export const JOURNEY = Object.fromEntries(IA.journey.stages.map((s) => [s.id, s.label]));
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const md = (s) => String(s).replace(/[\\`*_[\]<>|]/g, (c) => `\\${c}`);

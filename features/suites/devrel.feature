@@ -89,3 +89,9 @@ Feature: devrel
     Given the Diátaxis types of diataxis.fr and the journey stages Discover, Evaluate, Learn, Build and Scale of Lewko and Parton, Developer Relations
     When builder/test.mjs DR-14 writes the site and reads every page it wrote
     Then each page declares exactly one type and one stage, the tutorial, reference, explanation and how-to guides are separate pages, and the reference documents every member of prism_prompt and of its app spec
+
+  @DR-30 @build
+  Scenario: Every documentation page shares one uor.foundation header, Diátaxis tabs and footer, grouped by journey stage, and no link between pages lands nowhere
+    Given a site as the catalog and the builder write it, with devrel/site.json naming the Diátaxis types of diataxis.fr, the journey stages of Lewko and Parton and the uor.foundation brand
+    When devrel/test.mjs DR-30 runs devrel/shell.mjs over it
+    Then every page has the one header, tabs and footer, its own content, styles and scripts, a side navigation by journey stage and a list of its sections; the docs hub, llms.txt by type, sitemap.xml and the app page's docs link are written; and an unknown type or stage, an unclassified documentation page, a link or fragment that lands nowhere and a site already wrapped are each refused

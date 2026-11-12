@@ -104,3 +104,9 @@ id = "DR-14"
 level = "build"
 suite = "devrel"
 statement = "Every builder page is one Diátaxis documentation type and one stage of the developer journey, and the prompt reference is the MCP tool's own input schema"
+
+[[id]]
+id = "DR-30"
+level = "build"
+suite = "devrel"
+statement = "Every documentation page shares one uor.foundation header, Diátaxis tabs and footer, grouped by journey stage, and no link between pages lands nowhere"
