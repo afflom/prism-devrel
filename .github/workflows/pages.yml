@@ -21,8 +21,11 @@ on:
 permissions:
   contents: read
 
+# One run per ref at a time: main's runs publish in order, and a run
+# dispatched on a work branch verifies every example without waiting behind
+# main or being dropped by it.
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -297,6 +300,8 @@ jobs:
 
   deploy:
     name: publish the page
+    # Only main publishes; a dispatch on another branch stops at the verified build.
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 10
