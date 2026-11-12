@@ -99,3 +99,9 @@ experience-check:
 # UORust without anyone re-pinning it.
 generate: model-write catalog experience
     node builder/pack.mjs
+
+# The content standard over an assembled site: apply what a machine can
+# apply, then measure every rule (scripts/content/standard.json).
+content site="site":
+    node scripts/content/enrich.mjs {{site}}
+    node scripts/content/check.mjs {{site}}

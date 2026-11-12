@@ -29,6 +29,7 @@
 .cs-cast-member > a:hover { border-color: hsl(var(--fd-line-strong)); transform: translateY(-2px); }
 .cs-cast-role { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: hsl(var(--fd-dim)); }
 .cs-cast-need { font-size: 14px; line-height: 1.45; color: hsl(var(--fd-dim)); margin-top: 6px; }
+@media (max-width: 599px) { .cs-cast { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .cs-cast-member > a, .cs-cast-member:not(:has(a)) { padding: 12px; } .cs-cast .cs-avatar { width: 56px; height: 56px; } .cs-cast-need { display: none; } }
 
 /* Figures. */
 .cs-figure { margin: 28px 0 36px; }

@@ -149,6 +149,7 @@ const report = [];
 const page = await context.newPage();
 for (const rel of pages) {
   await page.goto(`${origin}${rel}`, { waitUntil: 'load' });
+  await page.evaluate(() => document.fonts.ready.then(() => true));
   const o = await page.evaluate(observe, { terms: M.terms, vague: STANDARD.vagueLinks, personas: M.personas.map((p) => p.id), sel: { FOLDABLE, MEASURED, NOT_PROSE, NOT_TERMS, SET_ASIDE } });
   const faults = [];
   const add = (id, detail) => faults.push({ rule: id, detail });

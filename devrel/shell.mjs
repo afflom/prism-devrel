@@ -27,6 +27,8 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, posix, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { load as loadContent } from '../scripts/content/model.mjs';
+import { personaFor } from '../scripts/content/guides.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = join(here, '..');
@@ -209,9 +211,32 @@ function hub(pages, live) {
       : [`<li><a href="${link(mine[0])}">${mine.length} ${esc(t.type.tab.toLowerCase())}</a> <span class="dc-dim">from ${esc(mine[0].title)}</span></li>`]));
     return `<li id="${s.id}" class="dc-home-card"><div class="dc-pattern ${patterns[i % patterns.length]}"></div><div class="dc-card-body"><em class="fd-mono">${String(i + 1).padStart(2, '0')} · ${esc(s.label)}</em><strong>${esc(s.question)}</strong>${lines.length ? `<ul>${lines.join('')}</ul>` : ''}</div></li>`;
   }).join('');
-  const types = TABS.filter((t) => t.flat.length).map((t) => `<li><a class="dc-home-card" href="${link(t.flat[0])}"><div class="dc-card-body"><em class="fd-mono">${esc(t.type.orientation)}</em><strong>${esc(t.type.tab)}</strong><span>${esc(t.type.what)}</span><span class="dc-dim">${t.flat.length} ${t.flat.length === 1 ? 'page' : 'pages'}</span></div></a></li>`).join('');
+  // The guide a reader meets most at each stage: the persona most of its pages are written for.
+  const M = loadContent(repo);
+  const guideOf = (s) => {
+    const tally = new Map();
+    for (const p of ordered.filter((q) => q.journey === s.id)) {
+      const g = personaFor(M, { rel: p.rel, diataxis: p.diataxis, journey: p.journey });
+      if (g) tally.set(g.id, (tally.get(g.id) ?? 0) + 1);
+    }
+    return [...tally].sort((a, b) => b[1] - a[1])[0]?.[0] ?? M.personas[0].id;
+  };
+  const journeyFigure = {
+    kind: 'flow', title: 'Your developer journey',
+    caption: `The ${STAGES.length} stages of the developer journey, as ${SITE.journey.authority.split(',')[0]} describe it. Each shows the question you bring to it and the guide you meet there.`,
+    steps: STAGES.map((s) => ({ label: s.label, sub: s.question, icon: `persona:${guideOf(s)}` })),
+  };
+  // Procida's map of the four kinds: what each serves (action or cognition) and when (study or work).
+  const place = { tutorial: [0, 1], howToGuide: [1, 1], reference: [1, 0], explanation: [0, 0] };
+  const compass = {
+    kind: 'quadrant', title: 'Four kinds of documentation',
+    caption: `${SITE.diataxis.authority.split(',')[0]}'s Diátaxis. Each page does one of four jobs. Across: whether you are studying or working. Up: whether the page helps you do or helps you know.`,
+    x: ['while you study', 'while you work'], y: ['to know', 'to do'],
+    cells: TABS.filter((t) => t.flat.length && place[t.type.id]).map((t) => ({ label: t.type.tab, sub: `${t.flat.length} ${t.flat.length === 1 ? 'page' : 'pages'}`, x: place[t.type.id][0], y: place[t.type.id][1], href: link(t.flat[0]) })),
+  };
+  const spec = (f) => `<figure class="cs-figure"><script type="application/vnd.prism.figure+json">${JSON.stringify(f).replace(/</g, '\\u003c')}</script></figure>`;
   const matrix = `<div class="table"><table><thead><tr><th scope="col">Stage</th>${TYPES.map((t) => `<th scope="col">${esc(t.tab)}</th>`).join('')}</tr></thead><tbody>${STAGES.map((s) => `<tr><th scope="row">${esc(s.label)}</th>${TYPES.map((t) => `<td>${ordered.filter((p) => p.journey === s.id && p.diataxis === t.id).map((p) => `<a href="${link(p)}">${esc(p.title)}</a>`).join('<br>')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
-  const body = `${header(root, null)}<main id="main" class="dc-home"><div class="dc-pixels" aria-hidden="true"></div><p class="eyebrow">// ${esc(SITE.hub.eyebrow)}</p><h1>${esc(SITE.hub.title)}<span class="dc-dim">.</span></h1><p class="dc-summary">${esc(SITE.hub.lead)}</p><p class="dc-body">${esc(SITE.hub.body)}</p><p class="dc-actions"><a class="dc-cta" href="${link(first)}">${esc(SITE.hub.start)}</a><a class="dc-ghost" href="${root}">Open the app</a><a class="dc-ghost" href="${SITE.links.prismDocs}">Prism docs</a></p><h2 id="journey">Your developer journey</h2><p class="dc-dim">The five stages of the developer journey, and the pages for each.</p><ol class="dc-home-grid dc-path-grid">${journey}</ol><h2 id="types">Four kinds of documentation</h2><p class="dc-dim">${esc(SITE.diataxis.authority.split(',')[0])}'s Diátaxis: each page does one of four jobs.</p><ul class="dc-home-grid">${types}</ul><h2 id="map">Every page, by stage and type</h2>${matrix}</main>${footer(root, '')}`;
+  const body = `${header(root, null)}<main id="main" class="dc-home"><div class="dc-pixels" aria-hidden="true"></div><p class="eyebrow">// ${esc(SITE.hub.eyebrow)}</p><h1>${esc(SITE.hub.title)}<span class="dc-dim">.</span></h1><p class="dc-summary">${esc(SITE.hub.lead)}</p><p class="dc-body">${esc(SITE.hub.body)}</p><p class="dc-actions"><a class="dc-cta" href="${link(first)}">${esc(SITE.hub.start)}</a><a class="dc-ghost" href="${root}">Open the app</a><a class="dc-ghost" href="${SITE.links.prismDocs}">Prism docs</a></p>${spec(journeyFigure)}<h2 id="guides">Meet your guides</h2><p class="dc-dim">${esc(SITE.hub.guides)}</p><div data-content="cast"></div><h2 id="journey">Your developer journey</h2><p class="dc-dim">The pages for each stage.</p><ol class="dc-home-grid dc-path-grid">${journey}</ol><h2 id="types">Four kinds of documentation</h2>${spec(compass)}<h2 id="map">Every page, by stage and type</h2>${matrix}</main>${footer(root, '')}`;
   const md = [
     `# ${SITE.hub.title}`,
     '',

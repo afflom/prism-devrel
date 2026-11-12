@@ -8,7 +8,7 @@
   "defaultType": "explanation",
   "personas": [
     {
-      "id": "kai", "stakeholder": "stakeholderRustNewcomer", "name": "Kai", "prop": "terminal", "accessory": "goggles",
+      "id": "kai", "start": "start/", "stakeholder": "stakeholderRustNewcomer", "name": "Kai", "prop": "terminal", "accessory": "goggles",
       "need": "A working Prism model of my own Cargo workspace, without writing it by hand.",
       "asks": {
         "discover": "What is Prism, and what would it do for my Rust code?",
@@ -19,7 +19,7 @@
       }
     },
     {
-      "id": "iris", "stakeholder": "stakeholderPrismModeler", "name": "Iris", "prop": "compass", "accessory": "sparkle",
+      "id": "iris", "start": "learn/architecture/", "stakeholder": "stakeholderPrismModeler", "name": "Iris", "prop": "compass", "accessory": "sparkle",
       "need": "To see how a complete model is laid out, one record kind at a time.",
       "asks": {
         "discover": "How is a complete Prism model laid out?",
@@ -30,7 +30,7 @@
       }
     },
     {
-      "id": "vera", "stakeholder": "stakeholderSecurityReviewer", "name": "Vera", "prop": "magnifier", "accessory": "glasses",
+      "id": "vera", "start": "learn/security/", "stakeholder": "stakeholderSecurityReviewer", "name": "Vera", "prop": "magnifier", "accessory": "glasses",
       "need": "Evidence that what the model claims about threats and controls is true.",
       "asks": {
         "discover": "What does this system claim, and who checks it?",
@@ -41,7 +41,7 @@
       }
     },
     {
-      "id": "wren", "stakeholder": "stakeholderDevRelAuthor", "name": "Wren", "prop": "quill", "accessory": "headset",
+      "id": "wren", "start": "learn/agents/", "stakeholder": "stakeholderDevRelAuthor", "name": "Wren", "prop": "quill", "accessory": "headset",
       "need": "To know which records no page teaches yet, and who each page is for.",
       "asks": {
         "discover": "Who is each page for, and what do they need first?",
@@ -52,7 +52,7 @@
       }
     },
     {
-      "id": "otto", "stakeholder": "stakeholderMaintainer", "name": "Otto", "prop": "wrench", "accessory": "beanie",
+      "id": "otto", "start": "learn/cli/", "stakeholder": "stakeholderMaintainer", "name": "Otto", "prop": "wrench", "accessory": "beanie",
       "need": "Everything kept in step when the subject changes, with no generated page edited by hand.",
       "asks": {
         "discover": "What runs where, and who owns it?",

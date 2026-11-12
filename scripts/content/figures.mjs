@@ -66,8 +66,11 @@ function flow(spec, palette) {
   const card = (s, i, x, y, w, h, chars) => {
     const lines = wrap(s.label, chars);
     const sub = s.sub ? wrap(s.sub, Math.round(chars * 1.1)) : [];
-    const icon = s.icon ? `<g transform="translate(${x + w / 2 - 22} ${y + 12}) scale(${44 / 120})">${s.icon}</g>` : '';
-    const top = y + (s.icon ? 60 : 16);
+    // Each drawing of an icon gets its own ids, so a hidden copy never owns a gradient the shown one uses.
+    const own = uid('i');
+    const art = s.icon ? s.icon.replace(/\bid="([^"]+)"/g, `id="$1-${own}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-${own})`) : '';
+    const icon = s.icon ? `<g transform="translate(${x + w / 2 - 22} ${y + 12}) scale(${44 / 120})">${art}</g>` : '';
+    const top = y + (s.icon ? 60 : 30);
     const labelH = lines.length * 17;
     return `<g class="cs-node"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" class="cs-card"/><rect x="${x}" y="${y}" width="${w}" height="4" rx="2" fill="${accent(i)}"/><text x="${x + 12}" y="${y + 20}" class="cs-step" dominant-baseline="middle">${String(i + 1).padStart(2, '0')}</text>${icon}${textBlock(lines, x + w / 2, top + labelH / 2 + 4, 14, 'cs-label')}${sub.length ? textBlock(sub, x + w / 2, top + labelH + 10 + (sub.length * 15) / 2, 11.5, 'cs-sub') : ''}</g>`;
   };
@@ -78,7 +81,7 @@ function flow(spec, palette) {
   const gap = 28;
   const W = WIDE;
   const cw = (W - gap * (n - 1)) / n;
-  const ch = 40 + iconH + maxLines;
+  const ch = 54 + iconH + maxLines;
   const aw = uid('cs-a');
   let wide = arrowDef(aw);
   steps.forEach((s, i) => {
@@ -93,7 +96,7 @@ function flow(spec, palette) {
   let y = 0;
   steps.forEach((s, i) => {
     const lines = wrap(s.label, 30).length * 17 + (s.sub ? wrap(s.sub, 34).length * 15 + 10 : 0);
-    const h = 40 + iconH + lines;
+    const h = 54 + iconH + lines;
     tall += card(s, i, 0, y, TW, h, 30);
     y += h;
     if (i < n - 1) { tall += `<line x1="${TW / 2}" y1="${y + 3}" x2="${TW / 2}" y2="${y + 25}" class="cs-edge" marker-end="url(#${at})"/>`; y += 28; }

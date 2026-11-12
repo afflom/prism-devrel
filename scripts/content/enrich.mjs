@@ -27,7 +27,7 @@ import { dirname, extname, join, normalize, posix, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { load } from './model.mjs';
 import { figure, spectrum } from './figures.mjs';
-import { card, personaFor } from './guides.mjs';
+import { avatar, card, cast, colourOf, personaFor } from './guides.mjs';
 import { FOLDABLE, NOT_TERMS, SET_ASIDE } from './dom.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -127,7 +127,7 @@ function fold(sel) {
     }
     return document.querySelector('h1')?.textContent.trim() ?? '';
   };
-  const blocks = [...main.querySelectorAll(sel.FOLDABLE)].filter((el) => !el.closest(`${sel.SET_ASIDE}, figure`) && !el.parentElement.closest(sel.FOLDABLE));
+  const blocks = [...main.querySelectorAll(sel.FOLDABLE)].filter((el) => !el.closest(`${sel.SET_ASIDE}, figure, .cs-cast`) && !el.parentElement.closest(sel.FOLDABLE));
   for (const el of blocks) {
     if (el.getBoundingClientRect().height <= limit) continue;
     const target = el.parentElement.matches('div.table, .table-wrap, .scroll') ? el.parentElement : el;
@@ -182,8 +182,17 @@ for (const rel of pages) {
   // Figures are drawn here, in Node, from the spec each generator wrote.
   html = html.replace(/<figure class="cs-figure"[^>]*>\s*<script type="application\/vnd\.prism\.figure\+json">([\s\S]*?)<\/script>\s*<\/figure>/g, (all, json) => {
     figuresDrawn++;
-    return figure(JSON.parse(json), PALETTE);
+    const spec = JSON.parse(json);
+    // A step may be illustrated by a guide: "persona:<id>" draws that character.
+    const draw = { ...spec, steps: spec.steps?.map((s) => {
+      const g = typeof s.icon === 'string' && s.icon.startsWith('persona:') ? M.personas.find((p) => p.id === s.icon.slice(8)) : null;
+      return g ? { ...s, icon: avatar(g, colourOf(M, g, PALETTE), PALETTE).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, ''), sub: `${g.name}: ${s.sub}` } : s;
+    }) };
+    if (!draw.steps) delete draw.steps;
+    return figure(draw, PALETTE).replace(/<script type="application\/vnd\.prism\.figure\+json">[\s\S]*?<\/script>/, `<script type="application/vnd.prism.figure+json">${json}</script>`);
   });
+  // The cast of guides, where a page asks for it: each links to where that guide starts.
+  html = html.replace(/<div data-content="cast"><\/div>/g, () => cast(M, PALETTE, (p) => (p.start ? posix.relative(posix.dirname(rel), p.start) + '/' : null)));
   if (!/<link rel="alternate" type="text\/markdown"/.test(html)) {
     const twin = rel.replace(/index\.html$/, 'index.md').replace(/\.html$/, '.md');
     writeFileSync(join(SITE, twin), twinOf(rel, html));
@@ -208,6 +217,7 @@ for (const rel of pages) {
   html = html.replace('</head>', `<link rel="stylesheet" href="${cssHref}"><script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script></head>`);
   writeFileSync(file, html);
   await tab.goto(`${origin}${rel}`, { waitUntil: 'load' });
+  await tab.evaluate(() => document.fonts.ready.then(() => true));
   const guide = card(M, persona, info, PALETTE);
   const r = await tab.evaluate(([guide, list, markTermsSrc, foldSrc, sel]) => {
     const markTerms = new Function(`return (${markTermsSrc})`)();
