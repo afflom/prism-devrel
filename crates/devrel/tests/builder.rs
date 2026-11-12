@@ -84,3 +84,27 @@ fn pages_dr_13() {
 fn frameworks_dr_14() {
     builder("DR-14");
 }
+
+/// `DR-17`: A state-machine prompt is checked as an OMG UML 2.5.1 state machine, and its final states and reachable states become invariants of every run that the Lean kernel proves
+#[test]
+fn machine_dr_17() {
+    builder("DR-17");
+}
+
+/// `DR-18`: Every app names the established pattern its behavior follows, a DMN 1.5 decision table, an XACML 3.0 policy decision or a UML 2.5.1 state machine, as a compliance obligation, and a policy decision answers exactly the four XACML decisions
+#[test]
+fn patterns_dr_18() {
+    builder("DR-18");
+}
+
+/// `DR-19`: The Prism source page shows every Foundation, Production and language module every built app carries, with each declaration and the word that denotes it, served byte for byte with its recorded upstream source
+#[test]
+fn source_dr_19() {
+    builder("DR-19");
+}
+
+/// `DR-20`: The how-to guides are grouped by pattern, and a state machine's page runs it from its initial state through the verified holo, each answer the next state
+#[test]
+fn gallery_dr_20() {
+    builder("DR-20");
+}

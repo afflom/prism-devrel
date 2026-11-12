@@ -26,3 +26,7 @@ output { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 14px
 .source pre { max-height: 32rem; }
 .fp code { font-size: 12px; word-break: break-all; }
 .verified .stats dd { font-size: clamp(18px, 2.4vw, 28px); }
+.run { display: grid; gap: 10px; margin: 16px 0 0; }
+.run textarea { width: 100%; font: 13px/1.5 "JetBrains Mono", ui-monospace, monospace; background: hsl(var(--fd-bg)); color: hsl(var(--fd-fg)); border: 1px solid hsl(var(--fd-line)); border-radius: 6px; padding: 10px; }
+.run button { justify-self: start; }
+.trace { font: 14px/1.6 "JetBrains Mono", ui-monospace, monospace; margin: 0; }

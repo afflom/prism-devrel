@@ -110,3 +110,26 @@ id = "DR-30"
 level = "build"
 suite = "devrel"
 statement = "Every documentation page shares one uor.foundation header, Diátaxis tabs and footer, grouped by journey stage, and no link between pages lands nowhere"
+
+id = "DR-17"
+level = "build"
+suite = "devrel"
+statement = "A state-machine prompt is checked as an OMG UML 2.5.1 state machine, and its final states and reachable states become invariants of every run that the Lean kernel proves"
+
+[[id]]
+id = "DR-18"
+level = "build"
+suite = "devrel"
+statement = "Every app names the established pattern its behavior follows, a DMN 1.5 decision table, an XACML 3.0 policy decision or a UML 2.5.1 state machine, as a compliance obligation, and a policy decision answers exactly the four XACML decisions"
+
+[[id]]
+id = "DR-19"
+level = "build"
+suite = "devrel"
+statement = "The Prism source page shows every Foundation, Production and language module every built app carries, with each declaration and the word that denotes it, served byte for byte with its recorded upstream source"
+
+[[id]]
+id = "DR-20"
+level = "build"
+suite = "devrel"
+statement = "The how-to guides are grouped by pattern, and a state machine's page runs it from its initial state through the verified holo, each answer the next state"
