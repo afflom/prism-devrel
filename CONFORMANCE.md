@@ -39,6 +39,10 @@ model does not sanction.
 | `DR-15` | `build` | The tutorial runs the subject's tool on the subject's fixture with the commands its gate runs, and shows the committed projection's records, frontier and first lifted function; the CLI reference is the tool's clap declaration |
 | `DR-16` | `build` | Every record value is shown as data: list and record literals as nested lists, and identifiers of records the catalog teaches as links to the page that teaches them; every page carries its Diátaxis type and journey stage |
 | `DR-30` | `build` | Every documentation page shares one uor.foundation header, Diátaxis tabs and footer, grouped by journey stage, and no link between pages lands nowhere |
+| `DR-17` | `build` | A state-machine prompt is checked as an OMG UML 2.5.1 state machine, and its final states and reachable states become invariants of every run that the Lean kernel proves |
+| `DR-18` | `build` | Every app names the established pattern its behavior follows, a DMN 1.5 decision table, an XACML 3.0 policy decision or a UML 2.5.1 state machine, as a compliance obligation, and a policy decision answers exactly the four XACML decisions |
+| `DR-19` | `build` | The Prism source page shows every Foundation, Production and language module every built app carries, with each declaration and the word that denotes it, served byte for byte with its recorded upstream source |
+| `DR-20` | `build` | The how-to guides are grouped by pattern, and a state machine's page runs it from its initial state through the verified holo, each answer the next state |
 
 ## Cited authorities
 
