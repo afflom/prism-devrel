@@ -1,0 +1,458 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether kappa-registry authorizes an operation on a namespace, so only an owner, a capability holder or a bounded delegation chain can write.",
+  "pattern": "policyDecision",
+  "repository": "UOR-Foundation/kappa-registry",
+  "app": {
+    "name": "namespace-authorization",
+    "limits": [
+      "It does not resolve namespaces or walk edges; it decides from the authority the walk found.",
+      "The redb store and the identity system are outside it."
+    ],
+    "title": "Namespace authorization",
+    "purpose": "Decide, as an XACML policy decision, whether an operation on a namespace is permitted, from the operation class, whether the store answered, what the target namespace is, the authority the asserter holds and the delegation hops it takes.",
+    "fields": [
+      {
+        "name": "op",
+        "kind": "choice",
+        "values": [
+          "exempt",
+          "read",
+          "write",
+          "admin"
+        ],
+        "means": "the operation class"
+      },
+      {
+        "name": "store",
+        "kind": "choice",
+        "values": [
+          "ok",
+          "error"
+        ],
+        "means": "whether the store answered the delegation walk"
+      },
+      {
+        "name": "target",
+        "kind": "choice",
+        "values": [
+          "existing",
+          "unclaimed",
+          "absent",
+          "reserved",
+          "none"
+        ],
+        "means": "the namespace: claimed, existing with no capability edges, absent, absent and reserved, or none"
+      },
+      {
+        "name": "grant",
+        "kind": "choice",
+        "values": [
+          "none",
+          "root",
+          "owner",
+          "direct",
+          "parent",
+          "role",
+          "delegated"
+        ],
+        "means": "the first authority the asserter holds, in authorize's order"
+      },
+      {
+        "name": "hops",
+        "kind": "number",
+        "min": 0,
+        "means": "delegation hops walked to a capability holder",
+        "max": 10
+      }
+    ],
+    "outcomes": [
+      "permit",
+      "deny",
+      "not-applicable",
+      "indeterminate"
+    ],
+    "meanings": {
+      "permit": "Allowed, AllowCreateNew or AllowedViaDelegation",
+      "deny": "Forbidden: access denied, or a reserved namespace needs _root authority",
+      "not-applicable": "NotFound: a read of a namespace that does not exist",
+      "indeterminate": "a store error during the auth check, so no decision is made"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "op",
+            "op": "is",
+            "value": "exempt"
+          }
+        ],
+        "then": "permit",
+        "why": "crates/kappa-server/src/auth.rs authorize: an Exempt operation is Allowed before any check"
+      },
+      {
+        "when": [
+          {
+            "field": "store",
+            "op": "is",
+            "value": "error"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "auth.rs: a store error in the delegation walk is AuthError::Store, not a decision"
+      },
+      {
+        "when": [
+          {
+            "field": "grant",
+            "op": "is",
+            "value": "root"
+          }
+        ],
+        "then": "permit",
+        "why": "auth.rs step 1: a capability on _root allows any namespace"
+      },
+      {
+        "when": [
+          {
+            "field": "target",
+            "op": "is",
+            "value": "none"
+          }
+        ],
+        "then": "permit",
+        "why": "auth.rs: ResolvedNamespace::NoNamespace is Allowed"
+      },
+      {
+        "when": [
+          {
+            "field": "target",
+            "op": "is",
+            "value": "reserved"
+          }
+        ],
+        "then": "deny",
+        "why": "auth.rs: an absent reserved namespace requires _root authority"
+      },
+      {
+        "when": [
+          {
+            "field": "target",
+            "op": "is",
+            "value": "absent"
+          },
+          {
+            "field": "op",
+            "op": "is",
+            "value": "read"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "auth.rs: reading an absent namespace is AuthError::NotFound"
+      },
+      {
+        "when": [
+          {
+            "field": "target",
+            "op": "is",
+            "value": "absent"
+          }
+        ],
+        "then": "permit",
+        "why": "auth.rs: a write to an absent non-reserved namespace is AllowCreateNew, first writer claims"
+      },
+      {
+        "when": [
+          {
+            "field": "target",
+            "op": "is",
+            "value": "unclaimed"
+          }
+        ],
+        "then": "permit",
+        "why": "auth.rs step 3: a non-reserved namespace with no capability edges is open"
+      },
+      {
+        "when": [
+          {
+            "field": "grant",
+            "op": "is not",
+            "value": "none"
+          },
+          {
+            "field": "grant",
+            "op": "is not",
+            "value": "delegated"
+          }
+        ],
+        "then": "permit",
+        "why": "auth.rs steps 2, 4, 5 and 6: owner, direct capability, parent namespace or held role"
+      },
+      {
+        "when": [
+          {
+            "field": "grant",
+            "op": "is",
+            "value": "delegated"
+          },
+          {
+            "field": "hops",
+            "op": "<=",
+            "value": 5
+          }
+        ],
+        "then": "permit",
+        "why": "auth.rs check_delegation_inner: a delegation chain counts up to hop 5, AllowedViaDelegation"
+      }
+    ],
+    "otherwise": "deny",
+    "otherwiseWhy": "auth.rs: no authority found, Forbidden access denied",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "op",
+            "op": "is",
+            "value": "read"
+          },
+          {
+            "field": "target",
+            "op": "is",
+            "value": "existing"
+          },
+          {
+            "field": "grant",
+            "op": "is",
+            "value": "none"
+          }
+        ],
+        "then": "permit",
+        "why": "a claimed namespace is never read without authority"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "target",
+            "op": "is",
+            "value": "existing"
+          },
+          {
+            "field": "grant",
+            "op": "is",
+            "value": "delegated"
+          },
+          {
+            "field": "hops",
+            "op": ">",
+            "value": 5
+          },
+          {
+            "field": "op",
+            "op": "is not",
+            "value": "exempt"
+          }
+        ],
+        "then": "permit",
+        "why": "the delegation walk is bounded at five hops"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "target",
+            "op": "is",
+            "value": "reserved"
+          },
+          {
+            "field": "grant",
+            "op": "is not",
+            "value": "root"
+          },
+          {
+            "field": "op",
+            "op": "is not",
+            "value": "exempt"
+          }
+        ],
+        "then": "permit",
+        "why": "a reserved namespace needs _root authority"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "store",
+            "op": "is",
+            "value": "error"
+          },
+          {
+            "field": "op",
+            "op": "is not",
+            "value": "exempt"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "a store error never becomes a permit or a deny"
+      }
+    ],
+    "examples": [
+      {
+        "request": "read ok existing owner 0",
+        "response": "permit"
+      },
+      {
+        "request": "read ok existing none 0",
+        "response": "deny"
+      },
+      {
+        "request": "write ok absent none 0",
+        "response": "permit"
+      },
+      {
+        "request": "read ok absent none 0",
+        "response": "not-applicable"
+      },
+      {
+        "request": "admin ok reserved none 0",
+        "response": "deny"
+      },
+      {
+        "request": "write ok existing delegated 5",
+        "response": "permit"
+      },
+      {
+        "request": "write ok existing delegated 6",
+        "response": "deny"
+      },
+      {
+        "request": "read error existing owner 0",
+        "response": "indeterminate"
+      },
+      {
+        "request": "exempt error none none 0",
+        "response": "permit"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Namespace owner",
+      "text": "Owns a namespace and needs nothing but an owner, a capability holder or a bounded delegation to write to it.",
+      "concerns": [
+        "Proved guarantees",
+        "Correct answers"
+      ]
+    },
+    {
+      "name": "Registry operator",
+      "text": "Runs the single-binary server for Docker, Git, S3, Nix and AT Protocol clients and needs reserved namespaces kept for _root.",
+      "concerns": [
+        "Reserved namespaces protected"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Reserved namespaces protected",
+      "text": "The reserved namespaces, such as kappa/protocols, kappa/runtimes and kappa/os, are created only with _root authority.",
+      "model": "security"
+    }
+  ],
+  "components": [
+    {
+      "name": "Protocol clients",
+      "kind": "externalSystem",
+      "text": "docker push, git push, aws s3, nix copy and XRPC clients, each speaking its native protocol to the one server."
+    },
+    {
+      "name": "redb store",
+      "kind": "database",
+      "text": "state.redb: tags, edges, sequences, namespaces and epochs, which the auth checks query."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Delegation asserted by a third party",
+      "text": "Someone other than the source writes a delegation edge on its behalf to grant themselves access.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Source must assert",
+        "text": "A delegation counts only if its asserter is its source.",
+        "evidence": [
+          {
+            "kind": "review",
+            "reference": "crates/kappa-server/src/auth.rs check_delegation_inner"
+          },
+          {
+            "kind": "gate",
+            "reference": "crates/kappa-server/tests/integration/delegation.rs"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Unbounded delegation walk",
+      "text": "A long or cyclic delegation chain makes authorization walk without end or grants access far down a chain.",
+      "stride": "denialOfService",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Five hops",
+        "text": "The walk stops after hop 5, and beyond it nothing is permitted, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "KappaDominanceProofs::inv002Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Fail-open on an edge query error",
+      "text": "Step 3's edge query for an unclaimed namespace answers Allowed when the store errors.",
+      "stride": "elevationOfPrivilege",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "The app models a store error as indeterminate; auth.rs step 3 allows on an edge-query error, a fail-open recorded here for the repository to review."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Resistance",
+      "requirement": "No authority, no write",
+      "text": "No read, write or admin of a claimed namespace is permitted without an owner, capability, role or delegation within five hops.",
+      "measure": "Unauthorized permits",
+      "measureText": "Requests with no grant on a claimed namespace answered permit.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Namespace owner",
+      "steps": [
+        "REQ-009",
+        "REQ-010",
+        "otherwise",
+        "INV-001",
+        "INV-002"
+      ]
+    },
+    {
+      "stakeholder": "Registry operator",
+      "steps": [
+        "REQ-003",
+        "REQ-005",
+        "REQ-007",
+        "INV-003"
+      ]
+    }
+  ]
+}

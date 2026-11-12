@@ -1,0 +1,409 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether a UOR Atlas UTQC dictionary row passes the honesty meta-gate, so no row asserts more than its source shows.",
+  "pattern": "decisionTable",
+  "repository": "afflom/UOR-Atlas-UTQC",
+  "license": "MIT",
+  "app": {
+    "name": "utqc-row-honesty",
+    "title": "UTQC row honesty",
+    "purpose": "Decide whether one dictionary row is admitted by the honesty audit, or which status-discipline rule it breaks first.",
+    "fields": [
+      {
+        "name": "status",
+        "kind": "choice",
+        "values": [
+          "some-true",
+          "build",
+          "open"
+        ],
+        "means": "the honesty level of the row in model/status.toml"
+      },
+      {
+        "name": "source",
+        "kind": "choice",
+        "values": [
+          "anchored",
+          "parenthetical"
+        ],
+        "means": "whether the source is an external anchor or a parenthetical in-repo derivation"
+      },
+      {
+        "name": "oracle",
+        "kind": "choice",
+        "values": [
+          "external",
+          "exact-algebra"
+        ],
+        "means": "whether the oracle is external or the in-repo exact-algebra certificate"
+      },
+      {
+        "name": "tier",
+        "kind": "choice",
+        "values": [
+          "suite",
+          "target"
+        ],
+        "means": "whether the feature is a gating suite or a non-gating target"
+      },
+      {
+        "name": "cited",
+        "kind": "number",
+        "means": "cited classical lemmas the row declares"
+      },
+      {
+        "name": "disclosed",
+        "kind": "number",
+        "means": "cited lemmas that appear verbatim in the row atlas prose"
+      }
+    ],
+    "outcomes": [
+      "admitted",
+      "anchor-missing",
+      "oracle-misused",
+      "tier-violated",
+      "citation-refused"
+    ],
+    "meanings": {
+      "admitted": "the row passes the honesty meta-gate and its feature may run at its tier",
+      "anchor-missing": "a some-true row has an in-repo derivation for its source",
+      "oracle-misused": "a some-true row is backed by the in-repo exact-algebra oracle",
+      "tier-violated": "an open row is placed in a gating suite",
+      "citation-refused": "cited lemmas are declared by a non-asserting row or are not disclosed in its prose"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "status",
+            "op": "is",
+            "value": "some-true"
+          },
+          {
+            "field": "source",
+            "op": "is",
+            "value": "parenthetical"
+          }
+        ],
+        "then": "anchor-missing",
+        "why": "crates/tqc-conformance/src/honesty.rs: some-true requires an external source anchor, never (derived)"
+      },
+      {
+        "when": [
+          {
+            "field": "status",
+            "op": "is",
+            "value": "some-true"
+          },
+          {
+            "field": "oracle",
+            "op": "is",
+            "value": "exact-algebra"
+          }
+        ],
+        "then": "oracle-misused",
+        "why": "crates/tqc-conformance/src/honesty.rs: the in-repo exact-algebra oracle cannot back a some-true row"
+      },
+      {
+        "when": [
+          {
+            "field": "status",
+            "op": "is",
+            "value": "open"
+          },
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "suite"
+          }
+        ],
+        "then": "tier-violated",
+        "why": "crates/tqc-conformance/src/honesty.rs and model/status.toml: open is non-gating and may not be a gating suite"
+      },
+      {
+        "when": [
+          {
+            "field": "status",
+            "op": "is",
+            "value": "open"
+          },
+          {
+            "field": "cited",
+            "op": ">",
+            "value": 0
+          }
+        ],
+        "then": "citation-refused",
+        "why": "crates/tqc-conformance/src/honesty.rs: a non-asserting status may not declare cited lemmas"
+      },
+      {
+        "when": [
+          {
+            "field": "disclosed",
+            "op": "<",
+            "value": {
+              "field": "cited"
+            }
+          }
+        ],
+        "then": "citation-refused",
+        "why": "crates/tqc-conformance/src/honesty.rs: each cited lemma must appear verbatim in the row atlas prose"
+      }
+    ],
+    "otherwise": "admitted",
+    "otherwiseWhy": "docs/conceptual-model/03-status-discipline.md: the status is a contract the row keeps",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "status",
+            "op": "is",
+            "value": "some-true"
+          },
+          {
+            "field": "source",
+            "op": "is",
+            "value": "parenthetical"
+          }
+        ],
+        "then": "admitted",
+        "why": "03-status-discipline.md external-anchor rule: derived constructions belong at build"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "status",
+            "op": "is",
+            "value": "open"
+          },
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "suite"
+          }
+        ],
+        "then": "admitted",
+        "why": "03-status-discipline.md: an open claim is measured and reported, never green"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "status",
+            "op": "is",
+            "value": "open"
+          },
+          {
+            "field": "cited",
+            "op": ">",
+            "value": 0
+          }
+        ],
+        "then": "admitted",
+        "why": "an open row asserts nothing, so it rests on no cited lemma"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "status",
+            "op": "is",
+            "value": "build"
+          },
+          {
+            "field": "cited",
+            "op": "=",
+            "value": 0
+          }
+        ],
+        "then": "admitted",
+        "why": "a build row validated against the MTC axioms or an exact certificate may use any source and oracle"
+      }
+    ],
+    "examples": [
+      {
+        "request": "some-true anchored external suite 0 0",
+        "response": "admitted"
+      },
+      {
+        "request": "some-true parenthetical external suite 0 0",
+        "response": "anchor-missing"
+      },
+      {
+        "request": "some-true anchored exact-algebra suite 0 0",
+        "response": "oracle-misused"
+      },
+      {
+        "request": "open anchored external suite 0 0",
+        "response": "tier-violated"
+      },
+      {
+        "request": "open anchored external target 1 1",
+        "response": "citation-refused"
+      },
+      {
+        "request": "build parenthetical exact-algebra suite 2 1",
+        "response": "citation-refused"
+      },
+      {
+        "request": "build anchored exact-algebra suite 2 2",
+        "response": "admitted"
+      },
+      {
+        "request": "open parenthetical external target 0 0",
+        "response": "admitted"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Reader",
+      "text": "Reads the UOR Atlas whitepaper and needs every established claim to rest on an external anchor and every cited lemma to be disclosed.",
+      "concerns": [
+        "Proved guarantees",
+        "No status inflation"
+      ]
+    },
+    {
+      "name": "Maintainer",
+      "text": "Adds dictionary rows and feature files and needs to know which rule a row breaks before CI does.",
+      "concerns": [
+        "Correct answers"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "No status inflation",
+      "text": "No in-repo derivation or open measurement is billed as some-true or as a gating suite.",
+      "model": "quality"
+    }
+  ],
+  "components": [
+    {
+      "name": "F1 Atlas formalization",
+      "kind": "externalSystem",
+      "text": "The Lean formalization of the UOR Atlas whose theorems anchor some-true rows."
+    },
+    {
+      "name": "holospaces",
+      "kind": "externalSystem",
+      "text": "The content-addressing substrate whose vv witnesses anchor some-true rows."
+    },
+    {
+      "name": "uor-addr",
+      "kind": "externalSystem",
+      "text": "The realized composition operations that anchor some-true rows."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Status inflation",
+      "text": "A derived construction is recorded as some-true to make it read as established.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "External-anchor rule",
+        "text": "A some-true row with a parenthetical source is never admitted.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "UtqcRowHonestyProofs::inv001Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "just vv"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Open claim gated as established",
+      "text": "The advantage row, open and measured, is moved into a gating suite.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Tier discipline",
+        "text": "An open row in a gating suite is never admitted.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "UtqcRowHonestyProofs::inv002Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "crates/tqc-conformance/src/honesty.rs"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Undisclosed trust boundary",
+      "text": "A conclusion rests on a classical lemma the row cites but its prose does not name.",
+      "stride": "repudiation",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Cited-lemma disclosure",
+        "text": "Every cited lemma must appear verbatim in the row prose.",
+        "evidence": [
+          {
+            "kind": "gate",
+            "reference": "crates/tqc-conformance/src/honesty.rs"
+          },
+          {
+            "kind": "review",
+            "reference": "model/dictionary.toml"
+          }
+        ]
+      }
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "No inflated row admitted",
+      "text": "No some-true row with a parenthetical source and no open row in a suite is admitted.",
+      "measure": "Inflated rows admitted",
+      "measureText": "Requests breaking the external-anchor or tier rule that answer admitted.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Maintainability",
+      "subcharacteristic": "Analysability",
+      "requirement": "Three honesty levels",
+      "text": "Every row is decided against exactly the three levels model/status.toml declares.",
+      "measure": "Status levels",
+      "measureText": "Choices of the status field.",
+      "threshold": 3
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Reader",
+      "steps": [
+        "REQ-001",
+        "REQ-003",
+        "INV-001",
+        "INV-002"
+      ]
+    },
+    {
+      "stakeholder": "Maintainer",
+      "steps": [
+        "REQ-002",
+        "REQ-005",
+        "INV-004",
+        "otherwise"
+      ]
+    }
+  ]
+}

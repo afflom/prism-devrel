@@ -1,0 +1,465 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide the next state of the Atlas Explorer Dynamics view from the button pressed, so a walk through the E8 reflection orbit is replayable control by control.",
+  "pattern": "stateMachine",
+  "machine": {
+    "state": "state",
+    "initial": "home"
+  },
+  "repository": "afflom/atlas-explorer",
+  "app": {
+    "name": "atlas-explorer-walk",
+    "title": "Atlas walk controls",
+    "purpose": "Decide where the Atlas instance stands after a Dynamics control event: at A0, away from it, in a random walk, or walking home.",
+    "fields": [
+      {
+        "name": "state",
+        "kind": "choice",
+        "values": [
+          "home",
+          "away",
+          "walking",
+          "returning"
+        ],
+        "means": "where the instance stands now: A0, another instance, a running random walk, or a running walk home"
+      },
+      {
+        "name": "event",
+        "kind": "choice",
+        "values": [
+          "reflect",
+          "walk",
+          "walk-home",
+          "reset",
+          "finish"
+        ],
+        "means": "the control used, or the end of a running word"
+      },
+      {
+        "name": "orbit",
+        "kind": "choice",
+        "values": [
+          "mapping",
+          "mapped"
+        ],
+        "means": "whether the census of all 75,600 instances has finished"
+      },
+      {
+        "name": "lands",
+        "kind": "choice",
+        "values": [
+          "a0",
+          "other"
+        ],
+        "means": "whether the instance the event ends on is A0"
+      }
+    ],
+    "outcomes": [
+      "home",
+      "away",
+      "walking",
+      "returning"
+    ],
+    "meanings": {
+      "home": "the instance is A0, the canonical 48 classes",
+      "away": "the instance is another of the 75,600 in the orbit",
+      "walking": "a random word of 12 simple reflections is running and the controls are disabled",
+      "returning": "the path back to A0 from the orbit map is running and the controls are disabled"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "walking"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "finish"
+          },
+          {
+            "field": "lands",
+            "op": "is",
+            "value": "a0"
+          }
+        ],
+        "then": "home",
+        "why": "index.html runWord done: the walk ends at A0 when live.isA0"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "walking"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "finish"
+          }
+        ],
+        "then": "away",
+        "why": "index.html runWord done: the walk ends at another instance"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "walking"
+          }
+        ],
+        "then": "walking",
+        "why": "index.html setBusy: walk, reset and the simple reflection buttons are disabled while busy"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "returning"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "finish"
+          }
+        ],
+        "then": "home",
+        "why": "index.html homeBtn: the pathToRoot word ends with the 48 classes A0 again"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "returning"
+          }
+        ],
+        "then": "returning",
+        "why": "index.html setBusy: the controls stay disabled while the walk home runs"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "walk"
+          }
+        ],
+        "then": "walking",
+        "why": "index.html walkBtn: runWord with 12 random simple reflections"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "reset"
+          }
+        ],
+        "then": "home",
+        "why": "index.html resetBtn: loc is restored to the identity, which is A0"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "reflect"
+          },
+          {
+            "field": "lands",
+            "op": "is",
+            "value": "a0"
+          }
+        ],
+        "then": "home",
+        "why": "index.html applyReflection: a reflection can carry the 48 classes back onto A0"
+      },
+      {
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "reflect"
+          }
+        ],
+        "then": "away",
+        "why": "index.html applyReflection: a simple reflection carries the Atlas to another instance"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "away"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "walk-home"
+          },
+          {
+            "field": "orbit",
+            "op": "is",
+            "value": "mapped"
+          }
+        ],
+        "then": "returning",
+        "why": "index.html: homeBtn is enabled only when orbit.done and the instance is not A0"
+      },
+      {
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "away"
+          }
+        ],
+        "then": "away",
+        "why": "index.html: walk home is disabled until the orbit is mapped, and finish does nothing when no word runs"
+      }
+    ],
+    "otherwise": "home",
+    "otherwiseWhy": "at A0, walk home is disabled and finish does nothing, so the instance stays home",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "home"
+          }
+        ],
+        "then": "returning",
+        "why": "index.html: homeBtn is disabled when live.isA0"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "away"
+          },
+          {
+            "field": "orbit",
+            "op": "is",
+            "value": "mapping"
+          }
+        ],
+        "then": "returning",
+        "why": "index.html: walk home needs the orbit map to find the path to A0"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "walking"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "reflect"
+          }
+        ],
+        "then": "walking",
+        "why": "index.html setBusy: reflections are disabled during a walk"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "event",
+            "op": "is",
+            "value": "reset"
+          },
+          {
+            "field": "state",
+            "op": "is not",
+            "value": "walking"
+          },
+          {
+            "field": "state",
+            "op": "is not",
+            "value": "returning"
+          }
+        ],
+        "then": "home",
+        "why": "reset always restores A0 when it is enabled"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "state",
+            "op": "is",
+            "value": "returning"
+          },
+          {
+            "field": "event",
+            "op": "is",
+            "value": "finish"
+          }
+        ],
+        "then": "away",
+        "why": "the walk home always ends at A0"
+      }
+    ],
+    "examples": [
+      {
+        "request": "home walk mapping other",
+        "response": "walking"
+      },
+      {
+        "request": "walking finish mapped other",
+        "response": "away"
+      },
+      {
+        "request": "away walk-home mapped a0",
+        "response": "returning"
+      },
+      {
+        "request": "returning finish mapped a0",
+        "response": "home"
+      },
+      {
+        "request": "away walk-home mapping other",
+        "response": "away"
+      },
+      {
+        "request": "walking reset mapped a0",
+        "response": "walking"
+      },
+      {
+        "request": "home reflect mapping other",
+        "response": "away"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Visitor",
+      "text": "Explores the E8 reflection orbit of the Atlas and needs every control to do what it says, and nothing while a walk runs.",
+      "concerns": [
+        "Correct answers"
+      ]
+    },
+    {
+      "name": "Mathematician",
+      "text": "Checks that the walk home always returns the 48 classes to A0 and that block reorderings are gauge transformations.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "UOR Atlas Explorer page",
+      "kind": "staticSite",
+      "text": "The single-page explorer on GitHub Pages that draws the 120 classes and runs the reflection walks."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Walk home without a map",
+      "text": "Walk home is pressed before the orbit census finishes, so there is no path to A0.",
+      "stride": "denialOfService",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "minor",
+      "control": {
+        "name": "Map before home",
+        "text": "Walk home leaves away only once the orbit is mapped.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "AtlasExplorerWalkProofs::inv002Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "index.html setBusy"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Overlapping words",
+      "text": "A control starts a second reflection word while one runs, so the instance shown is not the one the word reaches.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "minor",
+      "control": {
+        "name": "Busy lock",
+        "text": "While a word runs, every control leaves the state as it is.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "AtlasExplorerWalkProofs::inv003Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "index.html runWord"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Plane click during a walk",
+      "text": "A click on the plane in Dynamics mode applies a reflection without checking busy.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "minor",
+      "accepted": "The machine models the Dynamics buttons that setBusy disables; the plane click handler in index.html is not gated by busy and is outside this model."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Interaction capability",
+      "subcharacteristic": "User error protection",
+      "requirement": "Disabled controls stay disabled",
+      "text": "No button press changes the state while a walk or a walk home runs.",
+      "measure": "Button transitions during a word",
+      "measureText": "Requests in walking or returning, other than finish, that answer a different state.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every state reachable",
+      "text": "Each of the four states is reachable from home.",
+      "measure": "Unreachable states",
+      "measureText": "States no sequence of events reaches from the initial state.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Visitor",
+      "steps": [
+        "REQ-006",
+        "REQ-003",
+        "REQ-002",
+        "REQ-007"
+      ]
+    },
+    {
+      "stakeholder": "Mathematician",
+      "steps": [
+        "REQ-009",
+        "REQ-010",
+        "REQ-004",
+        "INV-005"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,453 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether a version 1 coded matrix request is computed or which modeled error it answers, in the order the LexLean Matmul protocol checks it.",
+  "pattern": "decisionTable",
+  "repository": "afflom/lexlean-matmul",
+  "app": {
+    "name": "matmul-coded-admission",
+    "title": "Coded matmul admission",
+    "purpose": "Decide whether a coded matrix product request is computed, or answered with the protocol error the LexLean Matmul source returns first.",
+    "fields": [
+      {
+        "name": "version",
+        "kind": "number",
+        "means": "the protocol version that leads the request"
+      },
+      {
+        "name": "m",
+        "kind": "number",
+        "means": "rows of A and of the result"
+      },
+      {
+        "name": "k",
+        "kind": "number",
+        "means": "columns of A and stored rows of B"
+      },
+      {
+        "name": "n",
+        "kind": "number",
+        "means": "columns of B and of the result"
+      },
+      {
+        "name": "shape",
+        "kind": "choice",
+        "values": [
+          "conformant",
+          "mismatched"
+        ],
+        "means": "whether A has m*k entries and B-codes has k*n codes"
+      },
+      {
+        "name": "tier",
+        "kind": "choice",
+        "values": [
+          "binary",
+          "ternary",
+          "signed8",
+          "full8",
+          "other"
+        ],
+        "means": "the scalar codec tier named after the operation"
+      },
+      {
+        "name": "code",
+        "kind": "number",
+        "means": "the largest stored code in B-codes"
+      }
+    ],
+    "outcomes": [
+      "ok",
+      "unsupported-version",
+      "invalid-dimension",
+      "shape-mismatch",
+      "unknown-tier",
+      "invalid-code"
+    ],
+    "meanings": {
+      "ok": "the codes are decoded and the exact product is returned as 1 ok rows columns cells",
+      "unsupported-version": "the request does not begin with version 1 and nothing is computed",
+      "invalid-dimension": "a dimension is above the modeled maximum of 8 and nothing is allocated",
+      "shape-mismatch": "A or B-codes does not have the entry count its dimensions declare",
+      "unknown-tier": "the tier is not binary, ternary, signed8 or full8",
+      "invalid-code": "a stored code is outside the range its tier decodes"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "version",
+            "op": "!=",
+            "value": 1
+          }
+        ],
+        "then": "unsupported-version",
+        "why": "PROTOCOL.md and src/Protocol.lex.tex: every request begins with 1; any other version is ProtocolError.UnsupportedVersion"
+      },
+      {
+        "when": [
+          {
+            "field": "m",
+            "op": ">",
+            "value": 8
+          }
+        ],
+        "then": "invalid-dimension",
+        "why": "src/Model.lex.tex maximumDimension is 8; Protocol.lex.tex answers InvalidDimension before parsing matrices"
+      },
+      {
+        "when": [
+          {
+            "field": "k",
+            "op": ">",
+            "value": 8
+          }
+        ],
+        "then": "invalid-dimension",
+        "why": "src/Model.lex.tex maximumDimension is 8 for k as for m and n"
+      },
+      {
+        "when": [
+          {
+            "field": "n",
+            "op": ">",
+            "value": 8
+          }
+        ],
+        "then": "invalid-dimension",
+        "why": "src/Model.lex.tex maximumDimension is 8 for n as for m and k"
+      },
+      {
+        "when": [
+          {
+            "field": "shape",
+            "op": "is",
+            "value": "mismatched"
+          }
+        ],
+        "then": "shape-mismatch",
+        "why": "src/Protocol.lex.tex compares a.length with m*k and b.length with k*n before the tier is read"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "other"
+          }
+        ],
+        "then": "unknown-tier",
+        "why": "src/Protocol.lex.tex validTier accepts exactly binary, ternary, signed8 and full8"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "binary"
+          },
+          {
+            "field": "code",
+            "op": ">",
+            "value": 1
+          }
+        ],
+        "then": "invalid-code",
+        "why": "src/Core.lex.tex validCode: binary codes 0,1 decode to -1,+1"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "ternary"
+          },
+          {
+            "field": "code",
+            "op": ">",
+            "value": 2
+          }
+        ],
+        "then": "invalid-code",
+        "why": "src/Core.lex.tex validCode: ternary codes 0,1,2 decode to -1,0,+1"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "signed8"
+          },
+          {
+            "field": "code",
+            "op": ">",
+            "value": 255
+          }
+        ],
+        "then": "invalid-code",
+        "why": "src/Core.lex.tex validCode: signed8 codes are bytes 0..255 read as two complement"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "full8"
+          },
+          {
+            "field": "code",
+            "op": ">",
+            "value": 255
+          }
+        ],
+        "then": "invalid-code",
+        "why": "src/Core.lex.tex validCode: full8 codes are bytes 0..255"
+      }
+    ],
+    "otherwise": "ok",
+    "otherwiseWhy": "version 1, every dimension at most 8, conformant shapes, a known tier and in-range codes: decode the code, accumulate exactly, encode once",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "m",
+            "op": ">",
+            "value": 8
+          }
+        ],
+        "then": "ok",
+        "why": "ERRORS.md: InvalidDimension has seven negative vectors; no product is computed above the dimension bound"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "binary"
+          },
+          {
+            "field": "code",
+            "op": ">",
+            "value": 1
+          }
+        ],
+        "then": "ok",
+        "why": "src/Core.lex.tex: a binary code above 1 is never decoded"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "version",
+            "op": "!=",
+            "value": 1
+          }
+        ],
+        "then": "unsupported-version",
+        "why": "the version is checked before any other field"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "version",
+            "op": "=",
+            "value": 1
+          },
+          {
+            "field": "m",
+            "op": "<=",
+            "value": 8
+          },
+          {
+            "field": "k",
+            "op": "<=",
+            "value": 8
+          },
+          {
+            "field": "n",
+            "op": "<=",
+            "value": 8
+          },
+          {
+            "field": "shape",
+            "op": "is",
+            "value": "conformant"
+          },
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "other"
+          }
+        ],
+        "then": "unknown-tier",
+        "why": "an unknown tier is reported as such, never as an invalid code"
+      }
+    ],
+    "examples": [
+      {
+        "request": "1 1 3 1 conformant ternary 2",
+        "response": "ok"
+      },
+      {
+        "request": "1 2 2 2 conformant full8 255",
+        "response": "ok"
+      },
+      {
+        "request": "2 2 2 2 conformant binary 0",
+        "response": "unsupported-version"
+      },
+      {
+        "request": "1 9 2 2 conformant binary 1",
+        "response": "invalid-dimension"
+      },
+      {
+        "request": "1 2 2 2 mismatched binary 0",
+        "response": "shape-mismatch"
+      },
+      {
+        "request": "1 2 2 2 conformant other 0",
+        "response": "unknown-tier"
+      },
+      {
+        "request": "1 1 1 1 conformant binary 2",
+        "response": "invalid-code"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Numerical researcher",
+      "text": "Runs coded and quantized products in the workbench and needs every rejected request to name the error the source declares.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Integrator",
+      "text": "Calls the generated native library or Core-Wasm guest and needs out-of-range dimensions and codes refused before any allocation.",
+      "concerns": [
+        "Refused malformed requests",
+        "Bounded allocation"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Bounded allocation",
+      "text": "No request with a dimension above 8 or an undecodable code reaches matrix allocation or decoding.",
+      "model": "security"
+    }
+  ],
+  "components": [
+    {
+      "name": "LexLean Matmul workbench",
+      "kind": "staticSite",
+      "text": "The research workbench on GitHub Pages that sends version 1 protocol requests from a browser worker."
+    },
+    {
+      "name": "Independent arithmetic oracles",
+      "kind": "externalSystem",
+      "text": "The reference UOR matmul oracles the just vv gate replays native and Wasm results against."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Oversized dimension",
+      "text": "A request declares a dimension above 8 to force a large allocation in the guest.",
+      "stride": "denialOfService",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Dimension bound first",
+        "text": "Dimensions are checked against maximumDimension before matrices are parsed or allocated.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "MatmulCodedAdmissionProofs::inv001Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "just vv"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Out-of-book code",
+      "text": "A stored code outside its tier is decoded into a value the tier does not define, changing the product.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Tier code range",
+        "text": "Each tier admits only the codes validCode accepts, and a binary code above 1 is never computed.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "MatmulCodedAdmissionProofs::inv002Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "just vv"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Misreported shape",
+      "text": "A caller reports a conformant shape for matrices whose entry counts do not match.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "minor",
+      "accepted": "The app decides from the shape it is given; counting entries belongs to the protocol parser in src/Protocol.lex.tex, whose ten shape-mismatch vectors cover it."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every modeled error is reachable",
+      "text": "Each of the five protocol errors the coded operation can return is the answer to some request.",
+      "measure": "Unreachable outcomes",
+      "measureText": "Outcomes of the spec that no request answers.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Interaction capability",
+      "subcharacteristic": "User error protection",
+      "requirement": "No silent acceptance",
+      "text": "A request with an out-of-range dimension or code is never computed.",
+      "measure": "Accepted invalid requests",
+      "measureText": "Requests above the dimension bound or out of code range that answer ok.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Numerical researcher",
+      "steps": [
+        "REQ-005",
+        "REQ-006",
+        "REQ-008",
+        "INV-002",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Integrator",
+      "steps": [
+        "refuse",
+        "REQ-001",
+        "REQ-002",
+        "INV-001",
+        "INV-003"
+      ]
+    }
+  ]
+}

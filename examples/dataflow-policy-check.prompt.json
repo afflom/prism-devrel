@@ -1,0 +1,328 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "decisionTable",
+  "goal": "Decide whether a Prism dataflow project script is accepted, rejected with policy findings, or an error, so a project that breaks its memory or PII-encryption policy never reads as accepted.",
+  "repository": "UOR-Foundation/prism-code",
+  "app": {
+    "name": "dataflow-policy-check",
+    "title": "Dataflow policy",
+    "purpose": "Decide the status of a dataflow-policy/1 script from its size in bytes, whether every line parsed, how many nodes exceed the memory policy and how many outputs personal data reaches unencrypted.",
+    "limits": [
+      "It does not parse the script; the parse field says whether every line was read and applied, and the first failing line's code is the CLI's to print.",
+      "It does not decide response too-large, the error a report longer than 16384 bytes is replaced by."
+    ],
+    "fields": [
+      {
+        "name": "bytes",
+        "kind": "number",
+        "min": 0,
+        "means": "the length of the request in bytes"
+      },
+      {
+        "name": "parse",
+        "kind": "choice",
+        "values": [
+          "ok",
+          "fault"
+        ],
+        "means": "whether the header and every statement line parsed and applied, or a line failed with its typed code"
+      },
+      {
+        "name": "excess",
+        "kind": "number",
+        "min": 0,
+        "means": "nodes whose memory requirement exceeds the policy memory limit (0 with no memory policy)"
+      },
+      {
+        "name": "exposed",
+        "kind": "number",
+        "min": 0,
+        "means": "output nodes personal data reaches without an encrypt node, under policy encrypt-pii (0 without it)"
+      }
+    ],
+    "outcomes": [
+      "accepted",
+      "rejected",
+      "error"
+    ],
+    "meanings": {
+      "accepted": "status accepted, then the canonical sorted project; exit 0",
+      "rejected": "status rejected, then every finding and the canonical project; exit 1",
+      "error": "status error with the request code or the first failing line and its code; exit 2"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "bytes",
+            "op": "=",
+            "value": 0
+          }
+        ],
+        "then": "error",
+        "why": "src/Specification.lex.tex: an empty request answers status error, request empty"
+      },
+      {
+        "when": [
+          {
+            "field": "bytes",
+            "op": ">",
+            "value": 4096
+          }
+        ],
+        "then": "error",
+        "why": "src/Specification.lex.tex: a request over 4096 bytes answers request too-large"
+      },
+      {
+        "when": [
+          {
+            "field": "parse",
+            "op": "is",
+            "value": "fault"
+          }
+        ],
+        "then": "error",
+        "why": "src/Engine.lex.tex runLines: the first line that fails to parse or apply ends the run as Outcome.Failed"
+      },
+      {
+        "when": [
+          {
+            "field": "excess",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "rejected",
+        "why": "src/Compliance.lex.tex memoryFindings: each node above the limit is a MemoryExceeded finding"
+      },
+      {
+        "when": [
+          {
+            "field": "exposed",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "rejected",
+        "why": "src/Compliance.lex.tex piiFindings: each output reached by unencrypted personal data is a PlaintextPii finding"
+      }
+    ],
+    "otherwise": "accepted",
+    "otherwiseWhy": "src/Engine.lex.tex certifyWith: a parsed project with no findings is Outcome.Accepted",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "parse",
+            "op": "is",
+            "value": "fault"
+          }
+        ],
+        "then": "accepted",
+        "why": "Engine.failedRunNeverAccepted: a failed run is never accepted"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "excess",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "accepted",
+        "why": "Engine.completedRunAcceptedOnlyIfCompliant: a node over its memory limit is not compliant"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "exposed",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "accepted",
+        "why": "Engine.completedRunAcceptedOnlyIfCompliant: plaintext personal data at an output is not compliant"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "bytes",
+            "op": ">",
+            "value": 4096
+          }
+        ],
+        "then": "error",
+        "why": "the request bound of 4096 bytes is checked before any line is read"
+      }
+    ],
+    "examples": [
+      {
+        "request": "120 ok 0 0",
+        "response": "accepted"
+      },
+      {
+        "request": "200 ok 1 0",
+        "response": "rejected"
+      },
+      {
+        "request": "200 ok 0 2",
+        "response": "rejected"
+      },
+      {
+        "request": "90 fault 0 0",
+        "response": "error"
+      },
+      {
+        "request": "0 ok 0 0",
+        "response": "error"
+      },
+      {
+        "request": "4097 ok 0 0",
+        "response": "error"
+      },
+      {
+        "request": "4096 ok 0 0",
+        "response": "accepted"
+      },
+      {
+        "request": "120 ok",
+        "response": "invalid"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Script author",
+      "text": "Writes Prism dataflow project scripts and needs the status line to say whether the project meets its declared policies.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Data protection reviewer",
+      "text": "Relies on an accepted project never sending personal data to an output in plaintext.",
+      "concerns": [
+        "Proved guarantees",
+        "No plaintext personal data accepted"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "No plaintext personal data accepted",
+      "text": "Under policy encrypt-pii, a project in which personal data reaches an output without an encrypt node is never accepted.",
+      "model": "security"
+    }
+  ],
+  "components": [
+    {
+      "name": "dataflow-policy CLI",
+      "kind": "cliAdapter",
+      "text": "The command line PrismPM generates from the prismpm/text-application/3 record: dataflow-policy check [FILE]."
+    },
+    {
+      "name": "Dataflow Policy workbench",
+      "kind": "staticSite",
+      "text": "The verified browser application on GitHub Pages that checks a script in the page."
+    }
+  ],
+  "threats": [
+    {
+      "name": "PII finding suppressed",
+      "text": "A project whose personal data reaches an output unencrypted is reported accepted, and the data ships in plaintext.",
+      "stride": "informationDisclosure",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Findings rule out acceptance",
+        "text": "Any PlaintextPii finding rules out accepted, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "DataflowPolicyCheckProofs::inv003Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "prism-code src/Engine.lex.tex completedRunAcceptedOnlyIfCompliant"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Oversized script exhausts the checker",
+      "text": "A very large script makes the checker allocate without bound.",
+      "stride": "denialOfService",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Request bound",
+        "text": "A request over 4096 bytes is answered error before any line is read.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "DataflowPolicyCheckProofs::inv004Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "prism-code crates/conformance/tests/cli CL-03"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PII label omitted",
+      "text": "A script author leaves out a pii line, so the policy never sees personal data on that input.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "accepted": "Labelling personal data is the script author's statement; the checker decides from the script it is given and prints the canonical project for review."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Integrity",
+      "requirement": "No non-compliant project accepted",
+      "text": "No request with a memory or PII finding, or a failed line, is accepted.",
+      "measure": "Non-compliant acceptances",
+      "measureText": "Acceptance vectors answered accepted while excess or exposed is at least 1 or parse is fault.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "Every status matches the model",
+      "text": "Each vector answers the status the prism-code model gives.",
+      "measure": "Vectors that disagree",
+      "measureText": "Acceptance vectors whose replayed status differs from the expected one.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Script author",
+      "steps": [
+        "REQ-001",
+        "REQ-003",
+        "REQ-004",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Data protection reviewer",
+      "steps": [
+        "REQ-005",
+        "INV-003",
+        "refuse"
+      ]
+    }
+  ]
+}

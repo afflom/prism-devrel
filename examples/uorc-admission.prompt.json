@@ -1,10 +1,12 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a UORC compressed candidate is admitted, stored raw, or refused, so losslessness is never traded for a smaller number.",
+  "goal": "Decide whether a UORC candidate archive replaces the best-known one, so losslessness is never traded for a smaller number.",
+  "pattern": "decisionTable",
+  "repository": "UOR-Foundation/compression",
   "app": {
     "name": "uorc-admission",
     "title": "Compression admission",
-    "purpose": "Decide whether a compressed candidate is admitted, the object is stored raw, or the candidate is refused, from its round trip, the original size and the encoded size.",
+    "purpose": "Decide whether a checked candidate replaces the incumbent archive, the incumbent is kept, or the candidate is refused, from its byte-exact replay, both wire lengths and, on a tie, their byte order.",
     "fields": [
       {
         "name": "roundtrip",
@@ -13,30 +15,40 @@
           "exact",
           "differs"
         ],
-        "means": "whether decoding reproduces the original bytes"
+        "means": "whether replay reproduces every object and boundary byte for byte"
       },
       {
-        "name": "original",
+        "name": "incumbent",
         "kind": "number",
         "min": 0,
-        "means": "original size, in bytes"
+        "means": "the best-known archive's wire length, in bytes"
       },
       {
-        "name": "encoded",
+        "name": "candidate",
         "kind": "number",
         "min": 0,
-        "means": "encoded size with its accounting, in bytes"
+        "means": "the candidate archive's wire length, in bytes"
+      },
+      {
+        "name": "order",
+        "kind": "choice",
+        "values": [
+          "before",
+          "same",
+          "after"
+        ],
+        "means": "with equal lengths, the candidate bytes against the incumbent bytes"
       }
     ],
     "outcomes": [
       "admit",
-      "raw",
+      "keep",
       "refuse"
     ],
     "meanings": {
-      "admit": "the candidate replaces the object",
-      "raw": "the object is stored as it is",
-      "refuse": "the candidate is not lossless"
+      "admit": "the candidate replaces the incumbent as best-known archive",
+      "keep": "the incumbent stays best-known",
+      "refuse": "the candidate is not lossless and is rejected"
     },
     "rules": [
       {
@@ -48,24 +60,48 @@
           }
         ],
         "then": "refuse",
-        "why": "losslessness is the first obligation"
+        "why": "src/Uorc/Search/Verify.lex.tex runTrial: any mismatch rejects the trial (full_bytes_not_digest_equality)"
       },
       {
         "when": [
           {
-            "field": "encoded",
-            "op": ">=",
+            "field": "candidate",
+            "op": "<",
             "value": {
-              "field": "original"
+              "field": "incumbent"
             }
           }
         ],
-        "then": "raw",
-        "why": "a candidate that is not smaller is not admitted"
+        "then": "admit",
+        "why": "src/Uorc/Search/OrderRope.lex.tex beginDecision: a shorter challenger replaces the incumbent"
+      },
+      {
+        "when": [
+          {
+            "field": "candidate",
+            "op": ">",
+            "value": {
+              "field": "incumbent"
+            }
+          }
+        ],
+        "then": "keep",
+        "why": "OrderRope.lex.tex beginDecision: a longer challenger keeps the incumbent"
+      },
+      {
+        "when": [
+          {
+            "field": "order",
+            "op": "is",
+            "value": "before"
+          }
+        ],
+        "then": "admit",
+        "why": "OrderRope.lex.tex: on equal length the first differing byte decides, and a smaller byte replaces"
       }
     ],
-    "otherwise": "admit",
-    "otherwiseWhy": "exact and strictly smaller",
+    "otherwise": "keep",
+    "otherwiseWhy": "equal length and not before in byte order: keepIncumbent",
     "properties": [
       {
         "kind": "never",
@@ -83,28 +119,59 @@
         "kind": "never",
         "when": [
           {
-            "field": "encoded",
-            "op": ">=",
+            "field": "candidate",
+            "op": ">",
             "value": {
-              "field": "original"
+              "field": "incumbent"
             }
           }
         ],
         "then": "admit",
-        "why": "admission always compresses"
+        "why": "the best-known archive never grows"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "roundtrip",
+            "op": "is",
+            "value": "exact"
+          },
+          {
+            "field": "candidate",
+            "op": "<",
+            "value": {
+              "field": "incumbent"
+            }
+          }
+        ],
+        "then": "admit",
+        "why": "an exact, strictly shorter archive always replaces"
       }
     ],
     "examples": [
       {
-        "request": "exact 1000 640",
+        "request": "exact 1000 640 same",
         "response": "admit"
       },
       {
-        "request": "exact 640 640",
-        "response": "raw"
+        "request": "exact 640 640 before",
+        "response": "admit"
       },
       {
-        "request": "differs 1000 10",
+        "request": "exact 640 640 after",
+        "response": "keep"
+      },
+      {
+        "request": "exact 640 640 same",
+        "response": "keep"
+      },
+      {
+        "request": "exact 640 700 before",
+        "response": "keep"
+      },
+      {
+        "request": "differs 1000 10 before",
         "response": "refuse"
       }
     ]
@@ -112,10 +179,118 @@
   "stakeholders": [
     {
       "name": "Compression researcher",
-      "text": "Searches for smaller references and needs every admitted one to be exact and strictly smaller.",
+      "text": "Searches for smaller references and needs every admitted one to be exact and no longer than the one it replaces.",
       "concerns": [
         "Proved guarantees",
         "Correct answers"
+      ]
+    },
+    {
+      "name": "Benchmark reviewer",
+      "text": "Compares measured results and needs a best-known archive never to be stated as a record or a minimum.",
+      "concerns": [
+        "Claim boundaries"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Claim boundaries",
+      "text": "A best-known checked archive is not a minimality certificate or a record; record status exists only when an external authority accepts it.",
+      "model": "quality"
+    }
+  ],
+  "components": [
+    {
+      "name": "UORC web client",
+      "kind": "staticSite",
+      "text": "The accessible file-oriented client in web/ and client/ that runs the search and shows the archive."
+    },
+    {
+      "name": "External record authority",
+      "kind": "externalSystem",
+      "text": "The benchmark authority whose own rules decide whether a measured result is a record."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Digest-only verification",
+      "text": "A candidate is accepted because a digest matched, while its bytes or boundaries differ.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "critical",
+      "control": {
+        "name": "Full byte replay",
+        "text": "Verification compares every byte and boundary, never only a digest, and a mismatch is never admitted.",
+        "evidence": [
+          {
+            "kind": "review",
+            "reference": "src/Uorc/Search/Verify.lex.tex full_bytes_not_digest_equality"
+          },
+          {
+            "kind": "proof",
+            "reference": "UorcAdmissionProofs::inv001Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Boundary-shifted collection",
+      "text": "An archive reproduces the same flattened bytes with the object boundaries moved.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Boundaries checked",
+        "text": "Replay checks object counts and lengths, so a shifted boundary is a mismatch.",
+        "evidence": [
+          {
+            "kind": "review",
+            "reference": "src/Uorc/Search/Verify.lex.tex same_flattening_different_boundary_rejected"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Record claimed",
+      "text": "A best-known archive is published as a compression record or a minimum.",
+      "stride": "repudiation",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "accepted": "The engine states only a best-known checked archive and produces no minimality certificate; README claim boundaries leave record status to the external authority."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "Lossless admissions",
+      "text": "Every admitted archive replays its objects exactly.",
+      "measure": "Lossy admissions",
+      "measureText": "Requests with roundtrip differs answered admit.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Compression researcher",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Benchmark reviewer",
+      "steps": [
+        "INV-001",
+        "INV-002",
+        "INV-003"
       ]
     }
   ]

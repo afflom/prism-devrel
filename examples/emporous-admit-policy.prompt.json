@@ -1,0 +1,351 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether Emporous admits a representation into a namespace, so every object kappa comes from an authorized principal under the realization its scope names.",
+  "pattern": "policyDecision",
+  "repository": "afflom/emporous",
+  "app": {
+    "name": "emporous-admit-policy",
+    "title": "Emporous admission",
+    "purpose": "Decide whether one representation is admitted under the scope its namespace names, from the scope, its realization, the principal and the bytes.",
+    "fields": [
+      {
+        "name": "namespace",
+        "kind": "choice",
+        "values": [
+          "scoped",
+          "unscoped",
+          "conflicted"
+        ],
+        "means": "whether the namespace names exactly one scope, none, or more than one"
+      },
+      {
+        "name": "realization",
+        "kind": "choice",
+        "values": [
+          "known",
+          "unknown"
+        ],
+        "means": "whether the registry knows the realization the scope names"
+      },
+      {
+        "name": "principal",
+        "kind": "choice",
+        "values": [
+          "authorized",
+          "unauthorized"
+        ],
+        "means": "whether a capability-edge walk reaches the principal from the scope authorization"
+      },
+      {
+        "name": "bytes",
+        "kind": "choice",
+        "values": [
+          "realizable",
+          "refused"
+        ],
+        "means": "whether the realization carries the bytes to a canonical form"
+      }
+    ],
+    "outcomes": [
+      "permit",
+      "deny",
+      "not-applicable",
+      "indeterminate"
+    ],
+    "meanings": {
+      "permit": "XACML 3.0 section 7: Permit; the object kappa, the representation kappa and a DerivedFrom edge are written",
+      "deny": "XACML 3.0 section 7: Deny; StoreError::Rejected and no DerivedFrom edge is written",
+      "not-applicable": "XACML 3.0 section 7: NotApplicable; the namespace names no scope, so no policy governs it",
+      "indeterminate": "XACML 3.0 section 7: Indeterminate; the scope cannot be evaluated, because its realization is unknown or the namespace names several scopes"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "namespace",
+            "op": "is",
+            "value": "unscoped"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "crates/admission/src/scope.rs scope_of_namespace: the namespace names no scope, StoreError::NotFound"
+      },
+      {
+        "when": [
+          {
+            "field": "namespace",
+            "op": "is",
+            "value": "conflicted"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "crates/admission/src/scope.rs: a namespace naming more than one scope is StoreError::Conflict"
+      },
+      {
+        "when": [
+          {
+            "field": "realization",
+            "op": "is",
+            "value": "unknown"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "crates/admission/src/admit.rs: the registry does not know the realization, StoreError::NotFound (EA-03)"
+      },
+      {
+        "when": [
+          {
+            "field": "principal",
+            "op": "is",
+            "value": "unauthorized"
+          }
+        ],
+        "then": "deny",
+        "why": "crates/admission/src/admit.rs and auth.rs: the principal is not authorized by the scope capability, StoreError::Rejected (EA-05)"
+      },
+      {
+        "when": [
+          {
+            "field": "bytes",
+            "op": "is",
+            "value": "refused"
+          }
+        ],
+        "then": "deny",
+        "why": "crates/admission/src/realize.rs: the realization refuses the bytes, StoreError::Rejected"
+      }
+    ],
+    "otherwise": "permit",
+    "otherwiseWhy": "SPEC.md 5.1: the canonical form is ingested on the scope axis and the received bytes at their own kappa, joined by a DerivedFrom edge",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "principal",
+            "op": "is",
+            "value": "unauthorized"
+          }
+        ],
+        "then": "permit",
+        "why": "EA-05: admission into a namespace requires the capability its scope names"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "realization",
+            "op": "is",
+            "value": "unknown"
+          }
+        ],
+        "then": "permit",
+        "why": "EA-03: a scope naming a realization the registry does not know is reported as not found"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "namespace",
+            "op": "is",
+            "value": "scoped"
+          },
+          {
+            "field": "realization",
+            "op": "is",
+            "value": "known"
+          },
+          {
+            "field": "principal",
+            "op": "is",
+            "value": "unauthorized"
+          }
+        ],
+        "then": "deny",
+        "why": "admit.rs checks authorization before the realization reads the bytes"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "namespace",
+            "op": "is",
+            "value": "unscoped"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "without a scope there is no realization, axis or authorization to apply"
+      }
+    ],
+    "examples": [
+      {
+        "request": "scoped known authorized realizable",
+        "response": "permit"
+      },
+      {
+        "request": "scoped known unauthorized realizable",
+        "response": "deny"
+      },
+      {
+        "request": "scoped unknown authorized realizable",
+        "response": "indeterminate"
+      },
+      {
+        "request": "unscoped known authorized realizable",
+        "response": "not-applicable"
+      },
+      {
+        "request": "scoped known authorized refused",
+        "response": "deny"
+      },
+      {
+        "request": "conflicted known authorized realizable",
+        "response": "indeterminate"
+      },
+      {
+        "request": "scoped known unauthorized refused",
+        "response": "deny"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Publisher",
+      "text": "Admits artefact representations into a namespace and needs each admission addressed by the canonical form its scope selects.",
+      "concerns": [
+        "Correct answers"
+      ]
+    },
+    {
+      "name": "Supply-chain auditor",
+      "text": "Assesses blast radius over ComposedOf and needs every object in a namespace admitted by a principal its capability authorizes.",
+      "concerns": [
+        "Proved guarantees",
+        "Authorized admission"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Authorized admission",
+      "text": "No object kappa and no DerivedFrom edge exist for a principal the scope capability does not reach.",
+      "model": "security"
+    }
+  ],
+  "components": [
+    {
+      "name": "kappa-registry",
+      "kind": "externalSystem",
+      "text": "The pinned upstream registry Emporous imports, whose KappaStore ingests content and resolves edges."
+    },
+    {
+      "name": "KappaStore",
+      "kind": "database",
+      "text": "The content-addressed store holding objects, representations, scopes and capability edges."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Unauthorized admission",
+      "text": "A principal outside the scope capability admits an object into the namespace.",
+      "stride": "elevationOfPrivilege",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Capability-edge walk",
+        "text": "Admission is denied unless the walk from the scope authorization reaches the principal.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "EmporousAdmitPolicyProofs::inv001Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "EA-05 features/suites/admission.feature"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Realization chosen in code",
+      "text": "The admission path names a realization or axis literal instead of reading it from the scope.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Read from the scope",
+        "text": "The realization and axis are read from the scope and a literal on the admission path fails the gate.",
+        "evidence": [
+          {
+            "kind": "gate",
+            "reference": "EA-03 features/suites/admission.feature"
+          },
+          {
+            "kind": "gate",
+            "reference": "cargo xtask audit-parametric"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Unknown realization admitted",
+      "text": "A scope names a realization the registry does not know and the bytes are admitted unrealized.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Not found, not admitted",
+        "text": "An unknown realization is indeterminate and never permitted.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "EmporousAdmitPolicyProofs::inv002Holds"
+          }
+        ]
+      }
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Resistance",
+      "requirement": "No unauthorized admission",
+      "text": "No request from an unauthorized principal is permitted.",
+      "measure": "Unauthorized permits",
+      "measureText": "Requests with an unauthorized principal that answer permit.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every admission condition decided",
+      "text": "Each admission condition of SPEC.md 6.3 and the namespace conflict has its own answer.",
+      "measure": "Undecided conditions",
+      "measureText": "Admission failure conditions no rule decides.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Publisher",
+      "steps": [
+        "REQ-001",
+        "REQ-003",
+        "REQ-005",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Supply-chain auditor",
+      "steps": [
+        "REQ-002",
+        "REQ-004",
+        "INV-001",
+        "INV-003"
+      ]
+    }
+  ]
+}

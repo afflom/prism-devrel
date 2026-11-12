@@ -1,0 +1,331 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Tell whether a PrismLegal matter node is current, so a strategy only ever rests on reviewed, grounded and up-to-date support.",
+  "pattern": "decisionTable",
+  "repository": "afflom/prism-legal",
+  "app": {
+    "name": "matter-support",
+    "limits": [
+      "It does not detect citation or dependency cycles; Matter::current excludes them.",
+      "It does not decide what a passage means; review does."
+    ],
+    "title": "Current support",
+    "purpose": "Decide whether a fact or conclusion in a matter is current, pending review, or withheld, from its origin, whether it was accepted, how many citations or dependencies ground it and how many of those are no longer current.",
+    "fields": [
+      {
+        "name": "origin",
+        "kind": "choice",
+        "values": [
+          "extracted",
+          "reviewed",
+          "inferred"
+        ],
+        "means": "where the node came from"
+      },
+      {
+        "name": "accepted",
+        "kind": "choice",
+        "values": [
+          "yes",
+          "no"
+        ],
+        "means": "whether review accepted the node"
+      },
+      {
+        "name": "grounds",
+        "kind": "number",
+        "min": 0,
+        "means": "citations of an extracted node, or dependencies of an inferred one",
+        "max": 100
+      },
+      {
+        "name": "stale",
+        "kind": "number",
+        "min": 0,
+        "means": "of its citations and dependencies, those no longer current",
+        "max": 100
+      }
+    ],
+    "outcomes": [
+      "current",
+      "pending",
+      "withheld"
+    ],
+    "meanings": {
+      "current": "the node is admitted and may support strategies",
+      "pending": "review has not accepted it, so it supports nothing",
+      "withheld": "it lacks grounding or current support, so it supports nothing"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "accepted",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "pending",
+        "why": "src/Matter.lex.tex ready: a node counts only once accepted (MatterLaws unreviewedSupportCannotAuthorizeInference)"
+      },
+      {
+        "when": [
+          {
+            "field": "origin",
+            "op": "is",
+            "value": "extracted"
+          },
+          {
+            "field": "grounds",
+            "op": "=",
+            "value": 0
+          }
+        ],
+        "then": "withheld",
+        "why": "src/Matter.lex.tex grounded: an extracted node needs a citation"
+      },
+      {
+        "when": [
+          {
+            "field": "origin",
+            "op": "is",
+            "value": "inferred"
+          },
+          {
+            "field": "grounds",
+            "op": "=",
+            "value": 0
+          }
+        ],
+        "then": "withheld",
+        "why": "src/Matter.lex.tex grounded: an inferred node needs dependencies"
+      },
+      {
+        "when": [
+          {
+            "field": "stale",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "withheld",
+        "why": "src/Matter.lex.tex citationsCurrent and allReferencesIn: a changed source or a corrected dependency invalidates it (correctionInvalidatesImmediateDependent, missingSupportIsNotCurrent)"
+      }
+    ],
+    "otherwise": "current",
+    "otherwiseWhy": "src/Matter.lex.tex ready: accepted, grounded, every citation current and every dependency admitted",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "accepted",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "current",
+        "why": "unreviewed support cannot authorize an inference"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "stale",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "current",
+        "why": "a correction invalidates every dependent, immediate or transitive"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "origin",
+            "op": "is",
+            "value": "reviewed"
+          },
+          {
+            "field": "accepted",
+            "op": "is",
+            "value": "yes"
+          },
+          {
+            "field": "stale",
+            "op": "=",
+            "value": 0
+          }
+        ],
+        "then": "current",
+        "why": "a reviewed, accepted node with current support is admitted"
+      }
+    ],
+    "examples": [
+      {
+        "request": "reviewed yes 0 0",
+        "response": "current"
+      },
+      {
+        "request": "extracted yes 2 0",
+        "response": "current"
+      },
+      {
+        "request": "extracted yes 0 0",
+        "response": "withheld"
+      },
+      {
+        "request": "inferred yes 0 0",
+        "response": "withheld"
+      },
+      {
+        "request": "inferred yes 3 1",
+        "response": "withheld"
+      },
+      {
+        "request": "inferred no 3 0",
+        "response": "pending"
+      },
+      {
+        "request": "reviewed yes 1 1",
+        "response": "withheld"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Lawyer",
+      "text": "Builds strategies on a matter and needs every fact they rest on to be reviewed and current.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Client",
+      "text": "Brings a matter and needs a correction to reach every conclusion that depended on the old wording.",
+      "concerns": [
+        "Proved guarantees",
+        "Corrections propagate"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Corrections propagate",
+      "text": "A corrected or withdrawn source invalidates every dependent conclusion, immediate or transitive, while unrelated context stays.",
+      "model": "quality"
+    }
+  ],
+  "components": [
+    {
+      "name": "Matter file",
+      "kind": "database",
+      "text": "The saved matter file, which replays the complete accepted command history, up to 2,048 commands."
+    },
+    {
+      "name": "Imported resources",
+      "kind": "externalSystem",
+      "text": "The UTF-8 text and CSV resources a client or lawyer imports, whose passages and cells are cited."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Unreviewed extraction promoted",
+      "text": "A passage the system extracted is used as a fact before anyone reviewed it.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Acceptance required",
+        "text": "An unaccepted node is never current, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "LimitationCheckProofs::inv001Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "src/MatterLaws.lex.tex unreviewedSupportCannotAuthorizeInference"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Stale source after replacement",
+      "text": "A resource is replaced and a conclusion keeps citing its old wording.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Invalidation proved",
+        "text": "Any stale citation or dependency withholds the node, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "LimitationCheckProofs::inv002Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "src/MatterLaws.lex.tex correctionInvalidatesTransitiveDependent"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Self-supporting inference",
+      "text": "A conclusion is grounded only on itself or on a cycle of conclusions.",
+      "stride": "repudiation",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "The app takes the counts it is given; cycles are excluded upstream by Matter::current, whose fixed point admits no self or mutual cycle (selfCycleIsNotEvidence, mutualCycleIsNotEvidence)."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Reliability",
+      "subcharacteristic": "Faultlessness",
+      "requirement": "No stale support",
+      "text": "No node with a stale citation or dependency is answered current.",
+      "measure": "Current answers with stale support",
+      "measureText": "Requests with stale at least 1 answered current.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Lawyer",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Client",
+      "steps": [
+        "REQ-004",
+        "INV-002",
+        "INV-001"
+      ]
+    }
+  ],
+  "axioms": {
+    "inv001Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv002Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
+}

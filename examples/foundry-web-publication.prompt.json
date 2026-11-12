@@ -1,0 +1,371 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "policyDecision",
+  "goal": "Decide whether foundry-web may publish a uor-foundry portal release to Pages, so only the exact verified, authorized, complete core stage is ever deployed.",
+  "repository": "UOR-Foundation/foundry-web",
+  "app": {
+    "name": "foundry-web-publication",
+    "title": "Portal publication",
+    "purpose": "Decide, as an XACML 3.0 policy decision point, whether a portal release may be published from its producer, how it is referenced, how many core capabilities it implements, the producer state it is in and whether its target is approved.",
+    "fields": [
+      {
+        "name": "producer",
+        "kind": "choice",
+        "values": [
+          "foundry",
+          "other",
+          "unverifiable"
+        ],
+        "means": "the producer identity: the uor-foundry repository, another producer, or one the SDK cannot verify"
+      },
+      {
+        "name": "reference",
+        "kind": "choice",
+        "values": [
+          "release",
+          "moving"
+        ],
+        "means": "an exact verified release, or a moving branch, tag, build directory or unchecked workflow artifact"
+      },
+      {
+        "name": "capabilities",
+        "kind": "number",
+        "min": 0,
+        "max": 5,
+        "means": "how many of identity, roles, shared workspaces, persistence and messaging pass their producer gates"
+      },
+      {
+        "name": "stage",
+        "kind": "choice",
+        "values": [
+          "ready",
+          "authorized",
+          "accepted"
+        ],
+        "means": "the producer state: producer-ready, deployment-authorized or accepted"
+      },
+      {
+        "name": "target",
+        "kind": "choice",
+        "values": [
+          "approved",
+          "unapproved"
+        ],
+        "means": "whether the origin and subpath are the authorized /foundry-web/ Pages target"
+      }
+    ],
+    "outcomes": [
+      "permit",
+      "deny",
+      "not-applicable",
+      "indeterminate"
+    ],
+    "meanings": {
+      "permit": "XACML 3.0 section 7: the policy applies and allows publishing the release",
+      "deny": "XACML 3.0 section 7: the policy applies and forbids publishing it",
+      "not-applicable": "XACML 3.0 section 7: no rule of this publisher's policy applies to the request",
+      "indeterminate": "XACML 3.0 section 7: the policy could not be evaluated, here because the producer identity cannot be verified"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "producer",
+            "op": "is",
+            "value": "other"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "SPEC.md Ownership: foundry-web publishes only the uor-foundry platform; it is not a second application model"
+      },
+      {
+        "when": [
+          {
+            "field": "producer",
+            "op": "is",
+            "value": "unverifiable"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "SPEC.md Release boundary: verify producer identity independently; a signed SDK or valid digest alone does not establish it"
+      },
+      {
+        "when": [
+          {
+            "field": "reference",
+            "op": "is",
+            "value": "moving"
+          }
+        ],
+        "then": "deny",
+        "why": "SPEC.md Release boundary: acquire an exact verified release, not a moving branch, tag, build directory or unchecked workflow artifact"
+      },
+      {
+        "when": [
+          {
+            "field": "capabilities",
+            "op": "<",
+            "value": 5
+          }
+        ],
+        "then": "deny",
+        "why": "SPEC.md Authorized initial scope: all five core capabilities must pass; reject incomplete stage capabilities and draft previews"
+      },
+      {
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "ready"
+          }
+        ],
+        "then": "deny",
+        "why": "SPEC.md Release boundary: producer-ready precedes a separately authorized deployment"
+      },
+      {
+        "when": [
+          {
+            "field": "target",
+            "op": "is",
+            "value": "unapproved"
+          }
+        ],
+        "then": "deny",
+        "why": "SPEC.md Publication acceptance: reject unauthorized targets; authorization binds the exact origin and subpath"
+      }
+    ],
+    "otherwise": "permit",
+    "otherwiseWhy": "SPEC.md: an exact verified uor-foundry release of the complete authorized core stage, deployment-authorized, to its approved target",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "capabilities",
+            "op": "<",
+            "value": 5
+          }
+        ],
+        "then": "permit",
+        "why": "a mock, draft preview or incomplete stage is not an eligible release"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "reference",
+            "op": "is",
+            "value": "moving"
+          }
+        ],
+        "then": "permit",
+        "why": "only exact verified releases are published"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "ready"
+          }
+        ],
+        "then": "permit",
+        "why": "deployment needs its own authorization"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "producer",
+            "op": "is",
+            "value": "other"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "another producer's release is outside this publisher's policy"
+      }
+    ],
+    "examples": [
+      {
+        "request": "foundry release 5 authorized approved",
+        "response": "permit"
+      },
+      {
+        "request": "foundry release 5 accepted approved",
+        "response": "permit"
+      },
+      {
+        "request": "foundry release 4 authorized approved",
+        "response": "deny"
+      },
+      {
+        "request": "foundry moving 5 authorized approved",
+        "response": "deny"
+      },
+      {
+        "request": "foundry release 5 ready approved",
+        "response": "deny"
+      },
+      {
+        "request": "foundry release 5 authorized unapproved",
+        "response": "deny"
+      },
+      {
+        "request": "other release 5 authorized approved",
+        "response": "not-applicable"
+      },
+      {
+        "request": "unverifiable release 5 authorized approved",
+        "response": "indeterminate"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Portal publisher",
+      "text": "Runs the foundry-web Pages workflow and needs it to deploy only verified, authorized producer bytes without rebuilding them.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Foundry owner",
+      "text": "Authorized the first functional release and needs no draft, incomplete or unauthorized stage presented as it.",
+      "concerns": [
+        "Proved guarantees",
+        "Integrity of the published app"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "uor-foundry release",
+      "kind": "externalSystem",
+      "text": "The producer repository's exact verified portal release and its evidence."
+    },
+    {
+      "name": "PrismPM SDK",
+      "kind": "cliAdapter",
+      "text": "The locked SDK that acquires the release and verifies its integrity, identity and evidence."
+    },
+    {
+      "name": "Foundry Pages site",
+      "kind": "staticSite",
+      "text": "The published portal at https://uor-foundation.github.io/foundry-web/."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Draft preview published as the core release",
+      "text": "A release missing one of the five core capabilities is deployed as the functional release.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Complete stage only",
+        "text": "Fewer than five passing capabilities is denied.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "FoundryWebPublicationProofs::inv001Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "UOR-Foundation/foundry-web SPEC.md Authorized initial scope"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Moving reference substituted",
+      "text": "A branch or tag is published, so the bytes differ from the verified release.",
+      "stride": "spoofing",
+      "asset": "source",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Exact release only",
+        "text": "A moving reference is denied.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "FoundryWebPublicationProofs::inv002Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Deployment before authorization",
+      "text": "A producer-ready release is deployed before its separate deployment authorization.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Authorized stage only",
+        "text": "A producer-ready release is denied.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "FoundryWebPublicationProofs::inv003Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Live checks skipped after deployment",
+      "text": "A deployment answered permit is treated as accepted without the live journeys SPEC.md requires.",
+      "stride": "repudiation",
+      "asset": "holo",
+      "likelihood": "medium",
+      "impact": "major",
+      "accepted": "The app decides whether to publish; post-deployment verification of the live URL and journeys is a separate foundry-web gate it does not replace."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "All five core capabilities required",
+      "text": "A release is permitted only when every one of the five authorized core capabilities passes.",
+      "measure": "Core capabilities required",
+      "measureText": "Passing core capabilities the policy requires before permit.",
+      "threshold": 5
+    },
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Integrity",
+      "requirement": "No ineligible release permitted",
+      "text": "No moving, incomplete, unauthorized or misdirected release is permitted.",
+      "measure": "Ineligible permits",
+      "measureText": "Acceptance vectors with an ineligible release answered permit.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Portal publisher",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-006",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Foundry owner",
+      "steps": [
+        "REQ-004",
+        "REQ-005",
+        "INV-001",
+        "INV-002",
+        "INV-003",
+        "refuse"
+      ]
+    }
+  ]
+}

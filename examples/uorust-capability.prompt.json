@@ -1,10 +1,12 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide how UORust routes a Rust function by the effect it reaches, so every capability becomes a modeled threat and nothing is silently pure.",
+  "goal": "Decide how UORust records a Rust target by the effect it reaches, so every capability becomes a modeled threat and nothing is silently pure.",
+  "pattern": "decisionTable",
+  "repository": "afflom/uorust",
   "app": {
     "name": "capability-route",
     "title": "Capability route",
-    "purpose": "Decide whether a Rust function is routed as pure, as a granted capability, or as a threat to model, from the effect it reaches and whether its crate forbids unsafe code.",
+    "purpose": "Decide whether a Rust target is recorded as pure, as pure under the compiler gate, as a capability, or as a threat, from the first effect it reaches and whether its crate forbids unsafe code.",
     "fields": [
       {
         "name": "effect",
@@ -18,7 +20,7 @@
           "unsafe",
           "ffi"
         ],
-        "means": "the first operating-system effect the function reaches"
+        "means": "the first operating-system effect the target reaches"
       },
       {
         "name": "forbid",
@@ -32,13 +34,15 @@
     ],
     "outcomes": [
       "pure",
+      "gated",
       "capability",
       "threat"
     ],
     "meanings": {
-      "pure": "lifted as pure behavior",
-      "capability": "a capability and its threat",
-      "threat": "an unsafe or foreign effect, a threat with no control"
+      "pure": "no effect: lifted as pure behavior, its memory threat controlled by review",
+      "gated": "no effect: pure, its memory threat controlled by the forbid(unsafe_code) compiler gate",
+      "capability": "an fs, net, process or env asset with a threat and reviewed sites",
+      "threat": "an unsafe or foreign effect: a memory-safety threat, elevation of privilege"
     },
     "rules": [
       {
@@ -50,7 +54,7 @@
           }
         ],
         "then": "threat",
-        "why": "unsafe code is a threat the borrow checker does not control"
+        "why": "model/routes.toml UR-R14: an unsafe block is a memory-safety threat"
       },
       {
         "when": [
@@ -61,7 +65,23 @@
           }
         ],
         "then": "threat",
-        "why": "a foreign call is outside the model"
+        "why": "model/routes.toml UR-R15: an extern block crosses the language boundary, a threat"
+      },
+      {
+        "when": [
+          {
+            "field": "effect",
+            "op": "is",
+            "value": "none"
+          },
+          {
+            "field": "forbid",
+            "op": "is",
+            "value": "yes"
+          }
+        ],
+        "then": "gated",
+        "why": "crates/uorust/src/project.rs threats: with forbid(unsafe_code) the memory threat is controlled by a gate (UR-R20)"
       },
       {
         "when": [
@@ -72,11 +92,11 @@
           }
         ],
         "then": "pure",
-        "why": "no effect, no capability"
+        "why": "crates/uorust/src/project.rs threats: without forbid the control is Safe Rust only, a review"
       }
     ],
     "otherwise": "capability",
-    "otherwiseWhy": "fs, net, process and env are capabilities with threats",
+    "otherwiseWhy": "model/routes.toml UR-R16 to UR-R19: fs, net, process and env uses are assets, each with a capability threat (project.rs capability_threat)",
     "properties": [
       {
         "kind": "never",
@@ -101,15 +121,35 @@
         ],
         "then": "threat",
         "why": "unsafe is always a threat"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "forbid",
+            "op": "is",
+            "value": "no"
+          }
+        ],
+        "then": "gated",
+        "why": "the compiler gate is evidence only where the crate forbids unsafe code"
       }
     ],
     "examples": [
       {
         "request": "none yes",
+        "response": "gated"
+      },
+      {
+        "request": "none no",
         "response": "pure"
       },
       {
         "request": "fs yes",
+        "response": "capability"
+      },
+      {
+        "request": "env no",
         "response": "capability"
       },
       {
@@ -129,6 +169,118 @@
       "concerns": [
         "Correct answers",
         "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Security reviewer",
+      "text": "Reads the threat model UORust writes and needs every unsafe or foreign call to arrive as a threat, with gate evidence only where the compiler enforces it.",
+      "concerns": [
+        "Honest evidence"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Honest evidence",
+      "text": "A control cites a gate only where the compiler enforces it; otherwise it cites a review.",
+      "model": "security"
+    }
+  ],
+  "components": [
+    {
+      "name": "Cargo workspace",
+      "kind": "externalSystem",
+      "text": "The workspace UORust reads through cargo metadata, Cargo.lock and syn, with source spans."
+    },
+    {
+      "name": "uorust CLI",
+      "kind": "cliAdapter",
+      "text": "crates/uorust, which ingests facts, routes them through model/routes.toml and writes the Prism model."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Unsafe routed as pure",
+      "text": "A target that reaches unsafe code is recorded as pure, so its memory threat is missing.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "critical",
+      "control": {
+        "name": "Effects never pure",
+        "text": "An effect is never answered pure, proved for every request, and the Rust router replays the same vectors.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "CapabilityRouteProofs::inv001Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "crates/conformance/tests/routes.rs"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Gate claimed without forbid",
+      "text": "A memory control cites the compiler gate for a crate that does not forbid unsafe code.",
+      "stride": "repudiation",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Gate only with forbid",
+        "text": "Gated is never answered without forbid, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "CapabilityRouteProofs::inv003Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "crates/uorust/src/project.rs threats"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Effect hidden by a macro",
+      "text": "A procedural macro or build script reaches an effect the source scan does not see.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "accepted": "UORust reads source spans with syn; what it cannot lift is recorded as residue in frontier.toml rather than routed."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every effect kind routed",
+      "text": "Each of the seven effect kinds has a route, with and without forbid.",
+      "measure": "Effect kinds without a route",
+      "measureText": "Of the seven effect kinds, those no rule or otherwise routes.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Rust developer",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Security reviewer",
+      "steps": [
+        "INV-001",
+        "INV-002",
+        "INV-003"
       ]
     }
   ]

@@ -1,70 +1,92 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a block header carries the work its target asks for, so a node's acceptance can be replayed from the header alone.",
+  "goal": "Decide whether a block header hash meets its target, so a node or miner can replay the proof-of-work admission from the header alone.",
+  "pattern": "decisionTable",
+  "repository": "afflom/prism-btc",
+  "license": "Apache-2.0",
   "app": {
     "name": "header-work",
+    "limits": [
+      "The hash and target are compared by their leading zero bits, then by the rest of the hash; decoding the compact bits to a target is the caller's.",
+      "It does not search nonces; prism-btc-node does."
+    ],
     "title": "Header work",
-    "purpose": "Decide whether a block header is accepted, from the leading zero bits of its double SHA-256 hash, the leading zero bits its target requires, and its version.",
+    "purpose": "Decide whether a block header is accepted, from the leading zero bits of its double SHA-256 hash, the leading zero bits of its target, and how the rest of the hash compares with the target when those are equal.",
     "fields": [
       {
         "name": "zeros",
         "kind": "number",
         "min": 0,
-        "max": 256,
-        "means": "leading zero bits of the header's sha256d hash"
+        "means": "leading zero bits of the header's sha256d hash",
+        "max": 256
       },
       {
         "name": "target",
         "kind": "number",
         "min": 0,
-        "max": 256,
-        "means": "leading zero bits the compact target requires"
+        "means": "leading zero bits of the target the compact bits decode to",
+        "max": 256
       },
       {
-        "name": "version",
+        "name": "rest",
         "kind": "choice",
         "values": [
-          "current",
-          "stale"
+          "lower",
+          "tied",
+          "higher"
         ],
-        "means": "whether the header version is one the node accepts"
+        "means": "with equal leading zeros, the rest of the hash against the rest of the target"
       }
     ],
     "outcomes": [
       "accepted",
       "rejected"
     ],
+    "meanings": {
+      "accepted": "block_hash <= target: the header carries the work",
+      "rejected": "block_hash > target: the candidate does not admit"
+    },
     "rules": [
       {
         "when": [
           {
-            "field": "version",
-            "op": "is",
-            "value": "stale"
-          }
-        ],
-        "then": "rejected",
-        "why": "a stale version is never accepted"
-      },
-      {
-        "when": [
-          {
             "field": "zeros",
-            "op": ">=",
+            "op": ">",
             "value": {
               "field": "target"
             }
           }
         ],
         "then": "accepted",
-        "why": "enough work for the target"
+        "why": "ARCHITECTURE.md: admission is block_hash <= target compared as bytes (LexicographicLessEqThreshold); more leading zeros is smaller"
+      },
+      {
+        "when": [
+          {
+            "field": "zeros",
+            "op": "<",
+            "value": {
+              "field": "target"
+            }
+          }
+        ],
+        "then": "rejected",
+        "why": "crates/prism-btc-node/src/lib.rs scan_template_nonces: fewer leading zeros is above the target, so the nonce is not taken"
+      },
+      {
+        "when": [
+          {
+            "field": "rest",
+            "op": "is",
+            "value": "higher"
+          }
+        ],
+        "then": "rejected",
+        "why": "ARCHITECTURE.md: with an equal zero prefix the remaining bytes decide, and above the target does not admit"
       }
     ],
-    "otherwise": "rejected",
-    "otherwiseWhy": "not enough work",
-    "limits": [
-      "Leading zero bits approximate the target comparison; equal zero counts are treated as meeting it."
-    ],
+    "otherwise": "accepted",
+    "otherwiseWhy": "the rest is lower than or tied with the target: block_hash <= target admits",
     "properties": [
       {
         "kind": "never",
@@ -81,29 +103,58 @@
         "why": "a header without the work is never accepted"
       },
       {
-        "kind": "never",
+        "kind": "always",
         "when": [
           {
-            "field": "version",
-            "op": "is",
-            "value": "stale"
+            "field": "zeros",
+            "op": ">",
+            "value": {
+              "field": "target"
+            }
           }
         ],
         "then": "accepted",
-        "why": "stale versions are refused"
+        "why": "more leading zeros than the target always admits"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "zeros",
+            "op": "=",
+            "value": {
+              "field": "target"
+            }
+          },
+          {
+            "field": "rest",
+            "op": "is",
+            "value": "higher"
+          }
+        ],
+        "then": "accepted",
+        "why": "a hash above the target never admits"
       }
     ],
     "examples": [
       {
-        "request": "76 76 current",
+        "request": "77 76 higher",
         "response": "accepted"
       },
       {
-        "request": "75 76 current",
+        "request": "75 76 lower",
         "response": "rejected"
       },
       {
-        "request": "90 76 stale",
+        "request": "76 76 lower",
+        "response": "accepted"
+      },
+      {
+        "request": "76 76 tied",
+        "response": "accepted"
+      },
+      {
+        "request": "76 76 higher",
         "response": "rejected"
       }
     ]
@@ -115,6 +166,106 @@
       "concerns": [
         "Correct answers",
         "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Miner",
+      "text": "Runs prism-btc-node's nonce scan and needs a header it submits to be one Bitcoin Core accepts.",
+      "concerns": [
+        "Agreement with Bitcoin Core"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Agreement with Bitcoin Core",
+      "text": "The admission is Bitcoin's own block_hash <= target, so a header the app accepts is one submitblock accepts.",
+      "model": "component"
+    }
+  ],
+  "components": [
+    {
+      "name": "Bitcoin Core",
+      "kind": "externalSystem",
+      "text": "The Bitcoin Core node prism-btc-node talks to over RPC: getblocktemplate for templates, submitblock for admitted headers."
+    },
+    {
+      "name": "prism-btc-wasm",
+      "kind": "service",
+      "text": "The WebAssembly binding of the prism-btc kernel, crates/prism-btc-wasm."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Header accepted without work",
+      "text": "A header whose hash is above its target is accepted and relayed.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "critical",
+      "control": {
+        "name": "Work proved",
+        "text": "The app never accepts fewer leading zeros than the target, and the node takes a nonce only when target.is_satisfied_by_bytes(digest).",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "HeaderWorkProofs::inv001Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "crates/prism-btc-node/src/lib.rs scan_template_nonces"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Target misdecoded",
+      "text": "The compact bits are decoded to an easier target, so a header passes with less work.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "The app compares the zero counts it is given; decoding Bits to Target belongs to the caller, and Bitcoin Core re-checks every submitted block."
+    },
+    {
+      "name": "Nonce space exhausted",
+      "text": "No nonce of a template admits, so mining stalls.",
+      "stride": "denialOfService",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "minor",
+      "accepted": "prism-btc-node rolls the extranonce when the 32-bit nonce space is exhausted; the app answers each candidate on its own."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Compatibility",
+      "subcharacteristic": "Interoperability",
+      "requirement": "Agrees with Bitcoin Core",
+      "text": "Every header the app accepts is one Bitcoin Core accepts by work, and every one it rejects is one Core rejects.",
+      "measure": "Disagreements with Core",
+      "measureText": "Examples whose answer differs from block_hash <= target.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Node operator",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "otherwise",
+        "INV-001"
+      ]
+    },
+    {
+      "stakeholder": "Miner",
+      "steps": [
+        "REQ-001",
+        "otherwise",
+        "INV-002",
+        "INV-003"
       ]
     }
   ]

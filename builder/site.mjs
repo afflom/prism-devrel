@@ -127,9 +127,10 @@ function facetSections(m) {
   return { html: html.join(''), text: text.join('\n\n') };
 }
 
+const sourcePaths = (files) => Object.keys(files).filter((p) => (p.startsWith('app/src/') && !p.startsWith('app/src/Foundation/') && !p.startsWith('app/src/Production/')) || /^(model|features|crates|openspec)\//.test(p) || p === 'app/prompt.json' || p === 'app/lexlean.toml' || p === 'site/app.json');
+
 function sources(files) {
-  const shown = Object.keys(files).filter((p) => (p.startsWith('app/src/') && !p.startsWith('app/src/Foundation/') && !p.startsWith('app/src/Production/')) || /^(model|features|crates|openspec)\//.test(p) || p === 'app/prompt.json' || p === 'app/lexlean.toml' || p === 'site/app.json');
-  return shown.map((p) => `<details class="source"><summary>${code(p)} <span class="dim">${files[p].split('\n').length} lines</span></summary><pre><code>${esc(files[p])}</code></pre></details>`).join('');
+  return sourcePaths(files).map((p) => `<details class="source"><summary>${code(p)} <span class="dim">${files[p].split('\n').length} lines</span></summary><pre><code>${esc(files[p])}</code></pre></details>`).join('');
 }
 
 /** A run of a state machine: the steps, one per line, each the fields after the state; the page feeds every answer back as the next state. */
@@ -151,7 +152,7 @@ export function examplePage(entry, built, m, files, claims, zipName, verified) {
   const body = [
     `<p>Inspired by <a href="${repoUrl}">${esc(entry.repository)}</a>${entry.live ? ` (<a href="${esc(entry.live)}">live</a>)` : ''}: ${esc(entry.summary)}</p><p class="dim">Pattern: <a href="${esc(m.pattern.url)}">${esc(m.pattern.name)}</a>, ${esc(m.pattern.standard)}.</p>`,
     status,
-    `<h2 id="prompt">The prompt</h2><p>This is the whole input. <a href="../prompts/${esc(entry.name)}.prompt.json">Raw JSON</a> · <a href="../../start/#builder" data-example="${esc(entry.name)}">Open it in the builder</a> · <a href="${zipName}">Download the app (.zip)</a></p><pre><code>${esc(JSON.stringify(m.prompt, null, 2))}</code></pre>`,
+    `<h2 id="prompt">The prompt</h2><p>This is the whole input. <a href="../prompts/${esc(entry.name)}.prompt.json">Raw JSON</a> · <a href="../../start/?example=${esc(entry.name)}#builder" data-example="${esc(entry.name)}">Open it in the builder</a> · <a href="${zipName}">Download the app (.zip)</a></p><pre><code>${esc(JSON.stringify(m.prompt, null, 2))}</code></pre>`,
     `<h2 id="claims">What the app claims</h2><p>Each claim is a row in <code>model/ids.toml</code>, a scenario and a test, and a theorem the Lean kernel checks.</p><ul>${claims.map((c) => `<li>${code(c.id)} ${esc(c.statement)}</li>`).join('')}</ul>`,
     facets.html,
     built?.design?.length ? `<h2 id="rendered">Rendered design views</h2><p>Written by the SDK from the design records when it verified the app.</p>${built.design.map((d) => `<details class="source"><summary>${code(d.name)}</summary><pre><code>${esc(d.text)}</code></pre></details>`).join('')}` : '',
@@ -162,9 +163,9 @@ export function examplePage(entry, built, m, files, claims, zipName, verified) {
     '',
     `> ${md(m.prompt.goal ?? m.spec.purpose).replace(/\n/g, ' ')}`,
     '',
-    `Inspired by ${entry.repository} (${repoUrl}). Pattern: ${m.pattern.name}, ${m.pattern.standard}. The prompt below is data, quoted from the example.`,
+    `Inspired by ${entry.repository} (${repoUrl})${entry.live ? `, live at ${entry.live}` : ''}: ${md(entry.summary)} Pattern: ${m.pattern.name}, ${m.pattern.standard}. The prompt below is data, quoted from the example.`,
     '',
-    v ? `Verified by prismpm verify in the pinned SDK. Fingerprint: ${v.fingerprint}. Acceptance vectors: ${m.vectors.length}.` : 'Not built when this twin was generated.',
+    v ? `Verified by prismpm verify in the pinned SDK. Fingerprint: ${v.fingerprint}. Acceptance vectors: ${m.vectors.length}. Claims: ${claims.length}.` : `Not built when this twin was generated. Acceptance vectors: ${m.vectors.length}. Claims: ${claims.length}.`,
     '',
     '## The prompt',
     '',
@@ -177,6 +178,13 @@ export function examplePage(entry, built, m, files, claims, zipName, verified) {
     ...claims.map((c) => `- ${c.id}: ${md(c.statement)}`),
     '',
     facets.text,
+    '',
+    ...(built?.design?.length ? ['## Rendered design views', '', 'Written by the SDK from the design records when it verified the app.', '', ...built.design.flatMap((d) => [`### ${d.name}`, '', fence(d.text), d.text, fence(d.text), ''])] : []),
+    '## Prism source',
+    '',
+    `Every file the builder wrote, laid out as a repository created from ${TEMPLATE_REPO}; the download ${zipName} has them all.`,
+    '',
+    ...sourcePaths(files).map((p) => `- ${md(p)} (${files[p].split('\n').length} lines)`),
     '',
   ].join('\n');
   return { html: { title: `How to build the ${m.title} app`, summary: m.prompt.goal ?? m.spec.purpose, body }, twin };
@@ -237,7 +245,7 @@ export async function writeSite(site, builtDir) {
     const { html, twin } = examplePage({ ...entry, name }, built, m, files, claims, zipName, built);
     write(join(dir, 'index.html'), page({ depth: 2, ...html, diataxis: 'howToGuide', journey: 'build', twin: 'index.md', scripts: built ? ['../../builder/web/example.mjs'] : [], importmap: built ? { imports: { 'node:crypto': '../../vendor/node-crypto-shim.mjs' } } : null }));
     write(join(dir, 'index.md'), twin);
-    index.push({ name, title: m.title, goal: m.prompt.goal ?? m.spec.purpose, repository: entry.repository, pattern: m.pattern.key, prompt: `${name}.prompt.json` });
+    index.push({ name, app: m.spec.name, title: m.title, goal: m.prompt.goal ?? m.spec.purpose, repository: entry.repository, pattern: m.pattern.key, prompt: `${name}.prompt.json` });
     cards.push({ pattern: m.pattern.key, html: `<li class="card"><p class="eyebrow">${esc(entry.repository)}</p><h3><a href="${name}/">${esc(m.title)}</a></h3><p>${esc(m.prompt.goal ?? m.spec.purpose)}</p><p class="dim">${count(m.spec.rules.length, 'rule')} · ${count(m.spec.properties.length, 'proved property', 'proved properties')} · ${count(m.security.threats.length, 'threat')} · ${count(m.vectors.length, 'vector')}${m.machine ? ` · ${count(m.machine.states.length, 'state')}` : ''}${built ? ' · verified' : ''}</p></li>`, twin: `- [${m.title}](examples/${name}/index.md): ${md(m.prompt.goal ?? m.spec.purpose)} Inspired by ${entry.repository}.` });
     twins.push(cards.at(-1).twin);
   }
@@ -255,21 +263,29 @@ export async function writeSite(site, builtDir) {
   const ship = ['gh repo create OWNER/prism-NAME --template UOR-Foundation/template --public', 'gh api -X POST repos/OWNER/prism-NAME/pages -f build_type=workflow', 'git -c core.autocrlf=false clone https://github.com/OWNER/prism-NAME.git', 'cd prism-NAME', 'git rm -q app/src/Contract.lex.tex crates/conformance/tests/contract.rs features/suites/contract.feature', 'unzip -o ../prism-NAME.zip', 'git add -A && git commit -m "Build the app from its prompt" && git push'].join('\n');
 
   // Tutorial (Learn): one lesson with one outcome, a verified first app.
-  const first = gallery.examples[0];
+  const first = index[0];
   const tutorialSteps = [
-    ['Load the first example.', `In the builder below, <em>Start from</em> already shows <a href="../examples/${esc(first.prompt.replace(/\.prompt\.json$/, ''))}/">${esc(first.summary)}</a>. Its <code>app</code> is a <code>prism/spec/1</code> spec: the request fields, the answers, the rules in order, the properties Lean must prove, and examples.`],
+    ['Load the first example.', `In the builder below, <em>Start from</em> already shows <a href="../examples/${esc(first.name)}/">${esc(first.title)} (${esc(first.repository)})</a>. Its <code>app</code> is a <code>prism/spec/1</code> spec: the request fields, the answers, the rules in order, the properties Lean must prove, and examples.`],
     ['Build it.', 'Press <strong>Build the app</strong>. The builder runs in this page and nothing is sent anywhere. You see what the app will claim and every file it wrote, one module per facet.'],
     ['Change one rule and build again.', 'Edit a rule\'s answer so that it contradicts an example, and build. The builder refuses and names the example; put the rule back. Every prompt is checked before anything is written.'],
     ['Download and ship it.', 'Press <strong>Download .zip</strong> and run the commands under <a href="#ship">Ship</a>. The repository\'s gate, <code>just vv</code>, checks every claim, and its Pages workflow proves the app with the Lean kernel and publishes it.'],
   ];
+  const lead = "In this tutorial you build, check and ship one Prism app from one prompt. It takes four steps; the first app is verified the first time its repository's workflow runs.";
+  const shipNote = `NAME is the app's name, app.name in the prompt (${first.app} for ${first.title}), so the download is prism-NAME.zip. Set repository in the prompt to OWNER/prism-NAME first, so the page links to the right place.`;
+  const next = [
+    ['../examples/', '../examples/index.md', 'Example apps', `${gallery.examples.length} how-to guides, each an app grounded in a real Prism or UOR project, built from one prompt and verified.`],
+    ['reference/', 'reference/index.md', 'Reference', 'every member of a prompt, the patterns, the CLI and the MCP tool.'],
+    ['source/', 'source/index.md', 'Prism source', 'the Foundation modules and language every app is written in.'],
+    ['explanation/', 'explanation/index.md', 'Explanation', 'how one prompt becomes every facet, and what checks each.'],
+  ];
   const tutorial = [
-    `<p>In this tutorial you build, check and ship one Prism app from one prompt. It takes four steps; the first app is verified the first time its repository's workflow runs.</p>`,
+    `<p>${esc(lead)}</p>`,
     `<ol class="steps">${tutorialSteps.map(([t, d]) => `<li><strong>${esc(t)}</strong> ${d}</li>`).join('')}</ol>`,
     `<h2 id="builder">Build an app</h2><div id="app-builder" class="builder"><div class="row"><label for="example">Start from</label><select id="example"><option value="">Loading examples…</option></select></div><label for="prompt" class="sr">Prompt (JSON)</label><textarea id="prompt" spellcheck="false" rows="18"></textarea><div class="row"><button type="button" id="build">Build the app</button><button type="button" id="download" disabled>Download .zip</button><output id="status" aria-live="polite"></output></div><div id="result"></div></div><noscript><p class="note">The builder needs JavaScript. Without it, run <code>node builder/cli.mjs build prompt.json --out my-app</code> from a clone of <a href="${REPOSITORY}">prism-devrel</a>.</p></noscript>`,
-    `<h2 id="ship">Ship</h2><pre><code>${esc(ship)}</code></pre><p>Set <code>repository</code> in the prompt to <code>OWNER/prism-NAME</code> first, so the page links to the right place.</p>`,
-    `<h2 id="next">Next</h2><ul><li><a href="../examples/">Example apps</a>: ${gallery.examples.length} how-to guides in the spirit of real Prism projects, each built from one prompt and verified.</li><li><a href="reference/">Reference</a>: every member of a prompt, the patterns, the CLI and the MCP tool.</li><li><a href="source/">Prism source</a>: the Foundation modules and language every app is written in.</li><li><a href="explanation/">Explanation</a>: how one prompt becomes every facet, and what checks each.</li></ul>`,
+    `<h2 id="ship">Ship</h2><pre><code>${esc(ship)}</code></pre><p>${esc(shipNote)}</p>`,
+    `<h2 id="next">Next</h2><ul>${next.map(([href, , t, d]) => `<li><a href="${href}">${esc(t)}</a>: ${esc(d)}</li>`).join('')}</ul>`,
   ].join('');
-  const tutorialTwin = ['# Build your first Prism app', '', 'In this tutorial you build, check and ship one Prism app from one prompt.', '', ...tutorialSteps.map(([t, d], i) => `${i + 1}. ${t} ${d.replace(/<[^>]+>/g, '')}`), '', '## Ship', '', fence(ship), ship, fence(ship), '', '## Next', '', '- [Example apps](../examples/index.md)', '- [Prism source](source/index.md)', '- [Reference](reference/index.md)', '- [Explanation](explanation/index.md)', ''].join('\n');
+  const tutorialTwin = ['# Build your first Prism app', '', lead, '', ...tutorialSteps.map(([t, d], i) => `${i + 1}. ${t} ${d.replace(/<[^>]+>/g, '')}`), '', '## Ship', '', fence(ship), ship, fence(ship), '', shipNote, '', '## Next', '', ...next.map(([, twin, t, d]) => `- [${t}](${twin}): ${d}`), ''].join('\n');
 
   // Reference (Build): the prompt's members, read from the tool's own schema.
   const members = (schema) => Object.entries(schema.properties).filter(([k]) => k !== 'schema').map(([k, v]) => [k, v.type ?? (v.enum ? 'one of' : 'value'), (schema.required ?? []).includes(k) ? 'required' : 'optional', v.description ?? '']);

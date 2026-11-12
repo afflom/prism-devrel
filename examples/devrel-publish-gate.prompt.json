@@ -1,6 +1,8 @@
 {
   "schema": "prism/prompt/1",
   "goal": "Decide whether Prism-DevRel publishes its catalog, so a developer never reads a page that misstates the subject model.",
+  "pattern": "decisionTable",
+  "repository": "afflom/prism-devrel",
   "app": {
     "name": "devrel-gate",
     "title": "Publish gate",
@@ -33,6 +35,11 @@
       "regenerate",
       "refuse"
     ],
+    "meanings": {
+      "publish": "the pages workflow publishes the catalog",
+      "regenerate": "not published: the catalog must be regenerated from the pinned commit with devrel-catalog",
+      "refuse": "not published: the catalog misstates the subject"
+    },
     "rules": [
       {
         "when": [
@@ -43,7 +50,7 @@
           }
         ],
         "then": "refuse",
-        "why": "a cover may not name what does not exist"
+        "why": "README DR-02: a catalog with an undeclared resource is refused (Catalog::undeclaredResourceRefused)"
       },
       {
         "when": [
@@ -54,7 +61,7 @@
           }
         ],
         "then": "refuse",
-        "why": "every record is taught"
+        "why": "README DR-01 and DR-02: every facet record is covered (Catalog::catalogCovered, uncoveredRecordRefused)"
       },
       {
         "when": [
@@ -65,11 +72,11 @@
           }
         ],
         "then": "regenerate",
-        "why": "the catalog follows its pin"
+        "why": ".github/workflows/pages.yml DR-03: devrel-catalog --check fails when the committed catalog is not the pinned commit's"
       }
     ],
     "otherwise": "publish",
-    "otherwiseWhy": "complete, declared and current",
+    "otherwiseWhy": "complete, declared and current: the pages workflow publishes",
     "properties": [
       {
         "kind": "never",
@@ -120,6 +127,14 @@
       {
         "request": "3 0 current",
         "response": "refuse"
+      },
+      {
+        "request": "0 2 current",
+        "response": "refuse"
+      },
+      {
+        "request": "3 2 stale",
+        "response": "refuse"
       }
     ]
   },
@@ -136,7 +151,121 @@
       "name": "DevRel author",
       "text": "Writes the pages and needs a publish to fail while any record is untaught.",
       "concerns": [
-        "Proved guarantees"
+        "Proved guarantees",
+        "Catalog follows its pin"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Catalog follows its pin",
+      "text": "The committed catalog is the catalog of exactly the commit devrel/subject.json pins, DR-03.",
+      "model": "component"
+    }
+  ],
+  "components": [
+    {
+      "name": "UORust subject",
+      "kind": "externalSystem",
+      "text": "The subject model, afflom/uorust app/, fetched at the full commit devrel/subject.json pins."
+    },
+    {
+      "name": "devrel-catalog",
+      "kind": "cliAdapter",
+      "text": "crates/devrel: reads every .lex.tex module of the subject and writes app/src/Catalog.lex.tex and the learning pages."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Pin moved without regenerating",
+      "text": "devrel/subject.json is moved to a new commit and the old catalog is published as if it taught the new one.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Catalog checked against its pin",
+        "text": "pages.yml regenerates the catalog from the pinned commit and fails on any difference; a stale pin is never published, proved for every request.",
+        "evidence": [
+          {
+            "kind": "gate",
+            "reference": ".github/workflows/pages.yml devrel-catalog --check"
+          },
+          {
+            "kind": "proof",
+            "reference": "DevrelGateProofs::inv003Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Fabricated cover",
+      "text": "A page claims to cover a resource the catalog does not declare.",
+      "stride": "spoofing",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Declared covers only",
+        "text": "A cover naming an undeclared resource refuses the catalog, in the Lean catalog and in this app.",
+        "evidence": [
+          {
+            "kind": "gate",
+            "reference": "Catalog::undeclaredResourceRefused"
+          },
+          {
+            "kind": "proof",
+            "reference": "DevrelGateProofs::inv002Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Subject commit substituted",
+      "text": "The fetched subject is not the commit the pin names.",
+      "stride": "spoofing",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "critical",
+      "control": {
+        "name": "Full commit fetched",
+        "text": "pages.yml fetches the pinned full commit and checks rev-parse HEAD equals it before building the catalog.",
+        "evidence": [
+          {
+            "kind": "gate",
+            "reference": ".github/workflows/pages.yml subject checkout"
+          }
+        ]
+      }
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every record taught",
+      "text": "Every facet record of the pinned subject is covered by at least one learning resource before the catalog is published.",
+      "measure": "Uncovered records",
+      "measureText": "Facet records of the subject no resource covers.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Developer",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "INV-001",
+        "INV-002"
+      ]
+    },
+    {
+      "stakeholder": "DevRel author",
+      "steps": [
+        "REQ-003",
+        "otherwise",
+        "INV-003"
       ]
     }
   ]

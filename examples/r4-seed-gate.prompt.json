@@ -1,0 +1,346 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "decisionTable",
+  "goal": "Decide whether a two-seed UOR-R4 run passes its milestone bar against the unigram and T2 baselines, so a result inside the noise band is never reported as a win.",
+  "repository": "UOR-Foundation/uor-r4",
+  "license": "MIT",
+  "app": {
+    "name": "r4-seed-gate",
+    "title": "Two-seed bar",
+    "purpose": "Decide whether a saved UOR-R4 model passes the two-seed bar on a test panel, from each seed's top-1 rows right, the unigram baseline and the required target T2 plus max(24, the seeds' spread).",
+    "fields": [
+      {
+        "name": "seed1",
+        "kind": "number",
+        "min": 0,
+        "max": 10000000,
+        "means": "rows the seed 1 artifact gets right"
+      },
+      {
+        "name": "seed2",
+        "kind": "number",
+        "min": 0,
+        "max": 10000000,
+        "means": "rows the seed 2 artifact gets right"
+      },
+      {
+        "name": "unigram",
+        "kind": "number",
+        "min": 0,
+        "max": 10000000,
+        "means": "rows the unigram table gets right"
+      },
+      {
+        "name": "t2",
+        "kind": "number",
+        "min": 0,
+        "max": 10000000,
+        "means": "rows the T2 previous-word table gets right"
+      },
+      {
+        "name": "target",
+        "kind": "number",
+        "min": 0,
+        "max": 10000000,
+        "means": "the required target: T2 plus max(24, the absolute difference of the two seeds)"
+      }
+    ],
+    "outcomes": [
+      "pass",
+      "trails-unigram",
+      "trails-t2",
+      "split",
+      "inside-band"
+    ],
+    "meanings": {
+      "pass": "both seeds beat the unigram table and reach the target",
+      "trails-unigram": "a seed does not beat the unigram table",
+      "trails-t2": "both seeds score below T2",
+      "split": "one seed reaches the target and the other does not",
+      "inside-band": "both seeds miss the target, at least one at or above T2: inside the noise band, not a win"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "seed1",
+            "op": "<=",
+            "value": {
+              "field": "unigram"
+            }
+          }
+        ],
+        "then": "trails-unigram",
+        "why": "docs/research/notebook/m1-discrete-attention.md G-Fresh-Gate: d11_top1 > unigram for each seed"
+      },
+      {
+        "when": [
+          {
+            "field": "seed2",
+            "op": "<=",
+            "value": {
+              "field": "unigram"
+            }
+          }
+        ],
+        "then": "trails-unigram",
+        "why": "docs/research/notebook/m1-discrete-attention.md G-Fresh-Gate: d11_top1 > unigram for each seed"
+      },
+      {
+        "when": [
+          {
+            "field": "seed1",
+            "op": "<",
+            "value": {
+              "field": "t2"
+            }
+          },
+          {
+            "field": "seed2",
+            "op": "<",
+            "value": {
+              "field": "t2"
+            }
+          }
+        ],
+        "then": "trails-t2",
+        "why": "README.md: the first human-text runs trail the baselines"
+      },
+      {
+        "when": [
+          {
+            "field": "seed1",
+            "op": ">=",
+            "value": {
+              "field": "target"
+            }
+          },
+          {
+            "field": "seed2",
+            "op": "<",
+            "value": {
+              "field": "target"
+            }
+          }
+        ],
+        "then": "split",
+        "why": "README.md: one seed ahead and one behind is not a win; the bar holds at both seeds"
+      },
+      {
+        "when": [
+          {
+            "field": "seed2",
+            "op": ">=",
+            "value": {
+              "field": "target"
+            }
+          },
+          {
+            "field": "seed1",
+            "op": "<",
+            "value": {
+              "field": "target"
+            }
+          }
+        ],
+        "then": "split",
+        "why": "README.md: one seed ahead and one behind is not a win; the bar holds at both seeds"
+      },
+      {
+        "when": [
+          {
+            "field": "seed1",
+            "op": "<",
+            "value": {
+              "field": "target"
+            }
+          }
+        ],
+        "then": "inside-band",
+        "why": "docs/research/notebook/m1-discrete-attention.md G-Fresh-Gate: >= T2 + max(24, |s1 - s2|); README.md: the 6 Nov best run is inside the noise band, not a win"
+      }
+    ],
+    "otherwise": "pass",
+    "otherwiseWhy": "docs/labs/m1-close-saved-model/README.md bar (d): both seeds beat Unigram and reach the T2 target, as 7,002 and 7,001 against 6,324 did",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "seed1",
+            "op": "<",
+            "value": {
+              "field": "target"
+            }
+          }
+        ],
+        "then": "pass",
+        "why": "a seed below the target is not a pass"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "seed2",
+            "op": "<",
+            "value": {
+              "field": "target"
+            }
+          }
+        ],
+        "then": "pass",
+        "why": "a seed below the target is not a pass"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "seed1",
+            "op": "<=",
+            "value": {
+              "field": "unigram"
+            }
+          }
+        ],
+        "then": "pass",
+        "why": "a model that does not beat word frequency has learned nothing"
+      }
+    ],
+    "examples": [
+      {
+        "request": "7002 7001 1226 6300 6324",
+        "response": "pass"
+      },
+      {
+        "request": "272867 234892 200000 256660 294635",
+        "response": "inside-band"
+      },
+      {
+        "request": "455 371 1226 6300 6384",
+        "response": "trails-unigram"
+      },
+      {
+        "request": "5009 5000 1226 6300 6324",
+        "response": "trails-t2"
+      },
+      {
+        "request": "6400 6330 1226 6300 6370",
+        "response": "split"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Researcher",
+      "text": "Runs training experiments and needs each two-seed result classified by the pre-registered bar, negative results included.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Reviewer",
+      "text": "Reads the research notebook and needs no result inside the noise band or at one seed reported as a win.",
+      "concerns": [
+        "Proved guarantees",
+        "Refused malformed requests"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "d11-scorer",
+      "kind": "cliAdapter",
+      "text": "The artifact scorer that counts each seed's top-1 rows on a panel."
+    },
+    {
+      "name": "Research notebook",
+      "kind": "externalSystem",
+      "text": "docs/research/notebook, where every result is one row."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Single-seed win reported",
+      "text": "One seed's score above the target is reported as a pass while the other seed misses it.",
+      "stride": "repudiation",
+      "asset": "answer",
+      "likelihood": "high",
+      "impact": "major",
+      "control": {
+        "name": "Both seeds bar",
+        "text": "Each seed must reach the target.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "R4SeedGateProofs::inv001Holds"
+          },
+          {
+            "kind": "proof",
+            "reference": "R4SeedGateProofs::inv002Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Target below the noise floor",
+      "text": "A caller sends a target below T2 plus 24, so a noise-level gain passes.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "accepted": "The target is computed by the pre-registered gate sheet before scoring; the app compares against the target it is given."
+    },
+    {
+      "name": "Sealed panel scored early",
+      "text": "The fresh panel is scored before the DEV decision, so the pass is not a confirmation.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "refuse_sealed_fresh_source in the scorer guards the seal; this app only classifies counts."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "Both seeds required",
+      "text": "A pass needs both of the two seeds to reach the target.",
+      "measure": "Seeds required",
+      "measureText": "Seeds that must reach the target before pass.",
+      "threshold": 2
+    },
+    {
+      "characteristic": "Reliability",
+      "subcharacteristic": "Faultlessness",
+      "requirement": "No noise-band win",
+      "text": "No result with a seed below the target is answered pass.",
+      "measure": "Noise-band passes",
+      "measureText": "Acceptance vectors with a seed below the target answered pass.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Researcher",
+      "steps": [
+        "REQ-001",
+        "REQ-003",
+        "REQ-006",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Reviewer",
+      "steps": [
+        "REQ-004",
+        "REQ-005",
+        "INV-001",
+        "INV-002",
+        "INV-003",
+        "refuse"
+      ]
+    }
+  ]
+}

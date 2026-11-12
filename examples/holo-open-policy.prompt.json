@@ -1,11 +1,26 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether Holo Search opens an app it fetched, so nothing runs unless its bytes match its address and its examples replay.",
+  "goal": "Decide whether Holo Search opens the app an address names, so nothing runs unless its bytes match the address, its model checks and its examples replay.",
+  "pattern": "policyDecision",
+  "repository": "UOR-Foundation/holo-search",
   "app": {
     "name": "holo-open",
+    "limits": [
+      "It does not fetch or hash the bytes; the page does, and passes the results."
+    ],
     "title": "Open policy",
-    "purpose": "Decide whether a fetched holo is opened, warned about, or refused, from whether its digest matches the address, how many acceptance vectors failed, and its assurance level.",
+    "purpose": "Decide, as an XACML policy decision, whether a fetched app may open, from how the address resolved, whether the bytes hash to it, whether the model checks and how many acceptance vectors failed.",
     "fields": [
+      {
+        "name": "resolution",
+        "kind": "choice",
+        "values": [
+          "found",
+          "ambiguous",
+          "missing"
+        ],
+        "means": "how the address or name resolved in the registry"
+      },
       {
         "name": "digest",
         "kind": "choice",
@@ -16,28 +31,56 @@
         "means": "whether the bytes hash to the address"
       },
       {
+        "name": "check",
+        "kind": "choice",
+        "values": [
+          "pass",
+          "fail"
+        ],
+        "means": "whether LexLean checks the compiled model"
+      },
+      {
         "name": "failed",
         "kind": "number",
         "min": 0,
         "means": "acceptance vectors that did not replay"
-      },
-      {
-        "name": "assurance",
-        "kind": "choice",
-        "values": [
-          "p0",
-          "p1",
-          "p2"
-        ],
-        "means": "the assurance level the policy reached"
       }
     ],
     "outcomes": [
-      "open",
-      "warn",
-      "refuse"
+      "permit",
+      "deny",
+      "not-applicable",
+      "indeterminate"
     ],
+    "meanings": {
+      "permit": "the gate is Ready: the app opens",
+      "deny": "the gate refuses with its reason: hash mismatch, check failed or vectors failed",
+      "not-applicable": "no app the address names was found, so the open policy does not apply",
+      "indeterminate": "the address names more than one app, so the policy cannot be evaluated until it is longer"
+    },
     "rules": [
+      {
+        "when": [
+          {
+            "field": "resolution",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "src/HoloSearch.lex.tex Resolution.Missing: nothing in the registry has this address"
+      },
+      {
+        "when": [
+          {
+            "field": "resolution",
+            "op": "is",
+            "value": "ambiguous"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "src/HoloSearch.lex.tex Resolution.Ambiguous: a prefix names more than one app"
+      },
       {
         "when": [
           {
@@ -46,8 +89,19 @@
             "value": "mismatch"
           }
         ],
-        "then": "refuse",
-        "why": "the bytes are not the app the address names"
+        "then": "deny",
+        "why": "src/HoloSearch.lex.tex gate: HashMismatch, always the reason given first (hash_mismatch_is_reported_first)"
+      },
+      {
+        "when": [
+          {
+            "field": "check",
+            "op": "is",
+            "value": "fail"
+          }
+        ],
+        "then": "deny",
+        "why": "src/HoloSearch.lex.tex gate: Refusal.CheckFailed"
       },
       {
         "when": [
@@ -57,23 +111,12 @@
             "value": 1
           }
         ],
-        "then": "refuse",
-        "why": "an example that does not replay is a broken app"
-      },
-      {
-        "when": [
-          {
-            "field": "assurance",
-            "op": "is",
-            "value": "p0"
-          }
-        ],
-        "then": "warn",
-        "why": "no signed provenance or proof"
+        "then": "deny",
+        "why": "src/HoloSearch.lex.tex gate: Refusal.VectorsFailed, as the tampered Calculator with 3 of 22 failing"
       }
     ],
-    "otherwise": "open",
-    "otherwiseWhy": "matched, replayed, and signed",
+    "otherwise": "permit",
+    "otherwiseWhy": "src/HoloSearch.lex.tex gate_ready_exactly: ready exactly when the address, the check and the vectors all pass",
     "properties": [
       {
         "kind": "never",
@@ -84,7 +127,7 @@
             "value": "mismatch"
           }
         ],
-        "then": "open",
+        "then": "permit",
         "why": "substituted bytes never run"
       },
       {
@@ -96,26 +139,75 @@
             "value": 1
           }
         ],
-        "then": "open",
+        "then": "permit",
         "why": "a failing app never runs"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "check",
+            "op": "is",
+            "value": "fail"
+          }
+        ],
+        "then": "permit",
+        "why": "a model that does not check never runs"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "resolution",
+            "op": "is",
+            "value": "found"
+          },
+          {
+            "field": "digest",
+            "op": "is",
+            "value": "mismatch"
+          }
+        ],
+        "then": "deny",
+        "why": "a mismatched address is refused, whatever else is true"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "resolution",
+            "op": "is",
+            "value": "ambiguous"
+          }
+        ],
+        "then": "permit",
+        "why": "an ambiguous prefix never opens an app"
       }
     ],
     "examples": [
       {
-        "request": "match 0 p2",
-        "response": "open"
+        "request": "found match pass 0",
+        "response": "permit"
       },
       {
-        "request": "match 0 p0",
-        "response": "warn"
+        "request": "found mismatch pass 0",
+        "response": "deny"
       },
       {
-        "request": "mismatch 0 p2",
-        "response": "refuse"
+        "request": "found match fail 0",
+        "response": "deny"
       },
       {
-        "request": "match 3 p1",
-        "response": "refuse"
+        "request": "found match pass 3",
+        "response": "deny"
+      },
+      {
+        "request": "missing match pass 0",
+        "response": "not-applicable"
+      },
+      {
+        "request": "ambiguous match pass 0",
+        "response": "indeterminate"
       }
     ]
   },
@@ -126,6 +218,128 @@
       "concerns": [
         "Proved guarantees",
         "Correct answers"
+      ]
+    },
+    {
+      "name": "App publisher",
+      "text": "Publishes a holo to the registry or IPFS and needs a tampered copy refused with its reason, whichever host serves it.",
+      "concerns": [
+        "Refusal names its reason"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Refusal names its reason",
+      "text": "A refused app is refused with one reason, and a mismatched address is always the reason given first.",
+      "model": "security"
+    }
+  ],
+  "components": [
+    {
+      "name": "IPFS gateways",
+      "kind": "externalSystem",
+      "text": "Public IPFS gateways that serve app bytes by CID; Holo Search trusts none of them."
+    },
+    {
+      "name": "Registry mirror",
+      "kind": "database",
+      "text": "registry/: models, holos, images and layers stored under their digest, with index.json for search, served raw."
+    },
+    {
+      "name": "LexLean Wasm runtime",
+      "kind": "service",
+      "text": "LexLean's runtime compiled to WebAssembly, which compiles the model and replays its vectors in the browser."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Hostile gateway",
+      "text": "A gateway or mirror serves other bytes under the address.",
+      "stride": "spoofing",
+      "asset": "holo",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Hash in the browser",
+        "text": "The page hashes the bytes before anything runs, and a mismatch is never permitted, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "HoloOpenProofs::inv001Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "src/HoloSearch.lex.tex hash_mismatch_is_reported_first"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Prefix collision",
+      "text": "An 8-digit prefix resolves to another app than the one the visitor meant.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Ambiguity is indeterminate",
+        "text": "A prefix that names more than one app is never permitted, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "HoloOpenProofs::inv005Holds"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Frame module swapped",
+      "text": "The prism-frame module loaded from the template site is replaced.",
+      "stride": "tampering",
+      "asset": "holo",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Frame pointer checked",
+        "text": "The page checks the frame module against frame/current.json's SHA-256 before running it, and falls back to a plain address bar.",
+        "evidence": [
+          {
+            "kind": "review",
+            "reference": "README.md frame"
+          }
+        ]
+      }
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Authenticity",
+      "requirement": "Only the named app opens",
+      "text": "No app opens whose bytes do not hash to the address, whose model does not check, or whose vectors fail.",
+      "measure": "Unverified opens",
+      "measureText": "Requests with a mismatch, a failed check or a failed vector answered permit.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Visitor",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "App publisher",
+      "steps": [
+        "REQ-003",
+        "REQ-004",
+        "REQ-005",
+        "INV-004"
       ]
     }
   ]

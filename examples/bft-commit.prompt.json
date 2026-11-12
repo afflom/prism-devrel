@@ -1,24 +1,27 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a consensus round commits, so a validator's step can be checked against the quorum rule.",
+  "goal": "Decide whether a consensus round commits a block proposed by reference, so a validator commits only on a quorum and only once it holds the content.",
+  "pattern": "decisionTable",
+  "repository": "UOR-Foundation/malachite-usdc",
+  "license": "Apache-2.0",
   "app": {
     "name": "bft-commit",
     "title": "Quorum commit",
-    "purpose": "Decide whether a round commits, waits, or moves to the next round, from the precommits seen, the quorum the validator set requires and whether the round timed out.",
+    "purpose": "Decide whether a round commits, waits, moves to the next round or fetches the block content, from the precommits seen, the quorum the validator set requires, whether the round timed out and whether the validator holds the referenced content.",
     "fields": [
       {
         "name": "precommits",
         "kind": "number",
         "min": 0,
-        "max": 1000,
-        "means": "precommit votes seen, by voting power"
+        "means": "precommit votes seen, by voting power",
+        "max": 1000
       },
       {
         "name": "quorum",
         "kind": "number",
-        "min": 1,
-        "max": 1000,
-        "means": "voting power a commit needs, more than two thirds"
+        "min": 0,
+        "means": "voting power a commit needs, more than two thirds",
+        "max": 1000
       },
       {
         "name": "timeout",
@@ -28,14 +31,48 @@
           "yes"
         ],
         "means": "whether the round's precommit timeout fired"
+      },
+      {
+        "name": "payload",
+        "kind": "choice",
+        "values": [
+          "held",
+          "missing"
+        ],
+        "means": "whether the validator rebuilt the block from the referenced transactions"
       }
     ],
     "outcomes": [
       "commit",
       "wait",
-      "next"
+      "next",
+      "fetch"
     ],
+    "meanings": {
+      "commit": "the block is decided and finalized",
+      "wait": "no quorum yet, the round continues",
+      "next": "the round timed out without a quorum, the next round starts",
+      "fetch": "a quorum decided a block whose content is missing: fetch it through the sync path, then commit"
+    },
     "rules": [
+      {
+        "when": [
+          {
+            "field": "precommits",
+            "op": ">=",
+            "value": {
+              "field": "quorum"
+            }
+          },
+          {
+            "field": "payload",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "fetch",
+        "why": "implementation/README.md: anything missing is fetched through malachite's existing sync path, crates/sync"
+      },
       {
         "when": [
           {
@@ -47,7 +84,7 @@
           }
         ],
         "then": "commit",
-        "why": "a quorum of precommits commits the block"
+        "why": "docs/ARCHITECTURE.md: Tendermint-style rounds in malachite, more than two thirds of precommits decide the block"
       },
       {
         "when": [
@@ -58,7 +95,7 @@
           }
         ],
         "then": "next",
-        "why": "without a quorum a timeout moves to the next round"
+        "why": "docs/ARCHITECTURE.md section 2: propose, prevote and precommit rounds, a timeout without a quorum starts the next round"
       }
     ],
     "otherwise": "wait",
@@ -79,6 +116,18 @@
         "why": "safety: no commit without a quorum"
       },
       {
+        "kind": "never",
+        "when": [
+          {
+            "field": "payload",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "commit",
+        "why": "a block is committed only when its content can be rebuilt"
+      },
+      {
         "kind": "always",
         "when": [
           {
@@ -87,23 +136,40 @@
             "value": {
               "field": "quorum"
             }
+          },
+          {
+            "field": "payload",
+            "op": "is",
+            "value": "held"
           }
         ],
         "then": "commit",
-        "why": "a quorum always commits"
+        "why": "a quorum on held content always commits"
       }
     ],
     "examples": [
       {
-        "request": "14 14 no",
+        "request": "14 14 no held",
         "response": "commit"
       },
       {
-        "request": "13 14 yes",
+        "request": "20 14 yes held",
+        "response": "commit"
+      },
+      {
+        "request": "14 14 no missing",
+        "response": "fetch"
+      },
+      {
+        "request": "13 14 yes held",
         "response": "next"
       },
       {
-        "request": "13 14 no",
+        "request": "13 14 yes missing",
+        "response": "next"
+      },
+      {
+        "request": "13 14 no held",
         "response": "wait"
       }
     ]
@@ -111,10 +177,108 @@
   "stakeholders": [
     {
       "name": "Validator",
-      "text": "Runs a validator and needs a block committed only on a quorum, and always on one.",
+      "text": "Runs a validator and needs a block committed only on a quorum, and always on one when it holds the content.",
       "concerns": [
         "Proved guarantees",
         "Correct answers"
+      ]
+    },
+    {
+      "name": "Chain operator",
+      "text": "Grows the validator set and needs consensus to carry references while content arrives off the critical path.",
+      "concerns": [
+        "Content before commit"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Content before commit",
+      "text": "A block proposed by reference is committed only once the validator holds its content, fetching anything missing through sync.",
+      "model": "component"
+    }
+  ],
+  "components": [
+    {
+      "name": "malachite",
+      "kind": "externalSystem",
+      "text": "circlefin/malachite, the BFT consensus engine behind Arc that the repository's patch and benchmarks run against."
+    },
+    {
+      "name": "malachite sync",
+      "kind": "externalSystem",
+      "text": "malachite's crates/sync, the fetch fallback for content a validator does not hold."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Withheld payload",
+      "text": "A proposer sends references but withholds the transactions, so validators commit a block they cannot execute.",
+      "stride": "denialOfService",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Fetch before commit",
+        "text": "A quorum on missing content is answered fetch, never commit, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "BftCommitProofs::inv002Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "implementation/README.md fetch-fallback"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reference to other bytes",
+      "text": "A reference resolves to transactions other than those proposed.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "critical",
+      "accepted": "References are content addresses verified on receipt, BLAKE3 over canonical bytes per the UOR specification; the app sees only whether the content is held."
+    },
+    {
+      "name": "Equivocating validators",
+      "text": "A third or more of the voting power signs conflicting precommits.",
+      "stride": "repudiation",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "critical",
+      "accepted": "BFT safety assumes less than a third of the voting power is faulty; the app counts the precommits it is given against the quorum."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Reliability",
+      "subcharacteristic": "Fault tolerance",
+      "requirement": "Commit only on a quorum",
+      "text": "No round commits with precommits below the quorum, whatever the timeout or content.",
+      "measure": "Commits without a quorum",
+      "measureText": "Requests with precommits below quorum answered commit.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Validator",
+      "steps": [
+        "REQ-002",
+        "REQ-003",
+        "otherwise",
+        "INV-001"
+      ]
+    },
+    {
+      "stakeholder": "Chain operator",
+      "steps": [
+        "REQ-001",
+        "INV-002",
+        "INV-003"
       ]
     }
   ]

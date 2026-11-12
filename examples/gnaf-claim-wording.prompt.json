@@ -1,0 +1,393 @@
+{
+  "schema": "prism/prompt/1",
+  "goal": "Decide whether a WASM-GEMM-GNAF document may call a claim proved, a theorem or globally optimal, so no README or ledger row says more than the Lean kernel checked.",
+  "pattern": "policyDecision",
+  "repository": "afflom/WASM-GEMM-GNAF",
+  "app": {
+    "name": "gnaf-claim-wording",
+    "title": "GNAF claim wording",
+    "purpose": "Decide whether a strong word may be used for a claim row, from its claim level, its declaration, its axioms and its scope.",
+    "fields": [
+      {
+        "name": "word",
+        "kind": "choice",
+        "values": [
+          "proved",
+          "theorem",
+          "globally-optimal",
+          "measured",
+          "cited"
+        ],
+        "means": "the word a document wants to use for the claim"
+      },
+      {
+        "name": "level",
+        "kind": "choice",
+        "values": [
+          "authority",
+          "build-evidence",
+          "formal-proof",
+          "measurement",
+          "open"
+        ],
+        "means": "the claim level of the row in model/claims.json"
+      },
+      {
+        "name": "declaration",
+        "kind": "choice",
+        "values": [
+          "present",
+          "absent"
+        ],
+        "means": "whether the Lean declaration the row names exists in the compiled environment"
+      },
+      {
+        "name": "axioms",
+        "kind": "choice",
+        "values": [
+          "permitted",
+          "executable-choice",
+          "sorry"
+        ],
+        "means": "the transitive axioms the declaration reaches"
+      },
+      {
+        "name": "scope",
+        "kind": "choice",
+        "values": [
+          "release",
+          "conditional"
+        ],
+        "means": "whether the declaration is the release-scoped statement or a generic or conditional lemma"
+      }
+    ],
+    "outcomes": [
+      "permit",
+      "deny",
+      "not-applicable",
+      "indeterminate"
+    ],
+    "meanings": {
+      "permit": "XACML 3.0 section 7: Permit; the document may use the word for this claim",
+      "deny": "XACML 3.0 section 7: Deny; the word overstates what the claim establishes",
+      "not-applicable": "XACML 3.0 section 7: NotApplicable; the strong-wording policy does not govern this word",
+      "indeterminate": "XACML 3.0 section 7: Indeterminate; the declaration cannot be found, so the policy cannot be evaluated"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "word",
+            "op": "is",
+            "value": "measured"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "SPEC.md 17.1 restricts only proved, theorem and globally optimal; a measurement is reported, not promoted"
+      },
+      {
+        "when": [
+          {
+            "field": "word",
+            "op": "is",
+            "value": "cited"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "SPEC.md 17.1: an external citation is an authority row and uses its own words"
+      },
+      {
+        "when": [
+          {
+            "field": "level",
+            "op": "is not",
+            "value": "formal-proof"
+          }
+        ],
+        "then": "deny",
+        "why": "SPEC.md 17.1: only formalProof supports proved, theorem or globally optimal; tests, benchmarks, citations and measurements cannot promote a claim"
+      },
+      {
+        "when": [
+          {
+            "field": "declaration",
+            "op": "is",
+            "value": "absent"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "SPEC.md 17.2: the conformance tool must confirm the declaration exists in the compiled Lean environment before the row is credited"
+      },
+      {
+        "when": [
+          {
+            "field": "axioms",
+            "op": "is",
+            "value": "sorry"
+          }
+        ],
+        "then": "deny",
+        "why": "README.md: what is proved is kernel-checked and sorry-free"
+      },
+      {
+        "when": [
+          {
+            "field": "axioms",
+            "op": "is",
+            "value": "executable-choice"
+          }
+        ],
+        "then": "deny",
+        "why": "README.md: declarations reaching Classical.choice as executable witnesses are recorded as uncredited, not counted as formal proof"
+      },
+      {
+        "when": [
+          {
+            "field": "word",
+            "op": "is",
+            "value": "globally-optimal"
+          },
+          {
+            "field": "scope",
+            "op": "is",
+            "value": "conditional"
+          }
+        ],
+        "then": "deny",
+        "why": "WasmGemmGnaf/Theorems/Status.lean: the generic argmin and other conditional infrastructure do not instantiate the release claim"
+      }
+    ],
+    "otherwise": "permit",
+    "otherwiseWhy": "a formal-proof row whose declaration exists, reaches only propext, Quot.sound and Prop-level Classical.choice, and is used at its own scope",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "level",
+            "op": "is not",
+            "value": "formal-proof"
+          }
+        ],
+        "then": "permit",
+        "why": "SPEC.md 17.1: nothing short of formalProof supports a strong word"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "word",
+            "op": "is",
+            "value": "globally-optimal"
+          },
+          {
+            "field": "scope",
+            "op": "is",
+            "value": "conditional"
+          }
+        ],
+        "then": "permit",
+        "why": "README.md: the generic finite-argmin lemma does not identify a committed artifact"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "axioms",
+            "op": "is",
+            "value": "executable-choice"
+          }
+        ],
+        "then": "permit",
+        "why": "README.md: executable Classical.choice witnesses are uncredited"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "word",
+            "op": "is",
+            "value": "measured"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "a measured number is reported with its corpus, never worded as a proof"
+      }
+    ],
+    "examples": [
+      {
+        "request": "proved formal-proof present permitted conditional",
+        "response": "permit"
+      },
+      {
+        "request": "globally-optimal formal-proof present permitted conditional",
+        "response": "deny"
+      },
+      {
+        "request": "globally-optimal formal-proof absent permitted release",
+        "response": "indeterminate"
+      },
+      {
+        "request": "theorem measurement present permitted release",
+        "response": "deny"
+      },
+      {
+        "request": "measured measurement present permitted release",
+        "response": "not-applicable"
+      },
+      {
+        "request": "proved formal-proof present executable-choice conditional",
+        "response": "deny"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Release reviewer",
+      "text": "Reviews README.md, CERTIFICATION.md and CONFORMANCE.md and needs no sentence to claim global optimality before the release theorem closes.",
+      "concerns": [
+        "Proved guarantees",
+        "Honest wording"
+      ]
+    },
+    {
+      "name": "Maintainer",
+      "text": "Adds claim rows and prose and needs to know, row by row, which words the row supports.",
+      "concerns": [
+        "Correct answers"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Honest wording",
+      "text": "A strong word appears only beside a formal-proof row whose declaration the kernel checked at its own scope.",
+      "model": "quality"
+    }
+  ],
+  "components": [
+    {
+      "name": "Lean 4 kernel",
+      "kind": "externalSystem",
+      "text": "Lean 4.30.0, which checks every declaration and reports its transitive axioms."
+    },
+    {
+      "name": "UOR-GNAF authority",
+      "kind": "externalSystem",
+      "text": "The pinned UOR-GNAF authority whose total answer carrier fixes the terminal answer WorkloadIncomplete."
+    },
+    {
+      "name": "Conformance tool",
+      "kind": "cliAdapter",
+      "text": "The xtask gate that loads the compiled environment, recomputes identities and enforces the dependency firewall."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Benchmark promoted to proof",
+      "text": "A benchmark or test result is worded as proved or globally optimal.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Formal proof only",
+        "text": "Only a formal-proof row is permitted a strong word.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "GnafClaimWordingProofs::inv001Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "just vv"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Generic lemma cited as release theorem",
+      "text": "Universal.exists_globalOptimal_of_nonempty is cited as if it were the release-scoped optimality theorem.",
+      "stride": "spoofing",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Scope check",
+        "text": "Global optimality is denied for any conditional declaration.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "GnafClaimWordingProofs::inv002Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "WasmGemmGnaf/Theorems/Status.lean"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Self-recorded proposition",
+      "text": "A row records GlobalOptimal := True so its hash matches itself.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "critical",
+      "control": {
+        "name": "Dependency firewall",
+        "text": "The conformance tool unfolds scope-critical definitions and compares them to the WGG-GO-1 authority schema.",
+        "evidence": [
+          {
+            "kind": "gate",
+            "reference": "xtask/src/firewall.rs"
+          },
+          {
+            "kind": "review",
+            "reference": "SPEC.md 17.2"
+          }
+        ]
+      }
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "No unearned strong word",
+      "text": "No strong word is permitted for a row below formal proof or with uncredited axioms.",
+      "measure": "Unearned permits",
+      "measureText": "Requests below formal proof or with executable-choice or sorry axioms that answer permit.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Accountability",
+      "requirement": "Every permit has a declaration",
+      "text": "A permit always names a declaration the compiled environment holds.",
+      "measure": "Permits without a declaration",
+      "measureText": "Requests with an absent declaration that answer permit.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Release reviewer",
+      "steps": [
+        "REQ-004",
+        "REQ-007",
+        "INV-002",
+        "INV-001"
+      ]
+    },
+    {
+      "stakeholder": "Maintainer",
+      "steps": [
+        "REQ-001",
+        "REQ-003",
+        "REQ-006",
+        "otherwise"
+      ]
+    }
+  ]
+}

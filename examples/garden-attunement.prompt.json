@@ -1,36 +1,33 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a plant answers the player in Verdant Resonance, so the soundscape responds the same way to the same walk.",
+  "goal": "Decide whether an attune gesture in Verdant Resonance reaches the plant the player faces, so the garden answers the same way to the same walk.",
+  "pattern": "decisionTable",
+  "repository": "afflom/verdant-resonance",
   "app": {
     "name": "garden-attunement",
     "title": "Plant attunement",
-    "purpose": "Decide whether a plant attunes, stays dormant, or is out of reach, from its biome, the hour of the in-game sky and how far the player stands from it.",
+    "purpose": "Decide whether an attune gesture attunes the focal plant, is ignored while the gesture rests, or misses a plant outside the forward gaze cone, from the angle to the plant, its distance and the attune cooldown left.",
     "fields": [
       {
-        "name": "biome",
-        "kind": "choice",
-        "values": [
-          "meadow",
-          "grove",
-          "marsh",
-          "dunes",
-          "canopy"
-        ],
-        "means": "the acoustic biome the plant grows in"
-      },
-      {
-        "name": "hour",
+        "name": "angle",
         "kind": "number",
         "min": 0,
-        "max": 23,
-        "means": "the hour of the in-game sky"
+        "means": "degrees between the player's gaze and the plant",
+        "max": 180
       },
       {
         "name": "distance",
         "kind": "number",
         "min": 0,
-        "max": 100,
-        "means": "how far the player stands, in metres"
+        "means": "how far the plant is, in metres",
+        "max": 100
+      },
+      {
+        "name": "cooldown",
+        "kind": "number",
+        "min": 0,
+        "means": "milliseconds of the attune refractory period left",
+        "max": 1100
       }
     ],
     "outcomes": [
@@ -38,106 +35,48 @@
       "dormant",
       "distant"
     ],
+    "meanings": {
+      "attuned": "the plant attunes and sings",
+      "dormant": "the gesture is ignored during its refractory pause, the plant rests",
+      "distant": "the plant is outside the forward gaze cone and is not activated"
+    },
     "rules": [
       {
         "when": [
           {
             "field": "distance",
             "op": ">",
-            "value": 8
+            "value": 22
           }
         ],
         "then": "distant",
-        "why": "plants hear the player within eight metres"
+        "why": "prism/src/Foundation/Humane/V1/Model.lex.tex evaluateGazeTargetInForwardCone: distMeters <= 22, maxInteractiveRangeMeters 22"
       },
       {
         "when": [
           {
-            "field": "biome",
-            "op": "is",
-            "value": "marsh"
-          },
-          {
-            "field": "hour",
-            "op": "<",
-            "value": 6
+            "field": "angle",
+            "op": ">",
+            "value": 62
           }
         ],
-        "then": "attuned",
-        "why": "marsh reeds sing before dawn"
+        "then": "distant",
+        "why": "Humane Model.lex.tex: forwardFovHalfAngleDeg 62; GardenCanvas.tsx never activates elements behind the player"
       },
       {
         "when": [
           {
-            "field": "biome",
-            "op": "is",
-            "value": "dunes"
-          },
-          {
-            "field": "hour",
+            "field": "cooldown",
             "op": ">=",
-            "value": 18
+            "value": 1
           }
         ],
-        "then": "attuned",
-        "why": "dune grass sings at dusk"
-      },
-      {
-        "when": [
-          {
-            "field": "biome",
-            "op": "is",
-            "value": "canopy"
-          },
-          {
-            "field": "hour",
-            "op": ">=",
-            "value": 6
-          },
-          {
-            "field": "hour",
-            "op": "<",
-            "value": 12
-          }
-        ],
-        "then": "attuned",
-        "why": "the canopy sings in the morning"
-      },
-      {
-        "when": [
-          {
-            "field": "biome",
-            "op": "is",
-            "value": "meadow"
-          },
-          {
-            "field": "hour",
-            "op": ">=",
-            "value": 6
-          },
-          {
-            "field": "hour",
-            "op": "<",
-            "value": 18
-          }
-        ],
-        "then": "attuned",
-        "why": "meadow flowers sing by day"
-      },
-      {
-        "when": [
-          {
-            "field": "biome",
-            "op": "is",
-            "value": "grove"
-          }
-        ],
-        "then": "attuned",
-        "why": "the grove always answers"
+        "then": "dormant",
+        "why": "Humane Model.lex.tex GestureHoldAndCooldownPolicy attuneRefractoryMs 1100: GardenCanvas.tsx ignores attune while it cools down"
       }
     ],
-    "otherwise": "dormant",
-    "otherwiseWhy": "outside its hours the plant rests",
+    "otherwise": "attuned",
+    "otherwiseWhy": "in the forward gaze cone and rested: the focal plant attunes",
     "properties": [
       {
         "kind": "never",
@@ -145,29 +84,61 @@
           {
             "field": "distance",
             "op": ">",
-            "value": 8
+            "value": 22
           }
         ],
         "then": "attuned",
         "why": "no plant answers a player out of reach"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "angle",
+            "op": ">",
+            "value": 62
+          }
+        ],
+        "then": "attuned",
+        "why": "behindPlayerActivationsCount is 0: nothing behind the player activates"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "cooldown",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "attuned",
+        "why": "mindful pacing: a repeated gesture never attunes during its refractory pause"
       }
     ],
     "examples": [
       {
-        "request": "marsh 4 3",
+        "request": "10 8 0",
         "response": "attuned"
       },
       {
-        "request": "marsh 7 3",
-        "response": "dormant"
+        "request": "62 22 0",
+        "response": "attuned"
       },
       {
-        "request": "grove 23 9",
+        "request": "180 5 0",
         "response": "distant"
       },
       {
-        "request": "meadow 12 0",
-        "response": "attuned"
+        "request": "0 23 0",
+        "response": "distant"
+      },
+      {
+        "request": "30 4 1100",
+        "response": "dormant"
+      },
+      {
+        "request": "30 4 1",
+        "response": "dormant"
       }
     ]
   },
@@ -181,21 +152,115 @@
     },
     {
       "name": "Sound designer",
-      "text": "Places plants and their hours and needs out-of-reach plants to stay silent.",
+      "text": "Places plants and tunes the humane pacing and needs plants outside the gaze cone, or a rushed gesture, to stay silent.",
       "concerns": [
-        "Proved guarantees"
+        "Proved guarantees",
+        "Calm interaction"
       ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Calm interaction",
+      "text": "Gestures follow the Humane design standard: focal gaze-cone selection and refractory pauses, with no activation behind the player.",
+      "model": "quality"
+    }
+  ],
+  "components": [
+    {
+      "name": "Garden client",
+      "kind": "staticSite",
+      "text": "The browser game, src/components/GardenCanvas.tsx, which finds the focal plant and sends the gesture."
+    },
+    {
+      "name": "Soundscape engine",
+      "kind": "service",
+      "text": "src/game/soundscapeEngine.ts, the Web Audio voices an attuned plant plays."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Key-repeat flood",
+      "text": "Operating-system key repeat fires attune many times a second, so plants chatter.",
+      "stride": "denialOfService",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "minor",
+      "control": {
+        "name": "Refractory pause",
+        "text": "Attune is ignored for 1100 ms after a gesture, proved for every request, and OS key repeat is suppressed.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "GardenAttunementProofs::inv003Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "prism/src/Foundation/Humane/V1/Model.lex.tex GestureHoldAndCooldownPolicy"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Activation behind the player",
+      "text": "A plant behind the player attunes, breaking the focal gaze law.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "minor",
+      "control": {
+        "name": "Gaze cone proved",
+        "text": "Beyond 62 degrees nothing attunes, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "GardenAttunementProofs::inv002Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "src/game/prismModel.test.ts focalGazeSelection"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Client range drift",
+      "text": "The client finds focal plants up to 32 m away while the model allows 22 m, so the page and the model disagree.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "medium",
+      "impact": "minor",
+      "accepted": "The app follows the LexLean model, 22 m; src/game/prismModel.ts findNearestPlant uses 32 m, a drift for the repository to reconcile."
     }
   ],
   "quality": [
     {
-      "characteristic": "Interaction capability",
-      "subcharacteristic": "User engagement",
-      "requirement": "Every biome answers",
-      "text": "Each of the five biomes has at least one hour in which its plants attune.",
-      "measure": "Silent biomes",
-      "measureText": "Biomes with no hour in which a plant attunes.",
+      "characteristic": "Safety",
+      "subcharacteristic": "Operational constraint",
+      "requirement": "No activation behind the player",
+      "text": "An attune gesture never activates a plant outside the forward gaze cone.",
+      "measure": "Behind-player activations",
+      "measureText": "Requests with an angle over 62 degrees answered attuned, behindPlayerActivationsCount in the model.",
       "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Player",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Sound designer",
+      "steps": [
+        "INV-001",
+        "INV-002",
+        "INV-003"
+      ]
     }
   ]
 }

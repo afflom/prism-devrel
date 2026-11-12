@@ -1,17 +1,23 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Resolve one die of a Karst: Zero Horizon strike pool against the target's cover, so every roll in a skirmish can be replayed.",
+  "goal": "Resolve one strike die of Karst: Zero Horizon against an undefended target, with cover and momentum, so every roll in a skirmish can be replayed.",
+  "pattern": "decisionTable",
+  "repository": "afflom/karst-zero",
   "app": {
     "name": "karst-strike",
+    "limits": [
+      "It resolves one attacking die against no defending hits; the opposed pool sums the dice.",
+      "Plating, resilience and subsystem rupture are outside it."
+    ],
     "title": "Strike die",
-    "purpose": "Decide what one d6 of a strike pool does against a target behind no cover, low cover or a solid bulkhead.",
+    "purpose": "Decide what one d6 of a strike pool does against an undefended target behind no cover, low cover or a solid bulkhead, after the striker moved some sectors.",
     "fields": [
       {
         "name": "die",
         "kind": "number",
-        "min": 1,
-        "max": 6,
-        "means": "the face the d6 shows"
+        "min": 0,
+        "means": "the face the d6 shows",
+        "max": 6
       },
       {
         "name": "cover",
@@ -27,8 +33,8 @@
         "name": "momentum",
         "kind": "number",
         "min": 0,
-        "max": 4,
-        "means": "momentum charges spent on the strike"
+        "means": "sectors the striker moved before the strike, 4 meaning 4 or more",
+        "max": 4
       }
     ],
     "outcomes": [
@@ -38,10 +44,10 @@
       "blocked"
     ],
     "meanings": {
-      "critical": "a hit that also ruptures a subsystem",
-      "hit": "one hit",
-      "miss": "no hit",
-      "blocked": "line of sight is blocked"
+      "critical": "one net hit from a natural 6",
+      "hit": "one net hit",
+      "miss": "no net hit",
+      "blocked": "line of sight is blocked, no hit"
     },
     "rules": [
       {
@@ -53,10 +59,15 @@
           }
         ],
         "then": "blocked",
-        "why": "a solid bulkhead blocks line of sight"
+        "why": "src/CombatEngine.lex.tex resolveOpposedNetHits: cover level 2, a solid bulkhead, gives 0 net hits (bulkheadFullCoverBlocksLineOfSight)"
       },
       {
         "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "none"
+          },
           {
             "field": "die",
             "op": "=",
@@ -64,44 +75,7 @@
           }
         ],
         "then": "critical",
-        "why": "a natural 6 is a critical"
-      },
-      {
-        "when": [
-          {
-            "field": "cover",
-            "op": "is",
-            "value": "low"
-          },
-          {
-            "field": "die",
-            "op": ">=",
-            "value": 5
-          }
-        ],
-        "then": "hit",
-        "why": "low cover adds one to the evasion target"
-      },
-      {
-        "when": [
-          {
-            "field": "cover",
-            "op": "is",
-            "value": "low"
-          },
-          {
-            "field": "momentum",
-            "op": ">=",
-            "value": 1
-          },
-          {
-            "field": "die",
-            "op": ">=",
-            "value": 4
-          }
-        ],
-        "then": "hit",
-        "why": "a momentum charge buys back the cover penalty"
+        "why": "src/game/nemesisEngine.ts: the strike pool scores critical 6s"
       },
       {
         "when": [
@@ -117,11 +91,69 @@
           }
         ],
         "then": "hit",
-        "why": "the strike pool hits on 4+"
+        "why": "README Subsystem 2: the opposed strike pool hits on 4+"
+      },
+      {
+        "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "none"
+          },
+          {
+            "field": "momentum",
+            "op": ">=",
+            "value": 4
+          }
+        ],
+        "then": "hit",
+        "why": "src/CombatEngine.lex.tex momentumBonusHit: 4 moved sectors add one hit to the pool"
+      },
+      {
+        "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "low"
+          },
+          {
+            "field": "momentum",
+            "op": ">=",
+            "value": 4
+          },
+          {
+            "field": "die",
+            "op": "=",
+            "value": 6
+          }
+        ],
+        "then": "critical",
+        "why": "src/CombatEngine.lex.tex: the momentum hit pays for the low cover auto-evade, so the natural 6 still lands"
+      },
+      {
+        "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "low"
+          },
+          {
+            "field": "momentum",
+            "op": ">=",
+            "value": 4
+          },
+          {
+            "field": "die",
+            "op": ">=",
+            "value": 4
+          }
+        ],
+        "then": "hit",
+        "why": "src/CombatEngine.lex.tex resolveOpposedNetHits: atk + momentumBonusHit minus coverAutoEvade leaves one net hit"
       }
     ],
     "otherwise": "miss",
-    "otherwiseWhy": "every other face misses",
+    "otherwiseWhy": "src/CombatEngine.lex.tex coverAutoEvade: low cover cancels the single hit without a momentum charge, and a face below 4 without momentum scores none",
     "properties": [
       {
         "kind": "never",
@@ -141,11 +173,40 @@
           {
             "field": "die",
             "op": "<",
+            "value": 6
+          }
+        ],
+        "then": "critical",
+        "why": "only a natural 6 is a critical"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "low"
+          },
+          {
+            "field": "momentum",
+            "op": "<",
             "value": 4
           }
         ],
         "then": "hit",
-        "why": "a face below 4 never hits"
+        "why": "partialCoverGrantsOneAutoEvade: without a momentum charge low cover cancels the one hit"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "cover",
+            "op": "is",
+            "value": "solid"
+          }
+        ],
+        "then": "blocked",
+        "why": "a solid bulkhead always blocks line of sight"
       }
     ],
     "examples": [
@@ -154,20 +215,36 @@
         "response": "critical"
       },
       {
+        "request": "4 none 0",
+        "response": "hit"
+      },
+      {
+        "request": "3 none 0",
+        "response": "miss"
+      },
+      {
+        "request": "3 none 4",
+        "response": "hit"
+      },
+      {
         "request": "4 low 0",
         "response": "miss"
       },
       {
-        "request": "4 low 1",
+        "request": "6 low 0",
+        "response": "miss"
+      },
+      {
+        "request": "4 low 4",
         "response": "hit"
+      },
+      {
+        "request": "6 low 4",
+        "response": "critical"
       },
       {
         "request": "6 solid 4",
         "response": "blocked"
-      },
-      {
-        "request": "3 none 4",
-        "response": "miss"
       }
     ]
   },
@@ -188,6 +265,73 @@
       ]
     }
   ],
+  "components": [
+    {
+      "name": "Karst client",
+      "kind": "staticSite",
+      "text": "The Karst: Zero Horizon client, src/game/nemesisEngine.ts, which rolls the pool and shows the combat breakdown."
+    },
+    {
+      "name": "karst-kernel",
+      "kind": "service",
+      "text": "The no_std, forbid(unsafe_code) Rust kernel in crates/karst-kernel that realizes the Nemesis Core engine."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Loaded die",
+      "text": "A client sends a face it did not roll, to turn a miss into a hit.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "accepted": "The app resolves the face it is given; the roll itself belongs to the client, and the skirmish replay shows every face sent."
+    },
+    {
+      "name": "Shot through a bulkhead",
+      "text": "A strike through solid cover is counted as a hit, so a unit behind a bulkhead takes damage.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Line of sight proved",
+        "text": "The app never answers hit behind solid cover, and the engine proves 0 net hits at cover level 2.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "KarstStrikeProofs::inv001Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "src/CombatEngine.lex.tex bulkheadFullCoverBlocksLineOfSight"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Momentum without the move",
+      "text": "A strike behind low cover is credited a momentum charge the striker did not earn.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "minor",
+      "control": {
+        "name": "Four sectors required",
+        "text": "Without 4 moved sectors low cover cancels the hit, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "KarstStrikeProofs::inv003Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "src/CombatEngine.lex.tex momentumChargeRequiresFourSectors"
+          }
+        ]
+      }
+    }
+  ],
   "quality": [
     {
       "characteristic": "Interaction capability",
@@ -197,6 +341,28 @@
       "measure": "Unnamed answers",
       "measureText": "Answers that are not one of the four outcome words.",
       "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Player",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Game designer",
+      "steps": [
+        "REQ-005",
+        "REQ-006",
+        "INV-001",
+        "INV-003",
+        "INV-004"
+      ]
     }
   ]
 }

@@ -1,160 +1,187 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether an agent may act, must defer to a person, or must refuse, so its ethical pipeline can be audited decision by decision.",
+  "goal": "Decide whether a CIRIS agent proceeds, defers to a Wise Authority or is halted, so its H3ERE pipeline can be audited decision by decision.",
+  "pattern": "decisionTable",
+  "repository": "afflom/prism-ciris",
   "app": {
     "name": "ciris-deferral",
     "title": "Wise deferral",
-    "purpose": "Decide whether an agent proceeds, defers to a wise authority, or refuses an action, from the harm it risks, how certain it is and whether consent was given.",
+    "purpose": "Decide whether an agent proceeds, defers to a wise authority, or is halted, from its confidence margin, the diversity of its perspectives, the conscience gate and the Wise Authority seats that signed a halt.",
     "fields": [
       {
-        "name": "harm",
+        "name": "margin",
         "kind": "number",
         "min": 0,
-        "max": 10,
-        "means": "the harm the action risks, 0 none to 10 severe"
+        "means": "the top score minus the runner-up score",
+        "max": 100
       },
       {
-        "name": "certainty",
+        "name": "keff",
         "kind": "number",
         "min": 0,
-        "max": 100,
-        "means": "how certain the agent is of its assessment, in percent"
+        "means": "the Kish effective number of independent perspectives",
+        "max": 22
       },
       {
-        "name": "consent",
+        "name": "conscience",
         "kind": "choice",
         "values": [
-          "given",
-          "absent"
+          "passed",
+          "vetoed"
         ],
-        "means": "whether the person affected consented"
+        "means": "what the H3ERE-06 conscience gate said"
+      },
+      {
+        "name": "seats",
+        "kind": "number",
+        "min": 0,
+        "means": "Wise Authority Yubikey seats that signed a halt",
+        "max": 3
       }
     ],
     "outcomes": [
       "proceed",
       "defer",
-      "refuse"
+      "halt"
     ],
     "meanings": {
-      "proceed": "the agent acts",
-      "defer": "a wise authority decides",
-      "refuse": "the agent does not act"
+      "proceed": "the agent acts autonomously",
+      "defer": "a Wise Authority decides, wisdom-based deferral",
+      "halt": "the agent stops, by a 2-of-3 Yubikey quorum"
     },
     "rules": [
       {
         "when": [
           {
-            "field": "harm",
+            "field": "seats",
             "op": ">=",
-            "value": 8
+            "value": 2
           }
         ],
-        "then": "refuse",
-        "why": "severe harm is never taken on"
+        "then": "halt",
+        "why": "src/Constitution.lex.tex checkYubikeyHaltQuorum: two of the three seats halt the agent (yubikeyTwoOfThreeQuorumHalts)"
       },
       {
         "when": [
           {
-            "field": "consent",
+            "field": "conscience",
             "op": "is",
-            "value": "absent"
-          },
-          {
-            "field": "harm",
-            "op": ">=",
-            "value": 1
+            "value": "vetoed"
           }
         ],
         "then": "defer",
-        "why": "harm without consent needs a person"
+        "why": "src/H3ERE.lex.tex decideOrDeferToWa: a failed conscience gate defers (conscienceVetoForcesDeferralOrHalt)"
       },
       {
         "when": [
           {
-            "field": "certainty",
+            "field": "keff",
             "op": "<",
-            "value": 80
+            "value": 4
           }
         ],
         "then": "defer",
-        "why": "uncertainty defers to wisdom"
+        "why": "src/H3ERE.lex.tex: k_eff below minimumEpistemicDiversityKeff, 4, defers (lowDiversityTriggersWisdomBasedDeferral)"
       },
       {
         "when": [
           {
-            "field": "harm",
-            "op": ">=",
-            "value": 5
+            "field": "margin",
+            "op": "<",
+            "value": 15
           }
         ],
         "then": "defer",
-        "why": "material harm defers even with consent"
+        "why": "src/H3ERE.lex.tex: a margin below minimumConfidenceMargin, 15, defers (lowMarginTriggersWisdomBasedDeferral)"
       }
     ],
     "otherwise": "proceed",
-    "otherwiseWhy": "low harm, certain, consented",
+    "otherwiseWhy": "src/H3ERE.lex.tex highMarginAndDiversityPermitsAutonomousAction: conscience passed, diverse and confident",
     "properties": [
       {
         "kind": "never",
         "when": [
           {
-            "field": "harm",
-            "op": ">=",
-            "value": 8
-          }
-        ],
-        "then": "proceed",
-        "why": "severe harm is never acted on alone"
-      },
-      {
-        "kind": "never",
-        "when": [
-          {
-            "field": "consent",
+            "field": "conscience",
             "op": "is",
-            "value": "absent"
-          },
-          {
-            "field": "harm",
-            "op": ">=",
-            "value": 1
+            "value": "vetoed"
           }
         ],
         "then": "proceed",
-        "why": "no harm without consent"
+        "why": "the conscience gate is a non-bypassable final veto"
       },
       {
         "kind": "never",
         "when": [
           {
-            "field": "certainty",
+            "field": "keff",
             "op": "<",
-            "value": 80
+            "value": 4
           }
         ],
         "then": "proceed",
-        "why": "the agent does not act on a guess"
+        "why": "a monoculture of perspectives never acts alone"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "margin",
+            "op": "<",
+            "value": 15
+          }
+        ],
+        "then": "proceed",
+        "why": "the agent does not act on a near tie"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "seats",
+            "op": ">=",
+            "value": 2
+          }
+        ],
+        "then": "halt",
+        "why": "a 2-of-3 Yubikey quorum always halts"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "seats",
+            "op": "<",
+            "value": 2
+          }
+        ],
+        "then": "halt",
+        "why": "yubikeySingleSeatCannotHalt: one seat alone cannot halt"
       }
     ],
     "examples": [
       {
-        "request": "0 95 absent",
+        "request": "35 6 passed 0",
         "response": "proceed"
       },
       {
-        "request": "9 100 given",
-        "response": "refuse"
-      },
-      {
-        "request": "2 90 absent",
+        "request": "8 5 passed 0",
         "response": "defer"
       },
       {
-        "request": "2 50 given",
+        "request": "35 2 passed 0",
         "response": "defer"
       },
       {
-        "request": "3 90 given",
+        "request": "75 8 vetoed 0",
+        "response": "defer"
+      },
+      {
+        "request": "35 6 passed 2",
+        "response": "halt"
+      },
+      {
+        "request": "35 6 passed 1",
         "response": "proceed"
       }
     ]
@@ -170,21 +197,129 @@
     },
     {
       "name": "Affected person",
-      "text": "Is affected by what the agent does and needs harm without consent to reach a person first.",
+      "text": "Is affected by what the agent does and needs an uncertain or vetoed action to reach a person first.",
       "concerns": [
         "Proved guarantees"
       ]
+    },
+    {
+      "name": "Wise Authority",
+      "text": "Holds a Yubikey seat and needs a 2-of-3 quorum to halt the agent, and one seat never to.",
+      "concerns": [
+        "Halt by quorum"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "Halt by quorum",
+      "text": "Two of the three Wise Authority seats halt the agent, and a single seat cannot, as Constitution.lex.tex checks.",
+      "model": "security"
+    }
+  ],
+  "components": [
+    {
+      "name": "H3ERE pipeline",
+      "kind": "service",
+      "text": "The 6-stage CSDMA, DSDMA, PDMA, IDMA, ASPDMA and conscience pipeline that computes the margin, k_eff and conscience result."
+    },
+    {
+      "name": "Wise Authority",
+      "kind": "externalSystem",
+      "text": "The human Wise Authority, ciris.wa.*, that receives deferrals and holds the Yubikey halt seats."
     }
   ],
   "threats": [
     {
-      "name": "Consent spoofed",
-      "text": "A caller claims consent was given when it was not, to make the agent proceed.",
+      "name": "Conscience result spoofed",
+      "text": "A caller reports that the conscience gate passed when it vetoed, to make the agent act.",
       "stride": "spoofing",
       "asset": "request",
       "likelihood": "medium",
       "impact": "major",
-      "accepted": "The app decides from the request it is given; establishing consent belongs to the system that sends it, which the app's answer names."
+      "accepted": "The app decides from the request it is given; the conscience result belongs to the H3ERE-06 stage that computes it, which the request names."
+    },
+    {
+      "name": "Single-seat halt",
+      "text": "One Wise Authority seat halts the agent alone, or impersonates a quorum.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "Quorum proved",
+        "text": "The app never halts below two seats, and the constitution proves one seat cannot halt.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "CirisDeferralProofs::inv005Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "src/Constitution.lex.tex yubikeySingleSeatCannotHalt"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Sycophantic monoculture",
+      "text": "The agent acts when its perspectives are not independent, so one view decides.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Diversity floor",
+        "text": "Below k_eff 4 the agent defers, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "CirisDeferralProofs::inv002Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "src/Coherence.lex.tex Kish k_eff verifier"
+          }
+        ]
+      }
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Safety",
+      "subcharacteristic": "Fail safe",
+      "requirement": "Uncertainty defers",
+      "text": "Every request with a vetoed conscience, k_eff below 4 or a margin below 15 is answered defer or halt.",
+      "measure": "Autonomous answers under uncertainty",
+      "measureText": "Requests with a veto, low diversity or low margin that are answered proceed.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Agent operator",
+      "steps": [
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Affected person",
+      "steps": [
+        "INV-001",
+        "INV-002",
+        "INV-003"
+      ]
+    },
+    {
+      "stakeholder": "Wise Authority",
+      "steps": [
+        "REQ-001",
+        "INV-004",
+        "INV-005"
+      ]
     }
   ],
   "axioms": {

@@ -1,0 +1,426 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "policyDecision",
+  "goal": "Decide whether a declaration's observed axioms satisfy its declared axiom policy, so lexlean verify publishes only declarations whose kernel-observed axioms are exactly what their source pins.",
+  "repository": "UOR-Foundation/LexLean",
+  "app": {
+    "name": "lexlean-axiom-policy",
+    "title": "Axiom policy",
+    "purpose": "Decide, for one declaration at stage 11 of lexlean verify, whether its axiom audit permits it, denies it with LLV7005, does not apply to it, or cannot be decided, from the audit result, where the declaration lives, its policy kind and how its observed set differs from the declared list.",
+    "limits": [
+      "It does not run the audit: the observed set is read from the Lean axiom audit members of stage 9 and 10.",
+      "It does not judge a model declaration's generated family, whose union LexLean compares with the model's declared set separately."
+    ],
+    "fields": [
+      {
+        "name": "audit",
+        "kind": "choice",
+        "values": [
+          "listed",
+          "unlisted",
+          "failed",
+          "unparsed"
+        ],
+        "means": "the audit of the declaration: listed in the output, absent from it, its member exited nonzero, or its output refused by the parser"
+      },
+      {
+        "name": "row",
+        "kind": "choice",
+        "values": [
+          "source",
+          "core"
+        ],
+        "means": "a source declaration of a document, or a row of the document's core calculus"
+      },
+      {
+        "name": "policy",
+        "kind": "choice",
+        "values": [
+          "none",
+          "allow",
+          "exact"
+        ],
+        "means": "the declared AxiomPolicy: noaxioms, allowaxioms or exactaxioms"
+      },
+      {
+        "name": "outside",
+        "kind": "number",
+        "min": 0,
+        "max": 64,
+        "means": "observed axioms not in the declared list (for noaxioms, every observed axiom)"
+      },
+      {
+        "name": "unseen",
+        "kind": "number",
+        "min": 0,
+        "max": 64,
+        "means": "declared axioms the audit did not observe"
+      }
+    ],
+    "outcomes": [
+      "permit",
+      "deny",
+      "not-applicable",
+      "indeterminate"
+    ],
+    "meanings": {
+      "permit": "XACML 3.0 Permit: the observed set satisfies the policy and the declaration row records result ok",
+      "deny": "XACML 3.0 Deny: the observed set violates the policy and verify fails with LLV7005",
+      "not-applicable": "XACML 3.0 NotApplicable: no observation applies, so the policy is not enforced on this row",
+      "indeterminate": "XACML 3.0 Indeterminate: the audit could not be evaluated, so verify fails before any policy is judged"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "audit",
+            "op": "is",
+            "value": "failed"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "crates/lexlean/src/verify/mod.rs: an audit member that exits nonzero fails with LLV7004"
+      },
+      {
+        "when": [
+          {
+            "field": "audit",
+            "op": "is",
+            "value": "unparsed"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "verify/mod.rs: output that axiom::parse_audit_output refuses fails with LLV7004, missing or malformed audit output"
+      },
+      {
+        "when": [
+          {
+            "field": "audit",
+            "op": "is",
+            "value": "unlisted"
+          },
+          {
+            "field": "row",
+            "op": "is",
+            "value": "core"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "verify/mod.rs stage 11: a core declaration absent from the observed map is skipped (continue)"
+      },
+      {
+        "when": [
+          {
+            "field": "audit",
+            "op": "is",
+            "value": "unlisted"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "verify/mod.rs: the audit family must observe every declaration, or verify fails as an internal error"
+      },
+      {
+        "when": [
+          {
+            "field": "outside",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "deny",
+        "why": "ir/declaration.rs AxiomPolicy::permits: none needs an empty set, allow a subset, exact an equal one"
+      },
+      {
+        "when": [
+          {
+            "field": "policy",
+            "op": "is",
+            "value": "exact"
+          },
+          {
+            "field": "unseen",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "deny",
+        "why": "AxiomPolicy::permits Exact: the sorted, deduplicated observed set must equal the declared list"
+      }
+    ],
+    "otherwise": "permit",
+    "otherwiseWhy": "AxiomPolicy::permits: every observed axiom is declared, and an exact policy saw every declared one",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "outside",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "permit",
+        "why": "an axiom the source did not declare is never published"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "policy",
+            "op": "is",
+            "value": "exact"
+          },
+          {
+            "field": "unseen",
+            "op": ">=",
+            "value": 1
+          }
+        ],
+        "then": "permit",
+        "why": "an exact policy is equality, not a subset (SPEC section 15.9)"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "audit",
+            "op": "is",
+            "value": "failed"
+          }
+        ],
+        "then": "permit",
+        "why": "a failed audit proves nothing about the declaration"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "audit",
+            "op": "is",
+            "value": "unparsed"
+          }
+        ],
+        "then": "permit",
+        "why": "output the parser refuses proves nothing about the declaration"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "audit",
+            "op": "is",
+            "value": "unlisted"
+          },
+          {
+            "field": "row",
+            "op": "is",
+            "value": "source"
+          }
+        ],
+        "then": "permit",
+        "why": "a source declaration the audit missed is never taken as axiom free"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "audit",
+            "op": "is",
+            "value": "listed"
+          },
+          {
+            "field": "outside",
+            "op": "=",
+            "value": 0
+          },
+          {
+            "field": "unseen",
+            "op": "=",
+            "value": 0
+          }
+        ],
+        "then": "permit",
+        "why": "an observed set equal to the declared list satisfies all three policies"
+      }
+    ],
+    "examples": [
+      {
+        "request": "listed source exact 0 0",
+        "response": "permit"
+      },
+      {
+        "request": "listed source exact 0 1",
+        "response": "deny"
+      },
+      {
+        "request": "listed source allow 0 2",
+        "response": "permit"
+      },
+      {
+        "request": "listed source none 1 0",
+        "response": "deny"
+      },
+      {
+        "request": "listed core allow 1 0",
+        "response": "deny"
+      },
+      {
+        "request": "unlisted core exact 0 0",
+        "response": "not-applicable"
+      },
+      {
+        "request": "unlisted source exact 0 0",
+        "response": "indeterminate"
+      },
+      {
+        "request": "failed source none 0 0",
+        "response": "indeterminate"
+      },
+      {
+        "request": "unparsed core exact 0 0",
+        "response": "indeterminate"
+      },
+      {
+        "request": "listed source exact 65 0",
+        "response": "invalid"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Model author",
+      "text": "Pins each declaration's axioms with noaxioms, allowaxioms or exactaxioms and needs verify to hold the kernel to exactly that.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Release reviewer",
+      "text": "Reads the declaration rows of a verify before a release and needs no row to say ok unless its audit was read and satisfied.",
+      "concerns": [
+        "No unaudited permit",
+        "Integrity of the published app"
+      ]
+    }
+  ],
+  "concerns": [
+    {
+      "name": "No unaudited permit",
+      "text": "A declaration whose audit failed, was refused or missed it is never permitted.",
+      "model": "security"
+    }
+  ],
+  "components": [
+    {
+      "name": "Lean axiom audit",
+      "kind": "cliAdapter",
+      "text": "The audit modules lexlean verify runs under the pinned Lean, whose output lists the axioms each declaration depends on."
+    },
+    {
+      "name": "lexlean verify",
+      "kind": "cliAdapter",
+      "text": "The LexLean verifier whose stage 11 enforces each declaration's policy and writes the declaration rows."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Classical axiom slipped in",
+      "text": "A declaration pinned noaxioms or an exact set starts depending on Classical.choice through a lemma it uses, and is still reported ok.",
+      "stride": "elevationOfPrivilege",
+      "asset": "source",
+      "likelihood": "medium",
+      "impact": "critical",
+      "control": {
+        "name": "Observed set outside the policy is denied",
+        "text": "Any observed axiom outside the declared list is a deny, proved for every request.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "LexleanAxiomPolicyProofs::inv001Holds"
+          },
+          {
+            "kind": "review",
+            "reference": "LexLean crates/lexlean/src/ir/declaration.rs AxiomPolicy::permits"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Silent audit taken as clean",
+      "text": "An audit member crashes or prints nothing for a declaration, and an empty observed set is read as no axioms.",
+      "stride": "repudiation",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "major",
+      "control": {
+        "name": "No permit without an audit",
+        "text": "A failed, refused or missing audit of a source declaration is indeterminate, never permit.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "LexleanAxiomPolicyProofs::inv003Holds"
+          },
+          {
+            "kind": "proof",
+            "reference": "LexleanAxiomPolicyProofs::inv005Holds"
+          },
+          {
+            "kind": "gate",
+            "reference": "LexLean crates/conformance/src/cases/verification.rs"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Core row left unenforced",
+      "text": "A core-calculus row absent from the audit is skipped, so a policy on it is never enforced.",
+      "stride": "tampering",
+      "asset": "source",
+      "likelihood": "low",
+      "impact": "minor",
+      "accepted": "verify/mod.rs skips a core row the audit does not name by design: only the declarations the audit family observes carry an observed set, and the not-applicable answer says so."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Integrity",
+      "requirement": "Only satisfied policies are permitted",
+      "text": "No request with an undeclared observed axiom, or an exact policy missing one, is permitted.",
+      "measure": "Violating permits",
+      "measureText": "Acceptance vectors permitted while outside or, under exact, unseen is at least 1.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional correctness",
+      "requirement": "Every decision matches verify",
+      "text": "Each vector answers the decision stage 11 of lexlean verify reaches.",
+      "measure": "Vectors that disagree",
+      "measureText": "Acceptance vectors whose replayed answer differs from the expected decision.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Model author",
+      "steps": [
+        "otherwise",
+        "REQ-005",
+        "REQ-006",
+        "INV-002"
+      ]
+    },
+    {
+      "stakeholder": "Release reviewer",
+      "steps": [
+        "REQ-001",
+        "REQ-004",
+        "REQ-003",
+        "INV-005",
+        "refuse"
+      ]
+    }
+  ]
+}
