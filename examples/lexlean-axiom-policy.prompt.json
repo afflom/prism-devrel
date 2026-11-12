@@ -1,7 +1,7 @@
 {
   "schema": "prism/prompt/1",
   "pattern": "policyDecision",
-  "goal": "Decide whether a declaration's observed axioms satisfy its declared axiom policy, so lexlean verify publishes only declarations whose kernel-observed axioms are exactly what their source pins.",
+  "goal": "Decide if a declaration uses only the axioms its source allows. Then lexlean verify publishes nothing that rests on more.",
   "repository": "UOR-Foundation/LexLean",
   "app": {
     "name": "lexlean-axiom-policy",

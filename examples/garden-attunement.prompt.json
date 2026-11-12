@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether an attune gesture in Verdant Resonance reaches the plant the player faces, so the garden answers the same way to the same walk.",
+  "goal": "Decide if a player's gesture in Verdant Resonance reaches the plant they face. The garden then answers the same walk the same way.",
   "pattern": "decisionTable",
   "repository": "afflom/verdant-resonance",
   "app": {

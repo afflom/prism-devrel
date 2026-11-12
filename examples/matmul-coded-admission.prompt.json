@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a version 1 coded matrix request is computed or which modeled error it answers, in the order the LexLean Matmul protocol checks it.",
+  "goal": "Decide if a coded matrix request is computed, or which error it gets. The checks run in the order the LexLean Matmul protocol sets.",
   "pattern": "decisionTable",
   "repository": "afflom/lexlean-matmul",
   "app": {

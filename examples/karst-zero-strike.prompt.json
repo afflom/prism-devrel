@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Resolve one strike die of Karst: Zero Horizon against an undefended target, with cover and momentum, so every roll in a skirmish can be replayed.",
+  "goal": "Roll one strike die in Karst: Zero Horizon, with cover and momentum. Then every roll in a fight can be replayed.",
   "pattern": "decisionTable",
   "repository": "afflom/karst-zero",
   "app": {

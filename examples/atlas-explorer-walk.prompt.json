@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide the next state of the Atlas Explorer Dynamics view from the button pressed, so a walk through the E8 reflection orbit is replayable control by control.",
+  "goal": "Find the next state of the Atlas Explorer view from the button pressed. Then each walk through the E8 orbit can be replayed step by step.",
   "pattern": "stateMachine",
   "machine": {
     "state": "state",

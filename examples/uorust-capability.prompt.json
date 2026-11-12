@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide how UORust records a Rust target by the effect it reaches, so every capability becomes a modeled threat and nothing is silently pure.",
+  "goal": "Decide how UORust records a Rust target by the effect it reaches. Every effect becomes a threat in the model, and nothing hides as pure.",
   "pattern": "decisionTable",
   "repository": "afflom/uorust",
   "app": {

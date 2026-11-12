@@ -8,7 +8,7 @@
       "removed"
     ]
   },
-  "goal": "Step a PrismPM holo container through Docker's lifecycle, so a holo that check refuses never runs and a running container is never removed under it.",
+  "goal": "Move a PrismPM holo container through its Docker life. A holo that fails its check never runs, and a running one is never removed.",
   "repository": "UOR-Foundation/PrismPM",
   "app": {
     "name": "prismpm-container-lifecycle",

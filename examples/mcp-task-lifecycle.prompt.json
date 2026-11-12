@@ -10,7 +10,7 @@
       "cancelled"
     ]
   },
-  "goal": "Step an MCP tasks-extension task to its next state, so a client polling tasks/get, tasks/update and tasks/cancel always sees the state the protocol core would write.",
+  "goal": "Find an MCP task's next state, so a client that polls, updates or cancels it always sees the state the protocol would write.",
   "repository": "UOR-Foundation/MCP",
   "app": {
     "name": "mcp-task-lifecycle",

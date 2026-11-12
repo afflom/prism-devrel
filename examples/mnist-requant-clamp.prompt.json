@@ -1,7 +1,7 @@
 {
   "schema": "prism/prompt/1",
   "pattern": "decisionTable",
-  "goal": "Classify how the MNIST network's 32-bit fixed-point requantization clamps a scaled accumulator into a uint8 activation code, so no activation ever leaves 0 to 255.",
+  "goal": "Sort how the MNIST network squeezes a 32-bit sum into an 8-bit value, so no value ever falls outside 0 to 255.",
   "repository": "UOR-Foundation/MNIST",
   "app": {
     "name": "mnist-requant-clamp",

@@ -1,7 +1,7 @@
 {
   "schema": "prism/prompt/1",
   "pattern": "decisionTable",
-  "goal": "Decide whether LexLean MCP admits a draft an LLM submits, so no path escapes the source roots and no draft exceeds the owner-set limits before LexLean sees it.",
+  "goal": "Decide if LexLean MCP takes a draft from an AI model. No file path leaves its folders, and no draft goes over the owner's limits.",
   "repository": "UOR-Foundation/lexlean-mcp",
   "app": {
     "name": "lexlean-mcp-draft-admission",

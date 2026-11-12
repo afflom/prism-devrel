@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a consensus round commits a block proposed by reference, so a validator commits only on a quorum and only once it holds the content.",
+  "goal": "Decide if a round of votes commits a block. A validator commits only when enough others agree, and only once it holds the block itself.",
   "pattern": "decisionTable",
   "repository": "UOR-Foundation/malachite-usdc",
   "license": "Apache-2.0",

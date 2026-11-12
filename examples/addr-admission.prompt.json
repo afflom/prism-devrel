@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a value gets a UOR-ADDR content address, so two values with one meaning share a label and a malformed one gets none.",
+  "goal": "Decide if a value gets a UOR-ADDR address. Two values that mean the same thing share one label, and a broken value gets none.",
   "pattern": "decisionTable",
   "repository": "UOR-Foundation/uor-addr",
   "license": "Apache-2.0",

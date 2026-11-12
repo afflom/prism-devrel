@@ -1,7 +1,7 @@
 {
   "schema": "prism/prompt/1",
   "pattern": "decisionTable",
-  "goal": "Give the one stable UOR-JCS-NFC refusal code, or admission to the digest, for a JSON document's findings, so every implementation refuses one malformed input with one code.",
+  "goal": "Give the one refusal code for a broken JSON document, or let it through. Then every tool refuses the same input with the same code.",
   "repository": "UOR-Foundation/uor-jcs-nfc",
   "license": "Apache-2.0",
   "app": {

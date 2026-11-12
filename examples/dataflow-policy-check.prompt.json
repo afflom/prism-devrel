@@ -1,7 +1,7 @@
 {
   "schema": "prism/prompt/1",
   "pattern": "decisionTable",
-  "goal": "Decide whether a Prism dataflow project script is accepted, rejected with policy findings, or an error, so a project that breaks its memory or PII-encryption policy never reads as accepted.",
+  "goal": "Decide if a Prism dataflow script is accepted, rejected for breaking a policy, or an error. A script that leaks memory or personal data is never accepted.",
   "repository": "UOR-Foundation/prism-code",
   "app": {
     "name": "dataflow-policy-check",

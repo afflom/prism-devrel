@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide the next status of one escrow in the PrismPM Vault studio from the operation applied to it, so locking, release and refund can be replayed step by step.",
+  "goal": "Find the next status of an escrow in the PrismPM Vault from the step applied to it. Then locking, release and refund can be replayed.",
   "pattern": "stateMachine",
   "machine": {
     "state": "state",

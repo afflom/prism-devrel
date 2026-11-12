@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a UOR Atlas UTQC dictionary row passes the honesty meta-gate, so no row asserts more than its source shows.",
+  "goal": "Decide if a row of the UOR Atlas UTQC dictionary passes the honesty check, so no row claims more than its source shows.",
   "pattern": "decisionTable",
   "repository": "afflom/UOR-Atlas-UTQC",
   "license": "MIT",

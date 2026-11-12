@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a block header hash meets its target, so a node or miner can replay the proof-of-work admission from the header alone.",
+  "goal": "Decide if a block header's hash meets its target, so any node can check the proof of work from the header alone.",
   "pattern": "decisionTable",
   "repository": "afflom/prism-btc",
   "license": "Apache-2.0",

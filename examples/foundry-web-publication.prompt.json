@@ -1,7 +1,7 @@
 {
   "schema": "prism/prompt/1",
   "pattern": "policyDecision",
-  "goal": "Decide whether foundry-web may publish a uor-foundry portal release to Pages, so only the exact verified, authorized, complete core stage is ever deployed.",
+  "goal": "Decide if foundry-web may publish a portal release. Only the exact build that was checked and approved can go live.",
   "repository": "UOR-Foundation/foundry-web",
   "app": {
     "name": "foundry-web-publication",

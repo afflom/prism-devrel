@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a CIRIS agent proceeds, defers to a Wise Authority or is halted, so its H3ERE pipeline can be audited decision by decision.",
+  "goal": "Decide if a CIRIS agent goes ahead, asks a Wise Authority first, or stops. Then each of its choices can be checked later.",
   "pattern": "decisionTable",
   "repository": "afflom/prism-ciris",
   "app": {

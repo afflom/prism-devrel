@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide the next state of one Rule 30 cell from its neighbourhood, so every row of the automaton can be replayed and checked.",
+  "goal": "Find the next state of one Rule 30 cell from its neighbours, so every row of the pattern can be replayed and checked.",
   "pattern": "decisionTable",
   "repository": "afflom/rule30",
   "license": "MIT",

@@ -1,7 +1,7 @@
 {
   "schema": "prism/prompt/1",
   "pattern": "decisionTable",
-  "goal": "Decide whether a two-seed UOR-R4 run passes its milestone bar against the unigram and T2 baselines, so a result inside the noise band is never reported as a win.",
+  "goal": "Decide if a two-seed UOR-R4 run beats its baselines, so a result inside the noise is never called a win.",
   "repository": "UOR-Foundation/uor-r4",
   "license": "MIT",
   "app": {

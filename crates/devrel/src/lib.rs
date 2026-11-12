@@ -309,23 +309,23 @@ macro_rules! resources {
 
 resources! {
     "getting-started", "Model your Rust project with UORust", Walkthrough, Scope::GettingStarted, Tutorial, Learn,
-        "Run UORust on its own fixture workspace, check what it writes with the SDK, and read a Rust function beside the LexLean definition it lifted to.";
+        "Run UORust on a sample workspace, check what it writes, and read a Rust function beside the LexLean it became.";
     "case-study", "How UORust was modeled", Walkthrough, Scope::CaseStudy, Explanation, Evaluate,
         "Who the model is for, what they care about, how those concerns became facets, and how far the lift reaches.";
     "architecture", "Architecture walkthrough", Walkthrough, Scope::Facet(Facet::Architecture), Explanation, Learn,
-        "Stakeholders, concerns, components, edges, viewpoints and views, as ISO/IEC/IEEE 42010 records.";
+        "Who UORust is for, what they care about, its parts and how they connect.";
     "design", "Design views in OPM and UML", Diagram, Scope::Facet(Facet::Design), Explanation, Learn,
-        "Every design view drawn: object-process, component, sequence and state machine diagrams.";
+        "Every design view, drawn: objects and processes, parts, messages and states.";
     "features", "Features and journeys", Walkthrough, Scope::Facet(Facet::Features), Explanation, Learn,
         "What the product does, the calls that realize it, the rows that accept it, and the paths people take.";
     "security", "Security and threat model", Walkthrough, Scope::Facet(Facet::Security), Explanation, Evaluate,
         "Assets, STRIDE threats, risks, controls with evidence, and the risks accepted on purpose.";
     "quality", "Quality model (ISO/IEC 25010)", Reference, Scope::Facet(Facet::Quality), Reference, Evaluate,
-        "Characteristics, subcharacteristics, requirements and measured thresholds.";
+        "What good quality means for UORust, and the numbers that measure it.";
     "behavior", "Behavior and proofs", Reference, Scope::Facet(Facet::Behavior), Reference, Build,
         "Every theorem the Lean kernel checks, with its statement and proof method.";
     "system", "System and release", Walkthrough, Scope::Facet(Facet::System), Explanation, Scale,
-        "The production system model, the release manifest and how a holo is published.";
+        "What UORust ships, the release manifest, and how a holo goes live.";
     "extensions", "Extension facets", Reference, Scope::Facet(Facet::Extension), Reference, Build,
         "Domain records the subject adds beside the standard facets.";
     "cli", "UORust command reference", Reference, Scope::Tool, Reference, Build,
@@ -333,7 +333,7 @@ resources! {
     "slides", "Slides and video script", VideoScript, Scope::FirstOfEachFacet, Explanation, Discover,
         "One slide per facet with a script to read over it.";
     "explorer", "Record explorer", InteractiveExplorer, Scope::Index, Reference, Build,
-        "Search every facet record by identifier, facet or text, and open the pages that teach it.";
+        "Search every record by name, facet or text, and open the pages that teach it.";
     "agents", "llms.txt and Markdown twins", AgentTwin, Scope::Index, Reference, Build,
         "The catalog as plain text for agents: llms.txt, a Markdown twin of every page, and a feed.";
 }

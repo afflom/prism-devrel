@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a router proposal is admitted into the composition, so a stale, ambiguous or conflicting proposal never becomes part of an app.",
+  "goal": "Decide if a router's proposal joins the app. A stale, unclear or clashing proposal never becomes part of it.",
   "pattern": "decisionTable",
   "repository": "UOR-Foundation/foundry",
   "app": {

@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether Holo Search opens the app an address names, so nothing runs unless its bytes match the address, its model checks and its examples replay.",
+  "goal": "Decide if Holo Search opens the app an address names. Nothing runs unless its bytes match the address, its model checks and its tests pass.",
   "pattern": "policyDecision",
   "repository": "UOR-Foundation/holo-search",
   "app": {

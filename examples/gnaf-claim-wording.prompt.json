@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a WASM-GEMM-GNAF document may call a claim proved, a theorem or globally optimal, so no README or ledger row says more than the Lean kernel checked.",
+  "goal": "Decide which words a GNAF document may use for a claim. No README or ledger may say more than the Lean kernel checked.",
   "pattern": "policyDecision",
   "repository": "afflom/WASM-GEMM-GNAF",
   "app": {

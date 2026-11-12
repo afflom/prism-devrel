@@ -1,7 +1,7 @@
 {
   "schema": "prism/prompt/1",
   "pattern": "decisionTable",
-  "goal": "Classify a Calculator protocol request into its answer kind, so a malformed, unsupported or out-of-range request is never answered with a number.",
+  "goal": "Sort a Calculator request by the kind of answer it gets. A bad, unknown or too-large request never gets a number back.",
   "repository": "UOR-Foundation/calculator-example",
   "app": {
     "name": "calculator-protocol",

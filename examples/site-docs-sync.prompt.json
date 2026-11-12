@@ -1,7 +1,7 @@
 {
   "schema": "prism/prompt/1",
   "pattern": "decisionTable",
-  "goal": "Decide what the scheduled Prism docs sync does to uor.foundation, so the site never overwrites its docs with an empty tree or an unverified prism-code release.",
+  "goal": "Decide what the nightly docs sync does to uor.foundation. The site must never swap its docs for an empty or unchecked release.",
   "repository": "UOR-Foundation/website",
   "license": "NOASSERTION",
   "app": {

@@ -1,5 +1,6 @@
 {
-  "about": "Each example is one prism/prompt/1 prompt for an app grounded in a real Prism or UOR project, its rules read from that project's source. The builder writes the whole app from it, every facet, and the pages workflow verifies every one in the pinned SDK before the site is published. They are grouped by the established pattern their behavior follows: DMN decision tables, XACML policy decisions and UML state machines.",
+  "about": "Each example is one prompt for an app from a real Prism or UOR project, with rules read from that project's source. The builder writes the whole app from the prompt. The pages workflow verifies every one before the site goes live. They are grouped by the pattern they follow: DMN decision tables, XACML policy decisions and UML state machines.",
+  "lead": "Apps built from one prompt each, grouped by pattern, and verified before they go live.",
   "examples": [
     { "prompt": "rule-30-cell.prompt.json", "repository": "afflom/rule30", "live": "https://afflom.github.io/rule30/", "summary": "LexLean and Lean 4 formalization of Wolfram's Rule 30 with verified artifacts." },
     { "prompt": "karst-zero-strike.prompt.json", "repository": "afflom/karst-zero", "live": "https://afflom.github.io/karst-zero/", "summary": "A tactical wargame whose Nemesis Core engine is modeled and verified with LexLean and PrismPM." },

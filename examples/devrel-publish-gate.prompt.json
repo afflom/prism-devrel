@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether Prism-DevRel publishes its catalog, so a developer never reads a page that misstates the subject model.",
+  "goal": "Decide if Prism-DevRel may publish its pages, so no reader ever sees a page that gets the model wrong.",
   "pattern": "decisionTable",
   "repository": "afflom/prism-devrel",
   "app": {

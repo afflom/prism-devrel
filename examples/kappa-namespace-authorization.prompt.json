@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether kappa-registry authorizes an operation on a namespace, so only an owner, a capability holder or a bounded delegation chain can write.",
+  "goal": "Decide if kappa-registry lets someone change a namespace. Only its owner, a key holder or a short chain of trust can write.",
   "pattern": "policyDecision",
   "repository": "UOR-Foundation/kappa-registry",
   "app": {

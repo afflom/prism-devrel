@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether a UORC candidate archive replaces the best-known one, so losslessness is never traded for a smaller number.",
+  "goal": "Decide if a new UORC archive replaces the best one so far. A smaller size must never come at the cost of lost data.",
   "pattern": "decisionTable",
   "repository": "UOR-Foundation/compression",
   "app": {

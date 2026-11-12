@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Decide whether Emporous admits a representation into a namespace, so every object kappa comes from an authorized principal under the realization its scope names.",
+  "goal": "Decide if Emporous lets an object into a namespace. Each object must come from someone who is allowed to add it there.",
   "pattern": "policyDecision",
   "repository": "afflom/emporous",
   "app": {

@@ -1,6 +1,6 @@
 {
   "schema": "prism/prompt/1",
-  "goal": "Tell whether a PrismLegal matter node is current, so a strategy only ever rests on reviewed, grounded and up-to-date support.",
+  "goal": "Tell if a PrismLegal matter is current. A legal strategy should only rest on support that is checked, grounded and up to date.",
   "pattern": "decisionTable",
   "repository": "afflom/prism-legal",
   "app": {

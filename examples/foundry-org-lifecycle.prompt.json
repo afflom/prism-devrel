@@ -8,7 +8,7 @@
       "retired"
     ]
   },
-  "goal": "Step a Foundry organization through its modeled lifecycle, so it is activated, suspended or retired only by its own distinct administrators with full coverage.",
+  "goal": "Move a Foundry organization through its life. Only its own admins can switch it on, pause it or retire it.",
   "repository": "UOR-Foundation/uor-foundry",
   "app": {
     "name": "foundry-org-lifecycle",

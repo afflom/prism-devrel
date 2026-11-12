@@ -8,7 +8,7 @@
       "accepted"
     ]
   },
-  "goal": "Step a template product release through build, candidate, plan, deploy, verify and accept, so no release is accepted without passing every protected job in order.",
+  "goal": "Move a template release from build to accept, one step at a time. No release is accepted before every step has passed in order.",
   "repository": "UOR-Foundation/template",
   "app": {
     "name": "template-release-lifecycle",
