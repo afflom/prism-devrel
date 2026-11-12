@@ -71,3 +71,19 @@ model-write:
 #     just new-capability CX-01 build parsing "A parsed document round-trips"
 new-capability id level suite statement:
     cargo run -q --locked -p xtask -- new-capability {{quote(id)}} {{quote(level)}} {{quote(suite)}} {{quote(statement)}}
+
+# Move devrel/subject.json to the subject's newest green main commit (never
+# back, never to a commit whose gate failed).
+repin:
+    scripts/repin.sh
+
+# Rewrite app/src/Catalog.lex.tex from the subject devrel/subject.json pins (DR-03).
+catalog:
+    scripts/catalog.sh
+
+# Every writer: CONFORMANCE.md, the builder's packed assets, and the catalog.
+# `generate.yml` runs `repin` and this on every push to main and on a schedule,
+# and commits what changed, so no generated file is stale and DevRel follows
+# UORust without anyone re-pinning it.
+generate: model-write catalog
+    node builder/pack.mjs

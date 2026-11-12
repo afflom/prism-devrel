@@ -36,3 +36,6 @@ screens/
 /site/llms.txt
 /site/llms-full.txt
 /site/feed.xml
+
+# Python bytecode from the CI scripts.
+__pycache__/
