@@ -7,13 +7,14 @@
  */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildApp } from './build.mjs';
 import { deriveModel } from './model.mjs';
 import { render as renderAssets } from './pack.mjs';
-import { examplePage, page } from './site.mjs';
+import { DIATAXIS, JOURNEY, examplePage, page, writeSite } from './site.mjs';
 import { readPrompt } from './prompt.mjs';
 import { SPEC_INPUT, TOOL } from './tool.mjs';
 import { zip, crc32 } from './zip.mjs';
@@ -58,6 +59,8 @@ const CASES = {
     await refused(async () => deriveModel({ ...good, journeys: [{ stakeholder: 'Researcher', steps: ['REQ-999'] }] }), /names no rule/, 'a journey step naming no feature is refused');
     await refused(async () => deriveModel({ ...good, stakeholders: [{ name: 'A', text: 'a', concerns: ['Nothing'] }] }), /is not a concern/, 'a stakeholder naming an undeclared concern is refused');
     await refused(async () => readPrompt({ jsonrpc: '2.0', method: 'tools/call', params: { name: 'prism_spec', arguments: good } }), /prism_prompt/, 'a tools/call of another tool is refused');
+    await refused(async () => deriveModel({ ...good, axioms: { noSuchDeclaration: ['propext'] } }), /does not declare/, 'an axiom set for a declaration the app does not have is refused');
+    await refused(async () => deriveModel({ ...good, axioms: { inv001Holds: ['Classical.em'] } }), /axiom of inv001Holds/, 'an axiom outside the policy vocabulary is refused');
     ok(readPrompt({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'prism_prompt', arguments: good } }).app.name === 'rule-thirty-cell', 'a prompt arrives as the tools/call of prism_prompt');
     await assert.rejects(() => buildApp(good, {}), TypeError);
     made++;
@@ -99,6 +102,10 @@ const CASES = {
     const entry = files['app/lexlean.toml'].match(/^entrypoints = \[(.*)\]$/m)[1];
     for (const name of ['Architecture', 'Compliance', 'Design', 'Features', 'Quality', 'Security', m.module, m.proofs]) ok(entry.includes(`"src/${name}.lex.tex"`), `${name} is an entrypoint`);
     ok(JSON.parse(files['site/app.json']).name === m.spec.title, 'the page describes the app');
+    const observed = await buildApp({ ...rule30(), axioms: { inv001Holds: ['propext', 'Quot.sound', 'Classical.choice'] } }, { lastModified: AT });
+    const theorem = module(observed.files, m.proofs).split('\n\n').find((d) => d.includes('name: inv001Holds,'));
+    ok(theorem.includes('axioms: [Classical.choice, Quot.sound, propext]'), 'an observed axiom set is the policy the theorem declares');
+    ok(module(files, m.proofs).split('\n\n').find((d) => d.includes('name: inv001Holds,')).includes('axioms: [Quot.sound, propext]'), 'otherwise the renderer expects Quot.sound and propext');
   },
   // The same prompt and instant write the same bytes; the archive is a valid ZIP.
   async 'DR-10'() {
@@ -162,7 +169,7 @@ const CASES = {
     const { files, model: m, claims } = await buildApp(hostile, { lastModified: AT });
     const entry = { name: 'hostile', repository: 'afflom/rule30', summary: H };
     const { html, twin } = examplePage(entry, null, m, files, claims, 'x.zip', null);
-    const text = page({ depth: 2, ...html, twin: 'index.md' });
+    const text = page({ depth: 2, ...html, diataxis: 'howToGuide', journey: 'build', twin: 'index.md' });
     const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     ok(!text.includes('<script>alert'), 'no prompt text becomes markup');
     ok(text.includes(esc(H)), 'prompt text is shown escaped');
@@ -184,6 +191,34 @@ const CASES = {
     ];
     for (const r of records) ok(text.includes(esc(r)), `the page shows ${r}`);
     for (const f of Object.keys(files).filter((p) => p.startsWith('app/src/') && !/^app\/src\/(Foundation|Production)\//.test(p))) ok(text.includes(`<code>${esc(f)}</code>`), `the page shows ${f}`);
+  },
+  // Every page is one Diátaxis type and one developer-journey stage, and the reference is the tool's own schema.
+  async 'DR-14'() {
+    eq(Object.keys(DIATAXIS), ['tutorial', 'howToGuide', 'reference', 'explanation'], 'the four Diátaxis types');
+    eq(Object.keys(JOURNEY), ['discover', 'evaluate', 'learn', 'build', 'scale'], 'the five journey stages of Lewko and Parton');
+    await assert.rejects(async () => page({ depth: 1, title: 't', summary: 's', body: '', twin: 'index.md', diataxis: 'blog', journey: 'build' }), TypeError);
+    made++;
+    const site = mkdtempSync(join(tmpdir(), 'devrel-site-'));
+    try {
+      await writeSite(site, null);
+      const walk = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(dir, e.name)) : e.name === 'index.html' ? [join(dir, e.name)] : []));
+      const pages = walk(site);
+      ok(pages.length === prompts().length + 4, 'a page per example, the gallery, the tutorial, the reference and the explanation');
+      const kinds = {};
+      for (const path of pages) {
+        const html = readFileSync(path, 'utf8');
+        const type = html.match(/<meta name="diataxis" content="([A-Za-z]+)">/)?.[1];
+        const stage = html.match(/<meta name="developer-journey" content="([a-z]+)">/)?.[1];
+        ok(Object.hasOwn(DIATAXIS, type) && Object.hasOwn(JOURNEY, stage), `${path.slice(site.length)} is one Diátaxis type and one journey stage`);
+        kinds[path.slice(site.length + 1)] = type;
+      }
+      eq([kinds['start/index.html'], kinds['start/reference/index.html'], kinds['start/explanation/index.html'], kinds['examples/index.html']], ['tutorial', 'reference', 'explanation', 'howToGuide'], 'the tutorial, reference, explanation and how-to guides are separate pages');
+      const reference = readFileSync(join(site, 'start/reference/index.html'), 'utf8');
+      for (const k of Object.keys(TOOL.inputSchema.properties).filter((k) => k !== 'schema')) ok(reference.includes(`<td>${k}</td>`), `the reference documents ${k}`);
+      for (const k of Object.keys(SPEC_INPUT.properties)) ok(reference.includes(`<td>${k}</td>`), `the reference documents app.${k}`);
+    } finally {
+      rmSync(site, { recursive: true, force: true });
+    }
   },
 };
 

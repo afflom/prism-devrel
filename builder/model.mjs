@@ -18,7 +18,7 @@
  */
 import { SpecError, counterexample, describeConditions, judge, requestLimits, respond, validateSpec } from './vendor/prism-code/src/journey/spec.mjs';
 import { answersFromSpec, compile } from './vendor/prism-code/src/journey/session.mjs';
-import { acceptanceVectors, names } from './vendor/prism-code/src/journey/render.mjs';
+import { acceptanceVectors, declarations, names, proofDeclarations } from './vendor/prism-code/src/journey/render.mjs';
 import { claims, idPrefix, suiteOf } from './vendor/prism-code/src/journey/template.mjs';
 import { ISO25010, MODEL_KINDS, readPrompt } from './prompt.mjs';
 
@@ -82,6 +82,8 @@ export function deriveModel(input) {
   const prompt = readPrompt(input);
   const spec = checkedSpec(prompt.app);
   const n = names(spec);
+  const declared = new Set([...declarations(spec, n), ...(spec.properties.length ? proofDeclarations(spec, n) : [])].map((d) => d.name));
+  for (const name of Object.keys(prompt.axioms)) if (!declared.has(name)) throw new SpecError(`axioms names \`${name}\`, which the app does not declare.`, 'axioms');
   const limits = requestLimits(spec);
   const vectors = acceptanceVectors(spec);
   const title = spec.title;

@@ -186,5 +186,12 @@
       "impact": "major",
       "accepted": "The app decides from the request it is given; establishing consent belongs to the system that sends it, which the app's answer names."
     }
-  ]
+  ],
+  "axioms": {
+    "inv002Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
 }

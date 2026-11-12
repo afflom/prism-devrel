@@ -68,10 +68,16 @@ instead of restating them.
 The builder in `builder/` turns one structured prompt into every facet of a
 Prism application, laid out as a repository created from
 [UOR-Foundation/template](https://github.com/UOR-Foundation/template). The
-site's [Start page](https://afflom.github.io/prism-devrel/start/) runs it in
-the browser, and [Examples](https://afflom.github.io/prism-devrel/examples/)
-shows fourteen apps in the spirit of real Prism projects, each built from one
-prompt and verified.
+site documents it as [Diátaxis](https://diataxis.fr) documentation along the
+developer journey of Lewko and Parton, *Developer Relations* (Apress, 2021):
+the [tutorial](https://afflom.github.io/prism-devrel/start/) (Learn) runs the
+builder in the browser; the [how-to guides](https://afflom.github.io/prism-devrel/examples/)
+(Build) are fourteen apps in the spirit of real Prism projects, each built from
+one prompt and verified; the [reference](https://afflom.github.io/prism-devrel/start/reference/)
+(Build) is the MCP tool's own input schema; and the
+[explanation](https://afflom.github.io/prism-devrel/start/explanation/)
+(Evaluate) says why one prompt determines every facet. Every page declares its
+type and stage (`DR-14`), with the identifiers the DevRel model uses.
 
 A prompt is `prism/prompt/1`. Its `app` member is the `prism/spec/1` spec that
 prism-code's MCP tool `prism_spec` takes; stakeholders, concerns, components,
@@ -93,6 +99,7 @@ and are derived from the spec when absent. From it the builder writes:
 node builder/cli.mjs check examples/rule-30-cell.prompt.json   # what the app will claim
 node builder/cli.mjs build my.prompt.json --out my-app          # write it into a template instance
 node builder/cli.mjs schema                                     # the MCP tool prism_prompt
+node builder/cli.mjs axioms my.prompt.json verify.log          # record observed axiom sets
 ```
 
 A prompt the builder cannot make into a sound app is refused with the reason
@@ -100,7 +107,9 @@ A prompt the builder cannot make into a sound app is refused with the reason
 counterexample, a threat with neither a control with evidence nor an accepted
 risk, an unknown STRIDE category, a subcharacteristic outside its ISO/IEC 25010
 characteristic, a journey step or stakeholder concern that names nothing
-declared. The same prompt and commit instant always write the same bytes
+declared. Lean's exact axiom policy is recorded as prism-code records it: the
+renderer expects `Quot.sound` and `propext`, and when a verify observes another
+set (LLV7005), `axioms` writes it into the prompt's `axioms` member. The same prompt and commit instant always write the same bytes
 (`DR-10`). The pages workflow builds every example into the template at the
 commit `frame.lock` pins and runs that instance's whole gate in the locked SDK
 before the example's page offers its holo (`DR-11`). The prism-code journey

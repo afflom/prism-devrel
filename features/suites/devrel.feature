@@ -83,3 +83,9 @@ Feature: devrel
     Given a Rule 30 prompt whose goal and stakeholder carry markup, a code fence and Markdown
     When builder/test.mjs DR-13 writes its page and twin
     Then no prompt text becomes markup, the twin's fence outruns every backtick run in the prompt, and every rule, property, stakeholder, concern, component, view, feature, threat, requirement, standard, claim and module is on the page
+
+  @DR-14 @build
+  Scenario: Every builder page is one Diátaxis documentation type and one stage of the developer journey, and the prompt reference is the MCP tool's own input schema
+    Given the Diátaxis types of diataxis.fr and the journey stages Discover, Evaluate, Learn, Build and Scale of Lewko and Parton, Developer Relations
+    When builder/test.mjs DR-14 writes the site and reads every page it wrote
+    Then each page declares exactly one type and one stage, the tutorial, reference, explanation and how-to guides are separate pages, and the reference documents every member of prism_prompt and of its app spec

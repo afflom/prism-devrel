@@ -78,3 +78,9 @@ fn vendored_dr_12() {
 fn pages_dr_13() {
     builder("DR-13");
 }
+
+/// `DR-14`: Every builder page is one Diátaxis documentation type and one stage of the developer journey, and the prompt reference is the MCP tool's own input schema
+#[test]
+fn frameworks_dr_14() {
+    builder("DR-14");
+}

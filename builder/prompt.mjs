@@ -28,6 +28,8 @@ export const MODEL_KINDS = ['component', 'quality', 'security'];
 export const EVIDENCE_KINDS = ['gate', 'proof', 'review'];
 /** What a threat in the prompt can be against: the assets every app has. */
 export const ASSET_KEYS = ['request', 'answer', 'holo', 'source'];
+/** The axioms a Lean kernel check can observe in a generated declaration, as LexLean's exact axiom policy names them. */
+export const AXIOMS = ['Classical.choice', 'Quot.sound', 'propext'];
 
 /**
  * ISO/IEC 25010:2023 product quality: each characteristic with its
@@ -102,6 +104,11 @@ export function inputSchema(specInput) {
       journeys: { type: 'array', description: 'Ordered steps a stakeholder takes. A step is a rule ID (REQ-001), a property ID (INV-001), otherwise or refuse.', items: { type: 'object', properties: { stakeholder: text, steps: { type: 'array', items: text } }, required: ['stakeholder', 'steps'] } },
       license: { type: 'string', description: 'The SPDX license expression; MIT OR Apache-2.0 when left out.' },
       repository: { type: 'string', description: 'owner/name of the repository the app will live in, for its page and links.' },
+      axioms: {
+        type: 'object',
+        description: 'The exact axiom set a verify observed for a generated declaration, by declaration name, as prism-code records it when LexLean reports LLV7005. `node builder/cli.mjs axioms` writes it from a verify log.',
+        additionalProperties: { type: 'array', items: { enum: AXIOMS }, uniqueItems: true },
+      },
     },
     required: ['app'],
   };
@@ -175,6 +182,19 @@ export function readPrompt(input) {
   });
   prompt.journeys = list('journeys').map((j) => ({ stakeholder: words(j.stakeholder), steps: (j.steps ?? []).map(words) }));
   prompt.license = words(prompt.license ?? 'MIT OR Apache-2.0');
+  if (prompt.axioms === undefined) prompt.axioms = {};
+  if (typeof prompt.axioms !== 'object' || Array.isArray(prompt.axioms)) refuse('axioms maps a declaration name to its observed axiom set.', 'axioms');
+  prompt.axioms = Object.fromEntries(
+    Object.keys(prompt.axioms)
+      .sort()
+      .map((name) => {
+        const set = prompt.axioms[name];
+        if (!Array.isArray(set)) refuse(`The axioms of \`${name}\` are a list.`, 'axioms');
+        for (const a of set) oneOf(a, AXIOMS, `axiom of ${name}`);
+        if (new Set(set).size !== set.length) refuse(`The axioms of \`${name}\` name one axiom twice.`, 'axioms');
+        return [name, [...set].sort()];
+      }),
+  );
   if (prompt.repository !== undefined && !/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(prompt.repository)) refuse('repository is owner/name.', 'repository');
   return prompt;
 }

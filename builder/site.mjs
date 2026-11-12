@@ -27,6 +27,15 @@ const repo = join(here, '..');
 const REPOSITORY = 'https://github.com/afflom/prism-devrel';
 const TEMPLATE_REPO = 'UOR-Foundation/template';
 
+/**
+ * Every page is one Diátaxis documentation type (https://diataxis.fr) and
+ * serves one stage of the developer journey of Lewko and Parton, Developer
+ * Relations (Apress, 2021). The identifiers are the ones the DevRel model's
+ * extension facet uses, so pages and catalog resources read with one table.
+ */
+export const DIATAXIS = { tutorial: 'tutorial', howToGuide: 'how-to guide', reference: 'reference', explanation: 'explanation' };
+export const JOURNEY = { discover: 'Discover', evaluate: 'Evaluate', learn: 'Learn', build: 'Build', scale: 'Scale' };
+
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const md = (s) => String(s).replace(/[\\`*_[\]<>|]/g, (c) => `\\${c}`);
 
@@ -40,11 +49,12 @@ export function committed(path) {
   return new Date(seconds * 1000).toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
-export function page({ depth, title, eyebrow, summary, body, twin, scripts = [], importmap = null }) {
+export function page({ depth, title, diataxis, journey, summary, body, twin, scripts = [], importmap = null }) {
+  if (!Object.hasOwn(DIATAXIS, diataxis) || !Object.hasOwn(JOURNEY, journey)) throw new TypeError(`${title}: a page is one Diátaxis type and one journey stage`);
   const root = '../'.repeat(depth);
   const map = importmap ? `<script type="importmap">${JSON.stringify(importmap)}</script>` : '';
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(title)} · Prism-DevRel</title><meta name="description" content="${esc(summary)}"><link rel="alternate" type="text/markdown" href="${twin}"><link rel="stylesheet" href="${root}learn/devrel.css"><link rel="stylesheet" href="${root}builder/web/builder.css">${map}</head><body class="foundation"><a class="skip" href="#main">Skip to content</a><header class="top"><a class="mark" href="${root}start/"><span class="spectrum" aria-hidden="true"></span>Prism-DevRel</a><nav aria-label="Site"><a href="${root}start/">Start</a><a href="${root}examples/">Examples</a><a href="${root}learn/">Learn</a><a href="${root}">App</a><a href="${root}llms.txt">llms.txt</a><a href="${REPOSITORY}">Source</a></nav></header><main id="main" class="wide"><p class="eyebrow">// ${esc(eyebrow)}</p><h1>${esc(title)}</h1><p class="lead">${esc(summary)}</p>${body}<p class="twin">Plain text: <a href="${twin}">Markdown twin</a>.</p></main><footer class="foot"><p>Written by the Prism-DevRel builder from <code>prism/prompt/1</code> prompts. Prism by the <a href="https://uor.foundation">UOR Foundation</a>. MIT or Apache-2.0.</p></footer>${scripts.map((s) => `<script type="module" src="${s}"></script>`).join('')}</body></html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(title)} · Prism-DevRel</title><meta name="description" content="${esc(summary)}"><meta name="diataxis" content="${diataxis}"><meta name="developer-journey" content="${journey}"><link rel="alternate" type="text/markdown" href="${twin}"><link rel="stylesheet" href="${root}learn/devrel.css"><link rel="stylesheet" href="${root}builder/web/builder.css">${map}</head><body class="foundation"><a class="skip" href="#main">Skip to content</a><header class="top"><a class="mark" href="${root}start/"><span class="spectrum" aria-hidden="true"></span>Prism-DevRel</a><nav aria-label="Site"><a href="${root}start/">Tutorial</a><a href="${root}examples/">How-to</a><a href="${root}start/reference/">Reference</a><a href="${root}start/explanation/">Explanation</a><a href="${root}learn/">Learn</a><a href="${root}">App</a><a href="${root}llms.txt">llms.txt</a><a href="${REPOSITORY}">Source</a></nav></header><main id="main" class="wide"><p class="eyebrow">// ${esc(DIATAXIS[diataxis])} · ${esc(JOURNEY[journey])}</p><h1>${esc(title)}</h1><p class="lead">${esc(summary)}</p>${body}<p class="twin">Plain text: <a href="${twin}">Markdown twin</a>.</p></main><footer class="foot"><p>Organized as <a href="https://diataxis.fr">Diátaxis</a> documentation along the developer journey (Discover, Evaluate, Learn, Build, Scale) of Lewko and Parton, <cite>Developer Relations</cite>. Written by the Prism-DevRel builder from <code>prism/prompt/1</code> prompts. Prism by the <a href="https://uor.foundation">UOR Foundation</a>. MIT or Apache-2.0.</p></footer>${scripts.map((s) => `<script type="module" src="${s}"></script>`).join('')}</body></html>
 `;
 }
 
@@ -121,7 +131,7 @@ export function examplePage(entry, built, m, files, claims, zipName, verified) {
     `<h2 id="source">Prism source</h2><p>Every file the builder wrote, laid out as a repository created from <a href="https://github.com/${TEMPLATE_REPO}">${TEMPLATE_REPO}</a>. The language packages and Foundation modules every app shares are in the download.</p>${sources(files)}`,
   ].join('');
   const twin = [
-    `# ${m.title}`,
+    `# How to build the ${m.title} app`,
     '',
     `> ${md(m.prompt.goal ?? m.spec.purpose).replace(/\n/g, ' ')}`,
     '',
@@ -142,7 +152,7 @@ export function examplePage(entry, built, m, files, claims, zipName, verified) {
     facets.text,
     '',
   ].join('\n');
-  return { html: { title: m.title, eyebrow: 'example', summary: m.prompt.goal ?? m.spec.purpose, body }, twin };
+  return { html: { title: `How to build the ${m.title} app`, summary: m.prompt.goal ?? m.spec.purpose, body }, twin };
 }
 
 function readBuilt(dir, name) {
@@ -198,62 +208,76 @@ export async function writeSite(site, builtDir) {
     const built = readBuilt(builtDir, name);
     if (built) copyFileSync(built.holo, join(dir, 'app.holo'));
     const { html, twin } = examplePage({ ...entry, name }, built, m, files, claims, zipName, built);
-    write(join(dir, 'index.html'), page({ depth: 2, ...html, twin: 'index.md', scripts: built ? ['../../builder/web/example.mjs'] : [], importmap: built ? { imports: { 'node:crypto': '../../vendor/node-crypto-shim.mjs' } } : null }));
+    write(join(dir, 'index.html'), page({ depth: 2, ...html, diataxis: 'howToGuide', journey: 'build', twin: 'index.md', scripts: built ? ['../../builder/web/example.mjs'] : [], importmap: built ? { imports: { 'node:crypto': '../../vendor/node-crypto-shim.mjs' } } : null }));
     write(join(dir, 'index.md'), twin);
     index.push({ name, title: m.title, goal: m.prompt.goal ?? m.spec.purpose, repository: entry.repository, prompt: `${name}.prompt.json` });
     cards.push(`<li class="card"><p class="eyebrow">${esc(entry.repository)}</p><h3><a href="${name}/">${esc(m.title)}</a></h3><p>${esc(m.prompt.goal ?? m.spec.purpose)}</p><p class="dim">${count(m.spec.rules.length, 'rule')} · ${count(m.spec.properties.length, 'proved property', 'proved properties')} · ${count(m.security.threats.length, 'threat')} · ${count(m.vectors.length, 'vector')}${built ? ' · verified' : ''}</p></li>`);
     twins.push(`- [${m.title}](examples/${name}/index.md): ${md(m.prompt.goal ?? m.spec.purpose)} Inspired by ${entry.repository}.`);
   }
   write(join(site, 'examples/prompts/index.json'), `${JSON.stringify(index, null, 2)}\n`);
-  write(join(site, 'examples/index.html'), page({ depth: 1, title: 'Examples', eyebrow: 'gallery', summary: gallery.about, twin: 'index.md', body: `<ul class="cards">${cards.join('')}</ul>` }));
-  write(join(site, 'examples/index.md'), `# Examples\n\n${gallery.about}\n\n${twins.map((t) => t.replace('(examples/', '(')).join('\n')}\n`);
+  write(join(site, 'examples/index.html'), page({ depth: 1, title: 'How-to guides', diataxis: 'howToGuide', journey: 'build', summary: gallery.about, twin: 'index.md', body: `<ul class="cards">${cards.join('')}</ul>` }));
+  write(join(site, 'examples/index.md'), `# How-to guides\n\n${gallery.about}\n\n${twins.map((t) => t.replace('(examples/', '(')).join('\n')}\n`);
 
   const sample = JSON.parse(readFileSync(join(repo, 'examples', gallery.examples[0].prompt), 'utf8'));
   const call = { jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: TOOL.name, arguments: sample } };
-  const start = [
-    `<ol class="steps"><li><strong>Write one prompt.</strong> Its <code>app</code> is the <code>prism/spec/1</code> spec prism-code's MCP tool <code>prism_spec</code> takes: the request fields, the answers, the rules in order, the properties Lean must prove, and examples. Everything else is optional, and derived from the spec when left out.</li><li><strong>Build.</strong> Here in the browser, with <code>node builder/cli.mjs build prompt.json --out my-app</code>, or by an agent calling the MCP tool <code>${TOOL.name}</code>. Every facet is written: architecture, design views, features and journeys, security and the threat model, quality, compliance and the behavior with its proofs.</li><li><strong>Ship.</strong> Create a repository from <a href="https://github.com/${TEMPLATE_REPO}">${TEMPLATE_REPO}</a>, put the files in, push. Its gate checks every claim and its Pages workflow verifies the holo and publishes it.</li></ol>`,
-    `<h2 id="facets">One prompt, every facet</h2><p>What each part of the prompt becomes, and what checks it.</p>${table(['Prompt', 'Facet', 'Records', 'Checked against'], FACET_MAP.map((r) => r.map(esc)))}`,
-    `<h2 id="builder">Build an app</h2><p>Pick an example or paste your own prompt. The builder runs here, in this page: nothing is sent anywhere.</p><div id="app-builder" class="builder"><div class="row"><label for="example">Start from</label><select id="example"><option value="">Loading examples…</option></select></div><label for="prompt" class="sr">Prompt (JSON)</label><textarea id="prompt" spellcheck="false" rows="18"></textarea><div class="row"><button type="button" id="build">Build the app</button><button type="button" id="download" disabled>Download .zip</button><output id="status" aria-live="polite"></output></div><div id="result"></div></div><noscript><p class="note">The builder needs JavaScript. Without it, run <code>node builder/cli.mjs build prompt.json --out my-app</code> from a clone of <a href="${REPOSITORY}">prism-devrel</a>.</p></noscript>`,
-    `<h2 id="ship">Ship what it writes</h2><pre><code>${esc(['gh repo create OWNER/prism-NAME --template UOR-Foundation/template --public', 'gh api -X POST repos/OWNER/prism-NAME/pages -f build_type=workflow', 'git -c core.autocrlf=false clone https://github.com/OWNER/prism-NAME.git', 'cd prism-NAME', 'git rm -q app/src/Contract.lex.tex crates/conformance/tests/contract.rs features/suites/contract.feature', 'unzip -o ../prism-NAME.zip', 'git add -A && git commit -m "Build the app from its prompt" && git push'].join('\n'))}</code></pre><p>Set <code>repository</code> in the prompt to <code>OWNER/prism-NAME</code> first, so the page links to the right place. The <code>bootstrap</code> workflow runs the gate, <code>just vv</code>, and <code>pages</code> builds, verifies and publishes the holo.</p>`,
-    `<h2 id="mcp">As an MCP tool call</h2><p>The prompt is the <code>arguments</code> of one call to <code>${TOOL.name}</code>; its <a href="../builder/tool-schema.json">input schema</a> embeds <code>prism_spec</code>'s. An agent drafts the spec from one sentence, as prism-code's guided build already does, and the facets with it.</p><pre><code>${esc(JSON.stringify(call, null, 2))}</code></pre>`,
-    `<h2 id="language">From structure to language</h2><p>Today the prompt is structured, like an MCP tool call, so every part of it is checked before anything is written: an example the rules contradict, or a property with a counterexample, is refused with the reason. Natural language attaches in front of it: a sentence becomes this prompt, then the same checks, the same facets and the same proofs.</p>`,
-    `<h2 id="examples">Examples</h2><p>${gallery.examples.length} apps in the spirit of real Prism projects, from <a href="https://github.com/afflom">afflom</a> and the <a href="https://github.com/UOR-Foundation">UOR Foundation</a>, each built from one prompt and verified. <a href="../examples/">See them all</a>.</p>`,
+  const shim = (depth) => ({ imports: { 'node:crypto': `${'../'.repeat(depth)}vendor/node-crypto-shim.mjs` } });
+  const ship = ['gh repo create OWNER/prism-NAME --template UOR-Foundation/template --public', 'gh api -X POST repos/OWNER/prism-NAME/pages -f build_type=workflow', 'git -c core.autocrlf=false clone https://github.com/OWNER/prism-NAME.git', 'cd prism-NAME', 'git rm -q app/src/Contract.lex.tex crates/conformance/tests/contract.rs features/suites/contract.feature', 'unzip -o ../prism-NAME.zip', 'git add -A && git commit -m "Build the app from its prompt" && git push'].join('\n');
+
+  // Tutorial (Learn): one lesson with one outcome, a verified first app.
+  const first = gallery.examples[0];
+  const tutorialSteps = [
+    ['Load the first example.', `In the builder below, <em>Start from</em> already shows <a href="../examples/${esc(first.prompt.replace(/\.prompt\.json$/, ''))}/">${esc(first.summary)}</a>. Its <code>app</code> is a <code>prism/spec/1</code> spec: the request fields, the answers, the rules in order, the properties Lean must prove, and examples.`],
+    ['Build it.', 'Press <strong>Build the app</strong>. The builder runs in this page and nothing is sent anywhere. You see what the app will claim and every file it wrote, one module per facet.'],
+    ['Change one rule and build again.', 'Edit a rule\'s answer so that it contradicts an example, and build. The builder refuses and names the example; put the rule back. Every prompt is checked before anything is written.'],
+    ['Download and ship it.', 'Press <strong>Download .zip</strong> and run the commands under <a href="#ship">Ship</a>. The repository\'s gate, <code>just vv</code>, checks every claim, and its Pages workflow proves the app with the Lean kernel and publishes it.'],
+  ];
+  const tutorial = [
+    `<p>In this tutorial you build, check and ship one Prism app from one prompt. It takes four steps; the first app is verified the first time its repository's workflow runs.</p>`,
+    `<ol class="steps">${tutorialSteps.map(([t, d]) => `<li><strong>${esc(t)}</strong> ${d}</li>`).join('')}</ol>`,
+    `<h2 id="builder">Build an app</h2><div id="app-builder" class="builder"><div class="row"><label for="example">Start from</label><select id="example"><option value="">Loading examples…</option></select></div><label for="prompt" class="sr">Prompt (JSON)</label><textarea id="prompt" spellcheck="false" rows="18"></textarea><div class="row"><button type="button" id="build">Build the app</button><button type="button" id="download" disabled>Download .zip</button><output id="status" aria-live="polite"></output></div><div id="result"></div></div><noscript><p class="note">The builder needs JavaScript. Without it, run <code>node builder/cli.mjs build prompt.json --out my-app</code> from a clone of <a href="${REPOSITORY}">prism-devrel</a>.</p></noscript>`,
+    `<h2 id="ship">Ship</h2><pre><code>${esc(ship)}</code></pre><p>Set <code>repository</code> in the prompt to <code>OWNER/prism-NAME</code> first, so the page links to the right place.</p>`,
+    `<h2 id="next">Next</h2><ul><li><a href="../examples/">How-to guides</a>: ${gallery.examples.length} apps in the spirit of real Prism projects, each built from one prompt and verified.</li><li><a href="reference/">Reference</a>: every member of a prompt, the CLI and the MCP tool.</li><li><a href="explanation/">Explanation</a>: how one prompt becomes every facet, and what checks each.</li></ul>`,
   ].join('');
-  write(
-    join(site, 'start/index.html'),
-    page({ depth: 1, title: 'One prompt, a whole Prism app', eyebrow: 'start', summary: 'Describe your app once, as a structured prompt, and Prism writes every facet of it, proves what it promises and publishes it.', twin: 'index.md', body: start, scripts: ['../builder/web/start.mjs'], importmap: { imports: { 'node:crypto': '../vendor/node-crypto-shim.mjs' } } }),
-  );
-  write(
-    join(site, 'start/index.md'),
-    [
-      '# One prompt, a whole Prism app',
-      '',
-      'Describe your app once, as a structured prism/prompt/1 prompt, and the Prism-DevRel builder writes every facet of it as a repository created from UOR-Foundation/template.',
-      '',
-      '1. Write one prompt. Its app member is the prism/spec/1 spec prism-code\'s MCP tool prism_spec takes. Everything else is optional and derived from the spec.',
-      `2. Build: node builder/cli.mjs build prompt.json --out my-app, or the MCP tool ${TOOL.name}.`,
-      '3. Ship: push the files to a repository created from UOR-Foundation/template; its gate and Pages workflow verify and publish the app.',
-      '',
-      '## One prompt, every facet',
-      '',
-      mdTable(['Prompt', 'Facet', 'Records', 'Checked against'], FACET_MAP),
-      '',
-      '## As an MCP tool call',
-      '',
-      '```json',
-      JSON.stringify(call, null, 2),
-      '```',
-      '',
-      '## Examples',
-      '',
-      ...twins,
-      '',
-    ].join('\n'),
-  );
+  const tutorialTwin = ['# Build your first Prism app', '', 'In this tutorial you build, check and ship one Prism app from one prompt.', '', ...tutorialSteps.map(([t, d], i) => `${i + 1}. ${t} ${d.replace(/<[^>]+>/g, '')}`), '', '## Ship', '', fence(ship), ship, fence(ship), '', '## Next', '', '- [How-to guides](../examples/index.md)', '- [Reference](reference/index.md)', '- [Explanation](explanation/index.md)', ''].join('\n');
+
+  // Reference (Build): the prompt's members, read from the tool's own schema.
+  const members = (schema) => Object.entries(schema.properties).filter(([k]) => k !== 'schema').map(([k, v]) => [k, v.type ?? (v.enum ? 'one of' : 'value'), (schema.required ?? []).includes(k) ? 'required' : 'optional', v.description ?? '']);
+  // `app` is prism_spec's input as prism-code declares it; its own description speaks of that tool, so the row says what it is here.
+  const promptRows = members(TOOL.inputSchema).map((r) => (r[0] === 'app' ? [r[0], r[1], r[2], 'The whole app as a prism/spec/1 spec, the input of prism-code\'s prism_spec. Its members are below.'] : r));
+  const appRows = members(TOOL.inputSchema.properties.app);
+  const cliRows = [
+    ['build <prompt.json> --out <dir>', 'Write every file of the app into a template instance, removing the template\'s example app.'],
+    ['check <prompt.json>', 'Check the prompt and print what the app will claim, writing nothing.'],
+    ['axioms <prompt.json> <verify.log>', 'Record the axiom sets a verify observed (LLV7005) in the prompt.'],
+    ['schema', `Print the MCP tool ${TOOL.name}.`],
+    ['list', 'Print the example names the pages workflow verifies.'],
+  ];
+  const head = ['Member', 'Type', 'Presence', 'Meaning'];
+  const reference = [
+    `<h2 id="prompt">Prompt members</h2><p>A prompt is the <code>arguments</code> of one call to <code>${TOOL.name}</code>; this table is its <a href="../../builder/tool-schema.json">input schema</a>.</p>${table(head, promptRows.map((r) => r.map(esc)))}`,
+    `<h2 id="app">app: the prism/spec/1 spec</h2><p>The same input prism-code's MCP tool <code>prism_spec</code> takes.</p>${table(head, appRows.map((r) => r.map(esc)))}`,
+    `<h2 id="cli">Command line</h2>${table(['node builder/cli.mjs', 'Does'], cliRows.map((r) => r.map(esc)))}<p>Exit codes: 0 done, 2 the prompt was refused (the reason is printed), 64 usage.</p>`,
+    `<h2 id="mcp">MCP tool call</h2><pre><code>${esc(JSON.stringify(call, null, 2))}</code></pre>`,
+  ].join('');
+  const referenceTwin = ['# Prompt reference', '', `A prompt is the arguments of one call to the MCP tool ${TOOL.name}.`, '', '## Prompt members', '', mdTable(head, promptRows), '', '## app: the prism/spec/1 spec', '', mdTable(head, appRows), '', '## Command line', '', mdTable(['node builder/cli.mjs', 'Does'], cliRows), '', '## MCP tool call', '', fence(JSON.stringify(call, null, 2)) + 'json', JSON.stringify(call, null, 2), fence(JSON.stringify(call, null, 2)), ''].join('\n');
+
+  // Explanation (Evaluate): why one prompt is enough, and what checks each part.
+  const why = 'A Prism app is one model with several facets, each with its own standard. Every facet but behavior has records that follow from the behavior by fixed rules: a rule is a feature, a property is a control with proof evidence, the request bound is a quality threshold. So a prompt that states the behavior, and only what cannot be derived from it, determines the whole app, and the builder writes it the same way every time.';
+  const language = 'The prompt is structured, like an MCP tool call, so every part of it is checked before anything is written: an example the rules contradict, or a property with a counterexample, is refused with the reason. Natural language attaches in front of it: a sentence becomes this prompt, then the same checks, the same facets and the same proofs.';
+  const facetHead = ['Prompt', 'Facet', 'Records', 'Checked against'];
+  const explanation = [`<p>${esc(why)}</p>`, `<h2 id="facets">One prompt, every facet</h2>${table(facetHead, FACET_MAP.map((r) => r.map(esc)))}`, `<h2 id="language">From structure to language</h2><p>${esc(language)}</p>`].join('');
+  const explanationTwin = ['# How one prompt becomes every facet', '', why, '', '## One prompt, every facet', '', mdTable(facetHead, FACET_MAP), '', '## From structure to language', '', language, ''].join('\n');
+
+  write(join(site, 'start/index.html'), page({ depth: 1, title: 'Build your first Prism app', diataxis: 'tutorial', journey: 'learn', summary: 'Describe your app once, as a structured prompt, and Prism writes every facet of it, proves what it promises and publishes it.', twin: 'index.md', body: tutorial, scripts: ['../builder/web/start.mjs'], importmap: shim(1) }));
+  write(join(site, 'start/index.md'), tutorialTwin);
+  write(join(site, 'start/reference/index.html'), page({ depth: 2, title: 'Prompt reference', diataxis: 'reference', journey: 'build', summary: `Every member of a prism/prompt/1 prompt, the command line and the MCP tool ${TOOL.name}.`, twin: 'index.md', body: reference }));
+  write(join(site, 'start/reference/index.md'), referenceTwin);
+  write(join(site, 'start/explanation/index.html'), page({ depth: 2, title: 'How one prompt becomes every facet', diataxis: 'explanation', journey: 'evaluate', summary: 'Why the behavior and a few choices determine a whole Prism app, and what checks each facet.', twin: 'index.md', body: explanation }));
+  write(join(site, 'start/explanation/index.md'), explanationTwin);
   write(join(site, 'builder/tool-schema.json'), `${JSON.stringify(TOOL, null, 2)}\n`);
   const llms = join(site, 'llms.txt');
   if (existsSync(llms)) {
-    const section = ['', '## Build an app from one prompt', '', `- [One prompt, a whole Prism app](start/index.md): the prism/prompt/1 prompt, what each part becomes, and how to ship it.`, `- [MCP tool ${TOOL.name}](builder/tool-schema.json): its input schema.`, ...twins, ''].join('\n');
+    const section = ['', '## Build an app from one prompt', '', `- [Build your first Prism app](start/index.md): tutorial, one prompt to a verified app.`, `- [Prompt reference](start/reference/index.md): every member of a prompt, the CLI and the MCP tool.`, `- [How one prompt becomes every facet](start/explanation/index.md): explanation.`, `- [MCP tool ${TOOL.name}](builder/tool-schema.json): its input schema.`, ...twins, ''].join('\n');
     writeFileSync(llms, `${readFileSync(llms, 'utf8').replace(/\n*$/, '\n')}${section}`);
   }
   return { examples: gallery.examples.length };

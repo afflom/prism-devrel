@@ -170,8 +170,10 @@ export async function buildApp(input, { lastModified } = {}) {
   const app = (path, text) => (files[`app/${path}`] = text);
   for (const [path, text] of Object.entries(ASSETS)) app(path, text);
   for (const [path, text] of Object.entries(facetModules(m))) app(path, text);
-  app(`src/${m.module}.lex.tex`, renderModel(m.spec));
-  if (m.hasProofs) app(`src/${m.proofs}.lex.tex`, renderProofs(m.spec));
+  // The observed axiom sets, in the form prism-code's renderer takes them.
+  const axioms = Object.fromEntries(Object.entries(m.prompt.axioms).map(([name, set]) => [name, `[${set.join(', ')}]`]));
+  app(`src/${m.module}.lex.tex`, renderModel(m.spec, { axioms }));
+  if (m.hasProofs) app(`src/${m.proofs}.lex.tex`, renderProofs(m.spec, { axioms }));
   const entrypoints = Object.keys(files)
     .filter((p) => p.startsWith('app/src/') && !p.startsWith('app/src/Foundation/') && !p.startsWith('app/src/Production/'))
     .map((p) => p.slice('app/'.length))

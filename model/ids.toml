@@ -98,3 +98,9 @@ id = "DR-13"
 level = "build"
 suite = "devrel"
 statement = "An example page shows every record the prompt becomes, and prompt text is escaped in the page and quoted as data in its twin"
+
+[[id]]
+id = "DR-14"
+level = "build"
+suite = "devrel"
+statement = "Every builder page is one Diátaxis documentation type and one stage of the developer journey, and the prompt reference is the MCP tool's own input schema"

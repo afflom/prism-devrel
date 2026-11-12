@@ -35,6 +35,7 @@ model does not sanction.
 | `DR-11` | `build` | Every example is built from its prompt into a template instance whose own gate passes in the locked SDK before its page is published |
 | `DR-12` | `build` | The builder's vendored and packed copies equal their sources |
 | `DR-13` | `build` | An example page shows every record the prompt becomes, and prompt text is escaped in the page and quoted as data in its twin |
+| `DR-14` | `build` | Every builder page is one Diátaxis documentation type and one stage of the developer journey, and the prompt reference is the MCP tool's own input schema |
 
 ## Cited authorities
 
