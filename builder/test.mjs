@@ -12,6 +12,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildApp } from './build.mjs';
+import { machineDeclarations } from './machine.mjs';
 import { deriveModel } from './model.mjs';
 import { render as renderAssets } from './pack.mjs';
 import { DIATAXIS, JOURNEY, PATTERN_TEXT, examplePage, page, prismSource, writeSite } from './site.mjs';
@@ -19,7 +20,7 @@ import { PATTERNS, XACML_DECISIONS, readPrompt } from './prompt.mjs';
 import { ASSETS } from './assets.mjs';
 import { SPEC_INPUT, TOOL } from './tool.mjs';
 import { zip, crc32 } from './zip.mjs';
-import { SpecError } from './vendor/prism-code/src/journey/spec.mjs';
+import { SpecError, holds, judge, sampleRequests } from './vendor/prism-code/src/journey/spec.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const examples = join(here, '..', 'examples');
@@ -101,6 +102,17 @@ const CASES = {
     eq(m.design.umlStates.filter((s) => s.view === view).map((s) => s.initial), [true, false, false, false, false], 'one UML state per machine state, the initial one marked');
     eq(m.design.transitions.filter((t) => t.view === view).length, mc.transitions.length, 'one UML transition per step a reachable state takes');
     ok(m.design.transitions.filter((t) => t.view === view).every((t) => t.trigger && t.source && t.target), 'every machine transition is triggered by the rule that takes it');
+    // The decision is owned by the states (UML 2.5.1, 14.2.3.8): judge tests the state, then fires the first rule of that state's chain.
+    const owned = machineDeclarations(m.spec, m.machine);
+    eq(owned.steps.map((s) => s.value), m.machine.states, 'one chain per state');
+    const byId = Object.fromEntries(m.spec.rules.map((r) => [r.id, r]));
+    const fire = (ids, req) => ids.map((id) => byId[id]).find((r) => r.when.every((c) => holds(c, req)))?.then ?? m.spec.otherwise;
+    const sample = [...sampleRequests(m.spec)];
+    ok(sample.length > 0 && sample.every((req) => fire(owned.steps.find((s) => s.value === req[mc.state]).rules, req) === judge(m.spec, req).outcome), "each state's chain answers as the whole first-match chain, for every request");
+    ok(owned.steps.every((s) => s.rules.length < m.spec.rules.length), 'each chain holds only the rules that can fire from its state');
+    const text = module(files, m.module);
+    ok(owned.steps.every((s) => text.includes(`name: ${s.name},`)) && text.includes('(if ((project request door) =? (doorClosed)) then (stepClosed request)'), "the app module decides by state, then by that state's chain");
+    ok(owned.steps.every((s) => module(files, m.proofs).includes(`${m.module}::${s.name}`)), "every theorem unfolds the states' chains");
     const obligation = m.compliance.find((o) => o.subject === 'State machine');
     ok(obligation.standard === PATTERNS.stateMachine.standard && mc.derived.every((id) => obligation.evidence.includes(`${m.proofs}::${m.names.properties[id].theorem}`)), 'the UML obligation names every invariant theorem as its evidence');
     // Without an exhaustive sample no state is called unreachable, so a sample can never make a property false.

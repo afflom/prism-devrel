@@ -19,6 +19,7 @@ import { TEMPLATE_EXAMPLE, appJson, featureText as propertyScenarios } from './v
 import { describeConditions } from './vendor/prism-code/src/journey/spec.mjs';
 import { ASSETS, LOCK_PACKAGES, TEMPLATE } from './assets.mjs';
 import { facetModules } from './facets.mjs';
+import { renderMachineModel, renderMachineProofs } from './machine.mjs';
 import { deriveModel } from './model.mjs';
 
 export { TEMPLATE_EXAMPLE };
@@ -172,8 +173,9 @@ export async function buildApp(input, { lastModified } = {}) {
   for (const [path, text] of Object.entries(facetModules(m))) app(path, text);
   // The observed axiom sets, in the form prism-code's renderer takes them.
   const axioms = Object.fromEntries(Object.entries(m.prompt.axioms).map(([name, set]) => [name, `[${set.join(', ')}]`]));
-  app(`src/${m.module}.lex.tex`, renderModel(m.spec, { axioms }));
-  if (m.hasProofs) app(`src/${m.proofs}.lex.tex`, renderProofs(m.spec, { axioms }));
+  // A state machine's decision is owned by its states (builder/machine.mjs); any other app's is prism-code's chain.
+  app(`src/${m.module}.lex.tex`, m.machine ? renderMachineModel(m.spec, m.machine, { axioms }) : renderModel(m.spec, { axioms }));
+  if (m.hasProofs) app(`src/${m.proofs}.lex.tex`, m.machine ? renderMachineProofs(m.spec, m.machine, { axioms }) : renderProofs(m.spec, { axioms }));
   const entrypoints = Object.keys(files)
     .filter((p) => p.startsWith('app/src/') && !p.startsWith('app/src/Foundation/') && !p.startsWith('app/src/Production/'))
     .map((p) => p.slice('app/'.length))

@@ -86,7 +86,7 @@ site documents it as [Diátaxis](https://diataxis.fr) documentation along the
 developer journey of Lewko and Parton, *Developer Relations* (Apress, 2021):
 the [tutorial](https://afflom.github.io/prism-devrel/start/) (Learn) runs the
 builder in the browser; the [how-to guides](https://afflom.github.io/prism-devrel/examples/)
-(Build) are 32 example apps, each grounded in a real afflom or UOR-Foundation
+(Build) are 33 example apps, each grounded in a real afflom or UOR-Foundation
 repository, built from one prompt and verified; the [reference](https://afflom.github.io/prism-devrel/start/reference/)
 (Build) is the MCP tool's own input schema, and the
 [Prism source](https://afflom.github.io/prism-devrel/start/source/) (Build) is
@@ -106,7 +106,12 @@ field, the initial state, the final states) the builder reads the reachable
 states off the successor relation and adds the properties that make the
 machine's invariants theorems: a final state is never left, and no step from a
 reachable state leaves the reachable set. Each is one step, so by induction it
-holds over every run (`DR-17`). The machine gets its own UML state-machine
+holds over every run (`DR-17`). As in UML, where every transition belongs to
+its source state, the app decides by state first: `judge` tests the state and
+hands the request to that state's own first-match chain, which keeps only the
+rules that can fire from it (`builder/machine.mjs`). The answer is the flat
+chain's for every request, and the prover splits one state's rules at a time,
+so a machine of many rules still proves. The machine gets its own UML state-machine
 view, and its example page runs it through the verified holo, feeding each
 answer back as the next state (`DR-20`).
 
