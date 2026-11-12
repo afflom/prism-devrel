@@ -364,5 +364,12 @@
         "INV-004"
       ]
     }
-  ]
+  ],
+  "axioms": {
+    "inv004Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
 }

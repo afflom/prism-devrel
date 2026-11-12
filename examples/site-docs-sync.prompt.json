@@ -360,5 +360,12 @@
         "refuse"
       ]
     }
-  ]
+  ],
+  "axioms": {
+    "inv004Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
 }

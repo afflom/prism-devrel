@@ -407,5 +407,22 @@
         "INV-004"
       ]
     }
-  ]
+  ],
+  "axioms": {
+    "inv003Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv004Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv005Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
 }

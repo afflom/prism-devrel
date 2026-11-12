@@ -533,5 +533,32 @@
         "refuse"
       ]
     }
-  ]
+  ],
+  "axioms": {
+    "inv001Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv002Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv003Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv004Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv006Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
 }

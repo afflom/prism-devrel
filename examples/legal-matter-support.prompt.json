@@ -321,11 +321,6 @@
       "Classical.choice",
       "Quot.sound",
       "propext"
-    ],
-    "inv002Holds": [
-      "Classical.choice",
-      "Quot.sound",
-      "propext"
     ]
   }
 }

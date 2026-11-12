@@ -281,5 +281,12 @@
         "INV-003"
       ]
     }
-  ]
+  ],
+  "axioms": {
+    "inv002Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
 }

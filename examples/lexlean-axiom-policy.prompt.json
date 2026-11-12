@@ -422,5 +422,27 @@
         "refuse"
       ]
     }
-  ]
+  ],
+  "axioms": {
+    "inv002Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv003Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv004Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv005Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
 }
