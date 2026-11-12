@@ -72,7 +72,7 @@ site documents it as [Diátaxis](https://diataxis.fr) documentation along the
 developer journey of Lewko and Parton, *Developer Relations* (Apress, 2021):
 the [tutorial](https://afflom.github.io/prism-devrel/start/) (Learn) runs the
 builder in the browser; the [how-to guides](https://afflom.github.io/prism-devrel/examples/)
-(Build) are 33 example apps, each grounded in a real afflom or UOR-Foundation
+(Build) are 32 example apps, each grounded in a real afflom or UOR-Foundation
 repository, built from one prompt and verified; the [reference](https://afflom.github.io/prism-devrel/start/reference/)
 (Build) is the MCP tool's own input schema, and the
 [Prism source](https://afflom.github.io/prism-devrel/start/source/) (Build) is
