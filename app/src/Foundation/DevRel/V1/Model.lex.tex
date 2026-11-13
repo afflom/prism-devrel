@@ -94,6 +94,16 @@ definition{
 }
 
 definition{
+  name: appendResources,
+  parameters: [front : (List Resource), back : (List Resource)],
+  result: (List Resource),
+  body: (match front
+    | List.nil => back
+    | List.cons item rest => (cons item (appendResources rest back))),
+  recursive_argument: front
+}
+
+definition{
   name: allBelow,
   parameters: [bound : Nat, values : (List Nat)],
   result: Bool,

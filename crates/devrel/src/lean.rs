@@ -231,19 +231,31 @@ pub fn sections(c: &Catalog) -> Vec<(String, String, Vec<String>)> {
             })
             .collect(),
     ));
+    // One paragraph per project: a list literal nests one level per element,
+    // so the pages are grouped rather than one paragraph each.
+    let mut groups: Vec<(String, Vec<String>)> = Vec::new();
+    for r in &c.resources {
+        let project = if c.subject.slug.is_empty() {
+            r.slug.split('/').next().unwrap_or(r.slug).to_string()
+        } else {
+            c.subject.name.clone()
+        };
+        let line = format!(
+            "{} ({})",
+            r.title_for(&c.subject.name),
+            crate::site::resource_path(c, r)
+        );
+        match groups.iter_mut().find(|(p, _)| *p == project) {
+            Some((_, lines)) => lines.push(line),
+            None => groups.push((project, vec![line])),
+        }
+    }
     out.push((
         "pages".to_string(),
         "Pages".to_string(),
-        c.resources
-            .iter()
-            .map(|r| {
-                format!(
-                    "{} ({}): {}",
-                    r.title_for(&c.subject.name),
-                    crate::site::resource_path(c, r),
-                    r.summary_for(&c.subject.name)
-                )
-            })
+        groups
+            .into_iter()
+            .map(|(_, lines)| format!("{}.", lines.join("; ")))
             .collect(),
     ));
     out
@@ -282,11 +294,23 @@ fn chunked(decls: &mut Vec<String>, name: &str, element: &str, append: &str, ite
         ));
         parts.push(part);
     }
-    let mut body = format!("(nil {MODEL}::{element})");
-    for part in parts.iter().rev() {
-        body = format!("({MODEL}::{append} ({part}) {body})");
+    // The parts are joined as a balanced tree of appends, so the nesting
+    // grows with the logarithm of the part count, not with the count.
+    fn join(parts: &[String], element: &str, append: &str) -> String {
+        match parts {
+            [] => format!("(nil {MODEL}::{element})"),
+            [one] => format!("({one})"),
+            _ => {
+                let (left, right) = parts.split_at(parts.len() / 2);
+                format!(
+                    "({MODEL}::{append} {} {})",
+                    join(left, element, append),
+                    join(right, element, append)
+                )
+            }
+        }
     }
-    decls.push(definition(name, &ty, &body));
+    decls.push(definition(name, &ty, &join(&parts, element, append)));
 }
 
 fn tree(decls: &mut Vec<String>, low: usize, high: usize) -> String {
@@ -341,11 +365,13 @@ pub fn catalog(c: &Catalog) -> String {
         .iter()
         .map(|r| format!("({})", resource_name(r.slug)))
         .collect();
-    decls.push(definition(
+    chunked(
+        &mut decls,
         "resources",
-        &format!("(List {MODEL}::Resource)"),
-        &list(&resource_refs, &format!("{MODEL}::Resource")),
-    ));
+        "Resource",
+        "appendResources",
+        &resource_refs,
+    );
     let records: Vec<String> = c
         .records
         .iter()
