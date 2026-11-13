@@ -93,7 +93,7 @@
   },
   "repository": "https://github.com/afflom/prism-devrel",
   "report": "https://github.com/afflom/prism-devrel/blob/main/CONFORMANCE.md",
-  "tagline": "Learn to build apps that prove what they do. Try one here.",
+  "tagline": "How to build complete Prism apps, refined on real projects. New to Prism? Start at uor.foundation.",
   "hint": "Every part of a Prism model is a numbered record. Enter a number to see the lessons that teach it.",
   "links": [
     {

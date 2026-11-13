@@ -19,15 +19,16 @@
   },
   "hub": {
     "path": "docs/",
-    "eyebrow": "Build with Prism",
-    "title": "Build apps that prove what they do",
-    "lead": "Prism is an open SDK for apps that prove what they do. Describe an app once, and Prism writes every part of it, checks every claim it makes, and ships it to run anywhere.",
-    "body": "This site shows you how to build Prism apps. Start with a tutorial. Follow a how-to guide for the task in front of you, and look up details in the reference. Read the explanations when you want to know why. Then copy an example, or study a whole project in a case study. The site is itself a Prism app: each page comes from a model, and is checked before it goes live.",
+    "eyebrow": "Prism practice",
+    "title": "Build complete Prism apps",
+    "lead": "This is where the UOR Foundation works out how to build a complete Prism app, and refines the way it is done. New to Prism? Start at uor.foundation, the Foundation's home for Prism and the Foundry portal.",
+    "body": "Every practice here is shown on real projects and checked before it goes live. Start with a tutorial, follow a how-to guide for the task in front of you, and look up details in the reference. Copy an example, or study a whole project in a case study. What works here goes back upstream to uor.foundation and Foundry, so the whole ecosystem builds on it.",
     "guides": "The readers this site is written for, one for each stakeholder of the model. Each page names the guide it was written for.",
     "start": "Start building",
     "ways": "Ways to start building",
     "waysLead": "Pick the one closest to what you have: an idea, existing code, or an app like yours.",
-    "collections": "Examples and case studies"
+    "collections": "Examples and case studies",
+    "newcomer": "New to Prism? Start at uor.foundation"
   },
   "app": {
     "about": "The app page at the root, as a newcomer meets it: what the site is (app.json tagline), the ways on (app.json links, drawn by the frame under the description), and a verified app to try. devrel/shell.mjs checks the links are these and land on pages.",
