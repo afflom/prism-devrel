@@ -116,9 +116,11 @@ fn scored_against_standards_fi_01() {
     .unwrap();
     let s = score(&dir.join("app"), &dir).expect("scores");
     assert!(
-        s.residue.iter().any(|r| r.record == "Architecture::stakeholderMaintainer"
-            && r.axis == Axis::Derived
-            && r.reason.contains("verbatim")),
+        s.residue
+            .iter()
+            .any(|r| r.record == "Architecture::stakeholderMaintainer"
+                && r.axis == Axis::Derived
+                && r.reason.contains("verbatim")),
         "a span that does not hold the record's text leaves it underived"
     );
     let _ = std::fs::remove_dir_all(&dir);
