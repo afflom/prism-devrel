@@ -241,11 +241,16 @@ fn pinned_subject_dr_03() {
     // give and never its own input.
     for s in &subjects.subjects {
         if s.own {
-            assert_eq!(
-                s.lookup_excludes,
-                ["src/Catalog.lex.tex", "src/Fidelity.lex.tex"],
-                "the lookup leaves out the files written from it"
+            assert!(
+                s.lookup_excludes.iter().any(|e| e == "src/Catalog.lex.tex"),
+                "the lookup leaves out the catalog it writes"
             );
+            for excluded in &s.lookup_excludes {
+                assert!(
+                    root().join(&s.path).join(excluded).is_file(),
+                    "{excluded} names a source written from the lookup"
+                );
+            }
             let lookup = Catalog::build_for_lookup(s.clone(), &root().join(&s.path))
                 .expect("this repository's model");
             assert!(

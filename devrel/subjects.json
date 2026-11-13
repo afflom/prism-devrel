@@ -28,7 +28,8 @@
       "self": true,
       "lookupExcludes": [
         "src/Catalog.lex.tex",
-        "src/Fidelity.lex.tex"
+        "src/Fidelity.lex.tex",
+        "src/Provenance.lex.tex"
       ]
     },
     {
