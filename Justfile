@@ -114,7 +114,9 @@ experience-check:
 # `generate.yml` runs `repin` and this on every push to main and on a schedule,
 # and commits what changed, so no generated file is stale and every case study
 # follows its subject without anyone re-pinning it.
-generate: model-write catalog experience fidelity-write
+# The catalog follows `experience`: the lookup reads every app source but
+# the ones written from it, and `fidelity-write` scores the lookup last.
+generate: model-write experience catalog fidelity-write
     node builder/pack.mjs
 
 # The content standard over an assembled site: apply what a machine can

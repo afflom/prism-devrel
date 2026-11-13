@@ -112,14 +112,14 @@ fn lean_out(path: &Path, catalog: &Catalog, check: bool) -> Result<(), String> {
             std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
         if committed != generated {
             return Err(format!(
-                "{} is not the catalog of {} at {}: regenerate it with --lean {} (without --check)",
+                "{} is not the catalog of {} at {}: regenerate it with --lean {} (without --check), or `just catalog`",
                 path.display(),
                 catalog.subject.repository,
                 catalog.subject.commit,
                 path.display()
             ));
         }
-        println!("{} is the catalog of the pinned subject", path.display());
+        println!("{} is the catalog of every pinned subject", path.display());
     } else {
         std::fs::write(path, generated).map_err(|e| format!("{}: {e}", path.display()))?;
     }
@@ -130,23 +130,33 @@ fn run(args: &Args) -> Result<(), String> {
     let text = std::fs::read_to_string(&args.subjects)
         .map_err(|e| format!("{}: {e}", args.subjects.display()))?;
     let subjects = Subjects::parse(&text, &args.self_commit).map_err(|e| e.to_string())?;
-    // The catalog subject first: --lean may rewrite app/src/Catalog.lex.tex,
-    // which the self subject's case study then reads.
-    let primary = study(args, subjects.catalog())?;
+    // The app's lookup first: --lean may rewrite app/src/Catalog.lex.tex,
+    // which the self subject's case study then reads (its lookup does not).
     if let Some(path) = &args.lean {
-        lean_out(path, &primary.catalog, args.check)?;
+        let parts = subjects
+            .subjects
+            .iter()
+            .map(|s| {
+                let (_, project) = locate(args, s);
+                Catalog::build_for_lookup(s.clone(), &project)
+                    .map_err(|e| format!("{}: {e}", s.slug))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let combined = Catalog::combine(&parts, site::REPOSITORY);
+        lean_out(path, &combined, args.check)?;
+        println!(
+            "the lookup: {} records of {} case studies covered by {} pages",
+            combined.records.len(),
+            parts.len(),
+            combined.resources.len()
+        );
     }
     let mut studies = Vec::new();
-    let mut primary = Some(primary);
-    for s in &subjects.subjects {
-        if s.slug == subjects.catalog {
-            studies.push(primary.take().expect("the catalog subject is listed once"));
-        } else if args.site.is_some() {
+    if let Some(dir) = &args.site {
+        for s in &subjects.subjects {
             studies.push(study(args, s)?);
         }
-    }
-    if let Some(dir) = &args.site {
-        let pages = site::write(&studies, &subjects.catalog, dir).map_err(|e| e.to_string())?;
+        let pages = site::write(&studies, &subjects.learn, dir).map_err(|e| e.to_string())?;
         println!("wrote {pages} pages under {}", dir.display());
     }
     for st in &studies {

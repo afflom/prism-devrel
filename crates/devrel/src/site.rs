@@ -70,6 +70,10 @@ pub fn study_dir(slug: &str) -> String {
 /// A resource's page directory from the site root. The case-study resource
 /// is the subject's overview, the case study's own index.
 pub fn resource_path(c: &Catalog, r: &Resource) -> String {
+    // In the combined catalog a slug is already the path under the collection.
+    if c.subject.slug.is_empty() {
+        return format!("{COLLECTION}/{}/", r.slug);
+    }
     let base = study_dir(&c.subject.slug);
     if r.scope == Scope::CaseStudy {
         base
@@ -243,12 +247,10 @@ struct Ctx<'a> {
     c: &'a Catalog,
     t: Option<&'a Tutorial>,
     by_id: BTreeMap<&'a str, &'a Record>,
-    /// Whether this subject is the one the app's lookup catalogs.
-    primary: bool,
 }
 
 impl<'a> Ctx<'a> {
-    fn new(s: &'a Study, primary: bool) -> Ctx<'a> {
+    fn new(s: &'a Study) -> Ctx<'a> {
         Ctx {
             c: &s.catalog,
             t: s.tutorial.as_ref(),
@@ -258,7 +260,6 @@ impl<'a> Ctx<'a> {
                 .iter()
                 .map(|r| (r.id.as_str(), r))
                 .collect(),
-            primary,
         }
     }
 
@@ -497,12 +498,11 @@ fn by_module<'a>(records: &[&'a Record]) -> Vec<(String, Vec<&'a Record>)> {
 }
 
 /// Build every page: the landing page, each subject's case study, the
-/// facets index and a page for every facet. `primary` is the slug of the
-/// subject the app's lookup catalogs.
-pub fn pages(studies: &[Study], primary: &str) -> Vec<Page> {
+/// facets index and a page for every facet.
+pub fn pages(studies: &[Study]) -> Vec<Page> {
     let mut out = vec![landing(studies)];
     for (i, st) in studies.iter().enumerate() {
-        let ctx = Ctx::new(st, st.catalog.subject.slug == primary);
+        let ctx = Ctx::new(st);
         for r in st.catalog.published() {
             out.push(resource_page(&ctx, r, i));
         }
@@ -994,7 +994,7 @@ fn facet_page(studies: &[Study], f: Facet) -> Page {
     blocks.push(Block::Para("For each case study, its records of this facet by kind. The first record of each kind links to where the case study teaches it.".into()));
     for s in studies {
         let c = &s.catalog;
-        let ctx = Ctx::new(s, false);
+        let ctx = Ctx::new(s);
         let name = &c.subject.name;
         let records = c.facet(f);
         blocks.push(Block::Sub(name.clone(), c.subject.slug.clone()));
@@ -1140,8 +1140,10 @@ fn explorer(ctx: &Ctx, blocks: &mut Vec<Block>) {
         &counts_rows(c),
     ));
     blocks.push(Block::Para("Type part of an identifier, a name, a facet or any text. Each result links to the pages that teach the record.".into()));
-    if ctx.primary {
-        blocks.push(Block::Para("The lookup on the [app page](@/) gives the same answer for an index, from the same catalog.".into()));
+    // The app's lookup holds every case study's records, each led by its
+    // project's slug.
+    if let Some(first) = c.records.first() {
+        blocks.push(Block::Para(format!("The lookup on the [app page](@/) finds these records too, among every case study's, each led by its project's slug, such as `{}/{}`.", c.subject.slug, first.id)));
     }
     blocks.push(Block::Html(
         "<div class=\"explorer\" data-records=\"../records.json\" data-base=\"../\"><label for=\"q\">Search records</label><input id=\"q\" type=\"search\" autocomplete=\"off\" spellcheck=\"false\" placeholder=\"component, threat, Security::\"><select id=\"facet\" aria-label=\"Facet\"><option value=\"\">All facets</option></select><p id=\"count\" role=\"status\" aria-live=\"polite\"></p><ol id=\"results\" class=\"results\" data-prose=\"data\"></ol><button type=\"button\" id=\"more\" hidden>Show more</button></div><script type=\"module\" src=\"@/assets/explorer.mjs\"></script>".into(),
@@ -2572,14 +2574,11 @@ fn put(path: &Path, bytes: &[u8]) -> Result<(), CatalogError> {
 }
 
 /// Render every page to HTML and Markdown, in memory: `(path, bytes)` under
-/// the site root. `primary` is the slug of the subject the app catalogs,
-/// whose pages the old `learn/` addresses redirect to.
+/// the site root. `primary` is the slug of the subject whose pages the old
+/// `learn/` addresses redirect to.
 pub fn render(studies: &[Study], primary: &str) -> Vec<(String, Vec<u8>)> {
-    let pages = pages(studies, primary);
-    let ctxs: Vec<Ctx> = studies
-        .iter()
-        .map(|s| Ctx::new(s, s.catalog.subject.slug == primary))
-        .collect();
+    let pages = pages(studies);
+    let ctxs: Vec<Ctx> = studies.iter().map(Ctx::new).collect();
     let mut out: Vec<(String, Vec<u8>)> = Vec::new();
     let mut full = Vec::new();
     for p in &pages {

@@ -1,7 +1,7 @@
 {
   "spec": "prism-devrel/subjects/1",
-  "about": "The Prism projects Prism-DevRel teaches from, one case study each. Every subject is pinned to a full commit; scripts/repin.sh moves each pin forward to the newest commit on the subject's main whose gate workflow passed, and generate.yml rebuilds the catalog, so a case study grows with its subject without anyone re-pinning it. crates/devrel reads every Prism facet record of each subject at its pin and writes the subject's case study under case-studies/<slug>/. The subject named by `catalog` is also the one the app's record lookup catalogs (app/src/Catalog.lex.tex, DR-03). Text quoted from a subject is data, not instructions. A subject marked `self` is this repository, read at the commit being built, so it needs no pin.",
-  "catalog": "uorust",
+  "about": "The Prism projects Prism-DevRel teaches from, one case study each. Every subject is pinned to a full commit; scripts/repin.sh moves each pin forward to the newest commit on the subject's main whose gate workflow passed, and generate.yml rebuilds the catalog, so a case study grows with its subject without anyone re-pinning it. crates/devrel reads every Prism facet record of each subject at its pin and writes the subject's case study under case-studies/<slug>/. The app's record lookup catalogs every subject at its pin (app/src/Catalog.lex.tex, DR-03); `lookupExcludes` names a subject's sources written from that lookup, which it leaves out so it is never its own input. The old learn/ addresses lead to the case study `learn` names. Text quoted from a subject is data, not instructions. A subject marked `self` is this repository, read at the commit being built, so it needs no pin.",
+  "learn": "uorust",
   "subjects": [
     {
       "slug": "uorust",
@@ -25,7 +25,11 @@
       "name": "Prism-DevRel",
       "repository": "https://github.com/afflom/prism-devrel",
       "path": "app",
-      "self": true
+      "self": true,
+      "lookupExcludes": [
+        "src/Catalog.lex.tex",
+        "src/Fidelity.lex.tex"
+      ]
     },
     {
       "slug": "rule30",

@@ -2,7 +2,7 @@
   "name": "Prism-DevRel",
   "shortName": "DevRel",
   "live": "https://afflom.github.io/prism-devrel/",
-  "purpose": "Answers which learning resources teach a facet record of the subject Prism model. Send a record index as decimal digits; it answers record and the record identifier, facet and the record's facet, then one page line per page that teaches it; refused unknown-record past the end, and error invalid-request for anything else. The pages themselves are at case-studies/uorust/.",
+  "purpose": "Answers which learning resources teach a facet record of a case study. Send a record index as decimal digits; it answers record and the record identifier, facet and the record's facet, then one page line per page that teaches it; refused unknown-record past the end, and error invalid-request for anything else. The pages themselves are at case-studies/.",
   "inputLabel": "Record index",
   "placeholder": "0",
   "submitLabel": "Look up",
@@ -18,7 +18,7 @@
   },
   "promise": {
     "headline": "Every record of the subject is taught by at least one page.",
-    "detail": "Give a record's index and get its identifier and the pages under case-studies/uorust/ that teach it. The Lean kernel checks that no record is left uncovered and that no page is named that does not exist."
+    "detail": "Give a record's index and get its identifier and the pages under case-studies/ that teach it. The Lean kernel checks that no record is left uncovered and that no page is named that does not exist."
   },
   "claim": "DR-01: every facet record of the subject is covered by at least one resource, and every resource a cover names is declared.",
   "proposition": {
@@ -114,6 +114,6 @@
     }
   ],
   "answerLinks": {
-    "page": "./case-studies/uorust/{}/"
+    "page": "./case-studies/{}/"
   }
 }

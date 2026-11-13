@@ -87,7 +87,7 @@ fn subjects_dr_53() {
     let cases = ["forward", "same", "behind", "diverged", "red", "offline"];
     let mut list: Vec<Value> = cases.iter().map(|c| subject(c, &pin)).collect();
     list.push(json!({ "name": "Self", "path": "app", "repository": "https://github.com/example/self", "self": true, "slug": "self" }));
-    let config = json!({ "about": "test", "catalog": "forward", "spec": "prism-devrel/subjects/1", "subjects": list });
+    let config = json!({ "about": "test", "learn": "forward", "spec": "prism-devrel/subjects/1", "subjects": list });
     let before = pretty(&config);
 
     let repo = |c: &str| format!("example/{c}");

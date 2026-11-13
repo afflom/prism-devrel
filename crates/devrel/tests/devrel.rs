@@ -40,6 +40,7 @@ fn config() -> SubjectConfig {
         gate: None,
         tutorial: Some(tutorial_config()),
         own: true,
+        lookup_excludes: vec!["src/Catalog.lex.tex".into(), "src/Fidelity.lex.tex".into()],
     }
 }
 
@@ -55,6 +56,7 @@ fn greenhouse_config() -> SubjectConfig {
         gate: Some("ci.yml".into()),
         tutorial: None,
         own: false,
+        lookup_excludes: Vec::new(),
     }
 }
 
@@ -230,16 +232,44 @@ fn pinned_subject_dr_03() {
         std::fs::read_to_string(root().join("devrel/subjects.json")).expect("devrel/subjects.json");
     let building = "2222222222222222222222222222222222222222";
     let subjects = Subjects::parse(&text, building).expect("valid subject pins");
-    let pinned = subjects.catalog();
-    assert!(!pinned.own, "the app catalogs a pinned subject");
     let model = std::fs::read_to_string(root().join("app/src/Catalog.lex.tex"))
         .expect("the committed catalog");
     let subject = declaration(&model, "subject");
-    assert!(
-        subject.contains(&format!("commit := \"{}\"", pinned.commit)),
-        "the catalog names another commit"
-    );
-    assert!(subject.contains(&format!("repository := \"{}\"", pinned.repository)));
+    // The app catalogs every subject: each pinned one at its pin, and this
+    // repository by the digest of its sources without the files written
+    // from the lookup, so the committed catalog is the one these sources
+    // give and never its own input.
+    for s in &subjects.subjects {
+        if s.own {
+            assert_eq!(
+                s.lookup_excludes,
+                ["src/Catalog.lex.tex", "src/Fidelity.lex.tex"],
+                "the lookup leaves out the files written from it"
+            );
+            let lookup = Catalog::build_for_lookup(s.clone(), &root().join(&s.path))
+                .expect("this repository's model");
+            assert!(
+                subject.contains(&format!("{}@sha256:{}", s.slug, lookup.source_digest)),
+                "the catalog is not the one this repository's sources give: run `just catalog`"
+            );
+            assert!(
+                lookup.records.iter().all(|r| r.module != "Catalog"),
+                "the lookup reads itself"
+            );
+        } else {
+            assert!(
+                subject.contains(&format!("{}@{}", s.slug, s.commit)),
+                "the catalog does not name {} at its pin",
+                s.slug
+            );
+        }
+    }
+    assert!(subject.contains("repository := \"https://github.com/afflom/prism-devrel\""));
+    let pinned = subjects
+        .subjects
+        .iter()
+        .find(|s| !s.own)
+        .expect("a pinned subject");
     let pages =
         std::fs::read_to_string(root().join(".github/workflows/pages.yml")).expect("pages.yml");
     assert!(
@@ -785,7 +815,7 @@ fn case_studies_dr_50() {
     // The generator, run as pages.yml runs it, over two subjects: a pinned
     // checkout and this repository as the self subject.
     let subjects = serde_json::json!({
-        "catalog": "greenhouse",
+        "learn": "greenhouse",
         "subjects": [
             {"slug": "greenhouse", "name": "Greenhouse", "repository": "https://github.com/example/greenhouse",
              "commit": "1111111111111111111111111111111111111111", "path": "model", "gate": "ci.yml"},
@@ -912,12 +942,12 @@ fn case_studies_dr_50() {
             .remove("commit");
     }));
     assert!(refused(&|v| v["subjects"][1]["slug"] = "greenhouse".into()));
-    assert!(refused(&|v| v["catalog"] = "nobody".into()));
+    assert!(refused(&|v| v["learn"] = "nobody".into()));
     assert!(Subjects::parse(&subjects.to_string(), "main").is_err());
     // A subject whose checkout is missing fails the run.
     let mut gone = subjects.clone();
     gone["subjects"][0]["slug"] = "absent".into();
-    gone["catalog"] = "absent".into();
+    gone["learn"] = "absent".into();
     assert!(!run_catalog(&gone, building, &scratch("dr-50-absent"))
         .status
         .success());
@@ -1097,4 +1127,57 @@ fn learn_redirects_dr_52() {
         .and_then(|r| r.split('"').next())
         .expect("the alias redirects");
     assert_eq!(resolve(&dir, to), "case-studies/prism-devrel/");
+}
+
+/// `DR-03`: the combined catalog leads every identifier and page with its
+/// subject's slug, keeps every cover, and names each kind of page once for
+/// the model's features.
+#[test]
+fn combined_catalog_dr_03() {
+    let parts = [own(), greenhouse()];
+    let c = Catalog::combine(&parts, "https://github.com/afflom/prism-devrel");
+    assert_eq!(
+        c.records.len(),
+        parts.iter().map(|p| p.records.len()).sum::<usize>()
+    );
+    assert!(c
+        .records
+        .iter()
+        .all(|r| r.id.starts_with("prism-devrel/") || r.id.starts_with("greenhouse/")));
+    assert!(
+        c.covers.iter().all(|rs| !rs.is_empty()),
+        "a record lost its pages"
+    );
+    let first = &c.records[0];
+    let answer = c.answer(first.index);
+    assert!(answer.starts_with(&format!("record {}\nfacet ", first.id)));
+    assert!(answer
+        .lines()
+        .filter(|l| l.starts_with("page "))
+        .all(|l| l.starts_with("page prism-devrel")));
+    assert!(
+        c.resources.iter().any(|r| r.slug == "greenhouse"),
+        "the overview is the project's slug"
+    );
+    assert_eq!(
+        site::resource_path(
+            &c,
+            c.resources
+                .iter()
+                .find(|r| r.slug == "greenhouse/behavior")
+                .expect("a behavior page")
+        ),
+        "case-studies/greenhouse/behavior/"
+    );
+    let lean = lean::catalog(&c);
+    assert!(
+        lean.contains("name: resourceArchitecture,")
+            && lean.contains("name: resourceArchitectureTeachesHolds,")
+    );
+    assert!(lean.contains("name: resourceGreenhouseBehavior,"));
+    let excluded = Catalog::build_for_lookup(config(), &root().join("app")).expect("lookup");
+    assert!(
+        excluded.records.len() < own().records.len(),
+        "the excluded files hold records"
+    );
 }

@@ -443,6 +443,10 @@ pub struct SubjectConfig {
     /// Whether the subject is this repository, read at the commit being
     /// built rather than at a pin.
     pub own: bool,
+    /// Sources of the project, relative to it, that are written from the
+    /// app's own lookup (`lookupExcludes`). The lookup leaves them out, so it
+    /// is never its own input; the case study still reads them.
+    pub lookup_excludes: Vec<String>,
 }
 
 fn full_commit(commit: &str) -> bool {
@@ -514,6 +518,17 @@ impl SubjectConfig {
                 .map(str::to_string),
             tutorial,
             own,
+            lookup_excludes: match value.get("lookupExcludes") {
+                None => Vec::new(),
+                Some(v) => v
+                    .as_array()
+                    .and_then(|a| a.iter().map(|x| x.as_str().map(str::to_string)).collect())
+                    .ok_or_else(|| {
+                        CatalogError::Config(format!(
+                            "{slug}: lookupExcludes is not a list of paths"
+                        ))
+                    })?,
+            },
             slug,
         })
     }
@@ -552,8 +567,9 @@ impl SubjectConfig {
 /// `devrel/subjects.json`: every subject, and which one the app catalogs.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Subjects {
-    /// The slug of the subject whose catalog is `app/src/Catalog.lex.tex`.
-    pub catalog: String,
+    /// The slug of the subject whose case study the old `learn/` addresses
+    /// lead to.
+    pub learn: String,
     /// Every subject, in the order the file lists them.
     pub subjects: Vec<SubjectConfig>,
 }
@@ -582,25 +598,25 @@ impl Subjects {
         if subjects.iter().filter(|s| s.own).count() > 1 {
             return Err(CatalogError::Config("more than one subject is self".into()));
         }
-        let catalog = value
-            .get("catalog")
+        let learn = value
+            .get("learn")
             .and_then(|v| v.as_str())
-            .ok_or_else(|| CatalogError::Config("catalog is not a string".into()))?
+            .ok_or_else(|| CatalogError::Config("learn is not a string".into()))?
             .to_string();
-        if !subjects.iter().any(|s| s.slug == catalog) {
+        if !subjects.iter().any(|s| s.slug == learn) {
             return Err(CatalogError::Config(format!(
-                "catalog names {catalog}, which is not a subject"
+                "learn names {learn}, which is not a subject"
             )));
         }
-        Ok(Subjects { catalog, subjects })
+        Ok(Subjects { learn, subjects })
     }
 
-    /// The subject the app catalogs.
-    pub fn catalog(&self) -> &SubjectConfig {
+    /// The subject the old `learn/` addresses lead to.
+    pub fn learn(&self) -> &SubjectConfig {
         self.subjects
             .iter()
-            .find(|s| s.slug == self.catalog)
-            .expect("parse checks that catalog names a subject")
+            .find(|s| s.slug == self.learn)
+            .expect("parse checks that learn names a subject")
     }
 }
 
@@ -623,6 +639,21 @@ pub struct Catalog {
 impl Catalog {
     /// Read the subject project at `root` and build its catalog.
     pub fn build(subject: SubjectConfig, root: &Path) -> Result<Catalog, CatalogError> {
+        Self::read(subject, root, &[])
+    }
+
+    /// The catalog the app's lookup serves for this subject: its sources
+    /// without the ones `lookupExcludes` names.
+    pub fn build_for_lookup(subject: SubjectConfig, root: &Path) -> Result<Catalog, CatalogError> {
+        let excludes = subject.lookup_excludes.clone();
+        Self::read(subject, root, &excludes)
+    }
+
+    fn read(
+        subject: SubjectConfig,
+        root: &Path,
+        excludes: &[String],
+    ) -> Result<Catalog, CatalogError> {
         let src = root.join("src");
         let mut files = Vec::new();
         collect(&src, &mut files)?;
@@ -637,6 +668,9 @@ impl Catalog {
                 .unwrap_or(file)
                 .to_string_lossy()
                 .replace('\\', "/");
+            if excludes.iter().any(|x| x == &rel) {
+                continue;
+            }
             hasher.update((rel.len() as u64).to_be_bytes());
             hasher.update(rel.as_bytes());
             hasher.update((text.len() as u64).to_be_bytes());
@@ -685,6 +719,10 @@ impl Catalog {
     /// with no tutorial member. The catalog still declares them, as the
     /// program's capability, and claims nothing for them.
     pub fn published(&self) -> Vec<&Resource> {
+        // A combined catalog holds only published pages already.
+        if self.subject.slug.is_empty() {
+            return self.resources.iter().collect();
+        }
         self.resources
             .iter()
             .filter(|r| !matches!(r.scope, Scope::Facet(f) if self.facet(f).is_empty()))
@@ -717,6 +755,83 @@ impl Catalog {
             *out.entry(r.facet).or_insert(0) += 1;
         }
         out
+    }
+
+    /// Every subject's lookup catalog as one, the catalog the app serves:
+    /// records in subject order, each identifier and each page slug led by
+    /// its subject's slug (`uorust/Architecture::x`, `uorust/architecture`,
+    /// and the overview as `uorust`), so a page line is the page's path under
+    /// `case-studies/`. Only published pages are resources. The combined
+    /// subject's commit lists each subject's pin; the self subject, read at
+    /// the commit being built, is named by its source digest instead, so the
+    /// catalog does not depend on the commit that holds it.
+    pub fn combine(parts: &[Catalog], repository: &str) -> Catalog {
+        let mut records = Vec::new();
+        let mut resources = Vec::new();
+        let mut covers = Vec::new();
+        let mut hasher = Sha256::new();
+        let mut pins = Vec::new();
+        for part in parts {
+            let s = &part.subject;
+            hasher.update(s.slug.as_bytes());
+            hasher.update(part.source_digest.as_bytes());
+            pins.push(if s.own {
+                format!("{}@sha256:{}", s.slug, part.source_digest)
+            } else {
+                format!("{}@{}", s.slug, s.commit)
+            });
+            let mut map = BTreeMap::new();
+            for r in part.published() {
+                let index = resources.len();
+                map.insert(r.index, index);
+                let leak = |text: String| -> &'static str { Box::leak(text.into_boxed_str()) };
+                resources.push(Resource {
+                    index,
+                    slug: if r.scope == Scope::CaseStudy {
+                        leak(s.slug.clone())
+                    } else {
+                        leak(format!("{}/{}", s.slug, r.slug))
+                    },
+                    title: leak(format!("{}: {}", s.name, r.title_for(&s.name))),
+                    summary: leak(r.summary_for(&s.name)),
+                    ..r.clone()
+                });
+            }
+            for r in &part.records {
+                let mut out = r.clone();
+                out.index = records.len();
+                out.id = format!("{}/{}", s.slug, r.id);
+                covers.push(
+                    part.covers[r.index]
+                        .iter()
+                        .filter_map(|i| map.get(i).copied())
+                        .collect(),
+                );
+                records.push(out);
+            }
+        }
+        let source_digest = hasher
+            .finalize()
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect::<String>();
+        Catalog {
+            subject: SubjectConfig {
+                slug: String::new(),
+                name: "the case studies".into(),
+                repository: repository.into(),
+                commit: pins.join(" "),
+                path: String::new(),
+                gate: None,
+                tutorial: None,
+                own: false,
+                lookup_excludes: Vec::new(),
+            },
+            source_digest,
+            records,
+            resources,
+            covers,
+        }
     }
 
     /// The answer the DevRel application gives for a record index, the

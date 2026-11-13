@@ -37,8 +37,10 @@ Each subject is a case study. `devrel/subjects.json` lists them: UORust (the
 tool that maps a Cargo workspace onto a complete Prism model), Rule 30,
 Verdant Resonance, Foundry, and Prism-DevRel itself, each read from its own
 Prism project at the commit it pins (Prism-DevRel at the commit being built).
-The subject `catalog` names, UORust, is also the one the app's record lookup
-catalogs: every one of its facet records is covered. Each case study states
+The app's record lookup catalogs every subject: each record is numbered in
+one index, led by its project's slug (`uorust/Architecture::…`), and answered
+with the case-study pages that teach it. Files written from the lookup itself
+(`lookupExcludes`) are left out of it, so it is never its own input. Each case study states
 its pinned commit and the count per facet, generated from that commit rather
 than restated here.
 
@@ -50,7 +52,7 @@ showing how each case study declares that facet. Every old `learn/` address
 redirects to the page that replaced it. Each page is one
 [Diátaxis](https://diataxis.fr) type and one stage of the developer journey,
 with the identifiers the builder pages use (`DR-16`). UORust's case study,
-the catalog's subject, carries these resources:
+which has a tutorial, carries every one of these resources:
 
 | Resource | Diátaxis type | Journey stage |
 | --- | --- | --- |
@@ -174,7 +176,7 @@ removed from the example page, `DR-13` fails on its first assertion.
    `Foundation.Qual`, `Production.*` or extension record type, and every
    theorem), numbers them by identifier and assigns each to the resources
    that teach it.
-3. It writes `app/src/Catalog.lex.tex` from the `catalog` subject (committed;
+3. It writes `app/src/Catalog.lex.tex` from every subject (committed;
    the coverage theorems are checked against it) and the case studies and
    facet pages (generated in `pages.yml`, never committed). `pages.yml`
    fetches the pinned commits and fails if the committed catalog is not their

@@ -38,7 +38,7 @@ pub fn allocation_maximum(c: &Catalog) -> usize {
 /// The declaration name of a resource: `resource` and its slug in camel case.
 pub fn resource_name(slug: &str) -> String {
     let mut out = String::from("resource");
-    for part in slug.split('-') {
+    for part in slug.split(['-', '/']) {
         let mut chars = part.chars();
         if let Some(first) = chars.next() {
             out.extend(first.to_uppercase());
@@ -197,21 +197,27 @@ pub fn sections(c: &Catalog) -> Vec<(String, String, Vec<String>)> {
         vec![
             "record ID: the facet record at that index, by its Module::declaration identifier.".to_string(),
             "facet NAME: the facet the record belongs to.".to_string(),
-            format!("page SLUG: one line per page that teaches the record, at {}SLUG/.", crate::site::study_dir(&c.subject.slug)),
+            format!("page SLUG: one line per page that teaches the record, at {}SLUG/.", if c.subject.slug.is_empty() { format!("{}/", crate::site::COLLECTION) } else { crate::site::study_dir(&c.subject.slug) }),
             format!("refused unknown-record: the index is {n} or more. error invalid-request: the request is not one to {} decimal digits.", index_digits(c)),
         ],
     )];
-    out.push((
-        "subject".to_string(),
-        "The subject".to_string(),
-        vec![
-            format!(
-                "{} at commit {}, project {}.",
-                c.subject.name, c.subject.commit, c.subject.path
-            ),
-            format!("{n} facet records, numbered by identifier from 0 to {}. Every one is taught by at least one page; the Lean kernel checks it (Catalog::catalogCovered).", n - 1),
-        ],
-    ));
+    let mut subject = vec![format!(
+        "{} at {}{}.",
+        c.subject.name,
+        if c.subject.slug.is_empty() {
+            ""
+        } else {
+            "commit "
+        },
+        c.subject.commit
+    )];
+    if c.subject.slug.is_empty() {
+        subject.push("Each record and page is led by its project's slug; a pin is a commit, or for this repository, read at the commit being built, the digest of its sources.".to_string());
+    } else {
+        subject.push(format!("Project {}.", c.subject.path));
+    }
+    subject.push(format!("{n} facet records, numbered from 0 to {}. Every one is taught by at least one page; the Lean kernel checks it (Catalog::catalogCovered).", n - 1));
+    out.push(("subject".to_string(), "The subject".to_string(), subject));
     let counts = c.counts();
     out.push((
         "facets".to_string(),
@@ -241,6 +247,12 @@ pub fn sections(c: &Catalog) -> Vec<(String, String, Vec<String>)> {
             .collect(),
     ));
     out
+}
+
+/// The kind of a combined catalog's page: its slug after the project's,
+/// and the overview, whose slug is the project's alone, as `case-study`.
+fn kind_of(slug: &str) -> &str {
+    slug.split_once('/').map_or("case-study", |(_, k)| k)
 }
 
 /// A LexLean byte literal.
@@ -445,6 +457,49 @@ pub fn catalog(c: &Catalog) -> String {
             quote(crate::UNKNOWN)
         ),
     ));
+    // In the combined catalog, each kind of page is also named once, as the
+    // model's features call it: the first page of that kind, and a claim
+    // that every page of that kind teaches.
+    if c.subject.slug.is_empty() {
+        let mut kinds: Vec<&str> = Vec::new();
+        for r in &c.resources {
+            let k = kind_of(r.slug);
+            if !kinds.contains(&k) {
+                kinds.push(k);
+            }
+        }
+        for k in kinds {
+            let name = resource_name(k);
+            let all: Vec<&crate::Resource> = c
+                .resources
+                .iter()
+                .filter(|r| kind_of(r.slug) == k)
+                .collect();
+            decls.push(definition(
+                &name,
+                &format!("{MODEL}::Resource"),
+                &format!("({})", resource_name(all[0].slug)),
+            ));
+            if !all[0].scope.teaches() {
+                continue;
+            }
+            let body = all
+                .iter()
+                .map(|r| format!("({MODEL}::teaches {} (covers))", r.index))
+                .reduce(|acc, t| format!("({t} && {acc})"))
+                .expect("a kind has a page");
+            decls.push(definition(&format!("{name}Teaches"), "Bool", &body));
+            if all
+                .iter()
+                .all(|r| c.covers.iter().any(|rs| rs.contains(&r.index)))
+            {
+                decls.push(theorem(
+                    &format!("{name}TeachesHolds"),
+                    &format!("(({name}Teaches) = true)"),
+                ));
+            }
+        }
+    }
     for r in c.resources.iter().filter(|r| r.scope.teaches()) {
         let name = resource_name(r.slug);
         decls.push(definition(
