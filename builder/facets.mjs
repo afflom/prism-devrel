@@ -28,7 +28,7 @@ const listDef = (name, type, items) => definition(name, `(List ${type})`, record
 const conj = (terms) => terms.reduceRight((rest, t) => (rest ? `(${t} && ${rest})` : t), '');
 const nats = (values) => cons('Nat', values.map(String));
 /** Exactly one of two Booleans, without `!=`, which the lexicon does not carry. */
-const exactlyOne = definition('exactlyOne', 'Bool', '(if first then (if second then false else true) else second)', { parameters: ['first : Bool', 'second : Bool'] });
+const exactlyOne = definition('exactlyOne', 'Bool', '(if left then (if right then false else true) else right)', { parameters: ['left : Bool', 'right : Bool'] });
 const listLength = (name, type) =>
   definition(name, 'Nat', `(match values | List.nil => 0 | List.cons value rest => ((${name} rest) + 1))`, { parameters: [`values : (List ${type})`], recursive: 'values' });
 
@@ -235,7 +235,7 @@ export function compliance(m) {
     definition('obligations', '(List Obligation)', cons('Obligation', m.compliance.map((o, index) => rec('Obligation', { index, standard: str(o.standard), subject: str(o.subject), text: str(o.text), evidence: cons('String', [...o.evidence, ...(o.holds ? [`Compliance::${holdsName(o)}`] : [])].map(str)) })))),
     // A separate definition: a match nested in a term is rewritten by
     // lexlean fmt into a form its parser refuses.
-    definition('hasEvidence', 'Bool', `(match evidence | List.nil => false | List.cons first others => true)`, { parameters: ['evidence : (List String)'] }),
+    definition('hasEvidence', 'Bool', `(match evidence | List.nil => false | List.cons item others => true)`, { parameters: ['evidence : (List String)'] }),
     definition('obligationsEvidenced', 'Bool', `(match items
     | List.nil => true
     | List.cons item rest => (((project item index) =? position) && ((hasEvidence (project item evidence)) && (obligationsEvidenced (position + 1) rest))))`, { parameters: ['position : Nat', 'items : (List Obligation)'], recursive: 'items' }),
