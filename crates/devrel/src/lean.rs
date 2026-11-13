@@ -313,14 +313,29 @@ fn chunked(decls: &mut Vec<String>, name: &str, element: &str, append: &str, ite
     decls.push(definition(name, &ty, &join(&parts, element, append)));
 }
 
-fn tree(decls: &mut Vec<String>, low: usize, high: usize) -> String {
+/// The answers from `low` to `high` as one function of the position. A run
+/// of at most [`CHUNK`] answers is a block, a chain of comparisons ending in
+/// the last answer, which nests no deeper than a list part; a longer run
+/// splits at a block boundary into a balanced tree of blocks. The guest
+/// holds one function per block and per join, not one per record, so its
+/// build grows with the record count divided by the block.
+fn tree(decls: &mut Vec<String>, answers: &[String], low: usize, high: usize) -> String {
     let name = format!("answerIn{low}x{high}");
-    let body = if high - low == 1 {
-        format!("(answer{low})")
+    let body = if high - low <= CHUNK {
+        let mut chain = quote(&answers[high - 1]);
+        for at in (low..high - 1).rev() {
+            chain = format!(
+                "(if (position <? {}) then {} else {chain})",
+                at + 1,
+                quote(&answers[at])
+            );
+        }
+        chain
     } else {
-        let mid = low + (high - low) / 2;
-        let left = tree(decls, low, mid);
-        let right = tree(decls, mid, high);
+        let blocks = (high - low).div_ceil(CHUNK);
+        let mid = low + blocks.div_ceil(2) * CHUNK;
+        let left = tree(decls, answers, low, mid);
+        let right = tree(decls, answers, mid, high);
         format!("(if (position <? {mid}) then ({left} position) else ({right} position))")
     };
     decls.push(indexed(&name, &body));
@@ -463,19 +478,13 @@ pub fn catalog(c: &Catalog) -> String {
         &format!("(List {V3}::Section)"),
         &list(&section_items, &format!("{V3}::Section")),
     ));
-    // The answers the guest serves. Each record's answer is its own string
-    // definition, reached through a balanced tree of comparisons, so the
-    // runtime path holds no list and no long chain: the codegen refuses
-    // list-valued intermediates and static list constants there.
-    for r in &c.records {
-        decls.push(definition(
-            &format!("answer{}", r.index),
-            "String",
-            &quote(&c.answer(r.index)),
-        ));
-    }
-    tree(&mut decls, 0, c.records.len());
+    // The answers the guest serves, as string literals reached through
+    // comparisons on the position, so the runtime path holds no list: the
+    // codegen refuses list-valued intermediates and static list constants
+    // there.
+    let answers: Vec<String> = c.records.iter().map(|r| c.answer(r.index)).collect();
     let n = c.records.len();
+    tree(&mut decls, &answers, 0, n);
     decls.push(indexed(
         "answerAt",
         &format!(

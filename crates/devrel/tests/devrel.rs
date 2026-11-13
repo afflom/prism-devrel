@@ -447,26 +447,20 @@ fn lookup_dr_06() {
         "definition{{name: indexDigits, parameters: [], result: Nat, body: {digits}}}"
     )));
     // Every answer the guest serves is the generator's answer for that record,
-    // and a branch of the tree reaches each of them.
+    // in the block of the tree that holds its position: the comparison that
+    // selects it bounds the position from above by the next record.
     let generated = lean::catalog(&catalog);
+    let n = catalog.records.len();
     for r in &catalog.records {
         let body = quote(&catalog.answer(r.index));
-        let one = format!(
-            "name: answer{}, parameters: [], result: String, body: {body}}}",
-            r.index
-        );
-        let multi = format!(
-            "  name: answer{},\n  parameters: [],\n  result: String,\n  body: {body}\n",
-            r.index
-        );
+        let selected = if (r.index + 1) % lean::CHUNK == 0 || r.index + 1 == n {
+            format!("else {body}")
+        } else {
+            format!("(if (position <? {}) then {body} else", r.index + 1)
+        };
         assert!(
-            generated.contains(&one) || generated.contains(&multi),
-            "answer{} is not the record's answer",
-            r.index
-        );
-        assert!(
-            generated.contains(&format!("(answer{})", r.index)),
-            "no branch reaches answer{}",
+            generated.contains(&selected),
+            "no branch of the tree answers record {}",
             r.index
         );
     }
