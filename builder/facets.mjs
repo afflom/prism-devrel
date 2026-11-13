@@ -14,6 +14,7 @@
  * application is checked exactly as this repository's model is.
  */
 import { cons, ctor, definition, moduleText, rec, str, structure, theorem } from './lean.mjs';
+import { DFD_KINDS, STRIDE } from './prompt.mjs';
 
 const BOOL = 'lexlean.std.bool@1.2.0';
 const NAT = 'lexlean.std.nat@1.2.0';
@@ -25,6 +26,11 @@ const A = 'Foundation.Arch';
 const records = (type, items) => cons(type, items.map((r) => `(${r.decl})`));
 const listDef = (name, type, items) => definition(name, `(List ${type})`, records(type, items));
 const conj = (terms) => terms.reduceRight((rest, t) => (rest ? `(${t} && ${rest})` : t), '');
+const nats = (values) => cons('Nat', values.map(String));
+/** Exactly one of two Booleans, without `!=`, which the lexicon does not carry. */
+const exactlyOne = definition('exactlyOne', 'Bool', '(if first then (if second then false else true) else second)', { parameters: ['first : Bool', 'second : Bool'] });
+const listLength = (name, type) =>
+  definition(name, 'Nat', `(match values | List.nil => 0 | List.cons value rest => ((${name} rest) + 1))`, { parameters: [`values : (List ${type})`], recursive: 'values' });
 
 /** The ISO standards profile, in the order and at the positions the SDK's profile numbers them. */
 const STANDARDS = [
@@ -102,7 +108,7 @@ export function features(m) {
 }
 
 export function security(m) {
-  const { assets, threats, risks, controls } = m.security;
+  const { assets, threats, risks, controls, mappings, elements, strideOpen } = m.security;
   const S = 'Foundation.Sec';
   const T = 'Production.ThreatModel';
   const evidence = (items) => cons(`${T}::Evidence`, items.map((e) => rec(`${T}::Evidence`, { kind: ctor(`${T}::EvidenceKind`, e.kind), reference: str(e.reference) })));
@@ -116,14 +122,45 @@ export function security(m) {
     ...assets.map((x) => definition(`modeled${x.decl[0].toUpperCase()}${x.decl.slice(1)}`, `${T}::ModeledAsset`, rec(`${T}::ModeledAsset`, { asset: ref(x.decl), name: str(x.name), text: str(x.text) }))),
     ...threats.map((x) => definition(`modeled${x.decl[0].toUpperCase()}${x.decl.slice(1)}`, `${T}::ModeledThreat`, rec(`${T}::ModeledThreat`, { threat: ref(x.decl), name: str(x.name), text: str(x.text), category: ctor(`${T}::Stride`, x.stride) }))),
     ...controls.map((c) => definition(`modeled${c.decl[0].toUpperCase()}${c.decl.slice(1)}`, `${T}::ModeledControl`, rec(`${T}::ModeledControl`, { control: ref(c.decl), name: str(c.name), text: str(c.text), evidence: evidence(c.evidence) }))),
-    ...controls.map((c) => definition(`mapping${c.risk.threat.decl.slice('threat'.length)}`, `${T}::ThreatMapping`, rec(`${T}::ThreatMapping`, { threat: ref(c.risk.threat.decl), controls: cons('String', [ref(c.decl)]) }))),
+    ...mappings.map((x) => definition(`mapping${x.threat.decl.slice('threat'.length)}`, `${T}::ThreatMapping`, rec(`${T}::ThreatMapping`, { threat: ref(x.threat.decl), controls: cons('String', x.controls.map((c) => ref(c.decl))) }))),
     ...threats.filter((x) => x.accepted).map((x) => definition(`accepted${x.decl.slice('threat'.length)}`, `${T}::AcceptedRisk`, rec(`${T}::AcceptedRisk`, { threat: ref(x.decl), rationale: str(x.accepted) }))),
+    // STRIDE per element. An element is a component, then a data flow, by
+    // index; its kind is a data flow diagram kind, by position in
+    // externalEntity, process, dataStore, dataFlow; a category is a position in
+    // spoofing, tampering, repudiation, informationDisclosure, denialOfService,
+    // elevationOfPrivilege. Every pair the method opens is answered by a
+    // threat or stated open, never both, and no other pair is stated open.
+    structure('StrideElement', ['{name: index, type: Nat}', '{name: kind, type: Nat}', '{name: name, type: String}']),
+    structure('StridePair', ['{name: element, type: Nat}', '{name: category, type: Nat}', '{name: name, type: String}']),
+    definition('strideElements', '(List StrideElement)', cons('StrideElement', elements.map((x) => rec('StrideElement', { index: x.index, kind: DFD_KINDS.indexOf(x.dfd), name: str(x.name) })))),
+    definition('threatPairs', '(List StridePair)', cons('StridePair', threats.map((t) => rec('StridePair', { element: t.target.index, category: STRIDE.indexOf(t.stride), name: ref(t.decl) })))),
+    definition('openPairs', '(List StridePair)', cons('StridePair', strideOpen.map((p) => rec('StridePair', { element: p.element.index, category: STRIDE.indexOf(p.category), name: str(p.name) })))),
+    definition('strideCategories', '(List Nat)', nats(STRIDE.map((_, i) => i))),
+    definition('strideApplies', 'Bool', '(if (kind =? 0) then ((category =? 0) || (category =? 2)) else (if (kind =? 1) then (category <? 6) else (if (kind =? 2) then ((0 <? category) && (category <? 5)) else ((category =? 1) || ((category =? 3) || (category =? 4))))))', { parameters: ['kind : Nat', 'category : Nat'] }),
+    definition('pairListed', 'Bool', `(match pairs
+    | List.nil => false
+    | List.cons pair rest => ((((project pair element) =? element) && ((project pair category) =? category)) || (pairListed element category rest)))`, { parameters: ['element : Nat', 'category : Nat', 'pairs : (List StridePair)'], recursive: 'pairs' }),
+    exactlyOne,
+    definition('categoriesStated', 'Bool', `(match categories
+    | List.nil => true
+    | List.cons category rest => ((if (strideApplies kind category) then (exactlyOne (pairListed element category (threatPairs)) (pairListed element category (openPairs))) else (if (pairListed element category (openPairs)) then false else true)) && (categoriesStated element kind rest)))`, { parameters: ['element : Nat', 'kind : Nat', 'categories : (List Nat)'], recursive: 'categories' }),
+    definition('elementsStated', 'Bool', `(match records
+    | List.nil => true
+    | List.cons item rest => (((project item index) =? position) && ((categoriesStated position (project item kind) (strideCategories)) && (elementsStated (position + 1) rest))))`, { parameters: ['position : Nat', 'records : (List StrideElement)'], recursive: 'records' }),
+    definition('pairsKnown', 'Bool', `(match pairs
+    | List.nil => true
+    | List.cons pair rest => (((project pair element) <? count) && (((project pair category) <? 6) && (pairsKnown count rest))))`, { parameters: ['count : Nat', 'pairs : (List StridePair)'], recursive: 'pairs' }),
+    listLength('pairCount', 'StridePair'),
+    definition('securityValid', 'Bool', conj(['(elementsStated 0 (strideElements))', `(pairsKnown ${elements.length} (threatPairs))`, `(pairsKnown ${elements.length} (openPairs))`])),
+    theorem('strideEnumerated', '((securityValid) = true)'),
+    // The open pairs are a measure: a change that answers or opens one moves this number.
+    theorem('strideOpenCount', `((pairCount (openPairs)) = ${strideOpen.length})`),
   ];
   return moduleText({ name: 'Security', glossaries: [BOOL, NAT, ARCH, SEC], imports: ['Foundation.Sec', 'Production.ThreatModel', 'Architecture'], title: 'security threat', declarations: decls });
 }
 
 export function quality(m) {
-  const { characteristics, subcharacteristics, requirements, measures } = m.quality;
+  const { characteristics, subcharacteristics, requirements, measures, openSubcharacteristics } = m.quality;
   const Q = 'Foundation.Qual';
   const named = (items) => cons('Named', items.map((x) => rec('Named', { index: x.index, name: str(x.name), text: str(x.text) })));
   const known = (name, type, field) =>
@@ -152,10 +189,28 @@ export function quality(m) {
     definition('thresholdOf', 'Nat', `(match records
     | List.nil => 0
     | List.cons head rest => (if ((project head index) =? wanted) then (project head threshold) else (thresholdOf wanted rest)))`, { parameters: ['wanted : Nat', `records : (List ${Q}::QualityMeasure)`], recursive: 'records' }),
+    // The whole ISO/IEC 25010:2023 product quality model, and its coverage:
+    // a subcharacteristic is stated by a requirement or listed open, never both.
+    definition('openSubcharacteristics', '(List Nat)', nats(openSubcharacteristics.map((x) => x.index))),
+    listLength('namesLength', 'Named'),
+    listLength('natsLength', 'Nat'),
+    definition('hasRequirement', 'Bool', `(match records
+    | List.nil => false
+    | List.cons item rest => (((project item subcharacteristicIndex) =? wanted) || (hasRequirement wanted rest)))`, { parameters: ['wanted : Nat', `records : (List ${Q}::QualityRequirement)`], recursive: 'records' }),
+    definition('natListed', 'Bool', `(match values
+    | List.nil => false
+    | List.cons value rest => ((value =? wanted) || (natListed wanted rest)))`, { parameters: ['wanted : Nat', 'values : (List Nat)'], recursive: 'values' }),
+    exactlyOne,
+    definition('coverageStated', 'Bool', `(match names
+    | List.nil => true
+    | List.cons item rest => ((exactlyOne (hasRequirement position (requirementRecords)) (natListed position (openSubcharacteristics))) && (coverageStated (position + 1) rest)))`, { parameters: ['position : Nat', 'names : (List Named)'], recursive: 'names' }),
     definition(
       'qualityValid',
       'Bool',
       conj([
+        `((namesLength (characteristicNames)) =? ${characteristics.length})`,
+        `((namesLength (subcharacteristicNames)) =? ${subcharacteristics.length})`,
+        '(coverageStated 0 (subcharacteristicNames))',
         '(namesNumbered 0 (characteristicNames))',
         '(namesNumbered 0 (subcharacteristicNames))',
         '(namesNumbered 0 (requirementNames))',
@@ -166,6 +221,7 @@ export function quality(m) {
       ]),
     ),
     theorem('qualityModelHolds', '((qualityValid) = true)'),
+    theorem('openSubcharacteristicCount', `((natsLength (openSubcharacteristics)) = ${openSubcharacteristics.length})`),
     // Each threshold, pinned by a theorem, so a weakened measure fails the kernel.
     ...measures.map((x) => theorem(`${x.decl}Threshold`, `((thresholdOf ${x.index} (measureRecords)) = ${x.threshold})`)),
   ];
@@ -173,22 +229,25 @@ export function quality(m) {
 }
 
 export function compliance(m) {
+  const holding = m.compliance.filter((o) => o.holds);
   const decls = [
     structure('Obligation', ['{name: index, type: Nat}', '{name: standard, type: String}', '{name: subject, type: String}', '{name: text, type: String}', '{name: evidence, type: (List String)}']),
-    definition('obligations', '(List Obligation)', cons('Obligation', m.compliance.map((o, index) => rec('Obligation', { index, standard: str(o.standard), subject: str(o.subject), text: str(o.text), evidence: cons('String', o.evidence.map(str)) })))),
+    definition('obligations', '(List Obligation)', cons('Obligation', m.compliance.map((o, index) => rec('Obligation', { index, standard: str(o.standard), subject: str(o.subject), text: str(o.text), evidence: cons('String', [...o.evidence, ...(o.holds ? [`Compliance::${holdsName(o)}`] : [])].map(str)) })))),
+    // A separate definition: a match nested in a term is rewritten by
+    // lexlean fmt into a form its parser refuses.
+    definition('hasEvidence', 'Bool', `(match evidence | List.nil => false | List.cons first others => true)`, { parameters: ['evidence : (List String)'] }),
     definition('obligationsEvidenced', 'Bool', `(match items
     | List.nil => true
-    | List.cons item rest => (((project item index) =? position) && (match{
-      branches: [
-        {body: false, binders: [], constructor: List.nil},
-        {body: true, binders: [first, others], constructor: List.cons}
-      ],
-      scrutinee: (project item evidence)
-    } && (obligationsEvidenced (position + 1) rest))))`, { parameters: ['position : Nat', 'items : (List Obligation)'], recursive: 'items' }),
+    | List.cons item rest => (((project item index) =? position) && ((hasEvidence (project item evidence)) && (obligationsEvidenced (position + 1) rest))))`, { parameters: ['position : Nat', 'items : (List Obligation)'], recursive: 'items' }),
     theorem('everyObligationEvidenced', '((obligationsEvidenced 0 (obligations)) = true)'),
+    // Each obligation a facet predicate decides is re-proved here, so the
+    // kernel checks the evidence this module names, not only that it is named.
+    ...holding.map((o) => theorem(holdsName(o), `((${o.holds}) = true)`)),
   ];
   return moduleText({ name: 'Compliance', glossaries: [BOOL, NAT, ARCH], imports: ['Architecture', 'Design', 'Quality', 'Security', m.module], title: 'standards reference', declarations: decls });
 }
+
+const holdsName = (o) => `holds${o.subject.split(/[^A-Za-z0-9]+/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join('')}`;
 
 /** The facet modules, by path under app/. */
 export function facetModules(m) {

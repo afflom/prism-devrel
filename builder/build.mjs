@@ -36,7 +36,8 @@ function allClaims(m) {
   const props = m.claims.map((c) => ({ ...c, kind: 'property' }));
   const facet = [
     { module: 'Architecture', theorem: 'architectureDescriptionHolds', statement: 'architectureValid', claim: 'The architecture description declares every stakeholder, concern, component, edge, viewpoint and view it references' },
-    { module: 'Quality', theorem: 'qualityModelHolds', statement: 'qualityValid', claim: 'The ISO/IEC 25010 quality model numbers every characteristic, subcharacteristic, requirement and measure, and every parent it names is declared' },
+    { module: 'Quality', theorem: 'qualityModelHolds', statement: 'qualityValid', claim: 'The ISO/IEC 25010:2023 quality model declares all 9 characteristics and 40 subcharacteristics, states each subcharacteristic by a requirement or lists it open, and every parent it names is declared' },
+    { module: 'Security', theorem: 'strideEnumerated', statement: 'securityValid', claim: 'Every STRIDE category each component and data flow is open to is answered by a threat or stated open, and no other pair is stated open' },
     { module: 'Compliance', theorem: 'everyObligationEvidenced', statement: 'obligationsEvidenced 0 (obligations)', claim: 'Every compliance obligation is numbered in order and names its evidence' },
   ];
   return [
