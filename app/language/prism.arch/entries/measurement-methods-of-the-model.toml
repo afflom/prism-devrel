@@ -1,0 +1,17 @@
+spec = "lexlean/entry/1"
+id = "measurement-methods-of-the-model"
+category = "label-word"
+surface_arity = 0
+frame = "atom"
+
+[denotation]
+kind = "document"
+module = "Measures"
+component = "uncoveredRecords"
+
+[[form]]
+id = "measurement-methods-of-the-model"
+channel = "text"
+surface = "Measurement methods of the model"
+canonical_source = true
+features = ["sentence-case", "singular"]

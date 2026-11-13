@@ -3,7 +3,7 @@
 //! ```text
 //! prism-fidelity --project app --repo . --register fidelity.toml
 //!                [--cite model/provenance.toml app/src/Provenance.lex.tex]
-//!                [--lean app/src/Fidelity.lex.tex] [--json scorecard.json] [--check]
+//!                [--measures model/measures.toml] [--lean app/src/Fidelity.lex.tex] [--json scorecard.json] [--check]
 //! ```
 //!
 //! Without `--check` it writes the register (and the LexLean measurement data
@@ -14,7 +14,7 @@
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use prism_fidelity::{file_kappa, lean, score, scorecard, Register};
+use prism_fidelity::{file_kappa, lean, scorecard, Register};
 
 fn main() -> ExitCode {
     let mut project = PathBuf::from("app");
@@ -24,6 +24,7 @@ fn main() -> ExitCode {
     let mut json_out: Option<PathBuf> = None;
     let mut check = false;
     let mut cite: Option<(PathBuf, PathBuf)> = None;
+    let mut measures: Option<PathBuf> = None;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         let mut path = |d: PathBuf| args.next().map(PathBuf::from).unwrap_or(d);
@@ -34,6 +35,7 @@ fn main() -> ExitCode {
             "--lean" => lean_out = Some(path(PathBuf::new())),
             "--json" => json_out = Some(path(PathBuf::new())),
             "--check" => check = true,
+            "--measures" => measures = Some(path(PathBuf::new())),
             "--cite" => {
                 let list = path(PathBuf::new());
                 let out = path(PathBuf::new());
@@ -51,7 +53,23 @@ fn main() -> ExitCode {
             return ExitCode::FAILURE;
         }
     }
-    match run(&project, &repo, &register, lean_out, json_out, check) {
+    // Writing reaches a fixed point in two passes: the second scores the
+    // measurement results the first wrote.
+    let passes = if check { 1 } else { 2 };
+    let mut outcome = Ok(String::new());
+    for pass in 0..passes {
+        let outputs = Outputs {
+            register: register.clone(),
+            lean: lean_out.clone(),
+            json: json_out.clone(),
+            measures: measures.clone(),
+        };
+        outcome = run(pass + 1 < passes, &project, &repo, outputs, check);
+        if outcome.is_err() {
+            break;
+        }
+    }
+    match outcome {
         Ok(summary) => {
             println!("{summary}");
             ExitCode::SUCCESS
@@ -87,21 +105,61 @@ fn run_cite(
     Ok(())
 }
 
+/// The files one scoring pass reads or writes besides the model.
+struct Outputs {
+    register: PathBuf,
+    lean: Option<PathBuf>,
+    json: Option<PathBuf>,
+    measures: Option<PathBuf>,
+}
+
 fn run(
+    rewriting: bool,
     project: &std::path::Path,
     repo: &std::path::Path,
-    register: &std::path::Path,
-    lean_out: Option<PathBuf>,
-    json_out: Option<PathBuf>,
+    files: Outputs,
     check: bool,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let score = score(project, repo)?;
+    let Outputs {
+        register,
+        lean: lean_out,
+        json: json_out,
+        measures,
+    } = files;
+    let register = register.as_path();
+    let specs = match &measures {
+        Some(p) => prism_fidelity::measures(
+            &std::fs::read_to_string(p).map_err(|e| format!("{}: {e}", p.display()))?,
+        )?,
+        None => Vec::new(),
+    };
+    let mut measured = Vec::new();
+    for m in specs {
+        let bytes =
+            std::fs::read(repo.join(&m.source)).map_err(|e| format!("{}: {e}", m.source))?;
+        let kappa = file_kappa(&m.source, &bytes);
+        measured.push((m, kappa));
+    }
+    // A first writing pass reads none of the measurement results it is about
+    // to rewrite: a result whose method changed is stale, not false.
+    let ignore: &[&str] = if rewriting {
+        &[prism_fidelity::FIDELITY_MODULE]
+    } else {
+        &[]
+    };
+    let score = prism_fidelity::score_ignoring(project, repo, ignore)?;
     let previous = match std::fs::read_to_string(register) {
         Ok(text) => Register::parse(&text)?,
         Err(e) if e.kind() == std::io::ErrorKind::NotFound && !check => Register::default(),
         Err(e) => return Err(format!("{}: {e}", register.display()).into()),
     };
-    let next = Register::next(&previous, &score)?;
+    // The first writing pass only refreshes the measurement results; the
+    // ratchet is applied by the pass that scores them.
+    let next = if rewriting {
+        Register::next(&Register::default(), &score)?
+    } else {
+        Register::next(&previous, &score)?
+    };
     let text = next.render();
     let location = register
         .strip_prefix(repo)
@@ -109,11 +167,14 @@ fn run(
         .to_string_lossy()
         .replace('\\', "/");
     let kappa = file_kappa(&location, text.as_bytes());
-    let mut outputs = vec![(register.to_path_buf(), text)];
-    if let Some(p) = lean_out {
-        outputs.push((p, lean::module(&score, &location, &kappa)));
+    let mut outputs = Vec::new();
+    if !rewriting {
+        outputs.push((register.to_path_buf(), text));
     }
-    if let Some(p) = json_out {
+    if let Some(p) = lean_out {
+        outputs.push((p, lean::module(&score, &location, &kappa, &measured)));
+    }
+    if let Some(p) = json_out.filter(|_| !rewriting) {
         outputs.push((p, scorecard(&score)));
     }
     for (path, text) in &outputs {

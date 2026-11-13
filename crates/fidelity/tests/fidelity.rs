@@ -164,10 +164,22 @@ fn register_only_shrinks_fi_02() {
         committed, next,
         "fidelity.toml is stale: run `just fidelity-write`"
     );
+    let specs = prism_fidelity::measures(
+        &std::fs::read_to_string(repo.join("model/measures.toml")).unwrap(),
+    )
+    .unwrap();
+    let measured: Vec<_> = specs
+        .into_iter()
+        .map(|m| {
+            let k = file_kappa(&m.source, &std::fs::read(repo.join(&m.source)).unwrap());
+            (m, k)
+        })
+        .collect();
     let lean_text = lean::module(
         &s,
         "fidelity.toml",
         &file_kappa("fidelity.toml", next.as_bytes()),
+        &measured,
     );
     assert_eq!(
         std::fs::read_to_string(repo.join("app/src/Fidelity.lex.tex")).unwrap(),
@@ -240,4 +252,35 @@ fn cited_from_primary_sources_fi_04() {
         module,
         "app/src/Provenance.lex.tex is stale: run `just fidelity-write`"
     );
+}
+
+/// `FI-05`: every listed measure is measured by a kernel-evaluated method,
+/// bounded by its own threshold.
+#[test]
+fn measures_measured_by_the_kernel_fi_05() {
+    let repo = root();
+    let specs = prism_fidelity::measures(
+        &std::fs::read_to_string(repo.join("model/measures.toml")).unwrap(),
+    )
+    .unwrap();
+    assert!(!specs.is_empty());
+    let text = std::fs::read_to_string(repo.join("app/src/Fidelity.lex.tex")).unwrap();
+    let s = score(&repo.join("app"), &repo).unwrap();
+    for m in &specs {
+        let short = m.record.rsplit("::").next().unwrap();
+        assert!(text.contains(&format!("bound := (project ({}) threshold)", m.record)));
+        assert!(text.contains(&format!("value := ({})", m.method)));
+        assert!(text.contains(&format!("name: {short}Holds")));
+        assert!(
+            s.closed
+                .iter()
+                .any(|r| r.record == m.record && r.axis == Axis::Measured),
+            "{} is measured",
+            m.record
+        );
+    }
+    assert!(prism_fidelity::measures(
+        "[[measure]]\nrecord = \"a\"\nmethod = \"b\"\nsource = \"c\"\ndirection = \"sideways\"\n"
+    )
+    .is_err());
 }

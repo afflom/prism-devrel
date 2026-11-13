@@ -90,7 +90,7 @@ fn smallest(text: &str, texts: &[String]) -> Option<(usize, usize)> {
 /// The citation module's text, in the layout `lexlean fmt` keeps, and the
 /// number of records it derives.
 pub fn module(project: &Path, repo: &Path, list: &str) -> Result<(String, usize), FidelityError> {
-    let score = score_ignoring(project, repo, Some(MODULE))?;
+    let score = score_ignoring(project, repo, &[MODULE, crate::FIDELITY_MODULE])?;
     let files = sources(repo, list)?;
     let mut texts = Vec::new();
     for f in &files {

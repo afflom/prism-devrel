@@ -60,6 +60,7 @@ model does not sanction.
 | `FI-02` | `build` | The fidelity register only shrinks: every question is keyed by its κ, a κ once closed that a later projection finds open is refused, and the committed register is byte for byte the one the model scores to |
 | `FI-03` | `build` | Prism-DevRel's own fidelity is measured in its model: one ISO/IEC/IEEE 15939 indicator per property, each with a result read from the committed register by its κ and decision criteria of no open question, and the Lean kernel checks every indicator is known and measured |
 | `FI-04` | `build` | A record no writer derives is cited from the smallest span of a primary source listed in model/provenance.toml that holds every text field of it verbatim, as a W3C PROV-O derivation by prism-fidelity; a record no listed source states stays open, and the committed citations are the ones the sources give |
+| `FI-05` | `build` | Every quality measure model/measures.toml lists is measured by the Lean kernel: its ISO/IEC/IEEE 15939 indicator's result is the value of a LexLean method, the decision criteria's bound is the measure's own threshold, the result carries the κ of the method's file, and a theorem that the value satisfies the criteria is checked |
 
 ## Cited authorities
 

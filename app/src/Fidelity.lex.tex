@@ -3,6 +3,9 @@
 \useglossary{lexlean.std.nat@1.2.0}
 \useglossary{prism.arch@1.0.0}
 \importmodule{Foundation.Measurement.V1.Model}
+\importmodule{Foundation.Qual}
+\importmodule{Measures}
+\importmodule{Quality}
 \title{Fidelity of the model}
 \begin{semanticmodule}
 definition{
@@ -97,23 +100,65 @@ definition{
 }
 
 definition{
+  name: derivedMeasureMeasureUncoveredRecords,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::DerivedMeasure,
+  body: (record Foundation.Measurement.V1.Model::DerivedMeasure {index := 3, name := "Quality::measureUncoveredRecords", function := "Measures::uncoveredRecords", baseMeasureIndices := (nil Nat)})
+}
+
+definition{
+  name: derivedMeasureMeasureUndeclaredReferences,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::DerivedMeasure,
+  body: (record Foundation.Measurement.V1.Model::DerivedMeasure {index := 4, name := "Quality::measureUndeclaredReferences", function := "Measures::undeclaredReferences", baseMeasureIndices := (nil Nat)})
+}
+
+definition{
+  name: criteriaMeasureUncoveredRecords,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::DecisionCriteria,
+  body: (record Foundation.Measurement.V1.Model::DecisionCriteria {index := 1, direction := (ctor Foundation.Measurement.V1.Model::Direction.atMost), bound := (project (Quality::measureUncoveredRecords) threshold), basis := "the threshold of Quality::measureUncoveredRecords"})
+}
+
+definition{
+  name: criteriaMeasureUndeclaredReferences,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::DecisionCriteria,
+  body: (record Foundation.Measurement.V1.Model::DecisionCriteria {index := 2, direction := (ctor Foundation.Measurement.V1.Model::Direction.atMost), bound := (project (Quality::measureUndeclaredReferences) threshold), basis := "the threshold of Quality::measureUndeclaredReferences"})
+}
+
+definition{
   name: indicators,
   parameters: [],
   result: (List Foundation.Measurement.V1.Model::Indicator),
-  body: (cons (record Foundation.Measurement.V1.Model::Indicator {index := 0, name := "Fidelity::indicatorDerived", conceptIndex := 0, derivedMeasureIndex := 0, analysisModel := "excess of the open count over the criteria's bound", criteriaIndex := 0}) (cons (record Foundation.Measurement.V1.Model::Indicator {index := 1, name := "Fidelity::indicatorMeant", conceptIndex := 0, derivedMeasureIndex := 1, analysisModel := "excess of the open count over the criteria's bound", criteriaIndex := 0}) (cons (record Foundation.Measurement.V1.Model::Indicator {index := 2, name := "Fidelity::indicatorMeasured", conceptIndex := 0, derivedMeasureIndex := 2, analysisModel := "excess of the open count over the criteria's bound", criteriaIndex := 0}) (nil Foundation.Measurement.V1.Model::Indicator))))
+  body: (cons (record Foundation.Measurement.V1.Model::Indicator {index := 0, name := "Fidelity::indicatorDerived", conceptIndex := 0, derivedMeasureIndex := 0, analysisModel := "excess of the open count over the criteria's bound", criteriaIndex := 0}) (cons (record Foundation.Measurement.V1.Model::Indicator {index := 1, name := "Fidelity::indicatorMeant", conceptIndex := 0, derivedMeasureIndex := 1, analysisModel := "excess of the open count over the criteria's bound", criteriaIndex := 0}) (cons (record Foundation.Measurement.V1.Model::Indicator {index := 2, name := "Fidelity::indicatorMeasured", conceptIndex := 0, derivedMeasureIndex := 2, analysisModel := "excess of the open count over the criteria's bound", criteriaIndex := 0}) (cons (record Foundation.Measurement.V1.Model::Indicator {index := 3, name := "Quality::measureUncoveredRecords", conceptIndex := 0, derivedMeasureIndex := 3, analysisModel := "excess of the measured value over the threshold", criteriaIndex := 1}) (cons (record Foundation.Measurement.V1.Model::Indicator {index := 4, name := "Quality::measureUndeclaredReferences", conceptIndex := 0, derivedMeasureIndex := 4, analysisModel := "excess of the measured value over the threshold", criteriaIndex := 2}) (nil Foundation.Measurement.V1.Model::Indicator))))))
 }
 
 definition{
   name: results,
   parameters: [],
   result: (List Foundation.Measurement.V1.Model::MeasurementResult),
-  body: (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 0, value := 985, source := "fidelity.toml", kappa := "d7c794e2909e52012b75a00b868beedaaf9d4639da867046444eed57f17eade7"}) (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 1, value := 921, source := "fidelity.toml", kappa := "d7c794e2909e52012b75a00b868beedaaf9d4639da867046444eed57f17eade7"}) (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 2, value := 6, source := "fidelity.toml", kappa := "d7c794e2909e52012b75a00b868beedaaf9d4639da867046444eed57f17eade7"}) (nil Foundation.Measurement.V1.Model::MeasurementResult))))
+  body: (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 0, value := 985, source := "fidelity.toml", kappa := "72939742092131ab1d1e12b6252bcf15c20335a180d9ea7aea478be81e1ade3e"}) (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 1, value := 921, source := "fidelity.toml", kappa := "72939742092131ab1d1e12b6252bcf15c20335a180d9ea7aea478be81e1ade3e"}) (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 2, value := 4, source := "fidelity.toml", kappa := "72939742092131ab1d1e12b6252bcf15c20335a180d9ea7aea478be81e1ade3e"}) (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 3, value := (Measures::uncoveredRecords), source := "app/src/Measures.lex.tex", kappa := "0b7bfaec6ed30025dc1d8d026440c2b75ec5166d7ba153ee2a9a202835528c1e"}) (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 4, value := (Measures::undeclaredReferences), source := "app/src/Measures.lex.tex", kappa := "0b7bfaec6ed30025dc1d8d026440c2b75ec5166d7ba153ee2a9a202835528c1e"}) (nil Foundation.Measurement.V1.Model::MeasurementResult))))))
 }
 
 theorem{
   name: indicatorsKnown,
   parameters: [],
-  statement: ((Foundation.Measurement.V1.Model::indicatorsKnown 1 3 1 (indicators)) = true),
+  statement: ((Foundation.Measurement.V1.Model::indicatorsKnown 1 5 3 (indicators)) = true),
+  proof: decide{}
+}
+
+theorem{
+  name: measureUncoveredRecordsHolds,
+  parameters: [],
+  statement: ((Foundation.Measurement.V1.Model::satisfies (criteriaMeasureUncoveredRecords) (Measures::uncoveredRecords)) = true),
+  proof: decide{}
+}
+
+theorem{
+  name: measureUndeclaredReferencesHolds,
+  parameters: [],
+  statement: ((Foundation.Measurement.V1.Model::satisfies (criteriaMeasureUndeclaredReferences) (Measures::undeclaredReferences)) = true),
   proof: decide{}
 }
 

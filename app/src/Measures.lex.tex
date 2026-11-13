@@ -1,0 +1,59 @@
+\begin{lexlean}{Measures}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\importmodule{Catalog}
+\importmodule{Foundation.DevRel.V1.Model}
+\title{Measurement methods of the model}
+\begin{semanticmodule}
+definition{
+  name: emptyRows,
+  parameters: [rows : (List Foundation.DevRel.V1.Model::Covers)],
+  result: Nat,
+  body: (match rows
+    | List.nil => 0
+    | List.cons row rest => match{
+      branches: [
+        {body: (1 + (emptyRows rest)), binders: [], constructor: List.nil},
+        {body: (emptyRows rest), binders: [first, others], constructor: List.cons}
+      ],
+      scrutinee: (project row resources)
+    }),
+  recursive_argument: rows
+}
+
+definition{
+  name: undeclaredIn,
+  parameters: [resourceCount : Nat, values : (List Nat)],
+  result: Nat,
+  body: (match values
+    | List.nil => 0
+    | List.cons value rest => ((prim subtract 1 (prim subtract resourceCount value : Nat) : Nat) + (undeclaredIn resourceCount rest))),
+  recursive_argument: values
+}
+
+definition{
+  name: undeclaredRows,
+  parameters: [resourceCount : Nat, rows : (List Foundation.DevRel.V1.Model::Covers)],
+  result: Nat,
+  body: (match rows
+    | List.nil => 0
+    | List.cons row rest => ((undeclaredIn resourceCount (project row resources)) + (undeclaredRows resourceCount rest))),
+  recursive_argument: rows
+}
+
+definition{
+  name: uncoveredRecords,
+  parameters: [],
+  result: Nat,
+  body: ((emptyRows (Catalog::covers)) + (prim subtract (Foundation.DevRel.V1.Model::recordTotal (Catalog::records)) (Foundation.DevRel.V1.Model::rowCount (Catalog::covers)) : Nat))
+}
+
+definition{
+  name: undeclaredReferences,
+  parameters: [],
+  result: Nat,
+  body: (undeclaredRows (Foundation.DevRel.V1.Model::resourceTotal (Catalog::resources)) (Catalog::covers))
+}
+\end{semanticmodule}
+\end{lexlean}

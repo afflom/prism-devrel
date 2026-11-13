@@ -1,0 +1,22 @@
+# The quality measures Prism-DevRel measures itself (ISO/IEC/IEEE 15939): each
+# names its QualityMeasure record, the LexLean method that computes its value
+# (the Lean kernel evaluates it when it checks app/src/Fidelity.lex.tex), the
+# file the method is written in (its κ is the result's), and whether the
+# record's threshold bounds the value from above (atMost) or below (atLeast).
+# The decision criteria's bound is the record's own threshold, never a number
+# written here. Listing a measure makes the gate hold it: the Lean kernel
+# evaluates the method and checks the value satisfies the criteria. A measure
+# not listed stays open on the measured axis.
+spec = "prism/measures/1"
+
+[[measure]]
+record = "Quality::measureUncoveredRecords"
+method = "Measures::uncoveredRecords"
+source = "app/src/Measures.lex.tex"
+direction = "atMost"
+
+[[measure]]
+record = "Quality::measureUndeclaredReferences"
+method = "Measures::undeclaredReferences"
+source = "app/src/Measures.lex.tex"
+direction = "atMost"

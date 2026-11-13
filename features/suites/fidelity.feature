@@ -34,3 +34,11 @@ Feature: fidelity
     Then the stakeholder is derived from the one line of charter.md that states it
     And the component stays open on the derived axis
     And app/src/Provenance.lex.tex is what prism-fidelity cites for app/
+
+  @FI-05 @build
+  Scenario: Every quality measure model/measures.toml lists is measured by the Lean kernel: its ISO/IEC/IEEE 15939 indicator's result is the value of a LexLean method, the decision criteria's bound is the measure's own threshold, the result carries the κ of the method's file, and a theorem that the value satisfies the criteria is checked
+    Given model/measures.toml and the methods in app/src/Measures.lex.tex
+    When prism-fidelity writes app/src/Fidelity.lex.tex and the Lean kernel checks it
+    Then each listed measure has an indicator named for it, criteria bounded by its threshold and a result whose value is its method
+    And a theorem that the value satisfies the criteria is decided for each
+    And the measure is closed on the measured axis of the register

@@ -320,15 +320,15 @@ struct Entity {
 /// `repo` is the root that provenance and measurement locations are relative
 /// to.
 pub fn score(project: &Path, repo: &Path) -> Result<Score, FidelityError> {
-    score_ignoring(project, repo, None)
+    score_ignoring(project, repo, &[])
 }
 
-/// [`score`], reading no provenance or measurement rows from the module
-/// named `ignore`: the citations [`cite`] writes are not an input of its own.
+/// [`score`], reading no provenance or measurement rows from the modules
+/// named in `ignore`: what a writer writes is not an input of its own.
 pub fn score_ignoring(
     project: &Path,
     repo: &Path,
-    ignore: Option<&str>,
+    ignore: &[&str],
 ) -> Result<Score, FidelityError> {
     let mut files = Vec::new();
     collect(&project.join("src"), &mut files)?;
@@ -365,8 +365,7 @@ pub fn score_ignoring(
                         .strip_prefix("(List ")
                         .and_then(|r| r.strip_suffix(')'))
                         .unwrap_or(result);
-                    if p.module.name != FIDELITY_MODULE
-                        && Some(p.module.name.as_str()) != ignore
+                    if !ignore.contains(&p.module.name.as_str())
                         && (element.starts_with(PROV) || element.starts_with(MEAS))
                     {
                         for item in record_items(body) {
@@ -510,6 +509,10 @@ pub fn score_ignoring(
                 "a measurement result names indicator {indicator} of {module}, which is not declared"
             )));
         };
+        if module == FIDELITY_MODULE && name.starts_with("Fidelity::") {
+            // The register's own indicators: their κ is the gate's byte check.
+            continue;
+        }
         let path = repo.join(location);
         let bytes = std::fs::read(&path).map_err(|e| FidelityError::Io(path, e))?;
         let k = file_kappa(location, &bytes);
@@ -719,6 +722,50 @@ impl Register {
     }
 }
 
+/// A quality measure the model measures itself: the record, the LexLean
+/// method that computes its value (the Lean kernel evaluates it), the module
+/// the method is written in, and whether the measure's threshold bounds it
+/// from above or below.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct MeasureSpec {
+    /// The `QualityMeasure` record, `Module::declaration`.
+    pub record: String,
+    /// The method, `Module::declaration` of a `Nat`.
+    pub method: String,
+    /// The file the method is written in, relative to the repository root.
+    pub source: String,
+    /// `atMost` or `atLeast`.
+    pub direction: String,
+}
+
+/// Read `model/measures.toml`: one `[[measure]]` table per measure.
+pub fn measures(text: &str) -> Result<Vec<MeasureSpec>, FidelityError> {
+    let mut out = Vec::new();
+    for table in text.split("[[measure]]").skip(1) {
+        let get = |k: &str| {
+            table
+                .lines()
+                .find_map(|l| l.trim().strip_prefix(&format!("{k} = ")))
+                .and_then(|v| v.strip_prefix('"').and_then(|v| v.strip_suffix('"')))
+                .map(str::to_string)
+                .ok_or_else(|| FidelityError::Register(format!("a measure has no {k}")))
+        };
+        let direction = get("direction")?;
+        if direction != "atMost" && direction != "atLeast" {
+            return Err(FidelityError::Register(format!(
+                "direction {direction} is neither atMost nor atLeast"
+            )));
+        }
+        out.push(MeasureSpec {
+            record: get("record")?,
+            method: get("method")?,
+            source: get("source")?,
+            direction,
+        });
+    }
+    Ok(out)
+}
+
 /// One line per axis: asked, closed, open.
 pub fn summary(score: &Score) -> String {
     let mut out = format!("{} records scored", score.records.len());
@@ -846,6 +893,13 @@ pub mod lean {
         )
     }
 
+    fn capital(name: &str) -> String {
+        let mut c = name.chars();
+        c.next()
+            .map(|f| f.to_uppercase().chain(c).collect())
+            .unwrap_or_default()
+    }
+
     fn title(axis: Axis) -> &'static str {
         match axis {
             Axis::Derived => "Derived",
@@ -863,7 +917,12 @@ pub mod lean {
     }
 
     /// The module's text, in the layout `lexlean fmt` keeps.
-    pub fn module(score: &Score, register: &str, kappa: &str) -> String {
+    pub fn module(
+        score: &Score,
+        register: &str,
+        kappa: &str,
+        measures: &[(super::MeasureSpec, String)],
+    ) -> String {
         let t = |ty: &str| format!("{MEAS}::{ty}");
         let mut decls = Vec::new();
         decls.push(definition(
@@ -985,9 +1044,68 @@ pub mod lean {
                 ],
             ));
         }
+        let mut criteria = Vec::new();
+        for (j, (m, method_kappa)) in measures.iter().enumerate() {
+            let i = Axis::ALL.len() + j;
+            let c = 1 + j;
+            let short = m.record.rsplit("::").next().unwrap_or(&m.record);
+            derived.push(definition(
+                &format!("derivedMeasure{}", capital(short)),
+                &t("DerivedMeasure"),
+                rec(
+                    "DerivedMeasure",
+                    &[
+                        ("index", i.to_string()),
+                        ("name", quote(&m.record)),
+                        ("function", quote(&m.method)),
+                        ("baseMeasureIndices", list("Nat", &[])),
+                    ],
+                ),
+            ));
+            criteria.push(definition(
+                &format!("criteria{}", capital(short)),
+                &t("DecisionCriteria"),
+                rec(
+                    "DecisionCriteria",
+                    &[
+                        ("index", c.to_string()),
+                        (
+                            "direction",
+                            format!("(ctor {MEAS}::Direction.{})", m.direction),
+                        ),
+                        ("bound", format!("(project ({}) threshold)", m.record)),
+                        ("basis", quote(&format!("the threshold of {}", m.record))),
+                    ],
+                ),
+            ));
+            indicators.push(rec(
+                "Indicator",
+                &[
+                    ("index", i.to_string()),
+                    ("name", quote(&m.record)),
+                    ("conceptIndex", "0".into()),
+                    ("derivedMeasureIndex", i.to_string()),
+                    (
+                        "analysisModel",
+                        quote("excess of the measured value over the threshold"),
+                    ),
+                    ("criteriaIndex", c.to_string()),
+                ],
+            ));
+            results.push(rec(
+                "MeasurementResult",
+                &[
+                    ("indicatorIndex", i.to_string()),
+                    ("value", format!("({})", m.method)),
+                    ("source", quote(&m.source)),
+                    ("kappa", quote(method_kappa)),
+                ],
+            ));
+        }
         decls.extend(attributes);
         decls.extend(bases);
         decls.extend(derived);
+        decls.extend(criteria);
         decls.push(definition(
             "indicators",
             &format!("(List {})", t("Indicator")),
@@ -1006,13 +1124,33 @@ pub mod lean {
                 (
                     "statement",
                     format!(
-                        "(({MEAS}::indicatorsKnown 1 {} 1 (indicators)) = true)",
-                        Axis::ALL.len()
+                        "(({MEAS}::indicatorsKnown 1 {} {} (indicators)) = true)",
+                        Axis::ALL.len() + measures.len(),
+                        1 + measures.len()
                     ),
                 ),
                 ("proof", "decide{}".into()),
             ],
         ));
+        for (m, _) in measures {
+            let short = m.record.rsplit("::").next().unwrap_or(&m.record);
+            decls.push(declaration(
+                "theorem",
+                &[
+                    ("name", format!("{short}Holds")),
+                    ("parameters", "[]".into()),
+                    (
+                        "statement",
+                        format!(
+                            "(({MEAS}::satisfies (criteria{}) ({})) = true)",
+                            capital(short),
+                            m.method
+                        ),
+                    ),
+                    ("proof", "decide{}".into()),
+                ],
+            ));
+        }
         decls.push(declaration(
             "theorem",
             &[
@@ -1025,8 +1163,22 @@ pub mod lean {
                 ("proof", "decide{}".into()),
             ],
         ));
+        let mut modules: Vec<&str> = measures
+            .iter()
+            .flat_map(|(m, _)| [m.record.as_str(), m.method.as_str()])
+            .filter_map(|id| id.rsplit_once("::").map(|(module, _)| module))
+            .chain([MEAS])
+            .chain(measures.first().map(|_| "Foundation.Qual"))
+            .collect();
+        modules.sort_unstable();
+        modules.dedup();
+        let imports: String = modules
+            .iter()
+            .map(|m| format!("\\importmodule{{{m}}}\n"))
+            .collect();
         format!(
-            "\\begin{{lexlean}}{{Fidelity}}\n\\useglossary{{lexlean.std.bool@1.2.0}}\n\\useglossary{{lexlean.std.nat@1.2.0}}\n\\useglossary{{prism.arch@1.0.0}}\n\\importmodule{{{MEAS}}}\n\\title{{Fidelity of the model}}\n\\begin{{semanticmodule}}\n{}\\end{{semanticmodule}}\n\\end{{lexlean}}\n",
+            "\\begin{{lexlean}}{{Fidelity}}\n\\useglossary{{lexlean.std.bool@1.2.0}}\n\\useglossary{{lexlean.std.nat@1.2.0}}\n\\useglossary{{prism.arch@1.0.0}}\n{}\\title{{Fidelity of the model}}\n\\begin{{semanticmodule}}\n{}\\end{{semanticmodule}}\n\\end{{lexlean}}\n",
+            imports,
             decls.join("\n")
         )
     }

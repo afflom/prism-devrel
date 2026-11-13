@@ -29,12 +29,12 @@ template-check:
 # FI-01..FI-04: the citations, the fidelity register and the model's measurement of it are
 # what the model scores to, and no closed κ is open again.
 fidelity:
-    cargo run -q --locked -p prism-fidelity -- --project app --repo . --register fidelity.toml --cite model/provenance.toml app/src/Provenance.lex.tex --lean app/src/Fidelity.lex.tex --check
+    cargo run -q --locked -p prism-fidelity -- --project app --repo . --register fidelity.toml --cite model/provenance.toml app/src/Provenance.lex.tex --measures model/measures.toml --lean app/src/Fidelity.lex.tex --check
 
 # Cite and rescore the model: app/src/Provenance.lex.tex, fidelity.toml and
 # app/src/Fidelity.lex.tex.
 fidelity-write:
-    cargo run -q --locked -p prism-fidelity -- --project app --repo . --register fidelity.toml --cite model/provenance.toml app/src/Provenance.lex.tex --lean app/src/Fidelity.lex.tex
+    cargo run -q --locked -p prism-fidelity -- --project app --repo . --register fidelity.toml --cite model/provenance.toml app/src/Provenance.lex.tex --measures model/measures.toml --lean app/src/Fidelity.lex.tex
 
 # Clippy at `-D warnings` over every target with every feature enabled. This is
 # the one place an optional feature is compiled: a rename upstream of an

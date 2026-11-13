@@ -218,3 +218,9 @@ id = "FI-04"
 level = "build"
 suite = "fidelity"
 statement = "A record no writer derives is cited from the smallest span of a primary source listed in model/provenance.toml that holds every text field of it verbatim, as a W3C PROV-O derivation by prism-fidelity; a record no listed source states stays open, and the committed citations are the ones the sources give"
+
+[[id]]
+id = "FI-05"
+level = "build"
+suite = "fidelity"
+statement = "Every quality measure model/measures.toml lists is measured by the Lean kernel: its ISO/IEC/IEEE 15939 indicator's result is the value of a LexLean method, the decision criteria's bound is the measure's own threshold, the result carries the κ of the method's file, and a theorem that the value satisfies the criteria is checked"

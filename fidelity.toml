@@ -575,6 +575,16 @@ record = "Compliance::obligations#9"
 axis = "meant"
 
 [[closed]]
+kappa = "4f8a51ea88dd6f1425a0f55fa8894c060b66add478924cdd4781bddffde65978"
+record = "Quality::measureUncoveredRecords"
+axis = "measured"
+
+[[closed]]
+kappa = "2523a8f20bc742ceebf931bcca72590a48fd3efe344b8cbc7d673da32623f703"
+record = "Quality::measureUndeclaredReferences"
+axis = "measured"
+
+[[closed]]
 kappa = "b3d904344ee1b3af2125a4d3da8040e3a6f9377799d1560b3e60245c9b9e707a"
 record = "Users::goals#0"
 axis = "meant"
@@ -11009,12 +11019,6 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4f8a51ea88dd6f1425a0f55fa8894c060b66add478924cdd4781bddffde65978"
-record = "Quality::measureUncoveredRecords"
-axis = "measured"
-reason = "no indicator named for it has a measurement result (ISO/IEC/IEEE 15939)"
-
-[[residue]]
 kappa = "a446a741dea337d49369332f7814b644a4d0d927dae94ee8df28bcae690216bc"
 record = "Quality::measureUndeclaredReferences"
 axis = "derived"
@@ -11025,12 +11029,6 @@ kappa = "7ca7ccf1e4f00532297b684f939ea4eca72ce48373d1b2c2ce5c94e80b9b8643"
 record = "Quality::measureUndeclaredReferences"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "2523a8f20bc742ceebf931bcca72590a48fd3efe344b8cbc7d673da32623f703"
-record = "Quality::measureUndeclaredReferences"
-axis = "measured"
-reason = "no indicator named for it has a measurement result (ISO/IEC/IEEE 15939)"
 
 [[residue]]
 kappa = "2edbde9308626fc4deac9034af5d4e4d7e85fa52afaf44b0d0b209dfd4cb84ca"
