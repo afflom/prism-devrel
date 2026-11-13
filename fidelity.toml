@@ -755,6 +755,11 @@ record = "Features::journeyReviewer"
 axis = "derived"
 
 [[closed]]
+kappa = "ef55c2b3e72662660fc340eff039534737b66cb4f2d7449d3b3757426957199e"
+record = "Quality::measureJourneysPerStakeholder"
+axis = "measured"
+
+[[closed]]
 kappa = "4f8a51ea88dd6f1425a0f55fa8894c060b66add478924cdd4781bddffde65978"
 record = "Quality::measureUncoveredRecords"
 axis = "measured"
@@ -11015,12 +11020,6 @@ kappa = "14311eb8087f32ac1c3047f80b6488c109ecc5c57025d7676e4fe138b3b48b14"
 record = "Quality::measureJourneysPerStakeholder"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "ef55c2b3e72662660fc340eff039534737b66cb4f2d7449d3b3757426957199e"
-record = "Quality::measureJourneysPerStakeholder"
-axis = "measured"
-reason = "no indicator named for it has a measurement result (ISO/IEC/IEEE 15939)"
 
 [[residue]]
 kappa = "32ab1a4c4b0365febf90bf27369c80bb3ce9377102711e21dac28ee93f3d0d72"

@@ -20,3 +20,9 @@ record = "Quality::measureUndeclaredReferences"
 method = "Measures::undeclaredReferences"
 source = "app/src/Measures.lex.tex"
 direction = "atMost"
+
+[[measure]]
+record = "Quality::measureJourneysPerStakeholder"
+method = "Measures::journeysPerStakeholder"
+source = "app/src/Measures.lex.tex"
+direction = "atLeast"

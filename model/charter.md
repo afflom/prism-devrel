@@ -6,7 +6,9 @@ prism-fidelity cites each stakeholder, concern and feature of the model from the
 
 ## Purpose
 
-Prism-DevRel shows developers how to build Prism apps. It is itself a Prism app, a reference implementation whose norms become standards for the ecosystem, and it teaches from case studies of real Prism models, UORust among them.
+Prism-DevRel streamlines producing the highest quality Prism apps possible, and refines that process, so that the ecosystem has a sound model of Prism best practices and reference implementations of complete Prism models. There are many ways to create a Prism; what matters is that the output Prism is complete. Prism-DevRel showed how to make UORust and takes the best parts of UORust for its own use, and every tool, process and piece of content here is made to advance the ecosystem.
+
+Prism-DevRel refines and informs the upstream work. What it proves out goes back upstream, so that https://uor.foundation, the entrypoint for new developers, and its Foundry portal are the single digital presence of the UOR Foundation.
 
 ## Stakeholders
 

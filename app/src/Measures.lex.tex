@@ -4,6 +4,8 @@
 \useglossary{prism.arch@1.0.0}
 \importmodule{Catalog}
 \importmodule{Foundation.DevRel.V1.Model}
+\importmodule{Foundation.Experience.V1.Model}
+\importmodule{Users}
 \title{Measurement methods of the model}
 \begin{semanticmodule}
 definition{
@@ -54,6 +56,53 @@ definition{
   parameters: [],
   result: Nat,
   body: (undeclaredRows (Foundation.DevRel.V1.Model::resourceTotal (Catalog::resources)) (Catalog::covers))
+}
+
+definition{
+  name: same,
+  parameters: [a : Nat, b : Nat],
+  result: Nat,
+  body: (prim subtract 1 ((prim subtract a b : Nat) + (prim subtract b a : Nat)) : Nat)
+}
+
+definition{
+  name: smaller,
+  parameters: [a : Nat, b : Nat],
+  result: Nat,
+  body: (prim subtract a (prim subtract a b : Nat) : Nat)
+}
+
+definition{
+  name: goalsOf,
+  parameters: [user : Nat, goals : (List Foundation.Experience.V1.Model::Goal)],
+  result: Nat,
+  body: (match goals
+    | List.nil => 0
+    | List.cons goal rest => ((same (project goal user) user) + (goalsOf user rest))),
+  recursive_argument: goals
+}
+
+definition{
+  name: fewestGoals,
+  parameters: [
+    user : Nat,
+    groups : (List Foundation.Experience.V1.Model::UserGroup),
+    goals : (List Foundation.Experience.V1.Model::Goal)
+  ],
+  result: Nat,
+  body: (match groups
+    | List.nil => 0
+    | List.cons group rest => (match rest
+      | List.nil => (goalsOf user goals)
+      | List.cons next others => (smaller (goalsOf user goals) (fewestGoals (user + 1) rest goals)))),
+  recursive_argument: groups
+}
+
+definition{
+  name: journeysPerStakeholder,
+  parameters: [],
+  result: Nat,
+  body: (fewestGoals 0 (Users::groups) (Users::goals))
 }
 \end{semanticmodule}
 \end{lexlean}
