@@ -34,6 +34,13 @@
     { "prompt": "mnist-requant-clamp.prompt.json", "repository": "UOR-Foundation/MNIST", "summary": "The ONNX Model Zoo int8 MNIST network as one LexLean model, certified into a Rust package that matches onnxruntime on all 10,000 test images." },
     { "prompt": "jcs-nfc-admission.prompt.json", "repository": "UOR-Foundation/uor-jcs-nfc", "summary": "A JSON digest context: RFC 8785 with integer-only admission, NFC before member sort, collision refusal and a pinned sha256 representation." },
     { "prompt": "r4-seed-gate.prompt.json", "repository": "UOR-Foundation/uor-r4", "live": "https://uor-foundation.github.io/uor-r4/", "summary": "An open research project testing whether geometry and integer tables can replace a transformer's run-time machinery in a laptop-scale language model." },
-    { "prompt": "site-docs-sync.prompt.json", "repository": "UOR-Foundation/website", "live": "https://uor.foundation/", "summary": "The UOR Foundation website, which syncs the Prism SDK docs from PrismPM every six hours and redeploys only when they change." }
+    { "prompt": "site-docs-sync.prompt.json", "repository": "UOR-Foundation/website", "live": "https://uor.foundation/", "summary": "The UOR Foundation website, which syncs the Prism SDK docs from PrismPM every six hours and redeploys only when they change." },
+    { "prompt": "uor-toc-lifecycle.prompt.json", "repository": "UOR-Foundation/.github", "summary": "The UOR Foundation TOC process: Sandbox, Incubation, Graduated and Archived, moved only by a quorate committee act on complete evidence." },
+    { "prompt": "uor-repo-files.prompt.json", "repository": "UOR-Foundation/.github", "summary": "The files each UOR Foundation repository tier requires and recommends, from the governance framework." },
+    { "prompt": "uor-repo-protection.prompt.json", "repository": "UOR-Foundation/.github", "summary": "Branch protection each UOR Foundation repository tier requires, from the governance framework." },
+    { "prompt": "uor-repo-standards.prompt.json", "repository": "UOR-Foundation/.github", "summary": "UOR Foundation topic tags and Semantic Versioning, from the repository standards." },
+    { "prompt": "uor-coc-enforcement.prompt.json", "repository": "UOR-Foundation/.github", "summary": "The UOR Foundation Code of Conduct enforcement ladder (Contributor Covenant 3.0)." },
+    { "prompt": "uor-contribution-attribution.prompt.json", "repository": "UOR-Foundation/.github", "summary": "Crediting agent and person contributions for CHAOSS contributor metrics through W3C PROV-O delegation." },
+    { "prompt": "uor-discord-read.prompt.json", "repository": "UOR-Foundation/.github", "summary": "Which UOR Foundation Discord channels the CHAOSS chat collector may read." }
   ]
 }

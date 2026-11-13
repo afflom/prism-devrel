@@ -1,0 +1,365 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "policyDecision",
+  "goal": "Decide whether a contribution to a UOR Foundation project is credited to a person, following W3C PROV-O delegation from a software agent to the person it acted for.",
+  "repository": "UOR-Foundation/.github",
+  "app": {
+    "name": "uor-contribution-attribution",
+    "title": "Contribution attribution",
+    "purpose": "Permit crediting a contribution to a person in the CHAOSS contributor metrics when its PROV-O agent is a resolved person, or a software agent whose prov:actedOnBehalfOf names a resolved person with the delegation recorded in the contribution; deny unattributed software work; not applicable for organizations.",
+    "fields": [
+      {
+        "name": "agent",
+        "kind": "choice",
+        "values": [
+          "person",
+          "software",
+          "organization"
+        ],
+        "means": "the PROV-O agent class that made the contribution: prov:Person, prov:SoftwareAgent or prov:Organization"
+      },
+      {
+        "name": "identity",
+        "kind": "choice",
+        "values": [
+          "resolved",
+          "unresolved"
+        ],
+        "means": "whether the person credited (the agent, or its principal) is resolved to one unique contributor identity"
+      },
+      {
+        "name": "delegation",
+        "kind": "choice",
+        "values": [
+          "declared",
+          "absent"
+        ],
+        "means": "whether the contribution declares prov:actedOnBehalfOf"
+      },
+      {
+        "name": "principal",
+        "kind": "choice",
+        "values": [
+          "person",
+          "organization",
+          "none"
+        ],
+        "means": "the PROV-O class of the agent it acted on behalf of"
+      },
+      {
+        "name": "trail",
+        "kind": "choice",
+        "values": [
+          "recorded",
+          "missing"
+        ],
+        "means": "whether the delegation is recorded in the contribution itself, as a commit trailer, session link or Requested by line"
+      }
+    ],
+    "outcomes": [
+      "permit",
+      "deny",
+      "not-applicable",
+      "indeterminate"
+    ],
+    "meanings": {
+      "permit": "credited to the person",
+      "deny": "counted as project activity but credited to no person",
+      "not-applicable": "an organization's contribution, counted by organizational metrics, not person metrics",
+      "indeterminate": "the person cannot be determined until their identity is resolved"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "agent",
+            "op": "is",
+            "value": "organization"
+          }
+        ],
+        "then": "not-applicable",
+        "why": "W3C PROV-O: prov:Organization is a distinct agent class; CHAOSS Organizational Diversity counts organizations, not contributors"
+      },
+      {
+        "when": [
+          {
+            "field": "identity",
+            "op": "is",
+            "value": "unresolved"
+          }
+        ],
+        "then": "indeterminate",
+        "why": "CHAOSS Contributors: one person counted once across identities; GrimoireLab SortingHat unifies identities before counting"
+      },
+      {
+        "when": [
+          {
+            "field": "agent",
+            "op": "is",
+            "value": "person"
+          }
+        ],
+        "then": "permit",
+        "why": "W3C PROV-O: prov:Person; CHAOSS Contributors counts persons who contribute"
+      },
+      {
+        "when": [
+          {
+            "field": "agent",
+            "op": "is",
+            "value": "software"
+          },
+          {
+            "field": "delegation",
+            "op": "is",
+            "value": "declared"
+          },
+          {
+            "field": "principal",
+            "op": "is",
+            "value": "person"
+          },
+          {
+            "field": "trail",
+            "op": "is",
+            "value": "recorded"
+          }
+        ],
+        "then": "permit",
+        "why": "W3C PROV-O prov:actedOnBehalfOf: the delegate's activity is attributed to the responsible agent; the trail records the delegation in the contribution"
+      },
+      {
+        "when": [
+          {
+            "field": "agent",
+            "op": "is",
+            "value": "software"
+          }
+        ],
+        "then": "deny",
+        "why": "W3C PROV-O: a prov:SoftwareAgent without a recorded delegation to a person is responsible for its own activity and is not a person"
+      }
+    ],
+    "otherwise": "deny",
+    "otherwiseWhy": "no PROV-O path from the contribution to a person",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "agent",
+            "op": "is",
+            "value": "software"
+          },
+          {
+            "field": "delegation",
+            "op": "is",
+            "value": "absent"
+          }
+        ],
+        "then": "permit",
+        "why": "software work is credited to a person only by delegation"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "agent",
+            "op": "is",
+            "value": "software"
+          },
+          {
+            "field": "trail",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "permit",
+        "why": "a delegation not recorded in the contribution cannot be verified from it"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "agent",
+            "op": "is",
+            "value": "software"
+          },
+          {
+            "field": "principal",
+            "op": "is",
+            "value": "organization"
+          }
+        ],
+        "then": "permit",
+        "why": "acting for an organization credits no person"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "identity",
+            "op": "is",
+            "value": "unresolved"
+          }
+        ],
+        "then": "permit",
+        "why": "an unresolved identity could count one person twice"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "agent",
+            "op": "is",
+            "value": "person"
+          },
+          {
+            "field": "identity",
+            "op": "is",
+            "value": "resolved"
+          }
+        ],
+        "then": "permit",
+        "why": "a resolved person's own contribution is always credited to them"
+      }
+    ],
+    "examples": [
+      {
+        "request": "person resolved absent none missing",
+        "response": "permit"
+      },
+      {
+        "request": "person unresolved absent none missing",
+        "response": "indeterminate"
+      },
+      {
+        "request": "software resolved declared person recorded",
+        "response": "permit"
+      },
+      {
+        "request": "software resolved declared person missing",
+        "response": "deny"
+      },
+      {
+        "request": "software resolved absent none missing",
+        "response": "deny"
+      },
+      {
+        "request": "software resolved declared organization recorded",
+        "response": "deny"
+      },
+      {
+        "request": "software unresolved declared person recorded",
+        "response": "indeterminate"
+      },
+      {
+        "request": "organization resolved absent none missing",
+        "response": "not-applicable"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Contributor",
+      "text": "Directs work, often through an agent, and needs it credited to them.",
+      "concerns": [
+        "Correct answers"
+      ]
+    },
+    {
+      "name": "Agent contributor",
+      "text": "A software agent that writes commits and pull requests and needs its work credited to the person it acted for, never counted as a person.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Community and Outreach Committee",
+      "text": "Reads CHAOSS contributor metrics and needs persons, agents and organizations counted apart.",
+      "concerns": [
+        "Proved guarantees",
+        "Refused malformed requests"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "GrimoireLab",
+      "kind": "externalSystem",
+      "text": "The CHAOSS oracle: Perceval collects contributions and SortingHat resolves identities."
+    },
+    {
+      "name": "Contribution trail",
+      "kind": "externalSystem",
+      "text": "Commit trailers, session links and Requested by lines that record each delegation."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Agents inflate contributor counts",
+      "text": "Agent commits are counted as extra people.",
+      "stride": "spoofing",
+      "asset": "answer",
+      "likelihood": "high",
+      "impact": "major",
+      "control": {
+        "name": "Delegation to a person",
+        "text": "Software work counts only through a recorded delegation to a resolved person.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "INV-001"
+          },
+          {
+            "kind": "proof",
+            "reference": "INV-002"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Forged trailer",
+      "text": "A contribution claims a delegation from someone who never directed it.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "major",
+      "accepted": "The app decides on the trail it is given; verifying a trailer's signature or session belongs to the collector and the forge."
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Contributor",
+      "steps": [
+        "REQ-003",
+        "REQ-004"
+      ]
+    },
+    {
+      "stakeholder": "Agent contributor",
+      "steps": [
+        "REQ-004",
+        "REQ-005",
+        "INV-001",
+        "INV-002"
+      ]
+    },
+    {
+      "stakeholder": "Community and Outreach Committee",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "INV-004",
+        "refuse"
+      ]
+    }
+  ],
+  "axioms": {
+    "inv005Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
+}

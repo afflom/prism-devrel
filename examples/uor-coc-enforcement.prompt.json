@@ -1,0 +1,527 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "stateMachine",
+  "machine": {
+    "state": "record",
+    "initial": "clear",
+    "final": [
+      "banned"
+    ]
+  },
+  "goal": "Give the rung of the UOR Foundation Code of Conduct enforcement ladder a found violation reaches, from the person's record and the violation's severity.",
+  "repository": "UOR-Foundation/.github",
+  "app": {
+    "name": "uor-coc-enforcement",
+    "title": "Code of Conduct enforcement ladder",
+    "purpose": "Give the enforcement rung of the UOR Foundation Code of Conduct (Contributor Covenant 3.0) a person reaches, from the highest rung on their record, whether Community Moderators found a violation, its severity, and who decided.",
+    "fields": [
+      {
+        "name": "record",
+        "kind": "choice",
+        "values": [
+          "clear",
+          "warned",
+          "limited",
+          "suspended",
+          "banned"
+        ],
+        "means": "the highest rung on the person's record"
+      },
+      {
+        "name": "finding",
+        "kind": "choice",
+        "values": [
+          "violation",
+          "none",
+          "pending"
+        ],
+        "means": "whether an investigation found a violation, found none, or is still open"
+      },
+      {
+        "name": "severity",
+        "kind": "choice",
+        "values": [
+          "minor",
+          "moderate",
+          "serious",
+          "severe"
+        ],
+        "means": "the violation's severity: a single incident, a more serious violation, a single serious violation, or one so serious the community cannot be kept safe"
+      },
+      {
+        "name": "authority",
+        "kind": "choice",
+        "values": [
+          "moderators",
+          "board",
+          "other"
+        ],
+        "means": "who decided: Community Moderators, the Board of Directors, or anyone else"
+      }
+    ],
+    "outcomes": [
+      "clear",
+      "warned",
+      "limited",
+      "suspended",
+      "banned"
+    ],
+    "meanings": {
+      "clear": "no enforcement on record",
+      "warned": "Warning: a private, written warning",
+      "limited": "Temporarily Limited Activities: a written warning with a time-limited cooldown",
+      "suspended": "Temporary Suspension: a written warning with conditions for return",
+      "banned": "Permanent Ban: access to all community spaces removed, the final rung"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "record",
+            "op": "is",
+            "value": "banned"
+          }
+        ],
+        "then": "banned",
+        "why": "CODE_OF_CONDUCT.md: there is no possible repair in cases of this severity"
+      },
+      {
+        "when": [
+          {
+            "field": "finding",
+            "op": "is",
+            "value": "violation"
+          },
+          {
+            "field": "authority",
+            "op": "is not",
+            "value": "other"
+          },
+          {
+            "field": "severity",
+            "op": "is",
+            "value": "severe"
+          }
+        ],
+        "then": "banned",
+        "why": "CODE_OF_CONDUCT.md Permanent Ban: a violation so serious that there is no way to keep the community safe; lower rungs may be skipped by severity"
+      },
+      {
+        "when": [
+          {
+            "field": "finding",
+            "op": "is",
+            "value": "violation"
+          },
+          {
+            "field": "authority",
+            "op": "is not",
+            "value": "other"
+          },
+          {
+            "field": "record",
+            "op": "is",
+            "value": "suspended"
+          }
+        ],
+        "then": "banned",
+        "why": "CODE_OF_CONDUCT.md Permanent Ban: a pattern of repeated violations that other steps on the ladder have failed to resolve"
+      },
+      {
+        "when": [
+          {
+            "field": "finding",
+            "op": "is",
+            "value": "violation"
+          },
+          {
+            "field": "authority",
+            "op": "is not",
+            "value": "other"
+          },
+          {
+            "field": "severity",
+            "op": "is",
+            "value": "serious"
+          }
+        ],
+        "then": "suspended",
+        "why": "CODE_OF_CONDUCT.md Temporary Suspension: a single serious violation"
+      },
+      {
+        "when": [
+          {
+            "field": "finding",
+            "op": "is",
+            "value": "violation"
+          },
+          {
+            "field": "authority",
+            "op": "is not",
+            "value": "other"
+          },
+          {
+            "field": "record",
+            "op": "is",
+            "value": "limited"
+          }
+        ],
+        "then": "suspended",
+        "why": "CODE_OF_CONDUCT.md Temporary Suspension: a pattern of repeated violation the moderators have tried to address with warnings"
+      },
+      {
+        "when": [
+          {
+            "field": "finding",
+            "op": "is",
+            "value": "violation"
+          },
+          {
+            "field": "authority",
+            "op": "is not",
+            "value": "other"
+          },
+          {
+            "field": "severity",
+            "op": "is",
+            "value": "moderate"
+          }
+        ],
+        "then": "limited",
+        "why": "CODE_OF_CONDUCT.md Temporarily Limited Activities: the first incidence of a more serious violation"
+      },
+      {
+        "when": [
+          {
+            "field": "finding",
+            "op": "is",
+            "value": "violation"
+          },
+          {
+            "field": "authority",
+            "op": "is not",
+            "value": "other"
+          },
+          {
+            "field": "record",
+            "op": "is",
+            "value": "warned"
+          }
+        ],
+        "then": "limited",
+        "why": "CODE_OF_CONDUCT.md Temporarily Limited Activities: a repeated incidence of a violation that previously resulted in a warning"
+      },
+      {
+        "when": [
+          {
+            "field": "finding",
+            "op": "is",
+            "value": "violation"
+          },
+          {
+            "field": "authority",
+            "op": "is not",
+            "value": "other"
+          }
+        ],
+        "then": "warned",
+        "why": "CODE_OF_CONDUCT.md Warning: a violation involving a single incident or series of incidents"
+      },
+      {
+        "when": [
+          {
+            "field": "record",
+            "op": "is",
+            "value": "warned"
+          }
+        ],
+        "then": "warned",
+        "why": "CODE_OF_CONDUCT.md: without a found violation the record does not change"
+      },
+      {
+        "when": [
+          {
+            "field": "record",
+            "op": "is",
+            "value": "limited"
+          }
+        ],
+        "then": "limited",
+        "why": "CODE_OF_CONDUCT.md: without a found violation the record does not change"
+      },
+      {
+        "when": [
+          {
+            "field": "record",
+            "op": "is",
+            "value": "suspended"
+          }
+        ],
+        "then": "suspended",
+        "why": "CODE_OF_CONDUCT.md: without a found violation the record does not change"
+      }
+    ],
+    "otherwise": "clear",
+    "otherwiseWhy": "CODE_OF_CONDUCT.md: not every conflict is a violation; with no finding by the enforcement authority the record stays clear",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "authority",
+            "op": "is",
+            "value": "other"
+          },
+          {
+            "field": "record",
+            "op": "is",
+            "value": "clear"
+          }
+        ],
+        "then": "banned",
+        "why": "CODE_OF_CONDUCT.md: enforcement authority rests with the Board, which may delegate it to moderators"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "finding",
+            "op": "is",
+            "value": "pending"
+          },
+          {
+            "field": "record",
+            "op": "is",
+            "value": "clear"
+          }
+        ],
+        "then": "warned",
+        "why": "CODE_OF_CONDUCT.md: the ladder is used if an investigation finds a violation"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "finding",
+            "op": "is",
+            "value": "none"
+          },
+          {
+            "field": "record",
+            "op": "is",
+            "value": "warned"
+          }
+        ],
+        "then": "limited",
+        "why": "no rung is reached without a found violation"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "record",
+            "op": "is",
+            "value": "limited"
+          }
+        ],
+        "then": "warned",
+        "why": "a record never moves down the ladder"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "record",
+            "op": "is",
+            "value": "suspended"
+          }
+        ],
+        "then": "clear",
+        "why": "a record never moves down the ladder"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "finding",
+            "op": "is",
+            "value": "violation"
+          },
+          {
+            "field": "authority",
+            "op": "is",
+            "value": "moderators"
+          },
+          {
+            "field": "severity",
+            "op": "is",
+            "value": "severe"
+          }
+        ],
+        "then": "banned",
+        "why": "a violation so serious the community cannot be kept safe is a Permanent Ban"
+      }
+    ],
+    "examples": [
+      {
+        "request": "clear violation minor moderators",
+        "response": "warned"
+      },
+      {
+        "request": "clear violation moderate moderators",
+        "response": "limited"
+      },
+      {
+        "request": "clear violation serious board",
+        "response": "suspended"
+      },
+      {
+        "request": "clear violation severe moderators",
+        "response": "banned"
+      },
+      {
+        "request": "warned violation minor moderators",
+        "response": "limited"
+      },
+      {
+        "request": "limited violation minor moderators",
+        "response": "suspended"
+      },
+      {
+        "request": "suspended violation minor moderators",
+        "response": "banned"
+      },
+      {
+        "request": "clear pending severe moderators",
+        "response": "clear"
+      },
+      {
+        "request": "warned none minor moderators",
+        "response": "warned"
+      },
+      {
+        "request": "clear violation severe other",
+        "response": "clear"
+      },
+      {
+        "request": "banned none minor board",
+        "response": "banned"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Community Moderator",
+      "text": "Investigates reports from email and Discord and needs the ladder's rung for each finding.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Community member",
+      "text": "Participates on Discord, GitHub and at events and needs enforcement to follow the published ladder, never an unpublished one.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "Board of Directors",
+      "text": "Holds ultimate enforcement authority and delegates it to moderators.",
+      "concerns": [
+        "Refused malformed requests"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "Report channels",
+      "kind": "externalSystem",
+      "text": "hi@uor.foundation and direct messages to Discord admins and moderators, where reports arrive."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Enforcement without authority",
+      "text": "Someone outside the moderators and the Board moves a person up the ladder.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Delegated authority only",
+        "text": "Only moderators and the Board move a record.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "INV-001"
+          },
+          {
+            "kind": "review",
+            "reference": "UOR-Foundation/.github CODE_OF_CONDUCT.md Addressing and Repairing Harm"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Discretion outside the ladder",
+      "text": "Moderators choose a rung the ladder does not give.",
+      "stride": "repudiation",
+      "asset": "answer",
+      "likelihood": "low",
+      "impact": "minor",
+      "accepted": "CODE_OF_CONDUCT.md calls the ladder a guideline that does not limit moderators' discretion; this app gives the ladder's rung, and a different decision is recorded by the moderators with its reasoning."
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Community Moderator",
+      "steps": [
+        "REQ-008",
+        "REQ-007",
+        "REQ-005",
+        "REQ-003",
+        "REQ-002"
+      ]
+    },
+    {
+      "stakeholder": "Community member",
+      "steps": [
+        "otherwise",
+        "INV-002",
+        "INV-003",
+        "INV-004"
+      ]
+    },
+    {
+      "stakeholder": "Board of Directors",
+      "steps": [
+        "INV-001",
+        "INV-006",
+        "refuse"
+      ]
+    }
+  ],
+  "axioms": {
+    "inv004Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv005Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv006Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv007Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
+}

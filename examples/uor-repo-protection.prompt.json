@@ -1,0 +1,354 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "decisionTable",
+  "goal": "Tell a UOR Foundation repository whether its default branch is protected as its tier requires.",
+  "repository": "UOR-Foundation/.github",
+  "app": {
+    "name": "uor-repo-protection",
+    "title": "Branch protection by tier",
+    "purpose": "Decide whether a UOR Foundation repository protects its default branch as GOVERNANCE.md 6.2 and 9 require for its tier: pull requests, approving reviews, required status checks and no force push.",
+    "fields": [
+      {
+        "name": "tier",
+        "kind": "choice",
+        "values": [
+          "t1",
+          "t2",
+          "t3",
+          "t4"
+        ],
+        "means": "the repository's tier: core framework, implementation, presentation or experiment"
+      },
+      {
+        "name": "pr",
+        "kind": "choice",
+        "values": [
+          "required",
+          "optional"
+        ],
+        "means": "whether the default branch requires a pull request"
+      },
+      {
+        "name": "reviews",
+        "kind": "number",
+        "min": 0,
+        "max": 8,
+        "means": "approving reviews the default branch requires"
+      },
+      {
+        "name": "checks",
+        "kind": "choice",
+        "values": [
+          "required",
+          "optional"
+        ],
+        "means": "whether status checks must pass before merging"
+      },
+      {
+        "name": "forcepush",
+        "kind": "choice",
+        "values": [
+          "blocked",
+          "allowed"
+        ],
+        "means": "whether force pushes to the default branch are allowed"
+      }
+    ],
+    "outcomes": [
+      "weak-protection",
+      "conformant"
+    ],
+    "meanings": {
+      "weak-protection": "branch protection is weaker than its tier requires",
+      "conformant": "every requirement and recommendation of its tier is met"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "forcepush",
+            "op": "is",
+            "value": "allowed"
+          }
+        ],
+        "then": "weak-protection",
+        "why": "GOVERNANCE.md 6.2: force push is never allowed, at any tier"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t4"
+          },
+          {
+            "field": "pr",
+            "op": "is",
+            "value": "optional"
+          }
+        ],
+        "then": "weak-protection",
+        "why": "GOVERNANCE.md 6.2: a pull request is required at Tiers 1 to 3"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t1"
+          },
+          {
+            "field": "reviews",
+            "op": "<",
+            "value": 2
+          }
+        ],
+        "then": "weak-protection",
+        "why": "GOVERNANCE.md 6.2 and 9: Tier 1 requires 2 reviews"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t4"
+          },
+          {
+            "field": "reviews",
+            "op": "<",
+            "value": 1
+          }
+        ],
+        "then": "weak-protection",
+        "why": "GOVERNANCE.md 6.2 and 9: Tiers 2 and 3 require 1 review"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t4"
+          },
+          {
+            "field": "checks",
+            "op": "is",
+            "value": "optional"
+          }
+        ],
+        "then": "weak-protection",
+        "why": "GOVERNANCE.md 6.2: status checks are required at Tiers 1 to 3"
+      }
+    ],
+    "otherwise": "conformant",
+    "otherwiseWhy": "GOVERNANCE.md 6.2 and 9: the default branch is protected as its tier requires",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "forcepush",
+            "op": "is",
+            "value": "allowed"
+          }
+        ],
+        "then": "conformant",
+        "why": "force push is never allowed, at any tier"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t1"
+          },
+          {
+            "field": "reviews",
+            "op": "<",
+            "value": 2
+          }
+        ],
+        "then": "conformant",
+        "why": "Tier 1 requires 2 reviews"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t2"
+          },
+          {
+            "field": "checks",
+            "op": "is",
+            "value": "optional"
+          }
+        ],
+        "then": "conformant",
+        "why": "Tier 2 requires status checks"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t4"
+          },
+          {
+            "field": "forcepush",
+            "op": "is",
+            "value": "blocked"
+          }
+        ],
+        "then": "conformant",
+        "why": "Tier 4 only forbids force push; the rest is recommended or optional"
+      }
+    ],
+    "examples": [
+      {
+        "request": "t1 required 2 required blocked",
+        "response": "conformant"
+      },
+      {
+        "request": "t1 required 1 required blocked",
+        "response": "weak-protection"
+      },
+      {
+        "request": "t2 required 1 required blocked",
+        "response": "conformant"
+      },
+      {
+        "request": "t2 required 0 required blocked",
+        "response": "weak-protection"
+      },
+      {
+        "request": "t3 optional 1 required blocked",
+        "response": "weak-protection"
+      },
+      {
+        "request": "t3 required 1 optional blocked",
+        "response": "weak-protection"
+      },
+      {
+        "request": "t3 required 1 required allowed",
+        "response": "weak-protection"
+      },
+      {
+        "request": "t4 optional 0 optional blocked",
+        "response": "conformant"
+      },
+      {
+        "request": "t4 optional 0 optional allowed",
+        "response": "weak-protection"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Repository Maintainer",
+      "text": "Keeps a repository healthy and needs to know whether it meets its tier and the first gap to close.",
+      "concerns": [
+        "Correct answers",
+        "Refused malformed requests"
+      ]
+    },
+    {
+      "name": "Organization Owner",
+      "text": "Holds final governance authority and needs every repository measured against the same published norms.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "GitHub repository settings",
+      "kind": "externalSystem",
+      "text": "The files, branch protection and topic tags the request is read from."
+    },
+    {
+      "name": "Template gate",
+      "kind": "externalSystem",
+      "text": "A template instance's just vv, which asks this app about its own repository."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Force push reported as conformant",
+      "text": "A repository that allows force pushes to its default branch is shown as meeting its norms.",
+      "stride": "tampering",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Force push gate",
+        "text": "Force push allowed is never conformant.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "INV-001"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Settings misread",
+      "text": "The request misstates the branch protection settings.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "minor",
+      "accepted": "The app decides on the settings it is given; reading them from GitHub belongs to the component that sends the request."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Integrity",
+      "requirement": "Every protection rule modeled",
+      "text": "Each Yes and number cell of GOVERNANCE.md 6.2 is one rule.",
+      "measure": "Unmodeled cells",
+      "measureText": "Cells of 6.2 with no rule.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Repository Maintainer",
+      "steps": [
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "REQ-005",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Organization Owner",
+      "steps": [
+        "INV-001",
+        "INV-002",
+        "refuse"
+      ]
+    }
+  ],
+  "axioms": {
+    "inv001Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv002Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv003Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
+}

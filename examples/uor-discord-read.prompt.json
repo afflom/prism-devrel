@@ -1,0 +1,72 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "policyDecision",
+  "goal": "Decide whether the community collector may read a UOR Foundation Discord channel for the CHAOSS Chat Platform Inclusivity metric.",
+  "repository": "UOR-Foundation/.github",
+  "app": {
+    "name": "uor-discord-read",
+    "title": "Discord channel read policy",
+    "purpose": "Permit the read-only collector to read a UOR Foundation Discord channel only when it is a text or forum channel everyone can view, the Foundation labels it public, a server administrator installed the bot and the Message Content intent is granted.",
+    "fields": [
+      { "name": "kind", "kind": "choice", "values": ["text", "forum", "voice", "dm"], "means": "the Discord channel type" },
+      { "name": "visibility", "kind": "choice", "values": ["everyone", "restricted"], "means": "whether the @everyone role can view the channel" },
+      { "name": "label", "kind": "choice", "values": ["public", "unlabeled", "excluded"], "means": "how the Foundation labels the channel for collection" },
+      { "name": "install", "kind": "choice", "values": ["admin", "other"], "means": "whether the bot was authorized by a member with Manage Server" },
+      { "name": "intent", "kind": "choice", "values": ["granted", "missing"], "means": "whether the Message Content privileged intent is granted to the bot" }
+    ],
+    "outcomes": ["permit", "deny", "not-applicable", "indeterminate"],
+    "meanings": {
+      "permit": "the collector may read the channel's messages",
+      "deny": "the collector must not read the channel",
+      "not-applicable": "the Foundation has not labeled the channel, so nothing is collected",
+      "indeterminate": "message content would arrive empty, so no reading can be trusted"
+    },
+    "rules": [
+      { "when": [{ "field": "kind", "op": "is", "value": "dm" }], "then": "deny", "why": "CODE_OF_CONDUCT.md: reports arrive by direct message and are handled with confidentiality" },
+      { "when": [{ "field": "kind", "op": "is", "value": "voice" }], "then": "deny", "why": "CHAOSS Chat Platform Inclusivity counts messages and participants; the collector records no audio" },
+      { "when": [{ "field": "install", "op": "is", "value": "other" }], "then": "deny", "why": "Discord OAuth2 bot authorization: adding a bot to a server requires the Manage Server permission" },
+      { "when": [{ "field": "visibility", "op": "is", "value": "restricted" }], "then": "deny", "why": "CHAOSS Chat Platform Inclusivity measures public shared chat rooms; a channel @everyone cannot view is not public" },
+      { "when": [{ "field": "label", "op": "is", "value": "excluded" }], "then": "deny", "why": "afflom/me: no personal data leaves its owner without declassification; the Foundation excludes the channel" },
+      { "when": [{ "field": "label", "op": "is", "value": "unlabeled" }], "then": "not-applicable", "why": "collection is opt-in per channel; an unlabeled channel is outside the policy" },
+      { "when": [{ "field": "intent", "op": "is", "value": "missing" }], "then": "indeterminate", "why": "Discord Gateway: without the Message Content privileged intent, message content fields arrive empty" }
+    ],
+    "otherwise": "permit",
+    "otherwiseWhy": "a public, labeled text or forum channel, with an admin-installed bot holding the Message Content intent",
+    "properties": [
+      { "kind": "never", "when": [{ "field": "kind", "op": "is", "value": "dm" }], "then": "permit", "why": "direct messages are never read" },
+      { "kind": "never", "when": [{ "field": "visibility", "op": "is", "value": "restricted" }], "then": "permit", "why": "a restricted channel is never read" },
+      { "kind": "never", "when": [{ "field": "label", "op": "is not", "value": "public" }], "then": "permit", "why": "only channels the Foundation labels public are read" },
+      { "kind": "never", "when": [{ "field": "install", "op": "is", "value": "other" }], "then": "permit", "why": "a bot not installed by a server administrator never reads" },
+      { "kind": "never", "when": [{ "field": "intent", "op": "is", "value": "missing" }], "then": "permit", "why": "empty content is never counted as a reading" }
+    ],
+    "examples": [
+      { "request": "text everyone public admin granted", "response": "permit" },
+      { "request": "forum everyone public admin granted", "response": "permit" },
+      { "request": "dm everyone public admin granted", "response": "deny" },
+      { "request": "voice everyone public admin granted", "response": "deny" },
+      { "request": "text restricted public admin granted", "response": "deny" },
+      { "request": "text everyone excluded admin granted", "response": "deny" },
+      { "request": "text everyone unlabeled admin granted", "response": "not-applicable" },
+      { "request": "text everyone public other granted", "response": "deny" },
+      { "request": "text everyone public admin missing", "response": "indeterminate" }
+    ]
+  },
+  "stakeholders": [
+    { "name": "Discord member", "text": "Talks in the Foundation's Discord and needs to know which channels are read and that direct messages never are.", "concerns": ["Proved guarantees"] },
+    { "name": "Discord administrator", "text": "Installs the bot and labels channels, and needs nothing read that was not labeled public.", "concerns": ["Correct answers", "Refused malformed requests"] },
+    { "name": "Community and Outreach Committee", "text": "Needs Chat Platform Inclusivity measured on the Foundation's live chat.", "concerns": ["Correct answers"] }
+  ],
+  "components": [
+    { "name": "Discord", "kind": "externalSystem", "text": "The Foundation's Discord server, read through the Discord API by a read-only bot." },
+    { "name": "Perceval Discord backend", "kind": "externalSystem", "text": "The GrimoireLab collector that asks this app before reading a channel." }
+  ],
+  "threats": [
+    { "name": "Private conversation collected", "text": "Direct messages or restricted channels, including Code of Conduct reports, are collected.", "stride": "informationDisclosure", "asset": "answer", "likelihood": "medium", "impact": "critical", "control": { "name": "Public channels only", "text": "Direct messages, voice and restricted or unlabeled channels are never permitted.", "evidence": [{ "kind": "proof", "reference": "INV-001" }, { "kind": "proof", "reference": "INV-002" }, { "kind": "proof", "reference": "INV-003" }] } },
+    { "name": "Label changed after collection", "text": "A channel is relabeled excluded after messages were collected.", "stride": "informationDisclosure", "asset": "request", "likelihood": "medium", "impact": "minor", "accepted": "The app decides per read; deleting already collected messages of a relabeled channel belongs to the collector's retention policy." }
+  ],
+  "journeys": [
+    { "stakeholder": "Discord member", "steps": ["REQ-001", "REQ-004", "INV-003"] },
+    { "stakeholder": "Discord administrator", "steps": ["REQ-003", "REQ-005", "REQ-006", "REQ-007", "otherwise"] },
+    { "stakeholder": "Community and Outreach Committee", "steps": ["otherwise", "INV-005", "refuse"] }
+  ]
+}

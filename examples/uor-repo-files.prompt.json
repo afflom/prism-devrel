@@ -1,0 +1,484 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "decisionTable",
+  "goal": "Tell a UOR Foundation repository whether it has every file its tier requires and recommends.",
+  "repository": "UOR-Foundation/.github",
+  "app": {
+    "name": "uor-repo-files",
+    "title": "Required repository files by tier",
+    "purpose": "Decide whether a UOR Foundation repository has the files GOVERNANCE.md 6.1 requires and recommends for its tier, naming a missing required file before a missing recommended one.",
+    "fields": [
+      {
+        "name": "tier",
+        "kind": "choice",
+        "values": [
+          "t1",
+          "t2",
+          "t3",
+          "t4"
+        ],
+        "means": "the repository's tier: core framework, implementation, presentation or experiment"
+      },
+      {
+        "name": "readme",
+        "kind": "choice",
+        "values": [
+          "present",
+          "missing"
+        ],
+        "means": "README.md"
+      },
+      {
+        "name": "license",
+        "kind": "choice",
+        "values": [
+          "present",
+          "missing"
+        ],
+        "means": "LICENSE"
+      },
+      {
+        "name": "contributing",
+        "kind": "choice",
+        "values": [
+          "present",
+          "missing"
+        ],
+        "means": "CONTRIBUTING.md, in the repository or inherited from UOR-Foundation/.github"
+      },
+      {
+        "name": "conduct",
+        "kind": "choice",
+        "values": [
+          "present",
+          "missing"
+        ],
+        "means": "CODE_OF_CONDUCT.md, in the repository or inherited from UOR-Foundation/.github"
+      },
+      {
+        "name": "security",
+        "kind": "choice",
+        "values": [
+          "present",
+          "missing"
+        ],
+        "means": "SECURITY.md, in the repository or inherited from UOR-Foundation/.github"
+      },
+      {
+        "name": "codeowners",
+        "kind": "choice",
+        "values": [
+          "present",
+          "missing"
+        ],
+        "means": ".github/CODEOWNERS"
+      },
+      {
+        "name": "ci",
+        "kind": "choice",
+        "values": [
+          "present",
+          "missing"
+        ],
+        "means": "a CI workflow"
+      }
+    ],
+    "outcomes": [
+      "missing-file",
+      "advisory",
+      "conformant"
+    ],
+    "meanings": {
+      "missing-file": "a file its tier requires is missing",
+      "advisory": "every requirement is met, but a file its tier recommends is missing",
+      "conformant": "every requirement and recommendation of its tier is met"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "readme",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "missing-file",
+        "why": "GOVERNANCE.md 6.1: README.md is required at every tier"
+      },
+      {
+        "when": [
+          {
+            "field": "license",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "missing-file",
+        "why": "GOVERNANCE.md 6.1: LICENSE is required at every tier"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t3"
+          },
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t4"
+          },
+          {
+            "field": "contributing",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "missing-file",
+        "why": "GOVERNANCE.md 6.1: CONTRIBUTING.md is required at Tiers 1 and 2"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t3"
+          },
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t4"
+          },
+          {
+            "field": "conduct",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "missing-file",
+        "why": "GOVERNANCE.md 6.1: CODE_OF_CONDUCT.md is required at Tiers 1 and 2"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t3"
+          },
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t4"
+          },
+          {
+            "field": "security",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "missing-file",
+        "why": "GOVERNANCE.md 6.1: SECURITY.md is required at Tiers 1 and 2"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t3"
+          },
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t4"
+          },
+          {
+            "field": "codeowners",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "missing-file",
+        "why": "GOVERNANCE.md 6.1: .github/CODEOWNERS is required at Tiers 1 and 2"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t3"
+          },
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t4"
+          },
+          {
+            "field": "ci",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "missing-file",
+        "why": "GOVERNANCE.md 6.1: a CI workflow is required at Tiers 1 and 2"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t3"
+          },
+          {
+            "field": "contributing",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "advisory",
+        "why": "GOVERNANCE.md 6.1: CONTRIBUTING.md is recommended at Tier 3"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t3"
+          },
+          {
+            "field": "conduct",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "advisory",
+        "why": "GOVERNANCE.md 6.1: CODE_OF_CONDUCT.md is recommended at Tier 3"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t3"
+          },
+          {
+            "field": "ci",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "advisory",
+        "why": "GOVERNANCE.md 6.1: a CI workflow is recommended at Tier 3"
+      }
+    ],
+    "otherwise": "conformant",
+    "otherwiseWhy": "GOVERNANCE.md 6.1: every required and recommended file of the tier is present",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "readme",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "conformant",
+        "why": "README.md is required at every tier"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "readme",
+            "op": "is",
+            "value": "present"
+          },
+          {
+            "field": "license",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "missing-file",
+        "why": "LICENSE is required at every tier and reported before a recommendation"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t1"
+          },
+          {
+            "field": "security",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "conformant",
+        "why": "SECURITY.md is required at Tier 1"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t4"
+          }
+        ],
+        "then": "advisory",
+        "why": "Tier 4 has no recommended files in GOVERNANCE.md 6.1, only optional ones"
+      }
+    ],
+    "examples": [
+      {
+        "request": "t1 present present present present present present present",
+        "response": "conformant"
+      },
+      {
+        "request": "t1 present present present present missing present present",
+        "response": "missing-file"
+      },
+      {
+        "request": "t2 present present present present present missing present",
+        "response": "missing-file"
+      },
+      {
+        "request": "t3 present present missing present missing missing present",
+        "response": "advisory"
+      },
+      {
+        "request": "t3 present present present present missing missing missing",
+        "response": "advisory"
+      },
+      {
+        "request": "t3 present present present present missing missing present",
+        "response": "conformant"
+      },
+      {
+        "request": "t4 present present missing missing missing missing missing",
+        "response": "conformant"
+      },
+      {
+        "request": "t4 missing present missing missing missing missing missing",
+        "response": "missing-file"
+      },
+      {
+        "request": "t4 present missing present present present present present",
+        "response": "missing-file"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Repository Maintainer",
+      "text": "Keeps a repository healthy and needs to know whether it meets its tier and the first gap to close.",
+      "concerns": [
+        "Correct answers",
+        "Refused malformed requests"
+      ]
+    },
+    {
+      "name": "Organization Owner",
+      "text": "Holds final governance authority and needs every repository measured against the same published norms.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "GitHub repository settings",
+      "kind": "externalSystem",
+      "text": "The files, branch protection and topic tags the request is read from."
+    },
+    {
+      "name": "Template gate",
+      "kind": "externalSystem",
+      "text": "A template instance's just vv, which asks this app about its own repository."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Missing security policy shown as conformant",
+      "text": "A Tier 1 or 2 repository without SECURITY.md is shown as meeting its norms, so vulnerability reports have nowhere to go.",
+      "stride": "informationDisclosure",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Required files first",
+        "text": "Every required file is checked before any other answer.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "INV-002"
+          },
+          {
+            "kind": "proof",
+            "reference": "INV-003"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Files misread",
+      "text": "The request misstates which files the repository has, including inherited UOR-Foundation/.github defaults.",
+      "stride": "spoofing",
+      "asset": "request",
+      "likelihood": "medium",
+      "impact": "minor",
+      "accepted": "The app decides on the files it is given; reading the repository and its inherited community health files belongs to the component that sends the request."
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every required-file cell modeled",
+      "text": "Each Req and Rec cell of GOVERNANCE.md 6.1 is one rule.",
+      "measure": "Unmodeled cells",
+      "measureText": "Req or Rec cells of 6.1 with no rule.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Repository Maintainer",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-008",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Organization Owner",
+      "steps": [
+        "INV-001",
+        "INV-003",
+        "refuse"
+      ]
+    }
+  ],
+  "axioms": {
+    "inv001Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv002Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv003Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
+}

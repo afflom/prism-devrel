@@ -1,0 +1,316 @@
+{
+  "schema": "prism/prompt/1",
+  "pattern": "decisionTable",
+  "goal": "Tell a UOR Foundation repository whether its topic tags and release versioning follow STANDARDS.md.",
+  "repository": "UOR-Foundation/.github",
+  "app": {
+    "name": "uor-repo-standards",
+    "title": "Repository tags and versioning",
+    "purpose": "Decide whether a UOR Foundation repository carries the identity tags, exactly one tier tag and exactly one status tag STANDARDS.md requires, and versions its releases with Semantic Versioning when it is Tier 1 or 2.",
+    "fields": [
+      {
+        "name": "tier",
+        "kind": "choice",
+        "values": [
+          "t1",
+          "t2",
+          "t3",
+          "t4"
+        ],
+        "means": "the repository's tier: core framework, implementation, presentation or experiment"
+      },
+      {
+        "name": "identity",
+        "kind": "choice",
+        "values": [
+          "present",
+          "missing"
+        ],
+        "means": "both identity topic tags, uor and uor-foundation"
+      },
+      {
+        "name": "tiertags",
+        "kind": "number",
+        "min": 0,
+        "max": 4,
+        "means": "how many tier topic tags the repository carries"
+      },
+      {
+        "name": "statustags",
+        "kind": "number",
+        "min": 0,
+        "max": 4,
+        "means": "how many status topic tags the repository carries"
+      },
+      {
+        "name": "versioning",
+        "kind": "choice",
+        "values": [
+          "semver",
+          "other",
+          "unreleased"
+        ],
+        "means": "how its release tags are versioned"
+      }
+    ],
+    "outcomes": [
+      "untagged",
+      "unversioned",
+      "conformant"
+    ],
+    "meanings": {
+      "untagged": "its topic tags do not follow STANDARDS.md",
+      "unversioned": "a Tier 1 or Tier 2 repository releases without Semantic Versioning",
+      "conformant": "every requirement and recommendation of its tier is met"
+    },
+    "rules": [
+      {
+        "when": [
+          {
+            "field": "identity",
+            "op": "is",
+            "value": "missing"
+          }
+        ],
+        "then": "untagged",
+        "why": "STANDARDS.md: every repository carries uor and uor-foundation"
+      },
+      {
+        "when": [
+          {
+            "field": "tiertags",
+            "op": "!=",
+            "value": 1
+          }
+        ],
+        "then": "untagged",
+        "why": "STANDARDS.md: exactly one tier tag per repository"
+      },
+      {
+        "when": [
+          {
+            "field": "statustags",
+            "op": "!=",
+            "value": 1
+          }
+        ],
+        "then": "untagged",
+        "why": "STANDARDS.md: exactly one status tag per repository"
+      },
+      {
+        "when": [
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t3"
+          },
+          {
+            "field": "tier",
+            "op": "is not",
+            "value": "t4"
+          },
+          {
+            "field": "versioning",
+            "op": "is",
+            "value": "other"
+          }
+        ],
+        "then": "unversioned",
+        "why": "STANDARDS.md and GOVERNANCE.md 8: Tier 1 and 2 repositories follow Semantic Versioning 2.0.0"
+      }
+    ],
+    "otherwise": "conformant",
+    "otherwiseWhy": "STANDARDS.md: the tags and versioning of the tier are followed",
+    "properties": [
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "tiertags",
+            "op": "=",
+            "value": 0
+          }
+        ],
+        "then": "conformant",
+        "why": "every repository carries exactly one tier tag"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "statustags",
+            "op": ">",
+            "value": 1
+          }
+        ],
+        "then": "conformant",
+        "why": "every repository carries exactly one status tag"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t1"
+          },
+          {
+            "field": "versioning",
+            "op": "is",
+            "value": "other"
+          }
+        ],
+        "then": "conformant",
+        "why": "Tier 1 follows Semantic Versioning 2.0.0"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "tier",
+            "op": "is",
+            "value": "t3"
+          }
+        ],
+        "then": "unversioned",
+        "why": "Semantic Versioning is required only at Tiers 1 and 2"
+      }
+    ],
+    "examples": [
+      {
+        "request": "t1 present 1 1 semver",
+        "response": "conformant"
+      },
+      {
+        "request": "t1 present 1 1 other",
+        "response": "unversioned"
+      },
+      {
+        "request": "t2 present 1 1 unreleased",
+        "response": "conformant"
+      },
+      {
+        "request": "t3 present 1 1 other",
+        "response": "conformant"
+      },
+      {
+        "request": "t3 missing 1 1 other",
+        "response": "untagged"
+      },
+      {
+        "request": "t2 present 0 1 semver",
+        "response": "untagged"
+      },
+      {
+        "request": "t2 present 1 2 semver",
+        "response": "untagged"
+      },
+      {
+        "request": "t4 present 2 0 other",
+        "response": "untagged"
+      }
+    ]
+  },
+  "stakeholders": [
+    {
+      "name": "Repository Maintainer",
+      "text": "Keeps a repository healthy and needs to know whether it meets its tier and the first gap to close.",
+      "concerns": [
+        "Correct answers",
+        "Refused malformed requests"
+      ]
+    },
+    {
+      "name": "Organization Owner",
+      "text": "Holds final governance authority and needs every repository measured against the same published norms.",
+      "concerns": [
+        "Proved guarantees"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "name": "GitHub repository settings",
+      "kind": "externalSystem",
+      "text": "The files, branch protection and topic tags the request is read from."
+    },
+    {
+      "name": "Template gate",
+      "kind": "externalSystem",
+      "text": "A template instance's just vv, which asks this app about its own repository."
+    }
+  ],
+  "threats": [
+    {
+      "name": "Untagged repository hidden",
+      "text": "A repository without its tier and status tags is shown as conformant, so it drops out of tier-based oversight.",
+      "stride": "repudiation",
+      "asset": "answer",
+      "likelihood": "high",
+      "impact": "major",
+      "control": {
+        "name": "Exactly one of each",
+        "text": "Tier and status tags must each number exactly one.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "INV-001"
+          },
+          {
+            "kind": "proof",
+            "reference": "INV-002"
+          }
+        ]
+      }
+    }
+  ],
+  "quality": [
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every tag and versioning rule modeled",
+      "text": "Each STANDARDS.md topic tag rule and the Semantic Versioning rule is one rule.",
+      "measure": "Unmodeled rules",
+      "measureText": "STANDARDS.md tag or versioning rules with no rule.",
+      "threshold": 0
+    }
+  ],
+  "journeys": [
+    {
+      "stakeholder": "Repository Maintainer",
+      "steps": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "otherwise"
+      ]
+    },
+    {
+      "stakeholder": "Organization Owner",
+      "steps": [
+        "INV-001",
+        "INV-002",
+        "INV-003",
+        "refuse"
+      ]
+    }
+  ],
+  "axioms": {
+    "inv001Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv002Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv003Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
+}
