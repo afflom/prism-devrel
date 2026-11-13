@@ -33,7 +33,7 @@ pub enum CatalogError {
     Source(PathBuf, String),
     /// The subject declares no facet record, so there is nothing to teach.
     Empty(PathBuf),
-    /// The subject configuration is not what `devrel/subject.json` must hold.
+    /// The subjects configuration is not what `devrel/subjects.json` must hold.
     Config(String),
     /// The subject's checkout no longer holds what the tutorial shows.
     Tutorial(String),
@@ -49,7 +49,7 @@ impl fmt::Display for CatalogError {
                 "{}: the subject declares no facet record",
                 path.display()
             ),
-            Self::Config(why) => write!(f, "devrel/subject.json: {why}"),
+            Self::Config(why) => write!(f, "devrel/subjects.json: {why}"),
             Self::Tutorial(why) => write!(f, "the subject's tutorial: {why}"),
         }
     }
@@ -195,6 +195,12 @@ impl Scope {
     pub fn teaches(self) -> bool {
         !matches!(self, Scope::Index | Scope::Tool)
     }
+
+    /// Whether a resource of this scope is read from the subject's tutorial
+    /// member, so that a subject without one does not publish it.
+    pub fn needs_tutorial(self) -> bool {
+        matches!(self, Scope::GettingStarted | Scope::Tool)
+    }
 }
 
 /// A Diátaxis documentation type (Procida, diataxis.fr): the identifiers
@@ -278,9 +284,10 @@ impl Journey {
 pub struct Resource {
     /// Position in the subject's catalog.
     pub index: usize,
-    /// The page's path under `learn/`, and the stem of its declaration.
+    /// The page's path under the subject's case study, and the stem of its
+    /// declaration.
     pub slug: &'static str,
-    /// The page's title.
+    /// The page's title, `{subject}` standing for the subject's name.
     pub title: &'static str,
     /// How it teaches.
     pub modality: Modality,
@@ -290,8 +297,21 @@ pub struct Resource {
     pub diataxis: Diataxis,
     /// The journey stage it serves.
     pub journey: Journey,
-    /// One sentence on what a reader gets from it.
+    /// One sentence on what a reader gets from it, `{subject}` standing for
+    /// the subject's name.
     pub summary: &'static str,
+}
+
+impl Resource {
+    /// The title for the subject named `subject`.
+    pub fn title_for(&self, subject: &str) -> String {
+        self.title.replace("{subject}", subject)
+    }
+
+    /// The summary for the subject named `subject`.
+    pub fn summary_for(&self, subject: &str) -> String {
+        self.summary.replace("{subject}", subject)
+    }
 }
 
 macro_rules! resources {
@@ -308,34 +328,34 @@ macro_rules! resources {
 }
 
 resources! {
-    "getting-started", "Model your Rust project with UORust", Walkthrough, Scope::GettingStarted, Tutorial, Learn,
-        "Run UORust on a sample workspace, check what it writes, and read a Rust function beside the LexLean it became.";
-    "case-study", "How UORust was modeled", Walkthrough, Scope::CaseStudy, Explanation, Evaluate,
-        "Who the model is for, what they care about, how those concerns became facets, and how far the lift reaches.";
+    "getting-started", "Turn a Rust project into a Prism model", Walkthrough, Scope::GettingStarted, Tutorial, Learn,
+        "Run {subject} on a sample workspace and check what it writes. Then read a Rust function beside the LexLean it became.";
+    "case-study", "How {subject} was modeled", Walkthrough, Scope::CaseStudy, Explanation, Evaluate,
+        "Who the {subject} model is for and what they care about. Then how those concerns became facets.";
     "architecture", "Architecture walkthrough", Walkthrough, Scope::Facet(Facet::Architecture), Explanation, Learn,
-        "Who UORust is for, what they care about, its parts and how they connect.";
+        "Who {subject} is for, what they care about, its parts and how they connect.";
     "design", "Design views in OPM and UML", Diagram, Scope::Facet(Facet::Design), Explanation, Learn,
-        "Every design view, drawn: objects and processes, parts, messages and states.";
+        "Every design view of {subject}, drawn. It shows things, steps, parts, messages and states.";
     "features", "Features and journeys", Walkthrough, Scope::Facet(Facet::Features), Explanation, Learn,
-        "What the product does, the calls that realize it, the rows that accept it, and the paths people take.";
+        "What {subject} does, the calls that do it, the rows that accept it, and the paths people take.";
     "security", "Security and threat model", Walkthrough, Scope::Facet(Facet::Security), Explanation, Evaluate,
-        "Assets, STRIDE threats, risks, controls with evidence, and the risks accepted on purpose.";
+        "The assets of {subject}, its threats, risks and controls, and the risks it accepts on purpose.";
     "quality", "Quality model (ISO/IEC 25010)", Reference, Scope::Facet(Facet::Quality), Reference, Evaluate,
-        "What good quality means for UORust, and the numbers that measure it.";
+        "What good quality means for {subject}, and the numbers that measure it.";
     "behavior", "Behavior and proofs", Reference, Scope::Facet(Facet::Behavior), Reference, Build,
-        "Every theorem the Lean kernel checks, with its statement and proof method.";
+        "Every theorem of {subject}, and how it is proved. The Lean kernel checks each one.";
     "system", "System and release", Walkthrough, Scope::Facet(Facet::System), Explanation, Scale,
-        "What UORust ships, the release manifest, and how a holo goes live.";
+        "What {subject} ships, its release manifest, and how its holo goes live.";
     "extensions", "Extension facets", Reference, Scope::Facet(Facet::Extension), Reference, Build,
-        "Domain records the subject adds beside the standard facets.";
-    "cli", "UORust command reference", Reference, Scope::Tool, Reference, Build,
-        "Every command and option of the uorust CLI, read from its source, and the commands its own gate runs.";
+        "The records {subject} adds of its own. They sit beside the standard facets.";
+    "cli", "Command reference", Reference, Scope::Tool, Reference, Build,
+        "Every command and option of the {subject} tool, read from its source. Also the commands its gate runs.";
     "slides", "Slides and video script", VideoScript, Scope::FirstOfEachFacet, Explanation, Discover,
-        "One slide per facet with a script to read over it.";
+        "One slide for each facet of {subject}, with a script to read over it.";
     "explorer", "Record explorer", InteractiveExplorer, Scope::Index, Reference, Build,
-        "Search every record by name, facet or text, and open the pages that teach it.";
+        "Search every record of {subject} by name, facet or text. Each result links to the pages that teach it.";
     "agents", "llms.txt and Markdown twins", AgentTwin, Scope::Index, Reference, Build,
-        "The catalog as plain text for agents: llms.txt, a Markdown twin of every page, and a feed.";
+        "The {subject} case study as plain text for agents. It has llms.txt, a twin of each page and a feed.";
 }
 
 /// A record field, as written in the record literal.
@@ -400,55 +420,102 @@ impl Record {
     }
 }
 
-/// Where the subject comes from, as `devrel/subject.json` states it.
+/// Where a subject comes from, as one entry of `devrel/subjects.json`
+/// states it.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SubjectConfig {
+    /// The case study's path segment, `case-studies/<slug>/`.
+    pub slug: String,
     /// The subject's name in prose.
     pub name: String,
     /// Its repository URL.
     pub repository: String,
-    /// The full commit the catalog is pinned to.
+    /// The full commit the catalog is read at: the pin, or for the self
+    /// subject the commit being built.
     pub commit: String,
     /// The Prism project's directory inside the repository.
     pub path: String,
-    /// What the tutorial runs, in the subject's checkout.
-    pub tutorial: tutorial::TutorialConfig,
+    /// The subject's gate workflow, whose passing run a pin moves to.
+    pub gate: Option<String>,
+    /// What the tutorial runs, in the subject's checkout, for a subject that
+    /// has one.
+    pub tutorial: Option<tutorial::TutorialConfig>,
+    /// Whether the subject is this repository, read at the commit being
+    /// built rather than at a pin.
+    pub own: bool,
+}
+
+fn full_commit(commit: &str) -> bool {
+    commit.len() == 40 && commit.bytes().all(|b| b.is_ascii_hexdigit())
 }
 
 impl SubjectConfig {
-    /// Parse `devrel/subject.json`.
-    pub fn parse(text: &str) -> Result<SubjectConfig, CatalogError> {
-        let value: serde_json::Value =
-            serde_json::from_str(text).map_err(|e| CatalogError::Config(e.to_string()))?;
+    /// Parse one entry of `devrel/subjects.json`. `self_commit` is the
+    /// commit being built, which a `self` subject is read at.
+    pub fn from_value(
+        value: &serde_json::Value,
+        self_commit: &str,
+    ) -> Result<SubjectConfig, CatalogError> {
+        let slug = value
+            .get("slug")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string();
         let get = |k: &str| {
             value
                 .get(k)
                 .and_then(|v| v.as_str())
                 .map(str::to_string)
-                .ok_or_else(|| CatalogError::Config(format!("{k} is not a string")))
+                .ok_or_else(|| CatalogError::Config(format!("{slug}: {k} is not a string")))
         };
-        let config = SubjectConfig {
+        if slug.is_empty()
+            || !slug
+                .bytes()
+                .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
+        {
+            return Err(CatalogError::Config(format!(
+                "slug {slug:?} is not lowercase letters, digits and hyphens"
+            )));
+        }
+        let own = value.get("self").and_then(|v| v.as_bool()).unwrap_or(false);
+        let commit = if own {
+            if value.get("commit").is_some() {
+                return Err(CatalogError::Config(format!(
+                    "{slug}: a self subject is read at the commit being built, so it names no commit"
+                )));
+            }
+            self_commit.to_string()
+        } else {
+            get("commit")?
+        };
+        if !full_commit(&commit) {
+            return Err(CatalogError::Config(format!(
+                "{slug}: commit {commit:?} is not a full 40-hex commit"
+            )));
+        }
+        let repository = get("repository")?;
+        if !repository.starts_with("https://github.com/") {
+            return Err(CatalogError::Config(format!(
+                "{slug}: repository is not a GitHub URL"
+            )));
+        }
+        let tutorial = match value.get("tutorial") {
+            Some(t) => Some(tutorial::TutorialConfig::parse(t)?),
+            None => None,
+        };
+        Ok(SubjectConfig {
             name: get("name")?,
-            repository: get("repository")?,
-            commit: get("commit")?,
+            repository,
+            commit,
             path: get("path")?,
-            tutorial: tutorial::TutorialConfig::parse(
-                value
-                    .get("tutorial")
-                    .ok_or_else(|| CatalogError::Config("tutorial is missing".into()))?,
-            )?,
-        };
-        if config.commit.len() != 40 || !config.commit.bytes().all(|b| b.is_ascii_hexdigit()) {
-            return Err(CatalogError::Config(
-                "commit is not a full 40-hex commit".into(),
-            ));
-        }
-        if !config.repository.starts_with("https://github.com/") {
-            return Err(CatalogError::Config(
-                "repository is not a GitHub URL".into(),
-            ));
-        }
-        Ok(config)
+            gate: value
+                .get("gate")
+                .and_then(|v| v.as_str())
+                .map(str::to_string),
+            tutorial,
+            own,
+            slug,
+        })
     }
 
     /// The checkout a subject project at `project` sits in: `project` with
@@ -474,6 +541,66 @@ impl SubjectConfig {
         } else {
             format!("{}/blob/{}/{}/{}", self.repository, self.commit, dir, path)
         }
+    }
+
+    /// The subject's tree on GitHub at the commit it is read at.
+    pub fn tree(&self) -> String {
+        format!("{}/tree/{}", self.repository, self.commit)
+    }
+}
+
+/// `devrel/subjects.json`: every subject, and which one the app catalogs.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Subjects {
+    /// The slug of the subject whose catalog is `app/src/Catalog.lex.tex`.
+    pub catalog: String,
+    /// Every subject, in the order the file lists them.
+    pub subjects: Vec<SubjectConfig>,
+}
+
+impl Subjects {
+    /// Parse `devrel/subjects.json`; `self_commit` is the commit being built.
+    pub fn parse(text: &str, self_commit: &str) -> Result<Subjects, CatalogError> {
+        let value: serde_json::Value =
+            serde_json::from_str(text).map_err(|e| CatalogError::Config(e.to_string()))?;
+        let list = value
+            .get("subjects")
+            .and_then(|v| v.as_array())
+            .ok_or_else(|| CatalogError::Config("subjects is not a list".into()))?;
+        let subjects = list
+            .iter()
+            .map(|v| SubjectConfig::from_value(v, self_commit))
+            .collect::<Result<Vec<_>, _>>()?;
+        if subjects.is_empty() {
+            return Err(CatalogError::Config("subjects is empty".into()));
+        }
+        for (i, s) in subjects.iter().enumerate() {
+            if subjects[..i].iter().any(|t| t.slug == s.slug) {
+                return Err(CatalogError::Config(format!("{} is listed twice", s.slug)));
+            }
+        }
+        if subjects.iter().filter(|s| s.own).count() > 1 {
+            return Err(CatalogError::Config("more than one subject is self".into()));
+        }
+        let catalog = value
+            .get("catalog")
+            .and_then(|v| v.as_str())
+            .ok_or_else(|| CatalogError::Config("catalog is not a string".into()))?
+            .to_string();
+        if !subjects.iter().any(|s| s.slug == catalog) {
+            return Err(CatalogError::Config(format!(
+                "catalog names {catalog}, which is not a subject"
+            )));
+        }
+        Ok(Subjects { catalog, subjects })
+    }
+
+    /// The subject the app catalogs.
+    pub fn catalog(&self) -> &SubjectConfig {
+        self.subjects
+            .iter()
+            .find(|s| s.slug == self.catalog)
+            .expect("parse checks that catalog names a subject")
     }
 }
 
@@ -526,11 +653,13 @@ impl Catalog {
             r.index = i;
         }
         let resources = resources();
+        let tutorial = subject.tutorial.is_some();
         let covers = records
             .iter()
             .map(|r| {
                 resources
                     .iter()
+                    .filter(|res| tutorial || !res.scope.needs_tutorial())
                     .filter(|res| covers(res.scope, r, &records))
                     .map(|res| res.index)
                     .collect()
@@ -552,12 +681,14 @@ impl Catalog {
 
     /// The resources published as pages for this subject: every one, except
     /// a facet page for a facet the subject has no record of, which would
-    /// teach nothing. The catalog still declares it, as the program's
-    /// capability, and claims nothing for it.
+    /// teach nothing, and the tutorial and command reference of a subject
+    /// with no tutorial member. The catalog still declares them, as the
+    /// program's capability, and claims nothing for them.
     pub fn published(&self) -> Vec<&Resource> {
         self.resources
             .iter()
             .filter(|r| !matches!(r.scope, Scope::Facet(f) if self.facet(f).is_empty()))
+            .filter(|r| self.subject.tutorial.is_some() || !r.scope.needs_tutorial())
             .collect()
     }
 

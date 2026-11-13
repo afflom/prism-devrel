@@ -17,8 +17,8 @@ Feature: devrel
     Then catalogValid is false for both planted defects
 
   @DR-03 @build
-  Scenario: The committed catalog is the catalog of the subject at the commit devrel/subject.json pins
-    Given devrel/subject.json naming a repository, a full commit and a project path
+  Scenario: The committed catalog is the catalog of the subject at the commit devrel/subjects.json pins
+    Given devrel/subjects.json naming, for the catalog subject, a repository, a full commit and a project path
     When pages.yml fetches exactly that commit and runs devrel-catalog with --check
     Then the regenerated Catalog.lex.tex equals the committed one byte for byte, or the run fails
 
@@ -92,7 +92,7 @@ Feature: devrel
 
   @DR-15 @build
   Scenario: The tutorial runs the subject's tool on the subject's fixture with the commands its gate runs, and shows the committed projection's records, frontier and first lifted function; the CLI reference is the tool's clap declaration
-    Given devrel/subject.json naming a Justfile recipe, a fixture workspace, the tool's source and the register rows the tutorial rests on
+    Given devrel/subjects.json naming, for a subject, a Justfile recipe, a fixture workspace, the tool's source and the register rows the tutorial rests on
     When devrel-catalog reads the subject's checkout at the pinned commit
     Then the tutorial's commands are the recipe's lines for that fixture, its numbers are read from the committed projection and lift register, and its example is the first lifted function beside its definition
     And a checkout without the recipe, the fixture's check line, a claimed row or the clap declaration is refused rather than rendered
@@ -147,3 +147,49 @@ Feature: devrel
     When the suite exercises DR-41
     Then every journey is a goal of its actor's user group, with its steps as tasks in order
     And every goal has an effectiveness, an efficiency and a satisfaction measure
+
+  @DR-31 @build
+  Scenario: Example apps and case studies are collections with their own tabs: a page that names a collection is listed there, grouped by its collection group, and keeps its Diátaxis type and journey stage as labels
+    Given a site whose example pages name the examples collection under their patterns, whose case study pages name the case-studies collection under their project, with a landing page for each, and a tutorial inside case-studies/ that names no collection
+    When devrel/test.mjs DR-31 runs devrel/shell.mjs over it
+    Then each collection has its own tab after the four Diátaxis tabs, its side navigation is its landing page then its groups in the order the generators list them, and its pages leave their type's tab but keep their type and stage as labels
+    And the docs hub offers every tutorial and every collection as a way to start, lists each collection by group, and keeps collections out of its stage-by-type map, and llms.txt lists the collections after the types
+    And an unknown collection, a collection named without its group and a collection without a landing page are each refused
+
+  @DR-21 @build
+  Scenario: Every pattern the builder offers has a how-to guide that builds an app of that pattern from a prompt, and every example page belongs to the Examples collection under its pattern
+    Given every pattern in builder/prompt.mjs PATTERNS, every example prompt in examples/gallery.json and the example job of .github/workflows/pages.yml
+    When builder/test.mjs DR-21 writes the site
+    Then each pattern has guides/<pattern>/ titled "How to build a <pattern> app", a how-to guide for building in no collection, in numbered steps, whose worked prompt is the pattern's example with the fewest rules, checked with builder/cli.mjs and passed through the gate pages.yml runs, linking every example of the pattern
+    And every example page and the gallery name the examples collection, under the pattern's plural name or Overview, keeping their Diátaxis type and journey stage, llms.txt lists the gallery then the examples in pattern order, and a guide that drops a pattern or a page that drops its collection fails the check
+
+  @DR-50 @build
+  Scenario: Every subject in devrel/subjects.json has a case study under case-studies/<slug>/, read from every facet record of the subject at its pinned commit, or at the commit being built for the self subject, and the case studies index lists every subject
+    Given a subjects file listing a pinned subject checked out under --checkouts and this repository as the self subject
+    When devrel-catalog runs with --self-commit and --site, as pages.yml runs it
+    Then each subject has an overview and a page per published resource under case-studies/<slug>/, in the case studies collection grouped by its name
+    And its records.json lists every facet record of the subject in identifier order, at its pin or, for the self subject, at the commit being built
+    And case-studies/index.html links to every subject and quotes what each subject's model says it is
+    And a run without the commit being built, a self subject with a pin, a pinned subject without one, a slug listed twice, a catalog naming no subject and a missing checkout are each refused
+
+  @DR-51 @build
+  Scenario: Every Prism facet has a concept page that explains the facet from its standard and shows how each case study declares it, with record counts read from the subjects
+    Given the catalogs of two subjects, this repository's model and a small fixture
+    When devrel-catalog renders the site
+    Then facets/<facet>/ exists for every facet as an explanation that cites the facet's standard at a pinned anchor and joins no collection
+    And under each subject it counts the subject's records of the facet by kind and links the first record of each kind to where the case study teaches it
+    And facets/ is a reference with a row per facet holding each subject's count
+
+  @DR-52 @build
+  Scenario: Every old learn/ address redirects to the page that replaced it, so no published link breaks
+    Given the addresses the learn/ tree published: its hub, every resource's page, their Markdown twins and records.json
+    When devrel-catalog renders the site with the catalog subject as the one learn/ described
+    Then every old page address is a page that refreshes to, links to and names as canonical the case study page that replaced it, carries no Diátaxis type or journey stage and asks not to be indexed
+    And every old twin and records.json is a copy of its replacement, so a client fetching it still reads what it asked for
+
+  @DR-53 @build
+  Scenario: Every subject pin moves only forward, to the newest main commit whose gate workflow passed, and the catalogs are regenerated from the new pins without anyone editing them
+    Given devrel/subjects.json with pinned subjects whose newest green gate run on main is ahead of the pin, the pin itself, behind it, on a diverged history, missing, or unreachable through the GitHub API
+    When scripts/repin.sh runs against those recorded API responses
+    Then only the subject whose green commit is ahead moves, to exactly that commit, every other pin stays with one line saying why, and the file keeps its two-space formatting
+    And generate.yml runs repin before just generate, whose writers include the catalog, and pushes devrel/subjects.json with what it regenerated

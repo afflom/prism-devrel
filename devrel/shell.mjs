@@ -35,10 +35,17 @@ const repo = join(here, '..');
 const SITE = JSON.parse(readFileSync(join(here, 'site.json'), 'utf8'));
 const TYPES = SITE.diataxis.types;
 const STAGES = SITE.journey.stages;
+const COLLECTIONS = SITE.collections?.items ?? [];
 const typeOf = Object.fromEntries(TYPES.map((t) => [t.id, t]));
 const stageOf = Object.fromEntries(STAGES.map((s) => [s.id, s]));
+const collectionOf = Object.fromEntries(COLLECTIONS.map((c) => [c.id, c]));
 const FONTS = join(repo, 'crates/devrel/assets/fonts');
-const DOCS_DIRS = ['learn/', 'start/', 'examples/'];
+// The directories the generators write documentation into: the builder's
+// start/ and guides/, the catalog's facets/, and every collection's own path.
+// learn/ holds only the redirects from the addresses it used to publish.
+const DOCS_DIRS = [...new Set(['start/', 'guides/', 'facets/', ...COLLECTIONS.map((c) => c.path)])];
+// A collection's landing page sorts first, under this group.
+const OVERVIEW = 'Overview';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const unesc = (s) => String(s).replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
@@ -75,12 +82,18 @@ function load(site) {
   for (const file of walk(site).filter((f) => f.endsWith('.html'))) {
     const p = parse(site, file);
     const inDocs = DOCS_DIRS.some((d) => p.rel.startsWith(d));
+    // A redirect from an address a page used to have is not a page.
+    const redirect = /<meta http-equiv="refresh"/.test(p.head) && /<meta name="robots" content="noindex">/.test(p.head);
     if (p.diataxis === undefined && p.journey === undefined) {
-      if (inDocs) refuse(`${p.rel}: a documentation page needs <meta name="diataxis"> and <meta name="developer-journey">`);
+      if (inDocs && !redirect) refuse(`${p.rel}: a documentation page needs <meta name="diataxis"> and <meta name="developer-journey">`);
       continue;
     }
     if (!typeOf[p.diataxis]) refuse(`${p.rel}: diataxis "${p.diataxis}" is not one of ${TYPES.map((t) => t.id).join(', ')}`);
     if (!stageOf[p.journey]) refuse(`${p.rel}: developer-journey "${p.journey}" is not one of ${STAGES.map((s) => s.id).join(', ')}`);
+    const collection = meta(p.head, 'collection');
+    const group = meta(p.head, 'collection-group');
+    if (collection !== undefined && !collectionOf[collection]) refuse(`${p.rel}: collection "${collection}" is not one of ${COLLECTIONS.map((c) => c.id).join(', ')}`);
+    if ((collection === undefined) !== (group === undefined)) refuse(`${p.rel}: a page names both a collection and its collection-group, or neither`);
     if (/<body[^>]*\bdc-root\b/.test(p.html)) refuse(`${p.rel}: already wrapped; write the pages again before running the shell`);
     const body = p.html.match(/<body[^>]*>([\s\S]*)<\/body>/)?.[1] ?? refuse(`${p.rel}: no <body>`);
     const main = body.match(/<main id="main"[^>]*>([\s\S]*)<\/main>/)?.[1] ?? refuse(`${p.rel}: no <main id="main">`);
@@ -91,7 +104,7 @@ function load(site) {
     const summary = unesc(meta(p.head, 'description') ?? refuse(`${p.rel}: no <meta name="description">`));
     const twin = p.head.match(/<link rel="alternate" type="text\/markdown" href="([^"]*)"/)?.[1] ?? refuse(`${p.rel}: no Markdown twin`);
     const url = p.rel.replace(/index\.html$/, '');
-    pages.push({ ...p, main, scripts, provenance, title, summary, url, twin: posix.normalize(posix.join(posix.dirname(p.rel), twin)) });
+    pages.push({ ...p, collection, group: group === undefined ? undefined : unesc(group), main, scripts, provenance, title, summary, url, twin: posix.normalize(posix.join(posix.dirname(p.rel), twin)) });
   }
   return pages;
 }
@@ -118,23 +131,40 @@ const icon = {
   app: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m4 17 6-6-6-6M12 19h8"/></svg>',
 };
 
-/** Pages of one type, by journey stage, then in declared order. */
+/**
+ * The tabs: one per Diátaxis type, holding the pages that name no collection,
+ * grouped by journey stage; then one per collection, holding its pages,
+ * grouped by collection-group (its landing page's group first, then in the
+ * order the generators list them). Within a group, pages keep declared order.
+ */
 function arrange(pages, order) {
   const pos = (p) => {
     const i = order.indexOf(p.twin);
     return i < 0 ? order.length : i;
   };
-  const tabs = TYPES.map((t) => {
-    const mine = pages.filter((p) => p.diataxis === t.id);
-    const groups = STAGES.map((s) => ({ stage: s, pages: mine.filter((p) => p.journey === s.id).sort((a, b) => pos(a) - pos(b) || a.rel.localeCompare(b.rel)) })).filter((g) => g.pages.length);
-    return { type: t, groups, flat: groups.flatMap((g) => g.pages) };
+  const sorted = (list) => [...list].sort((a, b) => pos(a) - pos(b) || a.rel.localeCompare(b.rel));
+  const types = TYPES.map((t) => {
+    const mine = pages.filter((p) => p.collection === undefined && p.diataxis === t.id);
+    const groups = STAGES.map((s) => ({ id: s.id, label: s.label, pages: sorted(mine.filter((p) => p.journey === s.id)) })).filter((g) => g.pages.length);
+    const flat = groups.flatMap((g) => g.pages);
+    return { id: t.id, tab: t.tab, label: t.label, type: t, groups, flat, landing: flat[0] };
   });
-  return tabs;
+  const collections = COLLECTIONS.map((c) => {
+    const mine = sorted(pages.filter((p) => p.collection === c.id));
+    const landing = mine.find((p) => p.rel === `${c.path}index.html`);
+    if (mine.length && !landing) refuse(`${c.path}index.html: the ${c.tab} collection has pages but no landing page`);
+    const labels = [...new Set([OVERVIEW, ...mine.map((p) => p.group)])];
+    const groups = labels.map((label) => ({ id: slug(label), label, pages: mine.filter((p) => p.group === label) })).filter((g) => g.pages.length);
+    return { id: c.id, tab: c.tab, label: c.label, collection: c, groups, flat: groups.flatMap((g) => g.pages), landing };
+  });
+  return [...types, ...collections];
 }
 
-function header(root, activeType) {
+const tabOf = (p) => TABS.find((t) => t.id === (p.collection ?? p.diataxis));
+
+function header(root, activeTab) {
   const tab = (href, label, on) => `<a href="${href}"${on ? ' class="dc-active" aria-current="true"' : ''}>${esc(label)}</a>`;
-  return `<header class="dc-header"><div class="dc-topbar"><a href="${root}${SITE.hub.path}" class="dc-brand"><span class="fd-head">${esc(SITE.brand.primary)}</span><span class="fd-mono">${esc(SITE.brand.secondary)}</span></a><nav class="dc-social" aria-label="Community"><a href="${SITE.links.source}" aria-label="Source on GitHub">${icon.github}</a><a href="${SITE.links.discord}" aria-label="Discord">${icon.discord}</a></nav><a href="${root}" class="dc-cta">${icon.app}<span>Open the app</span></a></div><nav class="dc-tabs" aria-label="Documentation types">${tab(`${root}${SITE.hub.path}`, 'Home', activeType === null)}${TABS.map((t) => (t.flat.length ? tab(`${root}${t.flat[0].url}`, t.type.tab, activeType === t.type.id) : '')).join('')}</nav><span aria-hidden="true" class="fd-header-line"></span></header>`;
+  return `<header class="dc-header"><div class="dc-topbar"><a href="${root}${SITE.hub.path}" class="dc-brand"><span class="fd-head">${esc(SITE.brand.primary)}</span><span class="fd-mono">${esc(SITE.brand.secondary)}</span></a><nav class="dc-social" aria-label="Community"><a href="${SITE.links.source}" aria-label="Source on GitHub">${icon.github}</a><a href="${SITE.links.discord}" aria-label="Discord">${icon.discord}</a></nav><a href="${root}" class="dc-cta">${icon.app}<span>Open the app</span></a></div><nav class="dc-tabs" aria-label="Documentation types">${tab(`${root}${SITE.hub.path}`, 'Home', activeTab === null)}${TABS.map((t) => (t.flat.length ? tab(`${root}${t.landing.url}`, t.tab, activeTab === t.id) : '')).join('')}</nav><span aria-hidden="true" class="fd-header-line"></span></header>`;
 }
 
 function footer(root, provenance) {
@@ -173,49 +203,63 @@ function wrap(p, live) {
   const depth = p.rel.split('/').length - 1;
   const root = '../'.repeat(depth);
   const href = (q) => posix.relative(posix.dirname(p.rel), q.rel).replace(/index\.html$/, '') || './';
-  const tab = TABS.find((t) => t.type.id === p.diataxis);
+  const tab = tabOf(p);
   const i = tab.flat.indexOf(p);
   const prev = tab.flat[i - 1];
   const next = tab.flat[i + 1];
   const t = typeOf[p.diataxis];
   const s = stageOf[p.journey];
-  const side = tab.groups.map((g) => `<div><p>${esc(g.stage.label)}</p>${g.pages.map((q) => `<a href="${href(q)}"${q === p ? ' class="dc-active" aria-current="page"' : ''}>${esc(q.title)}</a>`).join('')}</div>`).join('');
+  const g0 = tab.groups.find((g) => g.pages.includes(p));
+  const side = tab.groups.map((g) => `<div><p>${esc(g.label)}</p>${g.pages.map((q) => `<a href="${href(q)}"${q === p ? ' class="dc-active" aria-current="page"' : ''}>${esc(q.title)}</a>`).join('')}</div>`).join('');
   const { main, toc } = anchorHeadings(p.main);
   // The generator's own eyebrow gives way to the type and stage, worded once here.
-  const eyebrow = `<p class="eyebrow">// ${esc(t.label)} · ${esc(s.label)}</p>`;
+  const c = p.collection && collectionOf[p.collection];
+  const eyebrow = `<p class="eyebrow">// ${esc(c ? c.label : t.label)} · ${esc(c ? g0.label : s.label)}</p>`;
   // The twin is a chip under the page, so the generator's own line about it goes.
   const lead = main.replace(/^\s*<p class="eyebrow">[\s\S]*?<\/p>/, '').replace(/<p class="twin">[\s\S]*?<\/p>/, '');
-  const crumbs = `<nav aria-label="Breadcrumb" class="dc-crumbs"><a href="${root}${SITE.hub.path}">Docs</a>${icon.chevron}<a href="${href(tab.flat[0])}">${esc(t.tab)}</a>${icon.chevron}<span>${esc(s.label)}</span></nav>`;
-  const chips = `<p class="dc-meta"><a class="dc-tag" href="${t.href}" title="${esc(`${t.orientation}: ${t.what}`)}">${esc(t.label)}</a><a class="dc-tag" href="${root}${SITE.hub.path}#${s.id}" title="${esc(s.question)}">${esc(s.label)}</a><a class="dc-tag" href="${posix.relative(posix.dirname(p.rel), p.twin)}">Markdown</a></p>`;
-  const pager = `<nav class="dc-pager" aria-label="${esc(t.tab)}">${prev ? `<a class="dc-card" href="${href(prev)}"><span>Previous</span><strong>${esc(prev.title)}</strong></a>` : '<span></span>'}${next ? `<a class="dc-card dc-next" href="${href(next)}"><span>Next</span><strong>${esc(next.title)}</strong></a>` : ''}</nav>`;
-  const mnav = `<details class="dc-mnav"><summary>${esc(t.tab)}: ${esc(p.title)}</summary>${side}</details>`;
+  const crumbs = `<nav aria-label="Breadcrumb" class="dc-crumbs"><a href="${root}${SITE.hub.path}">Docs</a>${icon.chevron}<a href="${href(tab.landing)}">${esc(tab.tab)}</a>${icon.chevron}<span>${esc(g0.label)}</span></nav>`;
+  const chips = `<p class="dc-meta"><a class="dc-tag" href="${t.href}" title="${esc(`${t.orientation}: ${t.what}`)}">${esc(t.label)}</a><a class="dc-tag" href="${root}${SITE.hub.path}#${s.id}" title="${esc(s.question)}">${esc(s.label)}</a>${c && p !== tab.landing ? `<a class="dc-tag" href="${href(tab.landing)}" title="${esc(c.what)}">${esc(c.label)}</a>` : ''}<a class="dc-tag" href="${posix.relative(posix.dirname(p.rel), p.twin)}">Markdown</a></p>`;
+  const pager = `<nav class="dc-pager" aria-label="${esc(tab.tab)}">${prev ? `<a class="dc-card" href="${href(prev)}"><span>Previous</span><strong>${esc(prev.title)}</strong></a>` : '<span></span>'}${next ? `<a class="dc-card dc-next" href="${href(next)}"><span>Next</span><strong>${esc(next.title)}</strong></a>` : ''}</nav>`;
+  const mnav = `<details class="dc-mnav"><summary>${esc(tab.tab)}: ${esc(p.title)}</summary>${side}</details>`;
   const onPage = toc.length > 1 ? `<aside class="dc-toc" aria-label="On this page"><p>On this page</p>${toc.map((h) => `<a href="#${h.id}">${esc(h.label)}</a>`).join('')}</aside>` : '';
   // Each generator's own stylesheets and import map stay; its chrome does not.
   const keep = [...p.head.matchAll(/<link rel="stylesheet" href="([^"]*)">/g)].map((m) => m[1]).filter((h) => !h.endsWith('docs/docs.css'));
-  const extraHead = keep.map((h) => `<link rel="stylesheet" href="${h}">`).join('') + [...p.head.matchAll(/<script type="importmap">[\s\S]*?<\/script>/g)].map((m) => m[0]).join('') + `<meta name="diataxis" content="${p.diataxis}"><meta name="developer-journey" content="${p.journey}">${FEED ? `<link rel="alternate" type="application/rss+xml" href="${root}feed.xml" title="${esc(SITE.name)}">` : ''}`;
-  const body = `${header(root, p.diataxis)}<div class="dc-layout${onPage ? '' : ' dc-layout-notoc'}"><nav class="dc-side" aria-label="${esc(t.tab)}">${side}</nav><main id="main" class="dc-article">${crumbs}${mnav}${eyebrow}${lead}${chips}${pager}</main>${onPage}</div>${footer(root, p.provenance)}`;
+  const extraHead = keep.map((h) => `<link rel="stylesheet" href="${h}">`).join('') + [...p.head.matchAll(/<script type="importmap">[\s\S]*?<\/script>/g)].map((m) => m[0]).join('') + `<meta name="diataxis" content="${p.diataxis}"><meta name="developer-journey" content="${p.journey}">${p.collection ? `<meta name="collection" content="${p.collection}"><meta name="collection-group" content="${esc(p.group)}">` : ''}${FEED ? `<link rel="alternate" type="application/rss+xml" href="${root}feed.xml" title="${esc(SITE.name)}">` : ''}`;
+  const body = `${header(root, tab.id)}<div class="dc-layout${onPage ? '' : ' dc-layout-notoc'}"><nav class="dc-side" aria-label="${esc(tab.tab)}">${side}</nav><main id="main" class="dc-article">${crumbs}${mnav}${eyebrow}${lead}${chips}${pager}</main>${onPage}</div>${footer(root, p.provenance)}`;
   return doc({ root, title: p.title, summary: p.summary, canonical: `${live}${p.url}`, twin: posix.relative(posix.dirname(p.rel), p.twin), extraHead, body, scripts: p.scripts.join('') });
 }
 
 function hub(pages, live) {
   const root = '../'.repeat(SITE.hub.path.split('/').filter(Boolean).length);
-  const first = TABS.find((t) => t.type.id === 'tutorial')?.flat[0] ?? TABS.find((t) => t.flat.length).flat[0];
   const link = (p) => `${root}${p.url}`;
+  const types = TABS.filter((t) => t.type);
+  const collections = TABS.filter((t) => t.collection && t.flat.length);
+  const docs = types.flatMap((t) => t.flat);
+  const all = TABS.flatMap((t) => t.flat);
+  const tutorials = TABS.find((t) => t.id === 'tutorial')?.flat ?? [];
+  const first = tutorials[0] ?? all[0];
+  const count = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
   const patterns = ['dc-dots', 'dc-grid', 'dc-lines'];
-  const ordered = TABS.flatMap((t) => t.flat);
-  // A stage lists one line per documentation type: the page itself when it is
-  // the only one, otherwise how many there are, opening on the first.
+  // The ways to start building: every tutorial, then every collection, each
+  // in its own words (the page's summary, the collection's description).
+  const ways = [
+    ...tutorials.map((p) => ({ eyebrow: typeOf.tutorial.label, title: p.title, text: p.summary, href: link(p), note: stageOf[p.journey].label })),
+    ...collections.map((t) => ({ eyebrow: t.tab, title: t.landing.title, text: t.collection.what, href: link(t.landing), note: t.groups.filter((g) => g.label !== OVERVIEW).map((g) => `${g.label} ${g.pages.length}`).join(' · ') })),
+  ];
+  const wayCards = ways.map((w, i) => `<li><a class="dc-home-card" href="${w.href}"><div class="dc-pattern ${patterns[i % patterns.length]}"></div><div class="dc-card-body"><em class="fd-mono">${esc(w.eyebrow)}</em><strong>${esc(w.title)}</strong><span>${esc(w.text)}</span>${w.note ? `<span class="dc-dim">${esc(w.note)}</span>` : ''}</div></a></li>`).join('');
+  // A stage lists one line per tab: the page itself when it is the only one,
+  // otherwise how many there are, opening on the first.
   const journey = STAGES.map((s, i) => {
     const lines = TABS.map((t) => ({ t, mine: t.flat.filter((p) => p.journey === s.id) })).filter((x) => x.mine.length).flatMap(({ t, mine }) => (mine.length === 1
-      ? mine.map((p) => `<li><a href="${link(p)}">${esc(p.title)}</a> <span class="dc-dim">${esc(t.type.label)}</span></li>`)
-      : [`<li><a href="${link(mine[0])}">${mine.length} ${esc(t.type.tab.toLowerCase())}</a> <span class="dc-dim">from ${esc(mine[0].title)}</span></li>`]));
+      ? mine.map((p) => `<li><a href="${link(p)}">${esc(p.title)}</a> <span class="dc-dim">${esc(t.label)}</span></li>`)
+      : [`<li><a href="${link(mine[0])}">${mine.length} ${esc(t.tab.toLowerCase())}</a> <span class="dc-dim">from ${esc(mine[0].title)}</span></li>`]));
     return `<li id="${s.id}" class="dc-home-card"><div class="dc-pattern ${patterns[i % patterns.length]}"></div><div class="dc-card-body"><em class="fd-mono">${String(i + 1).padStart(2, '0')} · ${esc(s.label)}</em><strong>${esc(s.question)}</strong>${lines.length ? `<ul>${lines.join('')}</ul>` : ''}</div></li>`;
   }).join('');
   // The guide a reader meets most at each stage: the persona most of its pages are written for.
   const M = loadContent(repo);
   const guideOf = (s) => {
     const tally = new Map();
-    for (const p of ordered.filter((q) => q.journey === s.id)) {
+    for (const p of all.filter((q) => q.journey === s.id)) {
       const g = personaFor(M, { rel: p.rel, diataxis: p.diataxis, journey: p.journey });
       if (g) tally.set(g.id, (tally.get(g.id) ?? 0) + 1);
     }
@@ -232,11 +276,17 @@ function hub(pages, live) {
     kind: 'quadrant', title: 'Four kinds of documentation',
     caption: `${SITE.diataxis.authority.split(',')[0]}'s Diátaxis. Each page does one of four jobs. Across: whether you are studying or working. Up: whether the page helps you do or helps you know.`,
     x: ['while you study', 'while you work'], y: ['to know', 'to do'],
-    cells: TABS.filter((t) => t.flat.length && place[t.type.id]).map((t) => ({ label: t.type.tab, sub: `${t.flat.length} ${t.flat.length === 1 ? 'page' : 'pages'}`, x: place[t.type.id][0], y: place[t.type.id][1], href: link(t.flat[0]) })),
+    cells: types.filter((t) => t.flat.length && place[t.id]).map((t) => ({ label: t.tab, sub: count(t.flat.length, 'page'), x: place[t.id][0], y: place[t.id][1], href: link(t.landing) })),
   };
   const spec = (f) => `<figure class="cs-figure"><script type="application/vnd.prism.figure+json">${JSON.stringify(f).replace(/</g, '\\u003c')}</script></figure>`;
-  const matrix = `<div class="table"><table><thead><tr><th scope="col">Stage</th>${TYPES.map((t) => `<th scope="col">${esc(t.tab)}</th>`).join('')}</tr></thead><tbody>${STAGES.map((s) => `<tr><th scope="row">${esc(s.label)}</th>${TYPES.map((t) => `<td>${ordered.filter((p) => p.journey === s.id && p.diataxis === t.id).map((p) => `<a href="${link(p)}">${esc(p.title)}</a>`).join('<br>')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
-  const body = `${header(root, null)}<main id="main" class="dc-home"><div class="dc-pixels" aria-hidden="true"></div><p class="eyebrow">// ${esc(SITE.hub.eyebrow)}</p><h1>${esc(SITE.hub.title)}<span class="dc-dim">.</span></h1><p class="dc-summary">${esc(SITE.hub.lead)}</p><p class="dc-body">${esc(SITE.hub.body)}</p><p class="dc-actions"><a class="dc-cta" href="${link(first)}">${esc(SITE.hub.start)}</a><a class="dc-ghost" href="${root}">Open the app</a><a class="dc-ghost" href="${SITE.links.prismDocs}">Prism docs</a></p>${spec(journeyFigure)}<h2 id="guides">Meet your guides</h2><p class="dc-dim">${esc(SITE.hub.guides)}</p><div data-content="cast"></div><h2 id="journey">Your developer journey</h2><p class="dc-dim">The pages for each stage.</p><ol class="dc-home-grid dc-path-grid">${journey}</ol><h2 id="types">Four kinds of documentation</h2>${spec(compass)}<h2 id="map">Every page, by stage and type</h2>${matrix}</main>${footer(root, '')}`;
+  // Each collection, its groups and how many pages each holds, drawn from the pages.
+  const shelf = collections.map((t) => {
+    const groups = t.groups.filter((g) => g.label !== OVERVIEW);
+    const figure = { kind: 'bars', title: `${t.tab} by ${t.collection.group}`, unit: 'pages', caption: `${count(groups.length, t.collection.group)} in the ${t.tab.toLowerCase()} collection. Each bar is one ${t.collection.group} and how many pages it holds.`, rows: groups.map((g) => ({ label: g.label, values: [g.pages.length] })) };
+    return `<h3 id="${t.id}">${esc(t.tab)}</h3><p>${esc(t.collection.what)} <a href="${link(t.landing)}">${esc(t.landing.title)}</a>.</p>${spec(figure)}<ul class="dc-group-list">${groups.map((g) => `<li><a href="${link(g.pages[0])}">${esc(g.label)}</a> <span class="dc-dim">${count(g.pages.length, 'page')}</span></li>`).join('')}</ul>`;
+  }).join('');
+  const matrix = `<div class="table"><table><thead><tr><th scope="col">Stage</th>${types.map((t) => `<th scope="col">${esc(t.tab)}</th>`).join('')}</tr></thead><tbody>${STAGES.map((s) => `<tr><th scope="row">${esc(s.label)}</th>${types.map((t) => `<td>${docs.filter((p) => p.journey === s.id && p.diataxis === t.id).map((p) => `<a href="${link(p)}">${esc(p.title)}</a>`).join('<br>')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const body = `${header(root, null)}<main id="main" class="dc-home"><div class="dc-pixels" aria-hidden="true"></div><p class="eyebrow">// ${esc(SITE.hub.eyebrow)}</p><h1>${esc(SITE.hub.title)}<span class="dc-dim">.</span></h1><p class="dc-summary">${esc(SITE.hub.lead)}</p><p class="dc-body">${esc(SITE.hub.body)}</p><p class="dc-actions"><a class="dc-cta" href="${link(first)}">${esc(SITE.hub.start)}</a><a class="dc-ghost" href="${root}">Open the app</a><a class="dc-ghost" href="${SITE.links.prismDocs}">Prism docs</a></p>${spec(journeyFigure)}<h2 id="start">${esc(SITE.hub.ways)}</h2><p class="dc-dim">${esc(SITE.hub.waysLead)}</p><ol class="dc-home-grid">${wayCards}</ol><h2 id="journey">Your developer journey</h2><p class="dc-dim">The pages for each stage.</p><ol class="dc-home-grid dc-path-grid">${journey}</ol><h2 id="guides">Meet your guides</h2><p class="dc-dim">${esc(SITE.hub.guides)}</p><div data-content="cast"></div><h2 id="collections">${esc(SITE.hub.collections)}</h2><p class="dc-dim">${esc(SITE.collections.about.split('.')[0])}.</p>${shelf}<h2 id="types">Four kinds of documentation</h2>${spec(compass)}<h2 id="map">Every page, by stage and type</h2>${matrix}</main>${footer(root, '')}`;
   const md = [
     `# ${SITE.hub.title}`,
     '',
@@ -244,10 +294,15 @@ function hub(pages, live) {
     '',
     SITE.hub.body,
     '',
+    `## ${SITE.hub.ways}`,
+    '',
+    ...ways.map((w) => `- [${w.title}](${new URL(w.href, `${live}${SITE.hub.path}`).href}) (${w.eyebrow}): ${w.text}`),
+    '',
     ...STAGES.flatMap((s) => {
-      const mine = ordered.filter((p) => p.journey === s.id);
+      const mine = docs.filter((p) => p.journey === s.id);
       return mine.length ? [`## ${s.label}: ${s.question}`, '', ...mine.map((p) => `- [${p.title}](${live}${p.twin}) (${typeOf[p.diataxis].label}): ${p.summary}`), ''] : [];
     }),
+    ...collections.flatMap((t) => [`## ${t.tab}`, '', t.collection.what, '', ...t.groups.flatMap((g) => g.pages.map((p) => `- [${p.title}](${live}${p.twin}) (${g.label}): ${p.summary}`)), '']),
   ].join('\n');
   return { html: doc({ root, title: 'Docs', summary: SITE.hub.lead, canonical: `${live}${SITE.hub.path}`, twin: 'index.md', body }), md };
 }
@@ -274,7 +329,7 @@ function llms(pages, live, lines) {
   out.push(`- [Docs home](${live}${SITE.hub.path}index.md): every page by developer journey stage.`, '');
   for (const t of TABS) {
     if (!t.flat.length) continue;
-    out.push(`## ${t.type.tab}`, '');
+    out.push(`## ${t.tab}`, '');
     for (const p of t.flat) out.push(`- [${p.title}](${live}${p.twin}): ${p.summary} (${stageOf[p.journey].label})`);
     out.push('');
   }
@@ -382,7 +437,7 @@ export function shell(site) {
   for (const f of readdirSync(FONTS)) copyFileSync(join(FONTS, f), join(site, SITE.hub.path, 'fonts', f));
   linkApp(site);
   checkLinks(site, [...pages.map((p) => p.rel), `${SITE.hub.path}index.html`]);
-  return { pages: pages.length, tabs: TABS.map((t) => `${t.type.tab} ${t.flat.length}`) };
+  return { pages: pages.length, tabs: TABS.map((t) => `${t.tab} ${t.flat.length}`) };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {

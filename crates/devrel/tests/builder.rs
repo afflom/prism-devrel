@@ -108,3 +108,9 @@ fn source_dr_19() {
 fn gallery_dr_20() {
     builder("DR-20");
 }
+
+/// `DR-21`: Every pattern the builder offers has a how-to guide that builds an app of that pattern from a prompt, and every example page belongs to the Examples collection under its pattern
+#[test]
+fn guides_dr_21() {
+    builder("DR-21");
+}

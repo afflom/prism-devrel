@@ -1,0 +1,20 @@
+\begin{lexlean}{Greenhouse}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\title{Greenhouse}
+\begin{semanticmodule}
+definition{
+  name: application,
+  parameters: [],
+  result: Foundation.View.Text.V1.Model::TextApplication,
+  body: (record Foundation.View.Text.V1.Model::TextApplication {profile := "prismpm/text-application/1", name := "Greenhouse", cargoDescription := "Decides which bed of a greenhouse to water next."})
+}
+
+theorem{
+  name: dryBedWatered,
+  parameters: [],
+  statement: ((1 = 1)),
+  proof: decide{}
+}
+\end{semanticmodule}
+\end{lexlean}

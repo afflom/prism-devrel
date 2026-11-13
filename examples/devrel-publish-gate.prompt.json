@@ -159,15 +159,15 @@
   "concerns": [
     {
       "name": "Catalog follows its pin",
-      "text": "The committed catalog is the catalog of exactly the commit devrel/subject.json pins, DR-03.",
+      "text": "The committed catalog is the catalog of exactly the commit devrel/subjects.json pins, DR-03.",
       "model": "component"
     }
   ],
   "components": [
     {
-      "name": "UORust subject",
+      "name": "Catalog subject",
       "kind": "externalSystem",
-      "text": "The subject model, afflom/uorust app/, fetched at the full commit devrel/subject.json pins."
+      "text": "The catalog subject's model, fetched at the full commit devrel/subjects.json pins."
     },
     {
       "name": "devrel-catalog",
@@ -178,7 +178,7 @@
   "threats": [
     {
       "name": "Pin moved without regenerating",
-      "text": "devrel/subject.json is moved to a new commit and the old catalog is published as if it taught the new one.",
+      "text": "devrel/subjects.json is moved to a new commit and the old catalog is published as if it taught the new one.",
       "stride": "tampering",
       "asset": "source",
       "likelihood": "medium",

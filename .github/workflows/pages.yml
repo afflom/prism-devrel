@@ -158,22 +158,23 @@ jobs:
           node bootstrap/brand-sync.mjs --check
           python3 -I bootstrap/brand-fonts.py --check
           node bootstrap/frame-sync.mjs --check
-      - name: Regenerate the DevRel catalog from the pinned subject and write the learning pages
-        # devrel/subject.json pins the subject's repository, full commit and
-        # project path. The committed app/src/Catalog.lex.tex must be the
-        # catalog of exactly that commit (DR-03); the pages under site/learn/,
-        # their Markdown twins, llms.txt and feed.xml are generated here and
-        # never committed.
+      - name: Regenerate the DevRel catalog from the pinned subjects and write the case studies
+        # devrel/subjects.json pins each subject's repository, full commit and
+        # project path; the self subject is this repository at the commit
+        # being built. scripts/subjects.sh fetches every pinned subject at
+        # exactly its commit. The committed app/src/Catalog.lex.tex must be the
+        # catalog of exactly those commits (DR-03); the case studies under
+        # site/case-studies/, the facet pages under site/facets/, the
+        # redirects from the old site/learn/ addresses, their Markdown twins,
+        # llms.txt and feed.xml are generated here and never committed.
         shell: bash
         run: |
           set -euo pipefail
-          field() { node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync("devrel/subject.json", "utf8"))[process.argv[1]])' "$1"; }
-          subject="$RUNNER_TEMP/subject"
-          git init -q "$subject"
-          git -C "$subject" fetch -q --depth 1 "$(field repository)" "$(field commit)"
-          git -C "$subject" checkout -q --detach FETCH_HEAD
-          test "$(git -C "$subject" rev-parse HEAD)" = "$(field commit)"
-          cargo run -q --locked -p devrel-catalog -- --config devrel/subject.json --subject "$subject/$(field path)" --lean app/src/Catalog.lex.tex --check --site site
+          checkouts=$(scripts/subjects.sh "$RUNNER_TEMP/subjects")
+          cargo run -q --locked -p devrel-catalog -- \
+            --subjects devrel/subjects.json --checkouts "$checkouts" \
+            --self-root "$PWD" --self-commit "$GITHUB_SHA" \
+            --lean app/src/Catalog.lex.tex --check --site site
       - name: Fetch every example's verified build
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:

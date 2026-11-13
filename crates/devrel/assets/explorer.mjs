@@ -1,5 +1,7 @@
-// The record explorer: filters learn/records.json in the browser. Subject text
-// is set with textContent, never as markup. It shows one window's height of
+// The record explorer: filters a case study's records.json in the browser. The
+// page names the file (data-records) and its case study's directory
+// (data-base), both relative to the page. Subject text is set with
+// textContent, never as markup. It shows one window's height of
 // results at a time (the content standard's progressive disclosure, CS-06),
 // and "Show more" adds the next window.
 const q = document.getElementById("q");
@@ -7,7 +9,8 @@ const facet = document.getElementById("facet");
 const count = document.getElementById("count");
 const results = document.getElementById("results");
 const more = document.getElementById("more");
-const data = await fetch("../records.json").then((r) => r.json());
+const box = document.querySelector(".explorer");
+const data = await fetch(new URL(box.dataset.records, location.href)).then((r) => r.json());
 for (const f of [...new Set(data.records.map((r) => r.facet))]) {
   const o = document.createElement("option");
   o.value = f;
@@ -31,7 +34,7 @@ function show() {
     const links = el("p", "Taught by ", "links");
     r.covers.forEach((c, i) => {
       const a = el("a", c.title);
-      a.href = `../${c.slug}/#${r.anchor}`;
+      a.href = `${box.dataset.base}${c.href}#${r.anchor}`;
       links.append(i ? ", " : "", a);
     });
     li.append(head);
@@ -41,14 +44,16 @@ function show() {
   }));
   page(0);
 }
-/** Reveal results down to one window below `from`, and offer the rest. */
+/** Reveal results down to one window below `from`, and offer the rest. The
+ *  first window is measured from the list's own top, so its padding counts. */
 function page(from) {
   const items = [...results.children];
-  const top = (items[from] ?? results).getBoundingClientRect().top;
+  for (const li of items.slice(from)) li.hidden = true;
+  const top = from ? items[from].getBoundingClientRect().top : results.getBoundingClientRect().top;
   let shown = from;
   for (const li of items.slice(from)) {
     li.hidden = false;
-    if (shown > from && li.getBoundingClientRect().bottom - top > innerHeight) { li.hidden = true; break; }
+    if (shown > from && results.getBoundingClientRect().bottom - top > innerHeight) { li.hidden = true; break; }
     shown++;
   }
   for (const li of items.slice(shown)) li.hidden = true;

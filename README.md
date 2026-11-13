@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://afflom.github.io/prism-devrel/learn/"><b>Learning catalog</b></a>
+  <a href="https://afflom.github.io/prism-devrel/case-studies/"><b>Case studies</b></a>
   ·
   <a href="https://afflom.github.io/prism-devrel/">App</a>
   ·
@@ -33,18 +33,24 @@ records. The Lean kernel checks, over the generated catalog, that:
   record or an undeclared resource is refused (`Catalog::uncoveredRecordRefused`,
   `Catalog::undeclaredResourceRefused`, `DR-02`).
 
-The subject is [UORust](https://github.com/afflom/uorust), the tool that
-maps a Cargo workspace onto a complete Prism model, read from its own
-self-model in `app/` at the commit `devrel/subject.json` pins. Every one of
-its facet records is covered; the [learning hub](https://afflom.github.io/prism-devrel/learn/)
-states the pinned commit and the count per facet, generated from that commit
-rather than restated here.
+Each subject is a case study. `devrel/subjects.json` lists them: UORust (the
+tool that maps a Cargo workspace onto a complete Prism model), Rule 30,
+Verdant Resonance, Foundry, and Prism-DevRel itself, each read from its own
+Prism project at the commit it pins (Prism-DevRel at the commit being built).
+The subject `catalog` names, UORust, is also the one the app's record lookup
+catalogs: every one of its facet records is covered. Each case study states
+its pinned commit and the count per facet, generated from that commit rather
+than restated here.
 
 ## What is published
 
-The Pages site has the app at its root and the catalog under `learn/`. Each
-page is one [Diátaxis](https://diataxis.fr) type and one stage of the
-developer journey, with the identifiers the builder pages use (`DR-16`):
+The Pages site has the app at its root, one case study per subject under
+`case-studies/<slug>/`, and one concept page per Prism facet under `facets/`,
+showing how each case study declares that facet. Every old `learn/` address
+redirects to the page that replaced it. Each page is one
+[Diátaxis](https://diataxis.fr) type and one stage of the developer journey,
+with the identifiers the builder pages use (`DR-16`). UORust's case study,
+the catalog's subject, carries these resources:
 
 | Resource | Diátaxis type | Journey stage |
 | --- | --- | --- |
@@ -56,7 +62,7 @@ developer journey, with the identifiers the builder pages use (`DR-16`):
 | Behavior and proofs, Extension facets, UORust command reference | reference | Build |
 | System and release | explanation | Scale |
 | Slides and video script | explanation, one slide per facet with a script | Discover |
-| Record explorer | reference, interactive search over `learn/records.json` | Build |
+| Record explorer | reference, interactive search over the catalog's records | Build |
 | llms.txt and Markdown twins | reference: `llms.txt`, `llms-full.txt`, `feed.xml` and a `.md` twin of every page | Build |
 
 The tutorial runs UORust on the fixture workspace UORust's own gate projects,
@@ -156,22 +162,35 @@ removed from the example page, `DR-13` fails on its first assertion.
 
 ## How the catalog is made
 
-1. `devrel/subject.json` pins the subject: repository, full commit, project
-   path, and for the tutorial the `Justfile` recipe, fixture workspace, CLI
-   source and register rows it rests on.
-2. `devrel-catalog` (`crates/devrel`) reads every `.lex.tex` module of the
-   subject, takes its facet records (definitions whose result is a
-   `Foundation.Arch`, `Foundation.Sec`, `Foundation.Qual`, `Production.*` or
-   extension record type, and every theorem), numbers them by identifier and
-   assigns each to the resources that teach it.
-3. It writes `app/src/Catalog.lex.tex` (committed; the coverage theorems are
-   checked against it) and the pages (generated in `pages.yml`, never
-   committed). `pages.yml` fetches the pinned commit and fails if the committed
-   catalog is not that commit's catalog (`DR-03`).
+1. `devrel/subjects.json` lists the subjects. Each pins a repository, a full
+   commit, a project path and the `gate` workflow that must pass before the
+   pin may move; UORust's entry also names, for the tutorial, the `Justfile`
+   recipe, fixture workspace, CLI source and register rows it rests on. The
+   subject marked `self` is this repository and has no pin.
+2. `scripts/subjects.sh` checks out every pinned subject at exactly its
+   commit under `target/subjects/<slug>`. `devrel-catalog` (`crates/devrel`)
+   reads every `.lex.tex` module of each subject, takes its facet records
+   (definitions whose result is a `Foundation.Arch`, `Foundation.Sec`,
+   `Foundation.Qual`, `Production.*` or extension record type, and every
+   theorem), numbers them by identifier and assigns each to the resources
+   that teach it.
+3. It writes `app/src/Catalog.lex.tex` from the `catalog` subject (committed;
+   the coverage theorems are checked against it) and the case studies and
+   facet pages (generated in `pages.yml`, never committed). `pages.yml`
+   fetches the pinned commits and fails if the committed catalog is not their
+   catalog (`DR-03`).
+4. Nobody moves a pin by hand. Every hour and on every push to main,
+   `generate.yml` runs `scripts/repin.sh`, which moves each subject's pin
+   forward to the newest commit on its main whose `gate` workflow passed,
+   only when that commit descends from the pin: never back, never onto
+   another history, and a subject GitHub cannot answer for keeps its pin
+   (`DR-53`). It then regenerates the catalog and pushes, naming the subjects
+   that moved.
 
 ```sh
-# regenerate after moving the pin
-cargo run -p devrel-catalog -- --subject <checkout>/<path> --lean app/src/Catalog.lex.tex --site site
+just catalog   # rewrite app/src/Catalog.lex.tex from the pins
+just site      # assemble the whole documentation site in target/site, without the holo
+python3 -m http.server --directory target/site
 ```
 
 Pages are rendered once as blocks and written as HTML and Markdown, so a twin
@@ -201,6 +220,9 @@ Every facet is in `app/src`:
 | `prismpm --project app check` | Projects the model and runs the facet checks. |
 | `cd app && lexlean verify` | Has the Lean kernel check every theorem. |
 | `just model-write` | Regenerates `CONFORMANCE.md` from `model/`. |
+| `just repin` | Moves every subject's pin to its newest green main commit (`DR-53`). |
+| `just catalog` | Rewrites `app/src/Catalog.lex.tex` from the pinned subjects (`DR-03`). |
+| `just site` | Assembles the documentation site locally in `target/site`, as `pages.yml` does but without the holo. |
 
 [AGENTS.md](AGENTS.md) holds the rules R1 to R6. [CONFORMANCE.md](CONFORMANCE.md)
 lists the registered capabilities. Built from

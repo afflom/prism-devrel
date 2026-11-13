@@ -6,7 +6,7 @@
  *   bootstrap/screens.mjs         the compact window class every page is read at
  * Nothing here is a constant of its own: each value comes from one of those.
  */
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -44,5 +44,8 @@ export function load(root) {
   const terms = [...shared.terms, ...(content.terms ?? [])].map((t) => ({ ...t, match: t.match ?? [t.term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')] }));
   const proper = new Set([...shared.proper, ...(content.proper ?? []), ...personas.map((p) => p.name)]);
   for (const t of terms) for (const w of t.term.split(/\s+/)) if (/^[A-Z]/.test(w)) proper.add(w);
+  // The projects the case studies are about are named things too.
+  const subjects = join(root, 'devrel/subjects.json');
+  if (existsSync(subjects)) for (const s of JSON.parse(readFileSync(subjects, 'utf8')).subjects) for (const w of s.name.split(/[\s-]+/)) if (/^[A-Z]/.test(w)) proper.add(w);
   return { content, personas, terms, proper, compact: compact(root), stakeholders: holders };
 }

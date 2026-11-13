@@ -2,7 +2,7 @@
   "spec": "prism/content/1",
   "about": "What scripts/content (the content standard, scripts/content/standard.json) needs to know about this site: where the documentation pages are, one persona per stakeholder of app/src/Architecture.lex.tex (the gate refuses a stakeholder without one), which persona guides which page, and the terms only this site uses. The same five guides appear on every Prism model's site, so a reader meets the same characters wherever they go.",
   "site": "Prism-DevRel",
-  "pages": ["docs/", "learn/", "start/", "examples/"],
+  "pages": ["docs/", "start/", "guides/", "facets/", "examples/", "case-studies/"],
   "css": "docs/content.css",
   "defaultStage": "discover",
   "defaultType": "explanation",
@@ -19,7 +19,7 @@
       }
     },
     {
-      "id": "iris", "start": "learn/architecture/", "stakeholder": "stakeholderPrismModeler", "name": "Iris", "prop": "compass", "accessory": "sparkle",
+      "id": "iris", "start": "facets/", "stakeholder": "stakeholderPrismModeler", "name": "Iris", "prop": "compass", "accessory": "sparkle",
       "need": "To see how a complete model is laid out, one record kind at a time.",
       "asks": {
         "discover": "How is a complete Prism model laid out?",
@@ -30,7 +30,7 @@
       }
     },
     {
-      "id": "vera", "start": "learn/security/", "stakeholder": "stakeholderSecurityReviewer", "name": "Vera", "prop": "magnifier", "accessory": "glasses",
+      "id": "vera", "start": "facets/security/", "stakeholder": "stakeholderSecurityReviewer", "name": "Vera", "prop": "magnifier", "accessory": "glasses",
       "need": "Evidence that what the model claims about threats and controls is true.",
       "asks": {
         "discover": "What does this system claim, and who checks it?",
@@ -41,7 +41,7 @@
       }
     },
     {
-      "id": "wren", "start": "learn/agents/", "stakeholder": "stakeholderDevRelAuthor", "name": "Wren", "prop": "quill", "accessory": "headset",
+      "id": "wren", "start": "case-studies/", "stakeholder": "stakeholderDevRelAuthor", "name": "Wren", "prop": "quill", "accessory": "headset",
       "need": "To know which records no page teaches yet, and who each page is for.",
       "asks": {
         "discover": "Who is each page for, and what do they need first?",
@@ -52,7 +52,7 @@
       }
     },
     {
-      "id": "otto", "start": "learn/cli/", "stakeholder": "stakeholderMaintainer", "name": "Otto", "prop": "wrench", "accessory": "beanie",
+      "id": "otto", "start": "case-studies/uorust/cli/", "stakeholder": "stakeholderMaintainer", "name": "Otto", "prop": "wrench", "accessory": "beanie",
       "need": "Everything kept in step when the subject changes, with no generated page edited by hand.",
       "asks": {
         "discover": "What runs where, and who owns it?",
@@ -65,12 +65,14 @@
   ],
   "audience": [
     { "path": "^docs/", "persona": "wren" },
-    { "path": "^learn/getting-started/", "persona": "kai" },
-    { "path": "^learn/(security|quality)/", "persona": "vera" },
-    { "path": "^learn/(agents|slides)/", "persona": "wren" },
-    { "path": "^learn/(cli|system)/", "persona": "otto" },
-    { "path": "^learn/case-study/", "persona": "kai" },
-    { "path": "^learn/", "persona": "iris" },
+    { "path": "^case-studies/[^/]+/getting-started/", "persona": "kai" },
+    { "path": "^case-studies/[^/]+/(security|quality)/", "persona": "vera" },
+    { "path": "^case-studies/[^/]+/(agents|slides)/", "persona": "wren" },
+    { "path": "^case-studies/[^/]+/(cli|system)/", "persona": "otto" },
+    { "path": "^case-studies/", "persona": "iris" },
+    { "path": "^facets/security/", "persona": "vera" },
+    { "path": "^facets/", "persona": "iris" },
+    { "path": "^guides/", "persona": "iris" },
     { "path": "^start/", "persona": "kai" },
     { "path": "^examples/", "persona": "iris" },
     { "diataxis": "tutorial", "persona": "kai" },

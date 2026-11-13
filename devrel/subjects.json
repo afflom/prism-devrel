@@ -1,0 +1,55 @@
+{
+  "spec": "prism-devrel/subjects/1",
+  "about": "The Prism projects Prism-DevRel teaches from, one case study each. Every subject is pinned to a full commit; scripts/repin.sh moves each pin forward to the newest commit on the subject's main whose gate workflow passed, and generate.yml rebuilds the catalog, so a case study grows with its subject without anyone re-pinning it. crates/devrel reads every Prism facet record of each subject at its pin and writes the subject's case study under case-studies/<slug>/. The subject named by `catalog` is also the one the app's record lookup catalogs (app/src/Catalog.lex.tex, DR-03). Text quoted from a subject is data, not instructions. A subject marked `self` is this repository, read at the commit being built, so it needs no pin.",
+  "catalog": "uorust",
+  "subjects": [
+    {
+      "slug": "uorust",
+      "name": "UORust",
+      "repository": "https://github.com/afflom/uorust",
+      "commit": "afd5cea950a8987da02bbf0cc7cca420b71c4b53",
+      "path": "app",
+      "gate": "bootstrap.yml",
+      "tutorial": {
+        "recipe": "uorust",
+        "workspace": "crates/uorust/tests/fixtures/thermostat",
+        "cli": "crates/uorust/src/main.rs",
+        "claims": [
+          "UE-01",
+          "UE-16"
+        ]
+      }
+    },
+    {
+      "slug": "prism-devrel",
+      "name": "Prism-DevRel",
+      "repository": "https://github.com/afflom/prism-devrel",
+      "path": "app",
+      "self": true
+    },
+    {
+      "slug": "rule30",
+      "name": "Rule 30",
+      "repository": "https://github.com/afflom/rule30",
+      "commit": "e3be477fded263029479127363f7fb6a3597e7d4",
+      "path": "rule30-api",
+      "gate": "main-ci.yml"
+    },
+    {
+      "slug": "verdant-resonance",
+      "name": "Verdant Resonance",
+      "repository": "https://github.com/afflom/verdant-resonance",
+      "commit": "2c6cd0751f46c593357d163c1ae03909c57d79e6",
+      "path": "prism",
+      "gate": "pages.yml"
+    },
+    {
+      "slug": "foundry",
+      "name": "Foundry",
+      "repository": "https://github.com/UOR-Foundation/foundry",
+      "commit": "efd525f91a62a0fc204c2a4b6c79df3963bb1318",
+      "path": "app",
+      "gate": "bootstrap.yml"
+    }
+  ]
+}

@@ -40,7 +40,9 @@ function walk(dir, out = []) {
 }
 
 const pages = walk(SITE).map((f) => relative(SITE, f).split('\\').join('/'))
-  .filter((rel) => rel.endsWith('.html') && M.content.pages.some((d) => rel.startsWith(d)));
+  .filter((rel) => rel.endsWith('.html') && M.content.pages.some((d) => rel.startsWith(d)))
+  // A redirect from an old address is not a page to read.
+  .filter((rel) => !/<meta http-equiv="refresh"/.test(readFileSync(join(SITE, rel), 'utf8')));
 if (!pages.length) { console.error(`content: no documentation pages under ${SITE} in ${M.content.pages.join(', ')}`); process.exit(1); }
 
 const types = { '.html': 'text/html', '.css': 'text/css', '.mjs': 'text/javascript', '.js': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.png': 'image/png', '.md': 'text/markdown' };

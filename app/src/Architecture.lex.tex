@@ -58,7 +58,7 @@ definition{
   name: stakeholderRustNewcomer,
   parameters: [],
   result: Foundation.Arch::Stakeholder,
-  body: (record Foundation.Arch::Stakeholder {index := 3, name := "Rust developer new to Prism", text := "Knows Cargo and Rust, has never written a Prism model, and wants a working model of their own workspace."})
+  body: (record Foundation.Arch::Stakeholder {index := 3, name := "Developer new to Prism", text := "Can program, has never built a Prism app, and wants a working app of their own: from an idea, from existing code, or from an example."})
 }
 
 definition{
@@ -135,7 +135,7 @@ definition{
   name: componentCatalogSite,
   parameters: [],
   result: Foundation.Arch::Component,
-  body: (record Foundation.Arch::Component {index := 3, kind := (ctor Foundation.Arch::ComponentKind.staticSite), name := "Catalog site", text := "The learning pages under learn/, their Markdown twins, llms.txt and feed.xml."})
+  body: (record Foundation.Arch::Component {index := 3, kind := (ctor Foundation.Arch::ComponentKind.staticSite), name := "Catalog site", text := "The case study pages under case-studies/, the facet pages under facets/, their Markdown twins, llms.txt and feed.xml."})
 }
 
 definition{
@@ -163,7 +163,7 @@ definition{
   name: componentSubjectRepository,
   parameters: [],
   result: Foundation.Arch::Component,
-  body: (record Foundation.Arch::Component {index := 7, kind := (ctor Foundation.Arch::ComponentKind.externalSystem), name := "Subject repository", text := "The subject's Git repository, read at the commit devrel/subject.json pins."})
+  body: (record Foundation.Arch::Component {index := 7, kind := (ctor Foundation.Arch::ComponentKind.externalSystem), name := "Subject repository", text := "The subject's Git repository, read at the commit devrel/subjects.json pins for it."})
 }
 
 definition{

@@ -19,12 +19,15 @@
   },
   "hub": {
     "path": "docs/",
-    "eyebrow": "Build with Prism SDK",
-    "title": "Learn Prism by building with it",
-    "lead": "Prism is an open SDK for apps that prove what they do. Build them, ship them and run them anywhere, from edge to cloud.",
-    "body": "Prism-DevRel is the developer relations program for Prism, written as a Prism model. Each page is one kind of documentation and serves one stage of your journey. Together the pages teach every record of a model, and the Lean kernel checks that they do.",
+    "eyebrow": "Build with Prism",
+    "title": "Build apps that prove what they do",
+    "lead": "Prism is an open SDK for apps that prove what they do. Describe an app once, and Prism writes every part of it, checks every claim it makes, and ships it to run anywhere.",
+    "body": "This site shows you how to build Prism apps. Start with a tutorial. Follow a how-to guide for the task in front of you, and look up details in the reference. Read the explanations when you want to know why. Then copy an example, or study a whole project in a case study. The site is itself a Prism app: each page comes from a model, and is checked before it goes live.",
     "guides": "The readers this site is written for, one for each stakeholder of the model. Each page names the guide it was written for.",
-    "start": "Start building"
+    "start": "Start building",
+    "ways": "Ways to start building",
+    "waysLead": "Pick the one closest to what you have: an idea, existing code, or an app like yours.",
+    "collections": "Examples and case studies"
   },
   "app": {
     "about": "The app page at the root, as a newcomer meets it: what the site is (app.json tagline), the ways on (app.json links, drawn by the frame under the description), and a verified app to try. devrel/shell.mjs checks the links are these and land on pages.",
@@ -36,6 +39,10 @@
       {
         "label": "Examples",
         "path": "examples/"
+      },
+      {
+        "label": "Case studies",
+        "path": "case-studies/"
       },
       {
         "label": "Docs",
@@ -114,6 +121,28 @@
         "id": "scale",
         "label": "Scale",
         "question": "How do I ship, maintain and grow what I built?"
+      }
+    ]
+  },
+  "collections": {
+    "about": "Beside the four Diátaxis types, two collections of worked material: example apps and case studies. A page joins a collection by <meta name=\"collection\">, and is listed in that collection's tab instead of its Diátaxis type's tab, grouped by <meta name=\"collection-group\">; it keeps its Diátaxis type and journey stage as labels. The collection's landing page is <path>index.html.",
+    "authority": "Caroline Lewko and James Parton, Developer Relations (Apress, 2021): sample applications serve the Build stage and customer case studies the Evaluate stage of the developer journey",
+    "items": [
+      {
+        "id": "examples",
+        "tab": "Examples",
+        "path": "examples/",
+        "label": "example",
+        "what": "Small apps, each built from one prompt and verified, grouped by the pattern they follow. Copy one and change it.",
+        "group": "pattern"
+      },
+      {
+        "id": "case-studies",
+        "tab": "Case studies",
+        "path": "case-studies/",
+        "label": "case study",
+        "what": "Whole Prism projects, read record by record at a pinned commit, from their users to their proofs. Each one updates as its project grows.",
+        "group": "project"
       }
     ]
   }

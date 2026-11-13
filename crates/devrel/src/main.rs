@@ -1,45 +1,79 @@
-//! `devrel-catalog`: build the DevRel catalog of a subject Prism project.
+//! `devrel-catalog`: build the case studies of the subjects
+//! `devrel/subjects.json` lists, and the DevRel catalog of the one it names
+//! as `catalog`.
 //!
 //! ```text
-//! devrel-catalog --config devrel/subject.json --subject <checkout>/<path>
-//!                [--lean app/src/Catalog.lex.tex] [--check] [--site site]
+//! devrel-catalog --subjects devrel/subjects.json --checkouts <dir>
+//!                --self-root <repo root> --self-commit <40-hex>
+//!                [--lean app/src/Catalog.lex.tex] [--check] [--site <site dir>]
 //! ```
 //!
-//! `--lean` writes the catalog's LexLean data, or with `--check` compares it
-//! with the committed file and fails if they differ: the committed catalog is
-//! then not the catalog of the pinned subject. `--site` writes the pages.
+//! `<dir>/<slug>` is the checkout of each subject at its pin; the self
+//! subject is `--self-root` at `--self-commit`. `--lean` writes the catalog
+//! subject's LexLean data, or with `--check` compares it with the committed
+//! file and fails if they differ: the committed catalog is then not the
+//! catalog of the pinned subject. `--site` writes every case study, the facet
+//! pages and the redirects from the old `learn/` addresses.
 
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
+use devrel_catalog::site::Study;
 use devrel_catalog::tutorial::Tutorial;
-use devrel_catalog::{lean, site, Catalog, SubjectConfig};
+use devrel_catalog::{lean, site, Catalog, SubjectConfig, Subjects};
 
-fn main() -> ExitCode {
-    let mut config = PathBuf::from("devrel/subject.json");
-    let mut subject: Option<PathBuf> = None;
-    let mut lean_out: Option<PathBuf> = None;
-    let mut site_out: Option<PathBuf> = None;
+struct Args {
+    subjects: PathBuf,
+    checkouts: PathBuf,
+    self_root: PathBuf,
+    self_commit: String,
+    lean: Option<PathBuf>,
+    site: Option<PathBuf>,
+    check: bool,
+}
+
+fn parse() -> Result<Args, String> {
+    let mut subjects = PathBuf::from("devrel/subjects.json");
+    let mut checkouts = None;
+    let mut self_root = None;
+    let mut self_commit = None;
+    let mut lean = None;
+    let mut site = None;
     let mut check = false;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
+        let mut value = || args.next().ok_or_else(|| format!("{arg} needs a value"));
         match arg.as_str() {
-            "--config" => config = args.next().map(PathBuf::from).unwrap_or(config),
-            "--subject" => subject = args.next().map(PathBuf::from),
-            "--lean" => lean_out = args.next().map(PathBuf::from),
-            "--site" => site_out = args.next().map(PathBuf::from),
+            "--subjects" => subjects = PathBuf::from(value()?),
+            "--checkouts" => checkouts = Some(PathBuf::from(value()?)),
+            "--self-root" => self_root = Some(PathBuf::from(value()?)),
+            "--self-commit" => self_commit = Some(value()?),
+            "--lean" => lean = Some(PathBuf::from(value()?)),
+            "--site" => site = Some(PathBuf::from(value()?)),
             "--check" => check = true,
-            other => {
-                eprintln!("devrel-catalog: unknown argument {other}");
-                return ExitCode::from(64);
-            }
+            other => return Err(format!("unknown argument {other}")),
         }
     }
-    let Some(subject) = subject else {
-        eprintln!("devrel-catalog: --subject <dir> names the subject's Prism project");
-        return ExitCode::from(64);
+    Ok(Args {
+        subjects,
+        checkouts: checkouts.ok_or("--checkouts <dir> names the directory of subject checkouts")?,
+        self_root: self_root.ok_or("--self-root <dir> names this repository's root")?,
+        self_commit: self_commit.ok_or("--self-commit <40-hex> names the commit being built")?,
+        lean,
+        site,
+        check,
+    })
+}
+
+fn main() -> ExitCode {
+    let args = match parse() {
+        Ok(a) => a,
+        Err(why) => {
+            eprintln!("devrel-catalog: {why}");
+            return ExitCode::from(64);
+        }
     };
-    match run(&config, &subject, lean_out, site_out, check) {
+    match run(&args) {
         Ok(()) => ExitCode::SUCCESS,
         Err(why) => {
             eprintln!("devrel-catalog: {why}");
@@ -48,49 +82,84 @@ fn main() -> ExitCode {
     }
 }
 
-fn run(
-    config: &Path,
-    subject: &Path,
-    lean_out: Option<PathBuf>,
-    site_out: Option<PathBuf>,
-    check: bool,
-) -> Result<(), String> {
-    let text = std::fs::read_to_string(config).map_err(|e| format!("{}: {e}", config.display()))?;
-    let config = SubjectConfig::parse(&text).map_err(|e| e.to_string())?;
-    let checkout = config.checkout(subject);
-    let tutorial =
-        Tutorial::build(&config, &config.tutorial, &checkout).map_err(|e| e.to_string())?;
-    let catalog = Catalog::build(config, subject).map_err(|e| e.to_string())?;
-    if let Some(path) = lean_out {
-        let generated = lean::catalog(&catalog);
-        if check {
-            let committed =
-                std::fs::read_to_string(&path).map_err(|e| format!("{}: {e}", path.display()))?;
-            if committed != generated {
-                return Err(format!(
-                    "{} is not the catalog of {} at {}: regenerate it with --lean {} (without --check)",
-                    path.display(),
-                    catalog.subject.repository,
-                    catalog.subject.commit,
-                    path.display()
-                ));
-            }
-            println!("{} is the catalog of the pinned subject", path.display());
-        } else {
-            std::fs::write(&path, generated).map_err(|e| format!("{}: {e}", path.display()))?;
+/// The checkout a subject is read from, and its Prism project inside it.
+fn locate(args: &Args, s: &SubjectConfig) -> (PathBuf, PathBuf) {
+    let checkout = if s.own {
+        args.self_root.clone()
+    } else {
+        args.checkouts.join(&s.slug)
+    };
+    let project = checkout.join(s.path.trim_matches('/'));
+    (checkout, project)
+}
+
+fn study(args: &Args, s: &SubjectConfig) -> Result<Study, String> {
+    let (checkout, project) = locate(args, s);
+    let tutorial = match &s.tutorial {
+        Some(config) => {
+            Some(Tutorial::build(s, config, &checkout).map_err(|e| format!("{}: {e}", s.slug))?)
+        }
+        None => None,
+    };
+    let catalog = Catalog::build(s.clone(), &project).map_err(|e| format!("{}: {e}", s.slug))?;
+    Ok(Study { catalog, tutorial })
+}
+
+fn lean_out(path: &Path, catalog: &Catalog, check: bool) -> Result<(), String> {
+    let generated = lean::catalog(catalog);
+    if check {
+        let committed =
+            std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
+        if committed != generated {
+            return Err(format!(
+                "{} is not the catalog of {} at {}: regenerate it with --lean {} (without --check)",
+                path.display(),
+                catalog.subject.repository,
+                catalog.subject.commit,
+                path.display()
+            ));
+        }
+        println!("{} is the catalog of the pinned subject", path.display());
+    } else {
+        std::fs::write(path, generated).map_err(|e| format!("{}: {e}", path.display()))?;
+    }
+    Ok(())
+}
+
+fn run(args: &Args) -> Result<(), String> {
+    let text = std::fs::read_to_string(&args.subjects)
+        .map_err(|e| format!("{}: {e}", args.subjects.display()))?;
+    let subjects = Subjects::parse(&text, &args.self_commit).map_err(|e| e.to_string())?;
+    // The catalog subject first: --lean may rewrite app/src/Catalog.lex.tex,
+    // which the self subject's case study then reads.
+    let primary = study(args, subjects.catalog())?;
+    if let Some(path) = &args.lean {
+        lean_out(path, &primary.catalog, args.check)?;
+    }
+    let mut studies = Vec::new();
+    let mut primary = Some(primary);
+    for s in &subjects.subjects {
+        if s.slug == subjects.catalog {
+            studies.push(primary.take().expect("the catalog subject is listed once"));
+        } else if args.site.is_some() {
+            studies.push(study(args, s)?);
         }
     }
-    if let Some(dir) = site_out {
-        let pages = site::write(&catalog, &tutorial, &dir).map_err(|e| e.to_string())?;
-        println!("wrote {pages} catalog pages under {}", dir.display());
+    if let Some(dir) = &args.site {
+        let pages = site::write(&studies, &subjects.catalog, dir).map_err(|e| e.to_string())?;
+        println!("wrote {pages} pages under {}", dir.display());
     }
-    let covered = catalog.covers.iter().filter(|c| !c.is_empty()).count();
-    println!(
-        "{} records of {} covered by {} resources ({covered}/{} covered)",
-        catalog.records.len(),
-        catalog.subject.name,
-        catalog.resources.len(),
-        catalog.records.len()
-    );
+    for st in &studies {
+        let c = &st.catalog;
+        let covered = c.covers.iter().filter(|x| !x.is_empty()).count();
+        println!(
+            "{}: {} records at {} covered by {} pages ({covered}/{} covered)",
+            c.subject.slug,
+            c.records.len(),
+            &c.subject.commit[..12],
+            c.published().len(),
+            c.records.len()
+        );
+    }
     Ok(())
 }

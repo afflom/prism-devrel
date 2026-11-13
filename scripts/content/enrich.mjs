@@ -49,7 +49,9 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const slug = (s) => s.toLowerCase().normalize('NFKD').replace(/\p{M}/gu, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 const pages = walk(SITE).map((f) => relative(SITE, f).split('\\').join('/'))
-  .filter((rel) => rel.endsWith('.html') && M.content.pages.some((d) => rel.startsWith(d)));
+  .filter((rel) => rel.endsWith('.html') && M.content.pages.some((d) => rel.startsWith(d)))
+  // A redirect from an old address is not a page to read.
+  .filter((rel) => !/<meta http-equiv="refresh"/.test(readFileSync(join(SITE, rel), 'utf8')));
 
 mkdirSync(dirname(join(SITE, CSS)), { recursive: true });
 copyFileSync(join(here, 'content.css'), join(SITE, CSS));
@@ -81,6 +83,7 @@ const tab = await context.newPage();
 const app = existsSync(join(SITE, 'app.json')) ? JSON.parse(readFileSync(join(SITE, 'app.json'), 'utf8')) : {};
 const live = (app.live ?? '').replace(/\/?$/, '/');
 let llms = existsSync(join(SITE, 'llms.txt')) ? readFileSync(join(SITE, 'llms.txt'), 'utf8') : null;
+const unlisted = [];
 const terms = M.terms.map((t) => ({ id: `term-${slug(t.term)}`, term: t.term, plain: t.plain, match: t.match, case: !!t.case }));
 
 /** In the page: mark the first use of each term, and list the terms used. */
@@ -237,10 +240,13 @@ for (const rel of pages) {
   folds += r.folds;
   cards++;
   writeFileSync(file, r.html);
-  if (llms !== null && !llms.includes(url) && !llms.includes(`${live}${rel.replace(/index\.html$/, 'index.md')}`)) {
-    llms = `${llms.trimEnd()}\n\n## ${M.content.site} pages\n\n- [${title}](${url}): ${ld.description}\n`;
-  }
+  // A page llms.txt does not list yet, by its address or its Markdown twin's.
+  const twin = r.html.match(/<link rel="alternate" type="text\/markdown" href="([^"]*)"/)?.[1];
+  const twinUrl = twin ? new URL(twin, url).href : `${live}${rel.replace(/index\.html$/, 'index.md')}`;
+  if (llms !== null && !llms.includes(`(${url})`) && !llms.includes(`(${twinUrl})`)) unlisted.push(`- [${title}](${url}): ${ld.description}`);
 }
+// Every unlisted page goes under one heading, not one heading each.
+if (llms !== null && unlisted.length) llms = `${llms.trimEnd()}\n\n## ${M.content.site} pages\n\n${unlisted.join('\n')}\n`;
 if (llms !== null) writeFileSync(join(SITE, 'llms.txt'), llms);
 else {
   writeFileSync(join(SITE, 'llms.txt'), `# ${M.content.site}\n\n${pages.map((rel) => `- [${rel}](${live}${rel.replace(/index\.html$/, '')})`).join('\n')}\n`);

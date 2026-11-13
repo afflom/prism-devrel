@@ -197,7 +197,7 @@ pub fn sections(c: &Catalog) -> Vec<(String, String, Vec<String>)> {
         vec![
             "record ID: the facet record at that index, by its Module::declaration identifier.".to_string(),
             "facet NAME: the facet the record belongs to.".to_string(),
-            "page SLUG: one line per page that teaches the record, at learn/SLUG/.".to_string(),
+            format!("page SLUG: one line per page that teaches the record, at {}SLUG/.", crate::site::study_dir(&c.subject.slug)),
             format!("refused unknown-record: the index is {n} or more. error invalid-request: the request is not one to {} decimal digits.", index_digits(c)),
         ],
     )];
@@ -230,7 +230,14 @@ pub fn sections(c: &Catalog) -> Vec<(String, String, Vec<String>)> {
         "Pages".to_string(),
         c.resources
             .iter()
-            .map(|r| format!("{} (learn/{}/): {}", r.title, r.slug, r.summary))
+            .map(|r| {
+                format!(
+                    "{} ({}): {}",
+                    r.title_for(&c.subject.name),
+                    crate::site::resource_path(c, r),
+                    r.summary_for(&c.subject.name)
+                )
+            })
             .collect(),
     ));
     out
@@ -312,7 +319,7 @@ pub fn catalog(c: &Catalog) -> String {
                 "(record {MODEL}::Resource {{index := {}, slug := {}, title := {}, modality := (ctor {MODEL}::Modality.{})}})",
                 r.index,
                 quote(r.slug),
-                quote(r.title),
+                quote(&r.title_for(&c.subject.name)),
                 r.modality.constructor()
             ),
         ));

@@ -208,7 +208,7 @@ definition{
   name: modeledAssetSubjectPin,
   parameters: [],
   result: Production.ThreatModel::ModeledAsset,
-  body: (record Production.ThreatModel::ModeledAsset {asset := "Security::assetSubjectPin", name := "Subject pin", text := "The repository, commit and path devrel/subject.json names, which decide what the catalog describes."})
+  body: (record Production.ThreatModel::ModeledAsset {asset := "Security::assetSubjectPin", name := "Subject pin", text := "The repository, commit and path devrel/subjects.json names for each subject, which decide what each case study describes."})
 }
 
 definition{
@@ -278,7 +278,7 @@ definition{
   name: modeledControlPinnedSubject,
   parameters: [],
   result: Production.ThreatModel::ModeledControl,
-  body: (record Production.ThreatModel::ModeledControl {control := "Security::controlPinnedSubject", name := "Pinned subject", text := "The Pages workflow fetches exactly the repository and full commit devrel/subject.json names.", evidence := (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.gate), reference := "pages.yml fetches the pinned subject commit"}) (nil Production.ThreatModel::Evidence))})
+  body: (record Production.ThreatModel::ModeledControl {control := "Security::controlPinnedSubject", name := "Pinned subject", text := "The Pages workflow fetches exactly the repository and full commit devrel/subjects.json names for each subject.", evidence := (cons (record Production.ThreatModel::Evidence {kind := (ctor Production.ThreatModel::EvidenceKind.gate), reference := "pages.yml fetches the pinned subject commit"}) (nil Production.ThreatModel::Evidence))})
 }
 
 definition{

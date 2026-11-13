@@ -16,7 +16,7 @@ pub const RESPONSE_MAXIMUM: usize = 8192;
 
 /// `Catalog::foundText`: the message of a found record.
 pub const FOUND_TEXT: &str =
-    "Found: the record's identifier, its facet, then every page under learn/ that teaches it.";
+    "Found: the record's identifier, its facet, then every page of its case study that teaches it.";
 /// `Catalog::errorText`: the message of a refusal or an invalid request.
 pub const ERROR_TEXT: &str = "Not found: the index is past the last record or is not a number. The details name the reason; its fix is listed under refusals and errors.";
 /// `Catalog::overflowText`.

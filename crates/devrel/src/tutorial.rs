@@ -25,7 +25,8 @@ use std::path::Path;
 
 use crate::{lextex, Catalog, CatalogError, Facet, SubjectConfig};
 
-/// What `devrel/subject.json`'s `tutorial` member names in the subject.
+/// What a subject's `tutorial` member in `devrel/subjects.json` names in the
+/// subject.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TutorialConfig {
     /// The `Justfile` recipe that runs the tool on the fixture.

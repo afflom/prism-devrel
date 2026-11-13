@@ -1,0 +1,36 @@
+\begin{lexlean}{Architecture}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\importmodule{Foundation.Arch}
+\title{Greenhouse architecture}
+\begin{semanticmodule}
+definition{
+  name: stakeholderGrower,
+  parameters: [],
+  result: Foundation.Arch::Stakeholder,
+  body: (record Foundation.Arch::Stakeholder {index := 0, name := "Grower", text := "Keeps the plants alive and reads the greenhouse's decisions."})
+}
+
+definition{
+  name: concernWatering,
+  parameters: [],
+  result: Foundation.Arch::Concern,
+  body: (record Foundation.Arch::Concern {index := 0, name := "Timely watering", text := "No bed goes dry between two readings."})
+}
+
+definition{
+  name: viewpointWatering,
+  parameters: [],
+  result: Foundation.Arch::Viewpoint,
+  body: (record Foundation.Arch::Viewpoint {index := 0, stakeholderIndex := 0, concernIndex := 0, modelKindIndex := 0})
+}
+
+definition{
+  name: componentController,
+  parameters: [],
+  result: Foundation.Arch::Component,
+  body: (record Foundation.Arch::Component {index := 0, kind := (ctor Foundation.Arch::ComponentKind.service), name := "Controller", text := "Decides when each bed is watered."})
+}
+\end{semanticmodule}
+\end{lexlean}

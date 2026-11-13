@@ -37,7 +37,7 @@ statement = "A catalog with an uncovered record or a cover naming an undeclared 
 id = "DR-03"
 level = "build"
 suite = "devrel"
-statement = "The committed catalog is the catalog of the subject at the commit devrel/subject.json pins"
+statement = "The committed catalog is the catalog of the subject at the commit devrel/subjects.json pins"
 
 [[id]]
 id = "DR-04"
@@ -158,3 +158,39 @@ id = "DR-41"
 level = "build"
 suite = "devrel"
 statement = "Prism-DevRel's context of use (ISO 9241-11) is read from its own model: every journey's actor is a user group, every journey a goal whose tasks are its steps in order and each accepted, every user-facing component a technical environment, and every goal's usability measured or recorded open"
+
+[[id]]
+id = "DR-31"
+level = "build"
+suite = "devrel"
+statement = "Example apps and case studies are collections with their own tabs: a page that names a collection is listed there, grouped by its collection group, and keeps its Diátaxis type and journey stage as labels"
+
+[[id]]
+id = "DR-21"
+level = "build"
+suite = "devrel"
+statement = "Every pattern the builder offers has a how-to guide that builds an app of that pattern from a prompt, and every example page belongs to the Examples collection under its pattern"
+
+[[id]]
+id = "DR-50"
+level = "build"
+suite = "devrel"
+statement = "Every subject in devrel/subjects.json has a case study under case-studies/<slug>/, read from every facet record of the subject at its pinned commit, or at the commit being built for the self subject, and the case studies index lists every subject"
+
+[[id]]
+id = "DR-51"
+level = "build"
+suite = "devrel"
+statement = "Every Prism facet has a concept page that explains the facet from its standard and shows how each case study declares it, with record counts read from the subjects"
+
+[[id]]
+id = "DR-52"
+level = "build"
+suite = "devrel"
+statement = "Every old learn/ address redirects to the page that replaced it, so no published link breaks"
+
+[[id]]
+id = "DR-53"
+level = "build"
+suite = "devrel"
+statement = "Every subject pin moves only forward, to the newest main commit whose gate workflow passed, and the catalogs are regenerated from the new pins without anyone editing them"

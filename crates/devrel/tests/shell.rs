@@ -41,3 +41,9 @@ fn shell(id: &str) -> usize {
 fn shell_dr_30() {
     shell("DR-30");
 }
+
+/// `DR-31`: Example apps and case studies are collections with their own tabs: a page that names a collection is listed there, grouped by its collection group, and keeps its Diátaxis type and journey stage as labels
+#[test]
+fn devrel_dr_31() {
+    shell("DR-31");
+}

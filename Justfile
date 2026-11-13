@@ -72,14 +72,21 @@ model-write:
 new-capability id level suite statement:
     cargo run -q --locked -p xtask -- new-capability {{quote(id)}} {{quote(level)}} {{quote(suite)}} {{quote(statement)}}
 
-# Move devrel/subject.json to the subject's newest green main commit (never
-# back, never to a commit whose gate failed).
+# Move every pin in devrel/subjects.json to its subject's newest green main
+# commit (never back, never to a commit whose gate failed; DR-53).
 repin:
     scripts/repin.sh
 
-# Rewrite app/src/Catalog.lex.tex from the subject devrel/subject.json pins (DR-03).
+# Rewrite app/src/Catalog.lex.tex from the subjects devrel/subjects.json pins
+# (DR-03), fetched into target/subjects.
 catalog:
     scripts/catalog.sh
+
+# The whole documentation site, assembled locally without the holo as
+# pages.yml assembles it: case studies, facet pages, the builder, examples and
+# the docs shell, checked against the content standard. Serve `out` after.
+site out="target/site":
+    scripts/site.sh {{quote(out)}}
 
 # The brand, design and context-of-use facets (DR-40, DR-41): Brand and Users
 # in app/src, read from uor.foundation as brand/foundation.lock pins it and from
@@ -95,8 +102,8 @@ experience-check:
 
 # Every writer: CONFORMANCE.md, the builder's packed assets, and the catalog.
 # `generate.yml` runs `repin` and this on every push to main and on a schedule,
-# and commits what changed, so no generated file is stale and DevRel follows
-# UORust without anyone re-pinning it.
+# and commits what changed, so no generated file is stale and every case study
+# follows its subject without anyone re-pinning it.
 generate: model-write catalog experience
     node builder/pack.mjs
 

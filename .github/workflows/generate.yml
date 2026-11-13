@@ -1,7 +1,9 @@
-# Keeps every generated file current on main and DevRel pinned to the newest
-# green UORust. On each push to main, each hour (UORust's pushes start nothing
-# here) and on demand, it re-pins devrel/subject.json to the subject's newest
-# commit whose gate passed, runs `just generate` through the locked SDK, and,
+# Keeps every generated file current on main and every case study pinned to
+# its subject's newest green main. On each push to main, each hour (a subject's
+# pushes start nothing here) and on demand, it moves each pin in
+# devrel/subjects.json forward to the subject's newest main commit whose gate
+# workflow passed (scripts/repin.sh, DR-53; a subject GitHub cannot answer for
+# keeps its pin), runs `just generate` through the locked SDK, and,
 # when anything changed, pushes one commit and dispatches the gate and the
 # page for it. It also re-pins the brand to uor.foundation's newest main
 # (brand/foundation.lock), so the brand, design and context-of-use facets
@@ -26,7 +28,7 @@ concurrency:
 
 jobs:
   generate:
-    name: re-pin the subject, run every writer and push what changed
+    name: re-pin every subject, run every writer and push what changed
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
@@ -38,7 +40,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Re-pin the subject to its newest green main
+      - name: Re-pin every subject to its newest green main
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -60,12 +62,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          subject=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync("devrel/subject.json", "utf8")).commit.slice(0, 7))')
-          if git diff --quiet -- devrel/subject.json; then
+          # The commit says which subjects moved: "Pin UORust to abc1234,
+          # Rule 30 to def5678 and regenerate the catalogs".
+          moved=$(git show HEAD:devrel/subjects.json | node -e '
+            const fs = require("fs");
+            const before = Object.fromEntries(JSON.parse(fs.readFileSync(0, "utf8")).subjects.map((s) => [s.slug, s.commit]));
+            const pins = JSON.parse(fs.readFileSync("devrel/subjects.json", "utf8")).subjects
+              .filter((s) => !s.self && s.commit !== before[s.slug])
+              .map((s) => `${s.name} to ${s.commit.slice(0, 7)}`);
+            process.stdout.write(pins.length > 1 ? `${pins.slice(0, -1).join(", ")} and ${pins.at(-1)}` : pins.join(""));
+          ')
+          if [[ -z $moved ]]; then
             message="Regenerate the generated files"
           else
-            message="Pin the subject to UORust $subject and regenerate the catalog"
+            message="Pin $moved and regenerate the catalogs"
           fi
           scripts/ci/push.sh "$message" \
-            "CONFORMANCE.md devrel/subject.json app brand builder/assets.mjs" \
+            "CONFORMANCE.md devrel/subjects.json app brand builder/assets.mjs" \
             bootstrap.yml pages.yml

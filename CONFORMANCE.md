@@ -24,7 +24,7 @@ model does not sanction.
 | --- | --- | --- |
 | `DR-01` | `build` | Every facet record of the subject is covered by at least one resource, and every resource a cover names is declared |
 | `DR-02` | `build` | A catalog with an uncovered record or a cover naming an undeclared resource is refused |
-| `DR-03` | `build` | The committed catalog is the catalog of the subject at the commit devrel/subject.json pins |
+| `DR-03` | `build` | The committed catalog is the catalog of the subject at the commit devrel/subjects.json pins |
 | `DR-04` | `build` | Every page shows every record the catalog says it covers, and its Markdown twin quotes the same records |
 | `DR-05` | `build` | Subject text is escaped in every page and quoted as data in every twin |
 | `DR-06` | `build` | The lookup answers a record index with the record identifier, its facet and the pages that cover it, refuses malformed requests, and frames the workbench's answers as JSON |
@@ -45,6 +45,12 @@ model does not sanction.
 | `DR-20` | `build` | The how-to guides are grouped by pattern, and a state machine's page runs it from its initial state through the verified holo, each answer the next state |
 | `DR-40` | `build` | Prism-DevRel's brand identity and design system are read from uor.foundation: every Wheeler brand element and every W3C design token of the pinned site, each with its source span, and every text and focus colour the site sets on a surface meets its WCAG 2.2 contrast criterion |
 | `DR-41` | `build` | Prism-DevRel's context of use (ISO 9241-11) is read from its own model: every journey's actor is a user group, every journey a goal whose tasks are its steps in order and each accepted, every user-facing component a technical environment, and every goal's usability measured or recorded open |
+| `DR-31` | `build` | Example apps and case studies are collections with their own tabs: a page that names a collection is listed there, grouped by its collection group, and keeps its Diátaxis type and journey stage as labels |
+| `DR-21` | `build` | Every pattern the builder offers has a how-to guide that builds an app of that pattern from a prompt, and every example page belongs to the Examples collection under its pattern |
+| `DR-50` | `build` | Every subject in devrel/subjects.json has a case study under case-studies/<slug>/, read from every facet record of the subject at its pinned commit, or at the commit being built for the self subject, and the case studies index lists every subject |
+| `DR-51` | `build` | Every Prism facet has a concept page that explains the facet from its standard and shows how each case study declares it, with record counts read from the subjects |
+| `DR-52` | `build` | Every old learn/ address redirects to the page that replaced it, so no published link breaks |
+| `DR-53` | `build` | Every subject pin moves only forward, to the newest main commit whose gate workflow passed, and the catalogs are regenerated from the new pins without anyone editing them |
 
 ## Cited authorities
 

@@ -7,7 +7,7 @@
  */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,7 +15,7 @@ import { buildApp } from './build.mjs';
 import { machineDeclarations } from './machine.mjs';
 import { deriveModel } from './model.mjs';
 import { render as renderAssets } from './pack.mjs';
-import { DIATAXIS, JOURNEY, PATTERN_TEXT, examplePage, page, prismSource, writeSite } from './site.mjs';
+import { DIATAXIS, EXAMPLES, JOURNEY, OVERVIEW, PATTERN_TEXT, cliCommands, examplePage, groupOf, guidePath, guideTitle, page, prismSource, verifyScript, workflowStep, writeSite } from './site.mjs';
 import { PATTERNS, XACML_DECISIONS, readPrompt } from './prompt.mjs';
 import { ASSETS } from './assets.mjs';
 import { SPEC_INPUT, TOOL } from './tool.mjs';
@@ -46,6 +46,8 @@ const prompts = () =>
 const rule30 = () => JSON.parse(readFileSync(join(examples, 'rule-30-cell.prompt.json'), 'utf8'));
 const module = (files, name) => files[`app/src/${name}.lex.tex`];
 const sha = (text) => createHash('sha256').update(text).digest('hex');
+const escHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const meta = (html, name) => html.match(new RegExp(`<meta name="${name}" content="([^"]*)">`))?.[1];
 
 /**
  * A door: closed, open, locked, broken (final, entered by a kick from any
@@ -214,6 +216,62 @@ const CASES = {
     const script = readFileSync(join(here, 'web/example.mjs'), 'utf8');
     ok(script.includes("words.splice(at, 0, state)") && script.includes('state = answer;') && script.includes("if (answer === 'invalid') break;"), 'each answer is the next state, and a refused step ends the run');
   },
+  // Every pattern has a how-to guide built from its simplest example, and every example page is in the Examples collection under its pattern.
+  async 'DR-21'() {
+    const site = mkdtempSync(join(tmpdir(), 'devrel-guides-'));
+    try {
+      writeFileSync(join(site, 'llms.txt'), '# Prism-DevRel\n');
+      await writeSite(site, null);
+      const listed = JSON.parse(readFileSync(join(site, 'examples/prompts/index.json'), 'utf8'));
+      const rules = (e) => JSON.parse(readFileSync(join(examples, e.prompt), 'utf8')).app.rules.length;
+      const { commands } = cliCommands();
+      const llms = readFileSync(join(site, 'llms.txt'), 'utf8');
+      for (const [key, P] of Object.entries(PATTERNS)) {
+        const at = join(site, guidePath(key), 'index.html');
+        ok(existsSync(at) && existsSync(join(site, guidePath(key), 'index.md')), `${key} has a how-to guide and its twin`);
+        const html = readFileSync(at, 'utf8');
+        eq([meta(html, 'diataxis'), meta(html, 'developer-journey'), meta(html, 'collection')], ['howToGuide', 'build', undefined], `${key}'s guide is a how-to guide for building, in no collection, so it is in the How-to guides tab`);
+        ok(guideTitle(key) === `How to build ${/^[aeiou]/i.test(P.name) ? 'an' : 'a'} ${P.name.toLowerCase()} app` && html.includes(`<h1>${escHtml(guideTitle(key))}</h1>`), `${key}'s guide is titled for its pattern`);
+        ok(html.includes(escHtml(PATTERN_TEXT[key])) && html.includes(escHtml(P.standard)), `${key}'s guide says when to choose the pattern, with its standard`);
+        const steps = [...html.matchAll(/<h2 id="step-(\d+)">(\d+)\. /g)];
+        ok(steps.length >= 3 && steps.every((m, i) => Number(m[1]) === i + 1 && Number(m[2]) === i + 1), `${key}'s guide is numbered steps`);
+        const mine = listed.filter((e) => e.pattern === key);
+        ok(mine.length > 0, `some example follows ${key}`);
+        for (const e of mine) ok(html.includes(`href="../../examples/${e.name}/"`), `${key}'s guide links ${e.name}`);
+        const w = [...mine].sort((a, b) => rules(a) - rules(b) || (a.name < b.name ? -1 : 1))[0];
+        const file = `examples/${w.prompt}`;
+        ok(html.includes(`<pre><code>${escHtml(JSON.stringify(JSON.parse(readFileSync(join(examples, w.prompt), 'utf8')), null, 2))}</code></pre>`), `${key}'s worked prompt is ${w.name}, its simplest example`);
+        ok(html.includes(escHtml(`node builder/cli.mjs check ${file}`)) && html.includes(escHtml(verifyScript(file))), `${key}'s guide checks the prompt and runs the gate as pages.yml runs it`);
+        ok(llms.includes(`](${guidePath(key)}index.md)`), `${key}'s guide is in llms.txt`);
+      }
+      // The gate a guide shows is the pages workflow's, so a change to pages.yml changes every guide.
+      const gate = workflowStep('example', "Pass the instance's gate through the locked SDK").split('\n').filter((l) => l !== 'set -euo pipefail').join('\n');
+      ok(verifyScript('P').includes(gate) && gate.includes('"$image" just vv'), 'the verify script ends with the locked SDK running just vv');
+      ok(verifyScript('P').includes('node builder/cli.mjs build "$PROMPT" --out "$instance"'), 'the verify script builds the prompt it names');
+      // Every builder command a guide runs is one builder/cli.mjs documents.
+      const guideDirs = readdirSync(join(site, 'guides'));
+      ok(guideDirs.length > Object.keys(PATTERNS).length, 'the builder offers task guides beyond the patterns');
+      for (const g of guideDirs) {
+        const html = readFileSync(join(site, 'guides', g, 'index.html'), 'utf8');
+        eq([meta(html, 'diataxis'), meta(html, 'collection')], ['howToGuide', undefined], `guides/${g} is a how-to guide in no collection`);
+        const run = [...html.matchAll(/node builder\/cli\.mjs (\w+)/g)].map((m) => m[1]);
+        ok(run.every((v) => commands.some((c) => c.verb === v)), `guides/${g} runs only documented commands`);
+      }
+      // The Examples collection: the landing page first, then each pattern's examples in the order PATTERNS declares.
+      const landing = readFileSync(join(site, 'examples/index.html'), 'utf8');
+      eq([meta(landing, 'collection'), meta(landing, 'collection-group'), meta(landing, 'diataxis')], [EXAMPLES, OVERVIEW, 'howToGuide'], 'the gallery is the collection\'s overview, a how-to guide by label');
+      for (const e of listed) {
+        const html = readFileSync(join(site, 'examples', e.name, 'index.html'), 'utf8');
+        eq([meta(html, 'collection'), meta(html, 'collection-group'), meta(html, 'diataxis'), meta(html, 'developer-journey')], [EXAMPLES, groupOf(e.pattern), 'howToGuide', 'build'], `${e.name} is in the Examples collection under ${groupOf(e.pattern)}, keeping its labels`);
+        ok(html.includes(`<h1>${escHtml(e.title)}</h1>`) && html.includes(`href="../../${guidePath(e.pattern)}"`), `${e.name} is titled by its app and links its pattern's guide`);
+      }
+      eq([...llms.matchAll(/\]\((examples\/[^)]*index\.md)\)/g)].map((m) => m[1]), ['examples/index.md', ...Object.keys(PATTERNS).flatMap((k) => listed.filter((e) => e.pattern === k).map((e) => `examples/${e.name}/index.md`))], 'llms.txt lists the landing page, then the examples by pattern');
+      await assert.rejects(async () => page({ depth: 1, title: 't', summary: 's', body: '', twin: 'index.md', diataxis: 'howToGuide', journey: 'build', collection: EXAMPLES }), TypeError);
+      made++;
+    } finally {
+      rmSync(site, { recursive: true, force: true });
+    }
+  },
   // A prompt is checked as prism-code's journey checks a drafted spec, and every refusal is typed.
   async 'DR-07'() {
     const good = rule30();
@@ -372,10 +430,10 @@ const CASES = {
     made++;
     const site = mkdtempSync(join(tmpdir(), 'devrel-site-'));
     try {
-      await writeSite(site, null);
+      const { guides } = await writeSite(site, null);
       const walk = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(dir, e.name)) : e.name === 'index.html' ? [join(dir, e.name)] : []));
       const pages = walk(site);
-      ok(pages.length === prompts().length + 5, 'a page per example, the gallery, the tutorial, the reference, the Prism source and the explanation');
+      ok(guides >= Object.keys(PATTERNS).length && pages.length === prompts().length + 5 + guides, 'a page per example, the gallery, the tutorial, the reference, the Prism source, the explanation and every how-to guide');
       const kinds = {};
       for (const path of pages) {
         const html = readFileSync(path, 'utf8');
