@@ -128,7 +128,7 @@ jobs:
           cp -r "$build/design" "$out/design"
           echo "built=$RUNNER_TEMP/built" >>"$GITHUB_ENV"
       - name: Keep it for the page
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: example-${{ matrix.example }}
           path: ${{ env.built }}
@@ -176,7 +176,7 @@ jobs:
             --self-root "$PWD" --self-commit "$GITHUB_SHA" \
             --lean app/src/Catalog.lex.tex --check --site site
       - name: Fetch every example's verified build
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: example-*
           path: ${{ runner.temp }}/built
@@ -301,15 +301,15 @@ jobs:
           node bootstrap/screens.mjs site screens
       - name: Keep the screens
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: screens
           path: screens
           if-no-files-found: ignore
       - name: Configure Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
       - name: Upload the page
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
         with:
           path: site
 
@@ -329,4 +329,4 @@ jobs:
     steps:
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
