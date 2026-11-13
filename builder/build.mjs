@@ -21,6 +21,7 @@ import { ASSETS, LOCK_PACKAGES, TEMPLATE } from './assets.mjs';
 import { facetModules } from './facets.mjs';
 import { renderMachineModel, renderMachineProofs } from './machine.mjs';
 import { deriveModel } from './model.mjs';
+import { appJsonBrand, brandFiles, readBrand } from './brand.mjs';
 
 export { TEMPLATE_EXAMPLE };
 
@@ -161,8 +162,12 @@ function conformance(m, claims) {
  * Every file of the application, by path from the repository root, and the
  * paths of the template's example app it replaces. `lastModified` dates the
  * threat model's control set; it is the one input that is not in the prompt.
+ * `readBrandFile({ repository, commit, from })` returns the bytes of a file a
+ * prompt's brand copies (builder/brand.mjs); the bytes are trusted only once
+ * their SHA-256 equals the lock's, so where they are read from does not matter.
+ * A file is text, or bytes (a Uint8Array) for a brand's copied file.
  */
-export async function buildApp(input, { lastModified } = {}) {
+export async function buildApp(input, { lastModified, readBrandFile } = {}) {
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(lastModified ?? '')) throw new TypeError('lastModified is an instant, YYYY-MM-DDThh:mm:ssZ');
   const m = deriveModel(input);
   m.lastModified = lastModified;
@@ -219,6 +224,12 @@ export async function buildApp(input, { lastModified } = {}) {
   files['CONFORMANCE.md'] = conformance(m, claims);
   files['site/app.json'] = appJson(m.spec, TEMPLATE['site/app.json'], { repository: m.prompt.repository ?? `OWNER/prism-${m.spec.name}` });
   files[`openspec/specs/${m.spec.name}/spec.md`] = renderSpecDocument(m.spec, {});
+  if (m.prompt.brand !== undefined) {
+    m.brand = readBrand(m.prompt.brand);
+    Object.assign(files, await brandFiles(m.brand, readBrandFile));
+    const page = JSON.parse(files['site/app.json']);
+    files['site/app.json'] = `${JSON.stringify({ ...page, brand: appJsonBrand(m.brand) }, null, 2)}\n`;
+  }
   return { files, remove: [...TEMPLATE_EXAMPLE], model: m, claims };
 }
 

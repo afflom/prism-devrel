@@ -6,8 +6,9 @@
  * nothing fails too.
  */
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,6 +21,7 @@ import { PATTERNS, XACML_DECISIONS, readPrompt } from './prompt.mjs';
 import { ASSETS } from './assets.mjs';
 import { SPEC_INPUT, TOOL } from './tool.mjs';
 import { zip, crc32 } from './zip.mjs';
+import { BRAND_DIR, BrandDigestError } from './brand.mjs';
 import { SpecError, holds, judge, sampleRequests } from './vendor/prism-code/src/journey/spec.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -85,7 +87,163 @@ const door = () => {
   };
 };
 
+const BRANDS = join(here, 'brands');
+const chaoss = () => JSON.parse(readFileSync(join(BRANDS, 'chaoss-grimoirelab.brand.json'), 'utf8'));
+/** A copied file as cli.mjs reads it: under root, by repository, commit and path. */
+const brandRead = (root = join(BRANDS, 'files')) => ({ repository, commit, from }) => {
+  const path = join(root, ...repository.split('/'), commit, ...from.split('/'));
+  return existsSync(path) ? readFileSync(path) : null;
+};
+const cli = (...args) => spawnSync(process.execPath, [join(here, 'cli.mjs'), ...args], { encoding: 'utf8' });
+const tmpPrompt = (dir, prompt) => {
+  const path = join(dir, 'p.prompt.json');
+  writeFileSync(path, JSON.stringify(prompt));
+  return path;
+};
+
 const CASES = {
+  // A prompt's brand, a prism/brand-lock/1 lock pinned upstream, is the brand of the app's page and of its example page; every copied file is verified by SHA-256.
+  async 'DR-22'() {
+    const lock = chaoss();
+    const prompt = { ...rule30(), brand: lock };
+    const { files, model: m, claims } = await buildApp(prompt, { lastModified: AT, readBrandFile: brandRead() });
+    // Every copied file is served, byte for byte the upstream's at the pinned commit, with the lock's digest.
+    for (const f of lock.copied) {
+      const at = f.source ?? lock.source;
+      ok(files[f.to] instanceof Uint8Array && sha(files[f.to]) === f.sha256, `${f.to} is served with the digest the lock records`);
+      ok(f.to.startsWith(BRAND_DIR) && /^[0-9a-f]{40}$/.test(at.commit), `${f.from} is pinned to a full commit of ${at.repository}`);
+    }
+    eq(JSON.parse(files[`${BRAND_DIR}brand.lock.json`]), lock, 'the lock travels with the copies it pins');
+    eq(JSON.parse(files['app/prompt.json']).brand, lock, 'app/prompt.json carries the brand, so the instance rebuilds from itself');
+    // The tokens are the page's variables: each DTCG color and font, read here from the lock independently of the builder.
+    const css = files['site/card.css'];
+    const light = css.slice(css.indexOf(':root:not(.dark) {'), css.indexOf('}', css.indexOf(':root:not(.dark) {')));
+    const dark = css.slice(css.indexOf(':root.dark {'), css.indexOf('}', css.indexOf(':root.dark {')));
+    for (const [name, t] of Object.entries(lock.tokens.color).filter(([k]) => !k.startsWith('$'))) {
+      ok(light.includes(`--${name}: ${t.$value.toLowerCase()};`), `the light theme sets --${name} from color.${name}`);
+      const night = t.$extensions?.['foundation.uor.prism']?.dark;
+      ok(night ? dark.includes(`--${name}: ${night.toLowerCase()};`) : !dark.includes(`--${name}:`), `the dark theme sets --${name} only where the token states a dark value`);
+    }
+    for (const [name, t] of Object.entries(lock.tokens.font).filter(([k]) => !k.startsWith('$'))) ok(css.includes(`--font-${name}: ${t.$value.map((f) => (/\s/.test(f) ? `"${f}"` : f)).join(', ')};`), `--font-${name} is the font.${name} stack`);
+    const logo = lock.copied.find((f) => f.role === 'logo');
+    const logoDark = lock.copied.find((f) => f.role === 'logo-dark');
+    ok(css.includes(`content: "${lock.name}";`) && css.includes(`url("./${logo.to.slice('site/'.length)}")`) && css.includes(`url("./${logoDark.to.slice('site/'.length)}")`), 'the page header shows the brand name and its logo, the reverse logo in the dark theme');
+    const page = JSON.parse(files['site/app.json']);
+    eq([page.brand.name, page.brand.logo, page.brand.stylesheet], [lock.name, logo.to.slice('site/'.length), 'card.css'], 'site/app.json names the brand, its logo and stylesheet');
+    eq(page.brand.sources.map((s) => `${s.repository}@${s.commit}`).sort(), ['chaoss/community@e3de23a5c7e78fc61a5ae0d78782ed46490ac9c5', 'chaoss/grimoirelab@61c957b1cf1aecacb40bb1875d4864b6fd679192'], 'site/app.json names every pinned upstream');
+    // The example page carries the same brand: its logo, its name, and the tokens scoped to the brand's section.
+    const { html, twin } = examplePage({ name: 'chaoss', repository: 'chaoss/grimoirelab', summary: 's' }, null, m, files, claims, 'x.zip', null);
+    ok(html.body.includes(`<img src="${logo.to.slice('site/'.length)}" alt="${lock.name}">`) && html.body.includes(`<strong>${lock.name}</strong>`), 'the example page shows the brand logo and name');
+    ok(html.body.includes('.upstream-brand:not(.dark) {') && html.body.includes('--primary: #003756;') && html.body.includes('var(--brand)'), "the example page's brand section uses the tokens");
+    ok(twin.includes(`Built for ${lock.name}`), 'the twin names the brand');
+    // A digest that does not match is refused: a changed byte, a missing file, a lock that records another digest.
+    const tampered = (at) => {
+      const bytes = brandRead()(at);
+      if (at.from !== logo.from) return bytes;
+      const copy = Uint8Array.from(bytes);
+      copy[copy.length - 2] ^= 1;
+      return copy;
+    };
+    await assert.rejects(() => buildApp(prompt, { lastModified: AT, readBrandFile: tampered }), (e) => e instanceof BrandDigestError && e.from === logo.from && e.expected === logo.sha256 && e.got && e.got !== logo.sha256 && /has SHA-256 [0-9a-f]{64}, but the brand lock records/.test(e.message), 'a changed byte in a copied file is refused, naming both digests');
+    made++;
+    await assert.rejects(() => buildApp(prompt, { lastModified: AT, readBrandFile: () => null }), (e) => e instanceof BrandDigestError && /could not be read/.test(e.message), 'a copied file that cannot be read is refused, not defaulted');
+    made++;
+    await assert.rejects(() => buildApp(prompt, { lastModified: AT }), BrandDigestError, 'a brand with no way to read its files is refused');
+    made++;
+    const wrong = chaoss();
+    wrong.copied[2].sha256 = '0'.repeat(64);
+    await assert.rejects(() => buildApp({ ...rule30(), brand: wrong }, { lastModified: AT, readBrandFile: brandRead() }), (e) => e instanceof BrandDigestError && e.from === wrong.copied[2].from, 'a lock that records another digest is refused');
+    made++;
+    // The CLI refuses the same with exit 2, and writes nothing.
+    const dir = mkdtempSync(join(tmpdir(), 'devrel-brand-'));
+    try {
+      const files2 = join(dir, 'files');
+      cpSync(join(BRANDS, 'files'), files2, { recursive: true });
+      const at = join(files2, ...(logo.source ?? lock.source).repository.split('/'), (logo.source ?? lock.source).commit, ...logo.from.split('/'));
+      writeFileSync(at, `${readFileSync(at, 'utf8')} `);
+      const path = tmpPrompt(dir, prompt);
+      const good = cli('check', path);
+      ok(good.status === 0 && good.stdout.includes(`brand: ${lock.name}, ${lock.copied.length} files verified by SHA-256`), 'the CLI verifies the vendored brand files');
+      const bad = cli('build', path, '--out', join(dir, 'out'), '--brand-files', files2);
+      ok(bad.status === 2 && /^refused: The brand file chaoss\/community@e3de23a5c7e7:media-and-outreach\/logos\/chaoss-color\.svg has SHA-256/.test(bad.stderr), 'the CLI refuses a digest mismatch with exit 2');
+      ok(!existsSync(join(dir, 'out')), 'a refused build writes nothing');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+    // A lock of the wrong shape is refused before anything is read.
+    const shape = async (change, pattern, message) => {
+      const l = chaoss();
+      change(l);
+      await refused(async () => deriveModel({ ...rule30(), brand: l }), pattern, message);
+    };
+    await shape((l) => (l.spec = 'prism/brand-lock/2'), /brand.spec must be prism\/brand-lock\/1/, 'another spec is refused');
+    await shape((l) => (l.name = ' '), /names the brand/, 'a brand without a name is refused');
+    await shape((l) => (l.source.commit = 'main'), /full 40-hex commit/, 'a source not pinned to a commit is refused');
+    await shape((l) => (l.copied[0].role = 'mark'), /Exactly one copied file has the role logo/, 'a brand without a logo is refused');
+    await shape((l) => (l.copied[0].to = 'site/brand/hologram-warm.css'), /served under site\/brand\/upstream\//, "a copy over the template's own brand is refused");
+    await shape((l) => (l.copied[0].sha256 = 'abc'), /SHA-256 as 64/, 'a digest that is not SHA-256 is refused');
+    await shape((l) => (l.tokens.color.brand.$value = '{color.primary}'), /alias/, 'an alias token is refused');
+    await shape((l) => (l.tokens.color.brand.$value = 'red; } body { display: none'), /hex color/, 'a color that is not a hex color is refused');
+    await shape((l) => (l.tokens.font.sans.$value = ['Lato", x']), /not a plain family name/, 'a font family that would escape its declaration is refused');
+    await shape((l) => (l.tokens.space = { $type: 'dimension', sm: { $value: '4px' } }), /a brand applies color and fontFamily tokens/, 'a token type the builder does not apply is refused, not dropped');
+    // Without a brand, a prompt's build is the build it always was: the brand adds its files and its app.json member, and changes nothing else.
+    const plain = await buildApp(rule30(), { lastModified: AT });
+    const brandOnly = (p) => p.startsWith(BRAND_DIR) || p === 'site/card.css';
+    eq(Object.keys(files).filter((p) => !brandOnly(p)).sort(), Object.keys(plain.files).sort(), 'a brand adds files and removes none');
+    for (const p of Object.keys(plain.files)) {
+      if (p === 'site/app.json' || p === 'app/prompt.json') {
+        const { brand, ...rest } = JSON.parse(files[p]);
+        ok(brand && JSON.stringify(rest) === JSON.stringify(JSON.parse(plain.files[p])), `${p} differs only by its brand member`);
+      } else ok(files[p] === plain.files[p], `${p} is unchanged by the brand`);
+    }
+    for (const { file, prompt: p } of prompts()) {
+      const built = await buildApp(p, { lastModified: AT });
+      ok(!Object.keys(built.files).some(brandOnly) && !('brand' in JSON.parse(built.files['site/app.json'])) && !('brand' in JSON.parse(built.files['app/prompt.json'])), `${file} has no brand, so its build has none`);
+    }
+  },
+  // A prompt's own obligations follow the derived ones in the Compliance module, numbered in order, each with its evidence.
+  async 'DR-23'() {
+    const extra = [
+      { standard: 'Developer Certificate of Origin 1.1', subject: 'Commit sign-off', text: 'Every commit carries a Signed-off-by line.', evidence: ['.github/workflows/dco.yml', 'CONTRIBUTING.md'] },
+      { standard: 'Discord Developer Terms of Service and Developer Policy', subject: 'Data use', text: 'Messages are read only from channels the bot is invited to and kept no longer than the analysis needs.', evidence: ['tests/test_discord.py::test_rate_limit'] },
+    ];
+    const plain = await buildApp(rule30(), { lastModified: AT });
+    const { files, model: m, claims } = await buildApp({ ...rule30(), obligations: extra }, { lastModified: AT });
+    const derived = plain.model.compliance.length;
+    eq(m.compliance.slice(0, derived), plain.model.compliance, 'the derived obligations come first, unchanged');
+    eq(m.compliance.slice(derived), extra, "the prompt's obligations follow, in its order");
+    const text = module(files, 'Compliance');
+    const indexes = [...text.matchAll(/record Obligation \{index := (\d+), standard := "([^"]*)", subject := "([^"]*)"/g)];
+    eq(indexes.map((x) => Number(x[1])), [...Array(derived + extra.length).keys()], 'every obligation is numbered in order, so obligationsEvidenced holds of the whole list');
+    eq(indexes.slice(derived).map((x) => [x[2], x[3]]), extra.map((o) => [o.standard, o.subject]), "the module lists the prompt's obligations after the derived ones");
+    for (const o of extra) ok(o.evidence.every((e) => text.includes(`"${e}"`)), `${o.subject} names its evidence in the module`);
+    ok(text.includes('name: everyObligationEvidenced,') && text.includes('statement: ((obligationsEvidenced 0 (obligations)) = true),'), 'the theorem is the one every app has');
+    ok(claims.some((c) => c.theorem === 'everyObligationEvidenced'), 'the theorem is a registered claim');
+    const { html } = examplePage({ name: 'x', repository: 'afflom/rule30', summary: 's' }, null, m, files, claims, 'x.zip', null);
+    for (const o of extra) ok(html.body.includes(escHtml(o.subject)) && html.body.includes(escHtml(o.standard)), `the example page lists ${o.subject}`);
+    eq(JSON.parse(files['app/prompt.json']).obligations, extra, 'app/prompt.json carries the obligations');
+    // Refusals: no evidence, an empty evidence list, a subject named twice or already derived.
+    await refused(async () => deriveModel({ ...rule30(), obligations: [{ ...extra[0], evidence: [] }] }), /`Commit sign-off` names no evidence/, 'an obligation with empty evidence is refused');
+    await refused(async () => deriveModel({ ...rule30(), obligations: [{ ...extra[0], evidence: [' '] }] }), /names no evidence/, 'evidence of blank strings is no evidence');
+    await refused(async () => deriveModel({ ...rule30(), obligations: [{ standard: 's', subject: 'x', text: 't' }] }), /names no evidence/, 'an obligation without evidence is refused');
+    await refused(async () => deriveModel({ ...rule30(), obligations: [extra[0], { ...extra[1], subject: 'Commit sign-off' }] }), /`Commit sign-off` is named twice/, 'a duplicate subject is refused');
+    await refused(async () => deriveModel({ ...rule30(), obligations: [{ ...extra[0], subject: 'Licensing' }] }), /`Licensing` is already derived/, 'a subject the builder derives is refused');
+    await refused(async () => deriveModel({ ...rule30(), obligations: [{ ...extra[0], standard: '' }] }), /states its standard, subject and text/, 'an obligation without its standard is refused');
+    await refused(async () => deriveModel({ ...rule30(), obligations: {} }), /obligations is a list/, 'obligations that are not a list are refused');
+    const dir = mkdtempSync(join(tmpdir(), 'devrel-obligations-'));
+    try {
+      const out = cli('check', tmpPrompt(dir, { ...rule30(), obligations: [{ ...extra[0], evidence: [] }] }));
+      ok(out.status === 2 && out.stderr.startsWith('refused: The obligation `Commit sign-off` names no evidence.'), 'the CLI refuses empty evidence with exit 2');
+      const twice = cli('check', tmpPrompt(dir, { ...rule30(), obligations: [extra[0], extra[0]] }));
+      ok(twice.status === 2 && twice.stderr.includes('is named twice'), 'the CLI refuses a duplicate subject with exit 2');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+    // Left out, nothing changes: no obligations member is written back, and the module is the one an empty list gives.
+    ok(!('obligations' in JSON.parse(plain.files['app/prompt.json'])), 'a prompt without obligations writes none back');
+    const empty = await buildApp({ ...rule30(), obligations: [] }, { lastModified: AT });
+    ok(Object.keys(plain.files).every((p) => p === 'app/prompt.json' || plain.files[p] === empty.files[p]), 'leaving obligations out writes what an empty list writes, but for the prompt itself');
+  },
   // A state machine is checked as a UML 2.5.1 state machine, and its invariants over every run become theorems.
   async 'DR-17'() {
     const { files, model: m, claims } = await buildApp(door(), { lastModified: AT });

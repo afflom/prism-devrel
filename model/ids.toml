@@ -172,6 +172,18 @@ suite = "devrel"
 statement = "Every pattern the builder offers has a how-to guide that builds an app of that pattern from a prompt, and every example page belongs to the Examples collection under its pattern"
 
 [[id]]
+id = "DR-22"
+level = "build"
+suite = "devrel"
+statement = "A prompt's brand is a prism/brand-lock/1 lock pinned to upstream commits: the app's page and its example page carry the brand's name, logo and W3C DTCG color and font tokens, every copied file is verified by its SHA-256 and a mismatch is refused, and a prompt without a brand builds as it always has"
+
+[[id]]
+id = "DR-23"
+level = "build"
+suite = "devrel"
+statement = "A prompt's own compliance obligations follow the derived ones in the Compliance module, numbered in order and each naming its evidence, so everyObligationEvidenced holds of them all; an obligation without evidence or with a subject already used is refused, and a prompt without obligations builds as it always has"
+
+[[id]]
 id = "DR-50"
 level = "build"
 suite = "devrel"

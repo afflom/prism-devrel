@@ -12,6 +12,7 @@
  * optional: what is left out is derived from the spec, never invented.
  */
 import { SpecError } from './vendor/prism-code/src/journey/spec.mjs';
+import { BRAND_DIR, BRAND_LOCK, readBrand } from './brand.mjs';
 
 export const PROMPT_SCHEMA = 'prism/prompt/1';
 
@@ -145,6 +146,34 @@ export function inputSchema(specInput) {
         description: 'The exact axiom set a verify observed for a generated declaration, by declaration name, as prism-code records it when LexLean reports LLV7005. `node builder/cli.mjs axioms` writes it from a verify log.',
         additionalProperties: { type: 'array', items: { enum: AXIOMS }, uniqueItems: true },
       },
+      obligations: {
+        type: 'array',
+        description: 'Compliance obligations beyond the derived ones, such as an upstream project\'s contribution terms. Each is appended to the obligations of app/src/Compliance.lex.tex, numbered in order after the derived ones, and must name its evidence. Subjects are unique.',
+        items: {
+          type: 'object',
+          properties: {
+            standard: { type: 'string', description: 'The standard or terms, such as "Developer Certificate of Origin 1.1".' },
+            subject: { type: 'string', description: 'What it governs in this app, such as "Commit sign-off". No two obligations share a subject.' },
+            text: { type: 'string', description: 'What the app must do to meet it.' },
+            evidence: { type: 'array', minItems: 1, items: { type: 'string' }, description: 'What shows it is met: a file path, a test name or a Module::declaration.' },
+          },
+          required: ['standard', 'subject', 'text', 'evidence'],
+        },
+      },
+      brand: {
+        type: 'object',
+        description: `The upstream's brand the app's page is rendered in: a whole ${BRAND_LOCK} document, embedded so the prompt stays the single source. It names the brand, pins the upstream repository and commit, lists each copied file (logo and others, served under ${BRAND_DIR}) with its SHA-256, and carries color and fontFamily tokens in W3C DTCG format. Every copied file is verified by its SHA-256 when the app is built; a mismatch is refused. Left out, the page keeps the template's brand.`,
+        properties: {
+          spec: { const: BRAND_LOCK },
+          name: { type: 'string', description: 'The brand, such as "CHAOSS GrimoireLab".' },
+          source: { type: 'object', properties: { repository: { type: 'string' }, commit: { type: 'string' } }, required: ['repository', 'commit'] },
+          copied: { type: 'array', minItems: 1, items: { type: 'object', properties: { from: { type: 'string' }, to: { type: 'string' }, sha256: { type: 'string' }, role: { type: 'string', description: 'logo (exactly one), logo-dark or mark.' }, source: { type: 'object', description: 'This file\'s repository and commit, when not the lock\'s.' } }, required: ['from', 'to', 'sha256'] } },
+          tokens: { type: 'object', description: 'W3C DTCG tokens: color.<name> sets the page variable --<name>, font.<name> sets --font-<name>.' },
+          provenance: { type: 'array', description: 'Upstream files the tokens were read from, with their SHA-256; not served.' },
+          license: { type: 'object', description: 'The licenses of the copied files and any trademark or logo-use terms.' },
+        },
+        required: ['spec', 'name', 'source', 'copied', 'tokens'],
+      },
     },
     required: ['app'],
   };
@@ -243,5 +272,20 @@ export function readPrompt(input) {
     if (outcomes.length !== XACML_DECISIONS.length || !XACML_DECISIONS.every((d) => outcomes.includes(d))) refuse(`A policyDecision answers exactly the XACML 3.0 decisions ${XACML_DECISIONS.join(', ')}.`, 'pattern');
   }
   if (prompt.repository !== undefined && !/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(prompt.repository)) refuse('repository is owner/name.', 'repository');
+  // Both members are written back only when the prompt has them, so a prompt without them writes the bytes it always has.
+  if (prompt.obligations !== undefined) {
+    if (!Array.isArray(prompt.obligations)) refuse('obligations is a list.', 'obligations');
+    const subjects = new Set();
+    prompt.obligations = prompt.obligations.map((o) => {
+      if (!o || typeof o !== 'object') refuse('An obligation is an object with standard, subject, text and evidence.', 'obligations');
+      const ob = { standard: words(o.standard), subject: words(o.subject), text: words(o.text), evidence: Array.isArray(o.evidence) ? o.evidence.map(words).filter(Boolean) : [] };
+      if (!ob.standard || !ob.subject || !ob.text) refuse('An obligation states its standard, subject and text.', 'obligations');
+      if (ob.evidence.length === 0) refuse(`The obligation \`${ob.subject}\` names no evidence.`, 'obligations');
+      if (subjects.has(ob.subject)) refuse(`The obligation subject \`${ob.subject}\` is named twice.`, 'obligations');
+      subjects.add(ob.subject);
+      return ob;
+    });
+  }
+  if (prompt.brand !== undefined) readBrand(prompt.brand);
   return prompt;
 }

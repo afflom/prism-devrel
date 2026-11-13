@@ -349,3 +349,20 @@ commits and against mirrors served with `PRISM_TEMPLATE_RAW`:
 | a mirror's lock names a file its frame does not | refused: the lock's list against the frame's; nothing written |
 | a mirror's frame and lock both add `.github/workflows/x.yml` | refused: `names files outside the page`; nothing written |
 | an untouched mirror | pinned |
+
+## Upstream brand and obligations in the builder
+
+`DR-22` and `DR-23` were planted against before the change was committed.
+Every gallery example was built with `node builder/cli.mjs build` at the
+same instant from the commit before the change and from the change; the 33
+output trees (2,706 files) were identical under `diff -r`, and so was every
+page and download `builder/site.mjs` writes under `examples/`. Only the
+builder's own copies, `builder/tool-schema.json` and the prompt reference
+differ, by the two new members.
+
+| Gate | Planted defect | Result |
+| --- | --- | --- |
+| `node builder/test.mjs DR-22` | the digest comparison in `verifiedFiles` (`builder/brand.mjs`) disabled | rejected: `Missing expected rejection: a changed byte in a copied file is refused, naming both digests`; restored, 170 assertions pass |
+| `node builder/test.mjs DR-23` | the prompt's obligations put before the derived ones | rejected: `the derived obligations come first, unchanged`; restored, 22 assertions pass |
+| same | `readPrompt` writing `obligations: []` into every prompt | rejected: `a prompt without obligations writes none back`; restored, 22 assertions pass |
+

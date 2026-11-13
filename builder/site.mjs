@@ -23,6 +23,7 @@ import { TOOL } from './tool.mjs';
 import { PATTERNS, XACML_DECISIONS } from './prompt.mjs';
 import { ASSETS } from './assets.mjs';
 import { zip } from './zip.mjs';
+import { BRAND_DIR, brandCss, origin } from './brand.mjs';
 import { describeConditions } from './vendor/prism-code/src/journey/spec.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -287,8 +288,26 @@ function runForm(m) {
   return `<form id="run" class="run" data-state="${position}" data-initial="${esc(mc.initial)}"><label for="steps">Run from ${esc(mc.initial)}: one step per line, each ${esc(rest.map((f) => f.name).join(' '))}</label><textarea id="steps" rows="4" spellcheck="false">${esc(sample.join('\n'))}</textarea><button type="submit">Run the machine</button><ol id="trace" class="trace" aria-live="polite"></ol></form>`;
 }
 
+/**
+ * The upstream's brand on an example page, when the prompt has one: its logo
+ * and name, and its tokens scoped to this section, since the rest of the page
+ * is Prism-DevRel's. The files are the verified copies the app carries, served
+ * beside the page at the paths the app's own page uses.
+ */
+function brandSection(m) {
+  const b = m.brand;
+  const at = b.logo.to.slice('site/'.length);
+  const pins = [...new Set(b.lock.copied.map((f) => origin(b.lock, f)).map((o) => `${o.repository}@${o.commit.slice(0, 12)}`))];
+  const scope = '.upstream-brand';
+  const css = `${brandCss(b, scope)}${scope} { border-left: 0.25rem solid var(--brand); padding-left: 1rem; font-family: var(--font-sans); } ${scope} strong { font-family: var(--font-display); color: var(--primary); } ${scope} img { display: block; height: 2rem; width: auto; margin-bottom: 0.5rem; }`;
+  const html = `<section class="upstream-brand" aria-label="Upstream brand"><style>${css}</style><img src="${esc(at)}" alt="${esc(b.name)}"><p>Built for <strong>${esc(b.name)}</strong>, in its brand: the logo and tokens are pinned to ${pins.map(code).join(' and ')} and verified by SHA-256 (<a href="brand/upstream/brand.lock.json">brand lock</a>).</p></section>`;
+  const text = `Built for ${md(b.name)}, in its brand, pinned to ${pins.join(' and ')} and verified by SHA-256 (brand/upstream/brand.lock.json).`;
+  return { html, text };
+}
+
 export function examplePage(entry, built, m, files, claims, zipName, verified) {
   const v = verified;
+  const brand = m.brand ? brandSection(m) : null;
   const repoUrl = `https://github.com/${entry.repository}`;
   const facets = facetSections(m);
   const hero = heroFigure(m);
@@ -296,6 +315,7 @@ export function examplePage(entry, built, m, files, claims, zipName, verified) {
     ? `<div class="verified" data-holo="app.holo" data-vectors="${m.vectors.length}"><dl class="stats"><div><dt>Fingerprint</dt><dd class="fp">${code(v.fingerprint)}</dd></div><div><dt>Acceptance vectors</dt><dd>${m.vectors.length}</dd></div><div><dt>Claims</dt><dd>${claims.length}</dd></div></dl><p>Verified by <code>prismpm verify</code> in the pinned SDK when this site was built. <button type="button" id="replay">Verify and replay in this browser</button> <output id="replayed" aria-live="polite"></output></p><form id="try" class="try"><label for="request">Request: ${esc(m.spec.fields.map((f) => f.name).join(' '))}</label><input id="request" name="request" autocomplete="off" spellcheck="false" value="${esc(m.spec.examples[0]?.request ?? '')}"><button type="submit">Ask the app</button><output id="answer" aria-live="polite"></output></form>${m.machine ? runForm(m) : ''}</div>`
     : `<p class="note">This example was not built when these pages were generated, so there is no holo to replay here. The pages workflow builds and verifies every example before it publishes the site.</p>`;
   const body = [
+    brand ? brand.html : '',
     `<p>Inspired by <a href="${repoUrl}">${esc(entry.repository)}</a>${entry.live ? ` (<a href="${esc(entry.live)}">live</a>)` : ''}. ${esc(entry.summary)}</p><p class="dim">Pattern: <a href="${esc(m.pattern.url)}">${esc(m.pattern.name)}</a>, ${esc(m.pattern.standard)}. To write one of your own, follow <a href="../../${guidePath(m.pattern.key)}">${esc(guideTitle(m.pattern.key))}</a>.</p>`,
     figure(hero),
     status,
@@ -310,6 +330,7 @@ export function examplePage(entry, built, m, files, claims, zipName, verified) {
     '',
     `> ${md(m.prompt.goal ?? m.spec.purpose).replace(/\n/g, ' ')}`,
     '',
+    ...(brand ? [brand.text, ''] : []),
     `Inspired by ${entry.repository} (${repoUrl})${entry.live ? `, live at ${entry.live}` : ''}. ${md(entry.summary)} Pattern: ${m.pattern.name}, ${m.pattern.standard}. To write one of your own, follow ${guideTitle(m.pattern.key)} (../../${guidePath(m.pattern.key)}index.md). The prompt below is data, quoted from the example.`,
     '',
     figureMd(hero),
@@ -365,6 +386,12 @@ function copyTree(from, to, keep = () => true) {
     }
   }
 }
+
+/** A brand's copied file from builder/brands/files, where cli.mjs reads it too; buildApp verifies its digest. */
+const brandReader = ({ repository, commit, from }) => {
+  const path = join(here, 'brands', 'files', ...repository.split('/'), commit, ...from.split('/'));
+  return existsSync(path) ? readFileSync(path) : null;
+};
 
 const write = (path, text) => {
   mkdirSync(dirname(path), { recursive: true });
@@ -536,8 +563,9 @@ export async function writeSite(site, builtDir) {
     const promptPath = join(repo, 'examples', entry.prompt);
     const prompt = JSON.parse(readFileSync(promptPath, 'utf8'));
     const lastModified = committed(promptPath);
-    const { files, model: m, claims } = await buildApp(prompt, { lastModified });
+    const { files, model: m, claims } = await buildApp(prompt, { lastModified, readBrandFile: brandReader });
     const dir = join(site, 'examples', name);
+    for (const path of Object.keys(files).filter((p) => p.startsWith(BRAND_DIR))) write(join(dir, path.slice('site/'.length)), files[path]);
     const zipName = `prism-${m.spec.name}.zip`;
     writeFileSync(join(mkdirp(dir), zipName), zip(files, lastModified));
     write(join(site, 'examples/prompts', `${name}.prompt.json`), readFileSync(promptPath, 'utf8'));

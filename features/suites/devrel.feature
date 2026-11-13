@@ -163,6 +163,20 @@ Feature: devrel
     Then each pattern has guides/<pattern>/ titled "How to build a <pattern> app", a how-to guide for building in no collection, in numbered steps, whose worked prompt is the pattern's example with the fewest rules, checked with builder/cli.mjs and passed through the gate pages.yml runs, linking every example of the pattern
     And every example page and the gallery name the examples collection, under the pattern's plural name or Overview, keeping their Diátaxis type and journey stage, llms.txt lists the gallery then the examples in pattern order, and a guide that drops a pattern or a page that drops its collection fails the check
 
+  @DR-22 @build
+  Scenario: A prompt's brand is a prism/brand-lock/1 lock pinned to upstream commits: the app's page and its example page carry the brand's name, logo and W3C DTCG color and font tokens, every copied file is verified by its SHA-256 and a mismatch is refused, and a prompt without a brand builds as it always has
+    Given builder/brands/chaoss-grimoirelab.brand.json, pinned to chaoss/grimoirelab and chaoss/community commits, with its copied files under builder/brands/files
+    When builder/test.mjs DR-22 builds the rule 30 prompt with that brand and writes its example page
+    Then site/card.css sets every color and font token as the template page's variables, the header shows the brand name and logo, site/app.json names the brand and its pins, every copied file is served with the digest the lock records, and the example page shows the logo and name in a section styled by the tokens
+    And a changed byte, a missing file or a lock recording another digest is refused as a BrandDigestError, by the CLI with exit 2 and no file written, a lock of the wrong shape is refused before anything is read, and every gallery prompt builds with no brand file, member or stylesheet
+
+  @DR-23 @build
+  Scenario: A prompt's own compliance obligations follow the derived ones in the Compliance module, numbered in order and each naming its evidence, so everyObligationEvidenced holds of them all; an obligation without evidence or with a subject already used is refused, and a prompt without obligations builds as it always has
+    Given the rule 30 prompt with a Developer Certificate of Origin 1.1 obligation and a Discord Developer Terms of Service obligation, each with its evidence
+    When builder/test.mjs DR-23 builds it
+    Then app/src/Compliance.lex.tex lists the derived obligations unchanged, then the prompt's in its order, every index in sequence from 0, with the theorem everyObligationEvidenced every app has
+    And empty or blank evidence, a subject named twice or already derived, and a missing standard are refused, by the CLI with exit 2, and a prompt without obligations writes no obligations member and the module an empty list writes
+
   @DR-50 @build
   Scenario: Every subject in devrel/subjects.json has a case study under case-studies/<slug>/, read from every facet record of the subject at its pinned commit, or at the commit being built for the self subject, and the case studies index lists every subject
     Given a subjects file listing a pinned subject checked out under --checkouts and this repository as the self subject

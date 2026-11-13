@@ -162,6 +162,29 @@ modules the builder reuses are vendored byte for byte, with their digests in
 text and quote it as data in their Markdown twins (`DR-13`); with one escape
 removed from the example page, `DR-13` fails on its first assertion.
 
+An app built for an upstream contribution can carry that upstream's brand and
+obligations. `brand` is a whole `prism/brand-lock/1` lock embedded in the
+prompt, so the prompt stays the single source and is written back as
+`app/prompt.json`: the brand's name, the upstream repository and commit each
+file is pinned to, each copied file (one `logo`, optionally `logo-dark` and a
+`mark`) with its SHA-256, and color and fontFamily tokens in W3C DTCG format.
+The builder reads each copied file (by default from
+`builder/brands/files/<owner>/<repo>/<commit>/<path>`, or `--brand-files`),
+re-derives its digest and refuses a mismatch or a missing file with exit 2.
+The copies are served under `site/brand/upstream/` beside the lock, the tokens
+become `site/card.css` (the stylesheet the template's page inlines after its
+own brand layer) with the logo and name in the page header, `site/app.json`
+gains a `brand` member, and the example page shows the logo and name in a
+section styled by the tokens (`DR-22`). `builder/brands/chaoss-grimoirelab.brand.json`
+is CHAOSS GrimoireLab's, pinned to `chaoss/grimoirelab@61c957b` and
+`chaoss/community@e3de23a`; its `license` member records that the CHAOSS
+marks belong to The Linux Foundation and that permission to use them beyond a
+contribution to CHAOSS has not been given. `obligations` appends compliance
+obligations, each with its standard, subject, text and evidence, after the
+derived ones, numbered in order, so `everyObligationEvidenced` holds of them
+all; empty evidence or a repeated subject is refused (`DR-23`). A prompt
+without either member builds byte for byte as before.
+
 ## How the catalog is made
 
 1. `devrel/subjects.json` lists the subjects. Each pins a repository, a full

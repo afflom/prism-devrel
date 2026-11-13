@@ -2,12 +2,16 @@
 /**
  * prism-prompt: one prompt to a whole Prism application.
  *
- *   node builder/cli.mjs build <prompt.json> --out <dir> [--last-modified <instant>]
+ *   node builder/cli.mjs build <prompt.json> --out <dir> [--last-modified <instant>] [--brand-files <dir>]
  *       Write every file of the application into <dir>, laid out as a
  *       repository created from UOR-Foundation/template, and delete the
  *       template's example app there if it is present.
- *   node builder/cli.mjs check <prompt.json>
+ *   node builder/cli.mjs check <prompt.json> [--brand-files <dir>]
  *       Check the prompt and print what the app will claim, writing nothing.
+ *
+ * A prompt's brand names each file it copies by repository, commit, path and
+ * SHA-256. The bytes are read from <dir>/<owner>/<repo>/<commit>/<path>,
+ * builder/brands/files by default, and refused unless their digest matches.
  *   node builder/cli.mjs schema
  *       Print the MCP tool `prism_prompt`, whose input is one prompt.
  *   node builder/cli.mjs axioms <prompt.json> <verify.log>
@@ -20,7 +24,7 @@
  * Exit codes: 0 done, 2 the prompt was refused (the reason is printed), 64 usage.
  */
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildApp, claimLines } from './build.mjs';
@@ -41,6 +45,12 @@ const committed = (path) => {
   const seconds = /^\d+$/.test(iso) ? Number(iso) : Math.floor(Date.now() / 1000);
   return new Date(seconds * 1000).toISOString().replace(/\.\d{3}Z$/, 'Z');
 };
+/** A brand's copied file, by where its lock says it comes from; null when it is not there, which buildApp refuses. */
+const brandReader = (root) => ({ repository, commit, from }) => {
+  const path = join(root, ...repository.split('/'), commit, ...from.split('/'));
+  return existsSync(path) ? readFileSync(path) : null;
+};
+const BRAND_FILES = join(dirname(fileURLToPath(import.meta.url)), 'brands', 'files');
 /** The gallery's examples, by the name of each prompt file. */
 function exampleNames() {
   const examples = join(dirname(fileURLToPath(import.meta.url)), '..', 'examples');
@@ -74,7 +84,7 @@ try {
     } else {
       prompt.axioms = { ...(prompt.axioms ?? {}) };
       for (const { name, axioms } of observed) prompt.axioms[name] = axioms;
-      await buildApp(prompt, { lastModified: committed(file) });
+      await buildApp(prompt, { lastModified: committed(file), readBrandFile: brandReader(BRAND_FILES) });
       writeFileSync(file, `${JSON.stringify(prompt, null, 2)}\n`);
       for (const { name, axioms } of observed) console.log(`${name}: [${axioms.join(', ')}]`);
     }
@@ -83,11 +93,12 @@ try {
   } else if (verb === 'build' || verb === 'check') {
     if (!file) usage();
     const prompt = JSON.parse(readFileSync(file, 'utf8'));
-    const built = await buildApp(prompt, { lastModified: flag('--last-modified') ?? committed(file) });
+    const built = await buildApp(prompt, { lastModified: flag('--last-modified') ?? committed(file), readBrandFile: brandReader(flag('--brand-files') ?? BRAND_FILES) });
     if (verb === 'check') {
       console.log(`${built.model.title}: ${built.model.pattern.name} (${built.model.pattern.standard}), ${Object.keys(built.files).length} files, ${built.model.vectors.length} acceptance vectors`);
       const mc = built.model.machine;
       if (mc) console.log(`machine: ${mc.states.length} states from ${mc.initial}; reachable ${mc.reachable.join(', ')}${mc.final.length ? `; final ${mc.final.join(', ')}` : ''}; derived ${mc.derived.join(', ') || 'none'}${mc.exhaustive ? '' : ` (sample of ${mc.sampled} requests is not every request, so no state is claimed unreachable)`}`);
+      if (built.model.brand) console.log(`brand: ${built.model.brand.name}, ${built.model.brand.lock.copied.length} files verified by SHA-256`);
       for (const line of claimLines(built.claims)) console.log(line);
     } else {
       const out = flag('--out');

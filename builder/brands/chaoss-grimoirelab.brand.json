@@ -1,0 +1,112 @@
+{
+  "spec": "prism/brand-lock/1",
+  "name": "CHAOSS GrimoireLab",
+  "source": {
+    "repository": "chaoss/grimoirelab",
+    "commit": "61c957b1cf1aecacb40bb1875d4864b6fd679192",
+    "raw": "https://raw.githubusercontent.com/chaoss/grimoirelab/61c957b1cf1aecacb40bb1875d4864b6fd679192/"
+  },
+  "copied": [
+    {
+      "from": "media-and-outreach/logos/chaoss-color.svg",
+      "to": "site/brand/upstream/chaoss-color.svg",
+      "sha256": "6657b90f83db5888341703df23a272352b954ff97d475abd1df20ab7ba86ec2f",
+      "role": "logo",
+      "source": { "repository": "chaoss/community", "commit": "e3de23a5c7e78fc61a5ae0d78782ed46490ac9c5" },
+      "note": "The primary CHAOSS logo; media-and-outreach/brand-style-guide.md says the color logo should be used whenever possible."
+    },
+    {
+      "from": "media-and-outreach/logos/chaoss-white.svg",
+      "to": "site/brand/upstream/chaoss-white.svg",
+      "sha256": "21d96d6d149e60247254338dddb0a0f29d4a4277bc0ecc5215dce4ce076b84e5",
+      "role": "logo-dark",
+      "source": { "repository": "chaoss/community", "commit": "e3de23a5c7e78fc61a5ae0d78782ed46490ac9c5" },
+      "note": "The secondary reverse white logo the style guide provides, for the dark theme."
+    },
+    {
+      "from": "docs/img/wizard-y.svg",
+      "to": "site/brand/upstream/grimoirelab-wizard.svg",
+      "sha256": "5e07a78ec8a338a090d75867257193b46db4db6f2e8d773cb2c1344d27edaad6",
+      "role": "mark",
+      "note": "The GrimoireLab wizard, the mark docs/_includes/navigation.html shows as the site's navbar brand."
+    }
+  ],
+  "provenance": [
+    {
+      "from": "docs/css/styles.css",
+      "sha256": "cd725f6371f4fff5d286c4d383a0c15558dedd7e5c22de628136d9fd2f585410",
+      "note": "The GrimoireLab site stylesheet: --primary #003756, --secondary #2c3e50, link #003756, link hover #117964, body font Lato, heading font Montserrat, the monospace stack. Not served."
+    },
+    {
+      "from": "media-and-outreach/logos/chaoss-color.svg",
+      "source": { "repository": "chaoss/community", "commit": "e3de23a5c7e78fc61a5ae0d78782ed46490ac9c5" },
+      "sha256": "6657b90f83db5888341703df23a272352b954ff97d475abd1df20ab7ba86ec2f",
+      "note": "The logo's fills are the CHAOSS palette as exact values: #D50057, #009ADE, #66C9BA, #C19ADE, and #231F20 for the word mark."
+    },
+    {
+      "from": "media-and-outreach/design-style-element/palette.png",
+      "source": { "repository": "chaoss/community", "commit": "e3de23a5c7e78fc61a5ae0d78782ed46490ac9c5" },
+      "sha256": "a17ce91b1ec476d718febf8940398c1805e95ab47ffc15351f4cdd87f10ff946",
+      "note": "The palette as an image: Pantone Rubine Red C, 2925 C, 570 C and Violet 0631 C. Its printed RGB values differ slightly from the logo's fills; the tokens use the fills. Not served."
+    },
+    {
+      "from": "media-and-outreach/brand-style-guide.md",
+      "source": { "repository": "chaoss/community", "commit": "e3de23a5c7e78fc61a5ae0d78782ed46490ac9c5" },
+      "sha256": "15a49046c58cbd59aba118fb2cc2097905964e0134b71064ba06a9c2bb634a0e",
+      "note": "The CHAOSS brand style guide: CHAOSS in capitals; the color logo whenever possible, reverse white and black where needed; clear space of the diameter of the logo's o; at least 0.75 in (54 px) wide; cite https://chaoss.community. Not served."
+    },
+    {
+      "from": "governance/project-charter.md",
+      "source": { "repository": "chaoss/community", "commit": "e3de23a5c7e78fc61a5ae0d78782ed46490ac9c5" },
+      "sha256": "1905aa315a55886676433b4b4a5dc1fbda595ff1afd2b4fdf29e01ad1bc81761",
+      "note": "Section 8.4: project trademarks are owned by The Linux Foundation; section 7.2 asks participants to respect trademark owners' branding and usage guidelines. Not served."
+    },
+    {
+      "from": "LICENSE",
+      "source": { "repository": "chaoss/community", "commit": "e3de23a5c7e78fc61a5ae0d78782ed46490ac9c5" },
+      "sha256": "d99e7e4421e7ead4c1b5451914db504020008523e07773f469df06c07e14821a",
+      "note": "MIT License, Copyright (c) 2017 chaoss: the license of chaoss/community, which holds the logos."
+    },
+    {
+      "from": "docs/LICENSE",
+      "sha256": "681692b11642c647e7e4ec50c897d3ddad625b037891b7486283c57cea54807d",
+      "note": "Apache License 2.0, the license of chaoss/grimoirelab's docs/ (the site, its stylesheet and the wizard). Section 6 grants no permission to use the licensor's trademarks."
+    },
+    {
+      "from": "LICENSE",
+      "sha256": "589ed823e9a84c56feb95ac58e7cf384626b9cbf4fda2a907bc36e103de1bad2",
+      "note": "GNU GPL 3.0, the license of the rest of chaoss/grimoirelab. Nothing outside docs/ is copied."
+    }
+  ],
+  "tokens": {
+    "$description": "CHAOSS GrimoireLab in W3C DTCG format. color.<name> sets the page variable --<name>; font.<name> sets --font-<name>. A $extensions dark value replaces the color in the dark theme; a color without one keeps the template's dark value.",
+    "color": {
+      "$type": "color",
+      "brand": { "$value": "#D50057", "$description": "CHAOSS rubine, the logo's first fill.", "$extensions": { "foundation.uor.prism": { "dark": "#66C9BA" } } },
+      "primary": { "$value": "#003756", "$description": "GrimoireLab --primary, docs/css/styles.css." },
+      "primary-hover": { "$value": "#2c3e50", "$description": "GrimoireLab --secondary, docs/css/styles.css." },
+      "link": { "$value": "#003756", "$description": "GrimoireLab link color, docs/css/styles.css.", "$extensions": { "foundation.uor.prism": { "dark": "#66C9BA" } } },
+      "link-hover": { "$value": "#117964", "$description": "GrimoireLab link hover color, docs/css/styles.css.", "$extensions": { "foundation.uor.prism": { "dark": "#C19ADE" } } },
+      "ring": { "$value": "#009ADE", "$description": "CHAOSS blue, the logo's second fill.", "$extensions": { "foundation.uor.prism": { "dark": "#009ADE" } } },
+      "chart-1": { "$value": "#D50057", "$description": "CHAOSS rubine." },
+      "chart-2": { "$value": "#009ADE", "$description": "CHAOSS blue." },
+      "chart-3": { "$value": "#66C9BA", "$description": "CHAOSS teal." },
+      "chart-4": { "$value": "#C19ADE", "$description": "CHAOSS violet." }
+    },
+    "font": {
+      "$type": "fontFamily",
+      "sans": { "$value": ["Lato", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans", "sans-serif"], "$description": "GrimoireLab body font stack, docs/css/styles.css. Lato itself is not served." },
+      "display": { "$value": ["Montserrat", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans", "sans-serif"], "$description": "GrimoireLab heading font stack, docs/css/styles.css. Montserrat itself is not served." },
+      "mono": { "$value": ["SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"], "$description": "GrimoireLab monospace stack, docs/css/styles.css." }
+    }
+  },
+  "license": {
+    "copied": "The CHAOSS logos are from chaoss/community (MIT, Copyright (c) 2017 chaoss); the wizard is from chaoss/grimoirelab docs/ (Apache-2.0). The copyright notices travel with this lock.",
+    "trademark": "CHAOSS is a Linux Foundation project, and its charter (section 8.4) assigns project trademarks to The Linux Foundation. Neither license grants trademark rights (Apache-2.0 section 6 says so). The brand style guide sets how the logo is used but does not grant permission to use it.",
+    "permission": "Not established. Using the CHAOSS name and logos on a page for a contribution to CHAOSS GrimoireLab is the case this lock is built for; any other use, or publishing such a page outside the upstream's own review, needs permission from the CHAOSS project and The Linux Foundation, which has not been asked for or given."
+  },
+  "notes": [
+    "Fonts: GrimoireLab's site loads Lato and Montserrat from Google Fonts (docs/_includes/head.html); neither upstream repository holds their files, and the template's page allows fonts only from itself, so no font is copied and the stacks fall back to installed fonts.",
+    "Usage: the style guide asks for clear space of the logo's o and a minimum width of 54 px; the page shows the logo at 6.5rem (104 px) wide with that space around it."
+  ]
+}

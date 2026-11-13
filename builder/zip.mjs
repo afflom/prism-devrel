@@ -41,7 +41,7 @@ export function zip(files, instant) {
   const u32 = (v) => [v & 0xff, (v >>> 8) & 0xff, (v >>> 16) & 0xff, (v >>> 24) & 0xff];
   for (const path of Object.keys(files).sort()) {
     const name = encoder.encode(path);
-    const data = encoder.encode(files[path]);
+    const data = typeof files[path] === 'string' ? encoder.encode(files[path]) : files[path];
     const crc = crc32(data);
     // Version 2.0, flag bit 11 (UTF-8 names), method 0 (stored).
     const common = [...u16(20), ...u16(0x0800), ...u16(0), ...u16(time), ...u16(date), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0)];

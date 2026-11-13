@@ -426,6 +426,11 @@ export function deriveModel(input) {
     { standard: 'OpenSpec', subject: 'Requirements', text: 'Every rule and property of the spec is a requirement with a scenario in openspec/specs.', evidence: [`${M}::application`] },
     { standard: `SPDX ${prompt.license}`, subject: 'Licensing', text: `The application and its model are offered under ${prompt.license}.`, evidence: [`${M}::application`] },
   ];
+  // The prompt's own obligations follow the derived ones, so their numbering, and everyObligationEvidenced, extend unchanged.
+  for (const o of prompt.obligations ?? []) {
+    if (obligations.some((x) => x.subject === o.subject)) throw new SpecError(`The obligation subject \`${o.subject}\` is already derived; give it another subject.`, 'obligations');
+    obligations.push(o);
+  }
 
   return {
     prompt,

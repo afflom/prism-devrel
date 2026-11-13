@@ -114,3 +114,15 @@ fn gallery_dr_20() {
 fn guides_dr_21() {
     builder("DR-21");
 }
+
+/// `DR-22`: A prompt's brand is a prism/brand-lock/1 lock pinned to upstream commits: the app's page and its example page carry the brand's name, logo and W3C DTCG color and font tokens, every copied file is verified by its SHA-256 and a mismatch is refused, and a prompt without a brand builds as it always has
+#[test]
+fn brand_dr_22() {
+    builder("DR-22");
+}
+
+/// `DR-23`: A prompt's own compliance obligations follow the derived ones in the Compliance module, numbered in order and each naming its evidence, so everyObligationEvidenced holds of them all; an obligation without evidence or with a subject already used is refused, and a prompt without obligations builds as it always has
+#[test]
+fn obligations_dr_23() {
+    builder("DR-23");
+}
