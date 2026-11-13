@@ -40,6 +40,51 @@ function layout(lead, value, indent, tail) {
   return [`${pad}${lead}${value.record}{`, ...value.fields.flatMap(([key, v], i) => layout(`${key}: `, v, indent + 2, i < value.fields.length - 1 ? ',' : '')), `${pad}}${tail}`];
 }
 
+/** `text` split at its top-level `sep`, outside brackets and string literals. */
+function splitTop(text, sep) {
+  const out = [];
+  let depth = 0;
+  let quoted = false;
+  let start = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') quoted = !quoted;
+    else if (quoted) continue;
+    else if ('([{'.includes(ch)) depth++;
+    else if (')]}'.includes(ch)) depth--;
+    else if (depth === 0 && text.startsWith(sep, i)) {
+      out.push(text.slice(start, i));
+      start = i + sep.length;
+      i += sep.length - 1;
+    }
+  }
+  out.push(text.slice(start));
+  return out;
+}
+
+/** The value a one-line `kind{key: v, ...}`, `[a, b]` or term denotes, for `layout`. */
+function parseValue(text) {
+  const head = /^([A-Za-z_][A-Za-z0-9_.]*)\{([\s\S]*)\}$/.exec(text);
+  if (head) return record(head[1], head[2] === '' ? [] : splitTop(head[2], ', ').map((f) => {
+    const at = f.indexOf(': ');
+    return [f.slice(0, at), parseValue(f.slice(at + 2))];
+  }));
+  if (text.startsWith('[') && text.endsWith(']')) return list(text === '[]' ? [] : splitTop(text.slice(1, -1), ', ').map(parseValue));
+  return text;
+}
+
+/**
+ * Text laid out again where a line passes `WIDTH`, as `lexlean fmt` lays it
+ * out: a renamed declaration is longer than the one that was laid out.
+ */
+export function reflow(text) {
+  return text.split('\n').flatMap((line) => {
+    if (line.length <= WIDTH) return [line];
+    const m = /^( *)((?:[A-Za-z_][A-Za-z0-9_]*: )?)(.*?)(,?)$/.exec(line);
+    return layout(m[2], parseValue(m[3]), m[1].length, m[4]);
+  }).join('\n');
+}
+
 /** A LexLean string literal: printable ASCII only, without quotes or backslashes (the journey's rule). */
 export const str = (text) => `"${String(text).replace(/[^\x20-\x7e]/g, '').replace(/["\\]/g, '')}"`;
 

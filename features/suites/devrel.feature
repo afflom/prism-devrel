@@ -163,6 +163,14 @@ Feature: devrel
     Then each pattern has guides/<pattern>/ titled "How to build a <pattern> app", a how-to guide for building in no collection, in numbered steps, whose worked prompt is the pattern's example with the fewest rules, checked with builder/cli.mjs and passed through the gate pages.yml runs, linking every example of the pattern
     And every example page and the gallery name the examples collection, under the pattern's plural name or Overview, keeping their Diátaxis type and journey stage, llms.txt lists the gallery then the examples in pattern order, and a guide that drops a pattern or a page that drops its collection fails the check
 
+  @DR-22 @build
+  Scenario: Build-set writes one application from a prompt set: every app's model and proofs under names scoped by its module and laid out as lexlean fmt lays them out, one router that is the only application root and answers each app's vectors by name as the app does, distinct claim ids for every app and the set's facets, and the same bytes for the same set
+    Given a prompt set of one gallery example of each pattern, the policy decision renamed so its scoped names outrun their layout
+    When builder/test.mjs DR-22 builds the set twice
+    Then both builds write the same bytes, prismpm.toml names the router, and the router is the only module that declares application
+    And no declaration name repeats across the modules the guest compiles, and every line past 100 columns is a term or a lone name, as lexlean fmt leaves it
+    And the router answers every vector of every app, prefixed with the app's name, as the app does, and answers its own vectors, and every claim id is distinct, each app's from the initials of its name and the facets' from the set's
+
   @DR-50 @build
   Scenario: Every subject in devrel/subjects.json has a case study under case-studies/<slug>/, read from every facet record of the subject at its pinned commit, or at the commit being built for the self subject, and the case studies index lists every subject
     Given a subjects file listing a pinned subject checked out under --checkouts and this repository as the self subject

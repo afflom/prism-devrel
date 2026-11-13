@@ -12,6 +12,8 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildApp } from './build.mjs';
+import { buildSet, routerRespond } from './set.mjs';
+import { WIDTH } from './vendor/prism-code/src/journey/render.mjs';
 import { machineDeclarations } from './machine.mjs';
 import { deriveModel } from './model.mjs';
 import { render as renderAssets } from './pack.mjs';
@@ -273,6 +275,47 @@ const CASES = {
     }
   },
   // A prompt is checked as prism-code's journey checks a drafted spec, and every refusal is typed.
+  async 'DR-22'() {
+    // One app of each pattern, built into one application.
+    const names = ['kappa-namespace-authorization', 'prismpm-container-lifecycle', 'dataflow-policy-check'];
+    // A long app name makes scoped declarations outrun the line their unscoped names were laid out in.
+    const prompts = names.map((n, i) => {
+      const p = JSON.parse(readFileSync(join(examples, `${n}.prompt.json`), 'utf8'));
+      if (i === 0) p.app.name = 'kappa-namespace-authorization-policy';
+      return readPrompt(p);
+    });
+    const set = { schema: 'prism/prompt-set/1', name: 'gallery-set', title: 'Gallery set', purpose: 'Three gallery apps in one application.', repository: 'afflom/prism-devrel', prompts: names.map((n) => `${n}.prompt.json`) };
+    const built = await buildSet(set, prompts, { lastModified: AT });
+    const again = await buildSet(set, prompts, { lastModified: AT });
+    eq(JSON.stringify(again.files), JSON.stringify(built.files), 'the same set always writes the same bytes');
+    const { router, files, claims } = built;
+    eq(files['app/prismpm.toml'].match(/^project = "(.*)"$/m)[1], router.module, 'the router is the project root');
+    const roots = Object.entries(files).filter(([p, t]) => p.startsWith('app/src/') && /\n {2}name: application,\n/.test(t)).map(([p]) => p);
+    eq(roots, [`app/src/${router.module}.lex.tex`], 'one application root (PP2001): the router\'s');
+    // The guest crate, which compiles the router and every app module, names a declaration by its last component.
+    const guest = new Set([router.module, ...router.apps.map((m) => m.module)].map((m) => `app/src/${m}.lex.tex`));
+    const declared = new Map();
+    for (const [path, text] of Object.entries(files).filter(([p]) => /^app\/src\/[^/]+\.lex\.tex$/.test(p))) {
+      if (guest.has(path)) {
+        for (const [, name] of text.matchAll(/^(?:definition|structure|inductive)\{(?:\n {2})?name: ([A-Za-z_][A-Za-z0-9_]*),/gm)) {
+          ok(!declared.has(name), `${name} is declared once in the guest (${path}, ${declared.get(name)})`);
+          declared.set(name, path);
+        }
+      }
+      // As lexlean fmt lays it out: only a term outruns WIDTH.
+      for (const line of text.split('\n').filter((l) => l.length > WIDTH)) ok(/^ *(?:(?:[A-Za-z_]+: )?\(|\| |[A-Za-z_]+: [A-Za-z0-9_]+,?$)/.test(line), `${path}: a line past ${WIDTH} columns is a term: ${line.slice(0, 80)}`);
+    }
+    // The router answers each app's vectors, prefixed with the app's name, as the app does.
+    for (const m of router.apps) {
+      for (const v of m.vectors) eq(routerRespond(router, Uint8Array.from([...Buffer.from(`${m.spec.name} `), ...v.bytes])), v.response, `${m.spec.name}: ${v.why}`);
+      ok(router.vectors.some((v) => Buffer.from(v.bytes).toString('latin1').startsWith(`${m.spec.name} `)), `the router replays ${m.spec.name}`);
+    }
+    for (const v of router.vectors) eq(routerRespond(router, v.bytes), v.response, `router: ${v.why}`);
+    const ids = claims.map((c) => c.id);
+    eq(new Set(ids).size, ids.length, 'every claim id is distinct');
+    ok(['KNAP-01', 'PCL-01', 'DPC-01', 'GS-01'].every((id) => ids.includes(id)), `${ids.join(' ')}: claims take the initials of each app's name, the facets the set's`);
+    ok(files['model/ids.toml'].includes('id = "GS-01"'), 'the facet claims are registered');
+  },
   async 'DR-07'() {
     const good = rule30();
     ok(deriveModel(good).spec.rules.length === 3, 'the Rule 30 prompt is accepted');

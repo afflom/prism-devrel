@@ -29,7 +29,7 @@ import { SpecError, describeConditions, respond, requestLimits } from './vendor/
 import { ASSETS, TEMPLATE } from './assets.mjs';
 import { FACET_CLAIMS, rustTests } from './build.mjs';
 import { facetModules } from './facets.mjs';
-import { listDefinitions } from './lean.mjs';
+import { listDefinitions, reflow } from './lean.mjs';
 import { renderMachineModel, renderMachineProofs } from './machine.mjs';
 import { deriveModel } from './model.mjs';
 import { DFD_OF, STRIDE, STRIDE_PER_ELEMENT, STRIDE_TEXT } from './prompt.mjs';
@@ -285,8 +285,8 @@ function scope(m) {
   const ref = new RegExp(`(?<![A-Za-z0-9_.])${m.module}::([A-Za-z_][A-Za-z0-9_]*)`, 'g');
   m.scopedDispatch = map.get('dispatch');
   return {
-    text: (t) => t.replace(word, (x) => map.get(x)),
-    refs: (t) => t.replace(ref, (x, name) => (map.has(name) ? `${m.module}::${map.get(name)}` : x)),
+    text: (t) => reflow(t.replace(word, (x) => map.get(x))),
+    refs: (t) => reflow(t.replace(ref, (x, name) => (map.has(name) ? `${m.module}::${map.get(name)}` : x))),
     qualified: new Map([...map].map(([k, v]) => [`${m.module}::${k}`, `${m.module}::${v}`])),
   };
 }
