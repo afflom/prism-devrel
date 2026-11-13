@@ -8,7 +8,7 @@
 default: vv
 
 # The whole gate.
-vv: fmt-check model template-check experience-check lint test deny app
+vv: fmt-check model template-check experience-check fidelity lint test deny app
     @echo "vv: the acceptance gate passed"
 
 fmt-check:
@@ -25,6 +25,15 @@ model:
 template-check:
     prismpm template check
     prismpm lock check
+
+# FI-01..FI-03: the fidelity register and the model's measurement of it are
+# what the model scores to, and no closed κ is open again.
+fidelity:
+    cargo run -q --locked -p prism-fidelity -- --project app --repo . --register fidelity.toml --lean app/src/Fidelity.lex.tex --check
+
+# Rescore the model: fidelity.toml and app/src/Fidelity.lex.tex.
+fidelity-write:
+    cargo run -q --locked -p prism-fidelity -- --project app --repo . --register fidelity.toml --lean app/src/Fidelity.lex.tex
 
 # Clippy at `-D warnings` over every target with every feature enabled. This is
 # the one place an optional feature is compiled: a rename upstream of an

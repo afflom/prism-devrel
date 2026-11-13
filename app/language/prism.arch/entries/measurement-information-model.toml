@@ -1,0 +1,17 @@
+spec = "lexlean/entry/1"
+id = "measurement-information-model"
+category = "label-word"
+surface_arity = 0
+frame = "atom"
+
+[denotation]
+kind = "document"
+module = "Foundation.Measurement.V1.Model"
+component = "everyIndicatorMeasured"
+
+[[form]]
+id = "measurement-information-model"
+channel = "text"
+surface = "Measurement information model"
+canonical_source = true
+features = ["sentence-case", "singular"]

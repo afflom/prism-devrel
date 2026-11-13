@@ -1,0 +1,106 @@
+\begin{lexlean}{Foundation.Provenance.V1.Model}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\title{Provenance model}
+\begin{semanticmodule}
+inductive{
+  name: AgentKind,
+  type_parameters: [],
+  parameters: [],
+  constructors: [
+    {name: person, fields: []},
+    {name: organization, fields: []},
+    {name: softwareAgent, fields: []}
+  ]
+}
+
+structure{
+  name: Agent,
+  type_parameters: [],
+  parameters: [],
+  fields: [{name: index, type: Nat}, {name: name, type: String}, {name: kind, type: AgentKind}]
+}
+
+structure{
+  name: Activity,
+  type_parameters: [],
+  parameters: [],
+  fields: [{name: index, type: Nat}, {name: name, type: String}, {name: agentIndex, type: Nat}]
+}
+
+structure{
+  name: SourceEntity,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: index, type: Nat},
+    {name: location, type: String},
+    {name: firstLine, type: Nat},
+    {name: lastLine, type: Nat},
+    {name: kappa, type: String}
+  ]
+}
+
+structure{
+  name: Derivation,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: generatedEntity, type: String},
+    {name: usedEntityIndex, type: Nat},
+    {name: activityIndex, type: Nat}
+  ]
+}
+
+definition{
+  name: spansOrdered,
+  parameters: [entities : (List SourceEntity)],
+  result: Bool,
+  body: (match entities
+    | List.nil => true
+    | List.cons item rest => ((((project item firstLine) <? (project item lastLine)) || ((project item firstLine) =? (project item lastLine))) && (spansOrdered rest))),
+  recursive_argument: entities
+}
+
+definition{
+  name: activitiesKnown,
+  parameters: [agentCount : Nat, activities : (List Activity)],
+  result: Bool,
+  body: (match activities
+    | List.nil => true
+    | List.cons item rest => (((project item agentIndex) <? agentCount) && (activitiesKnown agentCount rest))),
+  recursive_argument: activities
+}
+
+definition{
+  name: derivationsKnown,
+  parameters: [entityCount : Nat, activityCount : Nat, derivations : (List Derivation)],
+  result: Bool,
+  body: (match derivations
+    | List.nil => true
+    | List.cons item rest => (((project item usedEntityIndex) <? entityCount) && (((project item activityIndex) <? activityCount) && (derivationsKnown entityCount activityCount rest)))),
+  recursive_argument: derivations
+}
+
+definition{
+  name: derived,
+  parameters: [recordId : String, derivations : (List Derivation)],
+  result: Bool,
+  body: (match derivations
+    | List.nil => false
+    | List.cons item rest => ((prim equal (project item generatedEntity) recordId : Bool) || (derived recordId rest))),
+  recursive_argument: derivations
+}
+
+definition{
+  name: everyRecordDerived,
+  parameters: [records : (List String), derivations : (List Derivation)],
+  result: Bool,
+  body: (match records
+    | List.nil => true
+    | List.cons recordId rest => ((derived recordId derivations) && (everyRecordDerived rest derivations))),
+  recursive_argument: records
+}
+\end{semanticmodule}
+\end{lexlean}

@@ -1,0 +1,22 @@
+[package]
+name = "prism-fidelity"
+description = "Scores every record of a Prism project on four properties (derived, meant, measured, closed) against W3C PROV-O and ISO/IEC/IEEE 15939, and keeps the κ-keyed register that only shrinks."
+# Build-time only: `just fidelity` and pages.yml run it; nothing shipped
+# depends on it.
+publish = false
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+devrel-catalog = { version = "0.1.0", path = "../devrel" }
+sha2 = "0.10.9"
+
+[lints]
+workspace = true

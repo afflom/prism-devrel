@@ -1,0 +1,219 @@
+\begin{lexlean}{Foundation.Measurement.V1.Model}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\title{Measurement information model}
+\begin{semanticmodule}
+inductive{
+  name: Scale,
+  type_parameters: [],
+  parameters: [],
+  constructors: [
+    {name: nominal, fields: []},
+    {name: ordinal, fields: []},
+    {name: interval, fields: []},
+    {name: ratio, fields: []}
+  ]
+}
+
+inductive{
+  name: Direction,
+  type_parameters: [],
+  parameters: [],
+  constructors: [{name: atMost, fields: []}, {name: atLeast, fields: []}]
+}
+
+structure{
+  name: InformationNeed,
+  type_parameters: [],
+  parameters: [],
+  fields: [{name: index, type: Nat}, {name: name, type: String}, {name: text, type: String}]
+}
+
+structure{
+  name: MeasurableConcept,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: index, type: Nat},
+    {name: informationNeedIndex, type: Nat},
+    {name: name, type: String}
+  ]
+}
+
+structure{
+  name: Entity,
+  type_parameters: [],
+  parameters: [],
+  fields: [{name: index, type: Nat}, {name: name, type: String}]
+}
+
+structure{
+  name: Attribute,
+  type_parameters: [],
+  parameters: [],
+  fields: [{name: index, type: Nat}, {name: entityIndex, type: Nat}, {name: name, type: String}]
+}
+
+structure{
+  name: BaseMeasure,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: index, type: Nat},
+    {name: attributeIndex, type: Nat},
+    {name: name, type: String},
+    {name: method, type: String},
+    {name: scale, type: Scale},
+    {name: unit, type: String}
+  ]
+}
+
+structure{
+  name: DerivedMeasure,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: index, type: Nat},
+    {name: name, type: String},
+    {name: function, type: String},
+    {name: baseMeasureIndices, type: (List Nat)}
+  ]
+}
+
+structure{
+  name: DecisionCriteria,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: index, type: Nat},
+    {name: direction, type: Direction},
+    {name: bound, type: Nat},
+    {name: basis, type: String}
+  ]
+}
+
+structure{
+  name: Indicator,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: index, type: Nat},
+    {name: name, type: String},
+    {name: conceptIndex, type: Nat},
+    {name: derivedMeasureIndex, type: Nat},
+    {name: analysisModel, type: String},
+    {name: criteriaIndex, type: Nat}
+  ]
+}
+
+structure{
+  name: MeasurementResult,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: indicatorIndex, type: Nat},
+    {name: value, type: Nat},
+    {name: source, type: String},
+    {name: kappa, type: String}
+  ]
+}
+
+definition{
+  name: excessAbove,
+  parameters: [bound : Nat, value : Nat],
+  result: Nat,
+  body: (prim subtract value bound : Nat)
+}
+
+definition{
+  name: excessBelow,
+  parameters: [bound : Nat, value : Nat],
+  result: Nat,
+  body: (prim subtract bound value : Nat)
+}
+
+theorem{
+  name: noExcessAboveIsAtMost,
+  parameters: [bound : Nat, value : Nat],
+  statement: (((excessAbove bound value) = 0) <-> (value <= bound)),
+  proof: linear_arithmetic{definitions: [excessAbove]},
+  axioms: [Classical.choice, Quot.sound, propext]
+}
+
+theorem{
+  name: noExcessBelowIsAtLeast,
+  parameters: [bound : Nat, value : Nat],
+  statement: (((excessBelow bound value) = 0) <-> (bound <= value)),
+  proof: linear_arithmetic{definitions: [excessBelow]},
+  axioms: [Classical.choice, Quot.sound, propext]
+}
+
+theorem{
+  name: excessAboveFallsWithTheValue,
+  parameters: [bound : Nat, before : Nat, after : Nat],
+  statement: ((after <= before) -> ((excessAbove bound after) <= (excessAbove bound before))),
+  proof: linear_arithmetic{definitions: [excessAbove]},
+  axioms: [Quot.sound, propext]
+}
+
+theorem{
+  name: excessBelowFallsAsTheValueRises,
+  parameters: [bound : Nat, before : Nat, after : Nat],
+  statement: ((before <= after) -> ((excessBelow bound after) <= (excessBelow bound before))),
+  proof: linear_arithmetic{definitions: [excessBelow]},
+  axioms: [Quot.sound, propext]
+}
+
+definition{
+  name: excessOver,
+  parameters: [criteria : DecisionCriteria, value : Nat],
+  result: Nat,
+  body: (match (project criteria direction)
+    | Direction.atMost => (excessAbove (project criteria bound) value)
+    | Direction.atLeast => (excessBelow (project criteria bound) value))
+}
+
+definition{
+  name: satisfies,
+  parameters: [criteria : DecisionCriteria, value : Nat],
+  result: Bool,
+  body: ((excessOver criteria value) =? 0)
+}
+
+definition{
+  name: indicatorsKnown,
+  parameters: [
+    conceptCount : Nat,
+    derivedCount : Nat,
+    criteriaCount : Nat,
+    indicators : (List Indicator)
+  ],
+  result: Bool,
+  body: (match indicators
+    | List.nil => true
+    | List.cons item rest => (((project item conceptIndex) <? conceptCount) && (((project item derivedMeasureIndex) <? derivedCount) && (((project item criteriaIndex) <? criteriaCount) && (indicatorsKnown conceptCount derivedCount criteriaCount rest))))),
+  recursive_argument: indicators
+}
+
+definition{
+  name: measured,
+  parameters: [indicator : Nat, results : (List MeasurementResult)],
+  result: Bool,
+  body: (match results
+    | List.nil => false
+    | List.cons item rest => (((project item indicatorIndex) =? indicator) || (measured indicator rest))),
+  recursive_argument: results
+}
+
+definition{
+  name: everyIndicatorMeasured,
+  parameters: [indicators : (List Indicator), results : (List MeasurementResult)],
+  result: Bool,
+  body: (match indicators
+    | List.nil => true
+    | List.cons item rest => ((measured (project item index) results) && (everyIndicatorMeasured rest results))),
+  recursive_argument: indicators
+}
+\end{semanticmodule}
+\end{lexlean}

@@ -52,6 +52,14 @@ model does not sanction.
 | `DR-52` | `build` | Every old learn/ address redirects to the page that replaced it, so no published link breaks |
 | `DR-53` | `build` | Every subject pin moves only forward, to the newest main commit whose gate workflow passed, and the catalogs are regenerated from the new pins without anyone editing them |
 
+## fidelity
+
+| ID | Level | Statement |
+| --- | --- | --- |
+| `FI-01` | `build` | Every record of a Prism project is scored as derived (W3C PROV-O wasDerivedFrom a source span whose κ recomputes and which holds its text), meant (a theorem names it, ISO/IEC/IEEE 29148) and, for a measure, measured (an ISO/IEC/IEEE 15939 measurement result whose κ recomputes); a provenance or measurement row that states something false is refused |
+| `FI-02` | `build` | The fidelity register only shrinks: every question is keyed by its κ, a κ once closed that a later projection finds open is refused, and the committed register is byte for byte the one the model scores to |
+| `FI-03` | `build` | Prism-DevRel's own fidelity is measured in its model: one ISO/IEC/IEEE 15939 indicator per property, each with a result read from the committed register by its κ and decision criteria of no open question, and the Lean kernel checks every indicator is known and measured |
+
 ## Cited authorities
 
 Never re-derived, vendored, or gated on.

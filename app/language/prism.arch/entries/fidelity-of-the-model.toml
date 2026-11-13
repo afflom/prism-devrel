@@ -1,0 +1,17 @@
+spec = "lexlean/entry/1"
+id = "fidelity-of-the-model"
+category = "label-word"
+surface_arity = 0
+frame = "atom"
+
+[denotation]
+kind = "document"
+module = "Fidelity"
+component = "indicators"
+
+[[form]]
+id = "fidelity-of-the-model"
+channel = "text"
+surface = "Fidelity of the model"
+canonical_source = true
+features = ["sentence-case", "singular"]

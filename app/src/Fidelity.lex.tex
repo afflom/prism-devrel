@@ -1,0 +1,127 @@
+\begin{lexlean}{Fidelity}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\importmodule{Foundation.Measurement.V1.Model}
+\title{Fidelity of the model}
+\begin{semanticmodule}
+definition{
+  name: informationNeed,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::InformationNeed,
+  body: (record Foundation.Measurement.V1.Model::InformationNeed {index := 0, name := "Fidelity of the model", text := "How much of what the model claims is derived from its sources, verified by a theorem and measured, and how much is still open."})
+}
+
+definition{
+  name: conceptOpenQuestions,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::MeasurableConcept,
+  body: (record Foundation.Measurement.V1.Model::MeasurableConcept {index := 0, informationNeedIndex := 0, name := "Open questions per property"})
+}
+
+definition{
+  name: entityRecord,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::Entity,
+  body: (record Foundation.Measurement.V1.Model::Entity {index := 0, name := "record of the model"})
+}
+
+definition{
+  name: criteriaNoneOpen,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::DecisionCriteria,
+  body: (record Foundation.Measurement.V1.Model::DecisionCriteria {index := 0, direction := (ctor Foundation.Measurement.V1.Model::Direction.atMost), bound := 0, basis := "closed: every question the model raises is answered, and the register never reopens one"})
+}
+
+definition{
+  name: attributeDerived,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::Attribute,
+  body: (record Foundation.Measurement.V1.Model::Attribute {index := 0, entityIndex := 0, name := "derived"})
+}
+
+definition{
+  name: attributeMeant,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::Attribute,
+  body: (record Foundation.Measurement.V1.Model::Attribute {index := 1, entityIndex := 0, name := "meant"})
+}
+
+definition{
+  name: attributeMeasured,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::Attribute,
+  body: (record Foundation.Measurement.V1.Model::Attribute {index := 2, entityIndex := 0, name := "measured"})
+}
+
+definition{
+  name: baseMeasureDerivedOpen,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::BaseMeasure,
+  body: (record Foundation.Measurement.V1.Model::BaseMeasure {index := 0, attributeIndex := 0, name := "open derived questions", method := "count the residue rows on the derived axis: records no W3C PROV-O derivation from a source span names", scale := (ctor Foundation.Measurement.V1.Model::Scale.ratio), unit := "question"})
+}
+
+definition{
+  name: baseMeasureMeantOpen,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::BaseMeasure,
+  body: (record Foundation.Measurement.V1.Model::BaseMeasure {index := 1, attributeIndex := 1, name := "open meant questions", method := "count the residue rows on the meant axis: records no theorem states anything about (ISO/IEC/IEEE 29148)", scale := (ctor Foundation.Measurement.V1.Model::Scale.ratio), unit := "question"})
+}
+
+definition{
+  name: baseMeasureMeasuredOpen,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::BaseMeasure,
+  body: (record Foundation.Measurement.V1.Model::BaseMeasure {index := 2, attributeIndex := 2, name := "open measured questions", method := "count the residue rows on the measured axis: quality measures with no ISO/IEC/IEEE 15939 measurement result", scale := (ctor Foundation.Measurement.V1.Model::Scale.ratio), unit := "question"})
+}
+
+definition{
+  name: derivedMeasureDerivedOpen,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::DerivedMeasure,
+  body: (record Foundation.Measurement.V1.Model::DerivedMeasure {index := 0, name := "open derived questions", function := "identity of the base measure", baseMeasureIndices := (cons 0 (nil Nat))})
+}
+
+definition{
+  name: derivedMeasureMeantOpen,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::DerivedMeasure,
+  body: (record Foundation.Measurement.V1.Model::DerivedMeasure {index := 1, name := "open meant questions", function := "identity of the base measure", baseMeasureIndices := (cons 1 (nil Nat))})
+}
+
+definition{
+  name: derivedMeasureMeasuredOpen,
+  parameters: [],
+  result: Foundation.Measurement.V1.Model::DerivedMeasure,
+  body: (record Foundation.Measurement.V1.Model::DerivedMeasure {index := 2, name := "open measured questions", function := "identity of the base measure", baseMeasureIndices := (cons 2 (nil Nat))})
+}
+
+definition{
+  name: indicators,
+  parameters: [],
+  result: (List Foundation.Measurement.V1.Model::Indicator),
+  body: (cons (record Foundation.Measurement.V1.Model::Indicator {index := 0, name := "Fidelity::indicatorDerived", conceptIndex := 0, derivedMeasureIndex := 0, analysisModel := "excess of the open count over the criteria's bound", criteriaIndex := 0}) (cons (record Foundation.Measurement.V1.Model::Indicator {index := 1, name := "Fidelity::indicatorMeant", conceptIndex := 0, derivedMeasureIndex := 1, analysisModel := "excess of the open count over the criteria's bound", criteriaIndex := 0}) (cons (record Foundation.Measurement.V1.Model::Indicator {index := 2, name := "Fidelity::indicatorMeasured", conceptIndex := 0, derivedMeasureIndex := 2, analysisModel := "excess of the open count over the criteria's bound", criteriaIndex := 0}) (nil Foundation.Measurement.V1.Model::Indicator))))
+}
+
+definition{
+  name: results,
+  parameters: [],
+  result: (List Foundation.Measurement.V1.Model::MeasurementResult),
+  body: (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 0, value := 1086, source := "fidelity.toml", kappa := "ced910a8af729582840597a20d8bb8fbc80f1508af6ef554b35beac3e5417dc1"}) (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 1, value := 976, source := "fidelity.toml", kappa := "ced910a8af729582840597a20d8bb8fbc80f1508af6ef554b35beac3e5417dc1"}) (cons (record Foundation.Measurement.V1.Model::MeasurementResult {indicatorIndex := 2, value := 6, source := "fidelity.toml", kappa := "ced910a8af729582840597a20d8bb8fbc80f1508af6ef554b35beac3e5417dc1"}) (nil Foundation.Measurement.V1.Model::MeasurementResult))))
+}
+
+theorem{
+  name: indicatorsKnown,
+  parameters: [],
+  statement: ((Foundation.Measurement.V1.Model::indicatorsKnown 1 3 1 (indicators)) = true),
+  proof: decide{}
+}
+
+theorem{
+  name: everyIndicatorMeasured,
+  parameters: [],
+  statement: ((Foundation.Measurement.V1.Model::everyIndicatorMeasured (indicators) (results)) = true),
+  proof: decide{}
+}
+\end{semanticmodule}
+\end{lexlean}
