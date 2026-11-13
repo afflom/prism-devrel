@@ -5,6 +5,61 @@
 spec = "prism/fidelity/1"
 
 [[closed]]
+kappa = "ec23a2f6ca5ea9eea70f4444f6596505aa8187bdb4627b46edf4808efd97d9dd"
+record = "Architecture::concernAccessibility"
+axis = "derived"
+
+[[closed]]
+kappa = "b39da50b3205938bbb82dcf51707db7de94f6ca6a358a73ba3a25d66b78de0ba"
+record = "Architecture::concernAccuracy"
+axis = "derived"
+
+[[closed]]
+kappa = "34f7006ed25054c618aee65a0d14a3b60bdbe88c59e87d8d61d6b19aeab0b043"
+record = "Architecture::concernCoverage"
+axis = "derived"
+
+[[closed]]
+kappa = "ecad8f49dff174d00cfcf0849639db7d112fd8d2477a2bc57f3d562608b73831"
+record = "Architecture::concernFindability"
+axis = "derived"
+
+[[closed]]
+kappa = "5b11d18cd64ed8a7ca6a1ff8327f4db5226a68b86754db7cf8560e70b95f9367"
+record = "Architecture::concernFreshness"
+axis = "derived"
+
+[[closed]]
+kappa = "09d484a025a4bf32bcdc75765cb3fa7e52d72e8bc0a11fdc659c1d8549bbec2b"
+record = "Architecture::concernIntegrity"
+axis = "derived"
+
+[[closed]]
+kappa = "6adfda958540d9300ac3646ce49345567cde82dc33725b05fc7cbee2e7d7e1fc"
+record = "Architecture::stakeholderDevRelAuthor"
+axis = "derived"
+
+[[closed]]
+kappa = "f1ad837c186bb6eee4dad2ed45a08f7c9416f3982b85fd2f3c2534596b668800"
+record = "Architecture::stakeholderMaintainer"
+axis = "derived"
+
+[[closed]]
+kappa = "2b243d3a0d7b61e2ed9a80a6854284f37327449c065bdc46200d15f5cc91b089"
+record = "Architecture::stakeholderPrismModeler"
+axis = "derived"
+
+[[closed]]
+kappa = "e87179957a0971cbe69b34df512cc20ca5603001a2a3ea5e9ced7ec54142f5ec"
+record = "Architecture::stakeholderRustNewcomer"
+axis = "derived"
+
+[[closed]]
+kappa = "4676ed989e79c1723474e51c193a152ee084341a087a20955154f7ba64285eb8"
+record = "Architecture::stakeholderSecurityReviewer"
+axis = "derived"
+
+[[closed]]
 kappa = "3b6103663e4cf23d35faddfa6f78cea0e9a72ceec21d184031ad87eeabe6cb87"
 record = "Brand::contrasts#0"
 axis = "derived"
@@ -495,6 +550,31 @@ record = "Brand::tokens#9"
 axis = "meant"
 
 [[closed]]
+kappa = "bbaf55dab65c8fb82e664a72686ca722454c6f4465f39f78fd7c39dc5588efc0"
+record = "Catalog::recordsPart1#18"
+axis = "derived"
+
+[[closed]]
+kappa = "b54557fa2c5e889727f6a60158ed923cbf56ebc4947ceeb47057e9e8b1f63932"
+record = "Catalog::recordsPart1#19"
+axis = "derived"
+
+[[closed]]
+kappa = "1170e62e01736eb02a01a0a3009b031004d41494c2c50b32c82395b52662deca"
+record = "Catalog::recordsPart1#20"
+axis = "derived"
+
+[[closed]]
+kappa = "b99704e6fa0ba8750043f5712c9c5c5930f1552dc1062d52dd36c73c80eb6622"
+record = "Catalog::recordsPart1#22"
+axis = "derived"
+
+[[closed]]
+kappa = "e6508917f13b9978f9a361d817585b4630d1615700b17073c783ddaaed2788ab"
+record = "Catalog::recordsPart6#9"
+axis = "derived"
+
+[[closed]]
 kappa = "2c62465471e0c319fa11dcb25f056d84edd1fb7b8d1b8e1a067414f595c1f2f2"
 record = "Catalog::resourceBehavior"
 axis = "derived"
@@ -575,6 +655,106 @@ record = "Compliance::obligations#9"
 axis = "meant"
 
 [[closed]]
+kappa = "6da8c44a69c63145a4b1eee1f3d0e15f75eee72df9ad52723c4da39a12f396fb"
+record = "Features::featureAgents"
+axis = "derived"
+
+[[closed]]
+kappa = "03b027c26fc0ed690cb39cc9dd86c5d1f6378e0513ea40a6924b0361486a626e"
+record = "Features::featureArchitecture"
+axis = "derived"
+
+[[closed]]
+kappa = "1211a3de8788326a575527452d9c47b5f4b83aa10285c59dfada3c887a53f454"
+record = "Features::featureBehavior"
+axis = "derived"
+
+[[closed]]
+kappa = "365e497a9602f1b8e6c798d58c68e06b40f3e88a8153aaf890d455589fa2fff4"
+record = "Features::featureCaseStudy"
+axis = "derived"
+
+[[closed]]
+kappa = "aae86a3ad506a6e3e794db87cc6d8900be6621ab9a9eef950c88d3813085841f"
+record = "Features::featureCli"
+axis = "derived"
+
+[[closed]]
+kappa = "fc47d4847cc2c4be18b1245d9c9ee5bf2f0eee7a51426c05d0962cd984994e80"
+record = "Features::featureDesign"
+axis = "derived"
+
+[[closed]]
+kappa = "a704eb053b97535d7f393414b992dcc5d2a635395fca0f0c3ad04a652528d79e"
+record = "Features::featureExplorer"
+axis = "derived"
+
+[[closed]]
+kappa = "50029402767d4161a1360e61a217bdc7bf61a16d9b4010725218dd6b1bea8e30"
+record = "Features::featureExtensions"
+axis = "derived"
+
+[[closed]]
+kappa = "7e51b454dc16aea51b1892e25a37363ce2c20eff9218daf58486425ec3e5ca93"
+record = "Features::featureFeatures"
+axis = "derived"
+
+[[closed]]
+kappa = "c552bfec6b46811fd9b5937743b45467e327192fdd6b5af6b85f98101a70d665"
+record = "Features::featureGettingStarted"
+axis = "derived"
+
+[[closed]]
+kappa = "fcb769e25090d03c40440267e9f08e66a6e47f3b2cf7f9d563130a7abd71fa04"
+record = "Features::featureLookup"
+axis = "derived"
+
+[[closed]]
+kappa = "cff67b88be59b6e451ec8b8835f900298bd88a3f8e7e68fdbb137a89c374a8e2"
+record = "Features::featureQuality"
+axis = "derived"
+
+[[closed]]
+kappa = "94aa161f9ce55109f6746392eec40e9b7a4ce992298b286fcab9126b5f087fd5"
+record = "Features::featureSecurity"
+axis = "derived"
+
+[[closed]]
+kappa = "782c3ca898ee087cc115b52a3fabc9cab0b0ec63204c264a7d681b62ecfa98ca"
+record = "Features::featureSlides"
+axis = "derived"
+
+[[closed]]
+kappa = "706ae271310eae2e1582feb905dad7fe038e69df5fb786ca63a2d56fd2d6199f"
+record = "Features::featureSystem"
+axis = "derived"
+
+[[closed]]
+kappa = "1829c1cda2b4e660d64daf1a93617c484bca5c3f26a3ee1d5b4a5086152b4f4f"
+record = "Features::journeyAuthor"
+axis = "derived"
+
+[[closed]]
+kappa = "d9cf7270fa8f3bd60cd297edadc98947f3e83be97d14e968abc67e313b84faba"
+record = "Features::journeyMaintainer"
+axis = "derived"
+
+[[closed]]
+kappa = "709bada6b054c9b9b9ede77664a0c31787bb7eede72c48474278d506f35cdb4d"
+record = "Features::journeyModeler"
+axis = "derived"
+
+[[closed]]
+kappa = "d98b3b36f1e696d11d4709f05387b2d987634a50387393b62bdd8f41fabd5a80"
+record = "Features::journeyNewcomer"
+axis = "derived"
+
+[[closed]]
+kappa = "b953945fab68d4ee3cb0352533d186830b5c54a8aba6bb4e987a1c06d4a67ef7"
+record = "Features::journeyReviewer"
+axis = "derived"
+
+[[closed]]
 kappa = "4f8a51ea88dd6f1425a0f55fa8894c060b66add478924cdd4781bddffde65978"
 record = "Quality::measureUncoveredRecords"
 axis = "measured"
@@ -585,9 +765,19 @@ record = "Quality::measureUndeclaredReferences"
 axis = "measured"
 
 [[closed]]
+kappa = "7c6b31d5edd8ac97b665f440dbf75eaf4ccbb1f32079d23d0cd9cd9b291347d9"
+record = "Users::goals#0"
+axis = "derived"
+
+[[closed]]
 kappa = "b3d904344ee1b3af2125a4d3da8040e3a6f9377799d1560b3e60245c9b9e707a"
 record = "Users::goals#0"
 axis = "meant"
+
+[[closed]]
+kappa = "bf06e707b37f6a7608bb53b71f4347a582f2357ff09dda25ea55b39f1199ea8a"
+record = "Users::goals#1"
+axis = "derived"
 
 [[closed]]
 kappa = "16213acbf5f624055197744abad7b80f0c5be78b66abfe29a3e227292d78044f"
@@ -595,9 +785,19 @@ record = "Users::goals#1"
 axis = "meant"
 
 [[closed]]
+kappa = "8fd8f130dc4eed61546f9447fa97bfbf0c73a1a6aeaa570a75bc74bae2097b4b"
+record = "Users::goals#2"
+axis = "derived"
+
+[[closed]]
 kappa = "adeefc7949ae45d30df37bda874c3fc4cb420eae4e12624eb41e00cfe011bdf2"
 record = "Users::goals#2"
 axis = "meant"
+
+[[closed]]
+kappa = "8ff5868ff93dc7ac374380d172a676d6da8095a472557375de02482ba64d8d7b"
+record = "Users::goals#3"
+axis = "derived"
 
 [[closed]]
 kappa = "b099b46bfc1eb2804589a870fbdacba2be1cd792ed5743ad4e78b6e111f9a137"
@@ -605,9 +805,39 @@ record = "Users::goals#3"
 axis = "meant"
 
 [[closed]]
+kappa = "3502f6dab7e961f356a675b866a21a0b3699a3a58a7af2c68472b4df86a0d34e"
+record = "Users::goals#4"
+axis = "derived"
+
+[[closed]]
 kappa = "23dcf5d6d596009ef47c6abdb2e8539acfeaa8b5f7015270563a6e125eb0eab3"
 record = "Users::goals#4"
 axis = "meant"
+
+[[closed]]
+kappa = "675980128a817860bb7068068b28883435b5c8a1092d9f2b62697ed724fb8692"
+record = "Users::groups#0"
+axis = "derived"
+
+[[closed]]
+kappa = "434dbc2a050c23e4c3a49416b1e66afaae467c77403376c64845cc1f475fc805"
+record = "Users::groups#1"
+axis = "derived"
+
+[[closed]]
+kappa = "aa24dc79b553b674baa648368cbf8611e9c97f69429fb87dc415ee5ed99a8dd9"
+record = "Users::groups#2"
+axis = "derived"
+
+[[closed]]
+kappa = "34ccf4068675a9603b53ff25a3a79bd312174b0453759714791e1862f066129c"
+record = "Users::groups#3"
+axis = "derived"
+
+[[closed]]
+kappa = "b0973edeb2379390edd22fc0fda79f10e45d285b0ca4b65a90103effff8270a4"
+record = "Users::groups#4"
+axis = "derived"
 
 [[closed]]
 kappa = "3a07486453bbdb1a9bc996dcd557c39b22da26c5209ed1634563a7fc04460d6a"
@@ -685,9 +915,19 @@ record = "Users::measures#9"
 axis = "meant"
 
 [[closed]]
+kappa = "faff6a37ba4f63c49bea7e42481d125c786a7ba834cf654519c4d948b66afb07"
+record = "Users::tasks#0"
+axis = "derived"
+
+[[closed]]
 kappa = "ca7d2f8750b4fd26bb53ac2b20217a66a6025a6f7e5ef63e05c2f1ff050f43e5"
 record = "Users::tasks#0"
 axis = "meant"
+
+[[closed]]
+kappa = "8961149e85129314a8340c3eaa79d1e959d0901523048686a2b8feaddfa4be3e"
+record = "Users::tasks#1"
+axis = "derived"
 
 [[closed]]
 kappa = "c8bc79d9c49d9b30565981983f67e8e1be7214f8c3cf97ddab1809011e1f532d"
@@ -695,9 +935,19 @@ record = "Users::tasks#1"
 axis = "meant"
 
 [[closed]]
+kappa = "fda95d8814821889dbd2e9172ead2e9c040f3edc52b63a60cf41173a0f5a54f3"
+record = "Users::tasks#10"
+axis = "derived"
+
+[[closed]]
 kappa = "11b8c9ed5c8cef402e742088ea9f8441739121580205499b0202c433a6684528"
 record = "Users::tasks#10"
 axis = "meant"
+
+[[closed]]
+kappa = "18a836cdb11c0e52737bc807fc5017bf6fa48024de11bcfd96eb7561036b9a34"
+record = "Users::tasks#11"
+axis = "derived"
 
 [[closed]]
 kappa = "eb50da5359ac63319f3bbc09e221482bf2e33b950dcbdb8d5fa172a0d7061ab5"
@@ -705,9 +955,19 @@ record = "Users::tasks#11"
 axis = "meant"
 
 [[closed]]
+kappa = "0755add7fd09f098fe8c1d931ae464cf4a75d3cab8e6db0a92c8c6ccde30eaa0"
+record = "Users::tasks#12"
+axis = "derived"
+
+[[closed]]
 kappa = "8675290748dfe505783f185baa0292f06bfbd6c98493ad74658c10010d0c4a1a"
 record = "Users::tasks#12"
 axis = "meant"
+
+[[closed]]
+kappa = "d512ce719e1328a139861413bb74520a1f5df8a7430cd91883707ad112fc88ae"
+record = "Users::tasks#13"
+axis = "derived"
 
 [[closed]]
 kappa = "2e0f4db09a13f4d35f07d20ef7e80425d747a599ebfc0fc5d0b5a6f94471121c"
@@ -715,9 +975,19 @@ record = "Users::tasks#13"
 axis = "meant"
 
 [[closed]]
+kappa = "d9b80d5bd12827b5b48387bc5311ddc519f02a87fe8ee02d662d34b9760462a3"
+record = "Users::tasks#14"
+axis = "derived"
+
+[[closed]]
 kappa = "4c47d172ce63de0e06ad7e1212ad575b97a2ca35ada658ab2f0c3e172b767b65"
 record = "Users::tasks#14"
 axis = "meant"
+
+[[closed]]
+kappa = "30df1477ac3b0eca7435d322f631ead741176f3bdf8e9d1e15189753595d868a"
+record = "Users::tasks#15"
+axis = "derived"
 
 [[closed]]
 kappa = "36753cb275a806dc654b9fce9babe4dcc7cdef5c04fce8bbdb742fb81439ff5a"
@@ -725,9 +995,19 @@ record = "Users::tasks#15"
 axis = "meant"
 
 [[closed]]
+kappa = "b6febfd7b54487d64568a02e4099e7e47eee39a5488a1493edf3c61a1af65bf0"
+record = "Users::tasks#16"
+axis = "derived"
+
+[[closed]]
 kappa = "d05919d77008066a0966175545165a9fbb6007bef2e7ffca462e179eb760711b"
 record = "Users::tasks#16"
 axis = "meant"
+
+[[closed]]
+kappa = "b4fa89d8518a9aec2134612741b54651dd93488413ea53de2789c74a9df16174"
+record = "Users::tasks#17"
+axis = "derived"
 
 [[closed]]
 kappa = "39dbf41100bf6c9c6ea1cbf789152a3fdac88ecdc256f41b5c967b3a32a42d54"
@@ -735,9 +1015,19 @@ record = "Users::tasks#17"
 axis = "meant"
 
 [[closed]]
+kappa = "ce700f6430942920edc83feed7fc77105bcd446b69be57d99e60da2d2ec5b5cc"
+record = "Users::tasks#18"
+axis = "derived"
+
+[[closed]]
 kappa = "b75efa0262c31592ce232d9f0921b6990dc2651b82fe2c258cde0e818f45a84e"
 record = "Users::tasks#18"
 axis = "meant"
+
+[[closed]]
+kappa = "2883437ddbf3000a9707bc27f044b7dacaf58e4035d1415128be051f955e3797"
+record = "Users::tasks#19"
+axis = "derived"
 
 [[closed]]
 kappa = "a118da805a591163da6822a593b0a73cb409426276b3e6f095ffb53264884188"
@@ -745,9 +1035,19 @@ record = "Users::tasks#19"
 axis = "meant"
 
 [[closed]]
+kappa = "fdcb1520f800076a754166affa027cf1e7383db134a270aa47fbc6eec91604c7"
+record = "Users::tasks#2"
+axis = "derived"
+
+[[closed]]
 kappa = "bb41901ade48b81a171e7be9490d2138ce5736a01bce5591bb57b0dad63a17f3"
 record = "Users::tasks#2"
 axis = "meant"
+
+[[closed]]
+kappa = "8a17ce1a7f8c917d726589d13acba6cc170cc38a34db9fd7031948287fa9398f"
+record = "Users::tasks#20"
+axis = "derived"
 
 [[closed]]
 kappa = "2552f87c279bc25dad205b4a4f7f884d520040f60f171e6fba1514841f888b57"
@@ -755,9 +1055,19 @@ record = "Users::tasks#20"
 axis = "meant"
 
 [[closed]]
+kappa = "1104253edc2d457b5ae515f65276b0a0247d99dbdb926a04f35014c949585691"
+record = "Users::tasks#21"
+axis = "derived"
+
+[[closed]]
 kappa = "737a6d21204c03f85ec97a41acd349042a88c72bfec5dbb105e2b4fcde4d2dee"
 record = "Users::tasks#21"
 axis = "meant"
+
+[[closed]]
+kappa = "b07a46077038379394596de538e7be619c5bbff1b36b94e42d5e45af7a36fdd2"
+record = "Users::tasks#3"
+axis = "derived"
 
 [[closed]]
 kappa = "eb041e0858d90fe132a704eff233cdf1c57b84d37434f3a51ac9d69689fad113"
@@ -765,9 +1075,19 @@ record = "Users::tasks#3"
 axis = "meant"
 
 [[closed]]
+kappa = "511f603cae4216b602941b333c1c97422018e0193ded85d6bf28b4199712260b"
+record = "Users::tasks#4"
+axis = "derived"
+
+[[closed]]
 kappa = "ed4f46139430e0fa16967a9dc72ad70e527bf533ae80a5356208fedca83570e3"
 record = "Users::tasks#4"
 axis = "meant"
+
+[[closed]]
+kappa = "8ebcf118135eb0022dfcbc42b2e8cdbc09b49f36b7f166fb3e2fc909e3db7253"
+record = "Users::tasks#5"
+axis = "derived"
 
 [[closed]]
 kappa = "f5118bd7be77db7fd99be08f2feb411f8b6200d98d2a1cfc82460a3999a795c7"
@@ -775,9 +1095,19 @@ record = "Users::tasks#5"
 axis = "meant"
 
 [[closed]]
+kappa = "1d67d62cba7f00156dc58dc2d91ef19b9c7d1d15f347b37a4e65e4e1bde662be"
+record = "Users::tasks#6"
+axis = "derived"
+
+[[closed]]
 kappa = "f7c4a8930763b5ff7bd44675b7cf0c9dafee53ce92f6d577a305c2ed8cefbb28"
 record = "Users::tasks#6"
 axis = "meant"
+
+[[closed]]
+kappa = "ce8d73783f1bf36c869d4034b9344697c963f3a47b901d11f6ed8ea41c38f1cf"
+record = "Users::tasks#7"
+axis = "derived"
 
 [[closed]]
 kappa = "c6b717d6f75a4efe0194c0f6ffe0b18317c74920a27dfaae3d147db8c0ee8b97"
@@ -785,9 +1115,19 @@ record = "Users::tasks#7"
 axis = "meant"
 
 [[closed]]
+kappa = "993c6ab3a82e4097f8ccf1ea946157ab57e26ea7b296728394d5c4c7582cc399"
+record = "Users::tasks#8"
+axis = "derived"
+
+[[closed]]
 kappa = "1ce27617eefddd6e10247c8a9243843adfcf03972a782122e947446e169550a6"
 record = "Users::tasks#8"
 axis = "meant"
+
+[[closed]]
+kappa = "007c6e8bc117c1bb626cabdd5a93deab71fa1218a1074c5e1bbeabd66df20c12"
+record = "Users::tasks#9"
+axis = "derived"
 
 [[closed]]
 kappa = "702de6b355b407a5dde32342a523274fa1573afe3585c80121cc24de5f87b61c"
@@ -891,22 +1231,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ec23a2f6ca5ea9eea70f4444f6596505aa8187bdb4627b46edf4808efd97d9dd"
-record = "Architecture::concernAccessibility"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "9a633eab0bd1e6c2241b9d4498429d3a4f4f43657616f9c0bc3b4278e18883e5"
 record = "Architecture::concernAccessibility"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "b39da50b3205938bbb82dcf51707db7de94f6ca6a358a73ba3a25d66b78de0ba"
-record = "Architecture::concernAccuracy"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "7746ea1b26b5af0a763a9b3e99f59750f4254381a5c7a671cf54b44a779db366"
@@ -915,22 +1243,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "34f7006ed25054c618aee65a0d14a3b60bdbe88c59e87d8d61d6b19aeab0b043"
-record = "Architecture::concernCoverage"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "6521ac58e69ae7906cd09cc81a22a0c4991340d19ac8533f8374d7c337b19b2a"
 record = "Architecture::concernCoverage"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "ecad8f49dff174d00cfcf0849639db7d112fd8d2477a2bc57f3d562608b73831"
-record = "Architecture::concernFindability"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "03960ee0b2f04cc10e9ee75a64cf7e5cc412927b4576308d3532e24ff173de91"
@@ -939,22 +1255,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "5b11d18cd64ed8a7ca6a1ff8327f4db5226a68b86754db7cf8560e70b95f9367"
-record = "Architecture::concernFreshness"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "b578dd3a556bdc66dc3a9c650222c1454a7ce7403b60452da4d03ab6c51c040b"
 record = "Architecture::concernFreshness"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "09d484a025a4bf32bcdc75765cb3fa7e52d72e8bc0a11fdc659c1d8549bbec2b"
-record = "Architecture::concernIntegrity"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "11d2bc01afcddbfbc18e2bb85510db2f9dc927d02a0f7701229ff3920326c65c"
@@ -1071,22 +1375,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6adfda958540d9300ac3646ce49345567cde82dc33725b05fc7cbee2e7d7e1fc"
-record = "Architecture::stakeholderDevRelAuthor"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "16da0b03213d155a1ff4b479b169ceec6136dd387d365101230d93771e437eca"
 record = "Architecture::stakeholderDevRelAuthor"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "f1ad837c186bb6eee4dad2ed45a08f7c9416f3982b85fd2f3c2534596b668800"
-record = "Architecture::stakeholderMaintainer"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "bf8662338911d1655ecc4011074c37adb76032133051ca627d1e14fe12cf0ef1"
@@ -1095,34 +1387,16 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "2b243d3a0d7b61e2ed9a80a6854284f37327449c065bdc46200d15f5cc91b089"
-record = "Architecture::stakeholderPrismModeler"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "bf52a2da5cb10a802d727bd4702d249eecfb6759a11d20e67c645cad364cfeae"
 record = "Architecture::stakeholderPrismModeler"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e87179957a0971cbe69b34df512cc20ca5603001a2a3ea5e9ced7ec54142f5ec"
-record = "Architecture::stakeholderRustNewcomer"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "f7cef11393545821681a7ecaecc23ab3405ea8eafdb02d5a96fadc3e1fc6939f"
 record = "Architecture::stakeholderRustNewcomer"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "4676ed989e79c1723474e51c193a152ee084341a087a20955154f7ba64285eb8"
-record = "Architecture::stakeholderSecurityReviewer"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "7af410aa9e4fc9ec405e698be50bf4470e50241fb6ee40b77c264820f2b7eac1"
@@ -1338,97 +1612,97 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "61062a14e42a78bc5059956706ab343f3f684b0385d6bc6045e287a146d781bb"
 record = "Brand::elements#10"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"public/favicon.png\" verbatim"
+reason = "derived from sources that do not hold its text \"public/favicon.png\" verbatim"
 
 [[residue]]
 kappa = "dffefe8d2a9aa3dbd441dd41790abcbc8ca2b86bea6617aedb82362e2184a606"
 record = "Brand::elements#11"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"fd-bg #0a0a0a, fd-panel #121212, fd-fg #fafafa, fd-dim #999999, fd-line #333333, fd-line-strong #616161, fd-accent #fafafa\" verbatim"
+reason = "derived from sources that do not hold its text \"fd-bg #0a0a0a, fd-panel #121212, fd-fg #fafafa, fd-dim #999999, fd-line #333333, fd-line-strong #616161, fd-accent #fafafa\" verbatim"
 
 [[residue]]
 kappa = "cfc1ae6b73749c3e8248a20e3b595348a595482d4e4f57313e2920133fcbec31"
 record = "Brand::elements#12"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"Space Grotesk, system-ui, sans-serif; JetBrains Mono, ui-monospace, monospace\" verbatim"
+reason = "derived from sources that do not hold its text \"Space Grotesk, system-ui, sans-serif; JetBrains Mono, ui-monospace, monospace\" verbatim"
 
 [[residue]]
 kappa = "57aade71c786b80788170284cb072c1519796b57933e6bc5b762829e1e31d2f8"
 record = "Brand::elements#5"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"Open by default\" verbatim"
+reason = "derived from sources that do not hold its text \"Open by default\" verbatim"
 
 [[residue]]
 kappa = "56f7e02f30d211a2016402ed5bbf59614d675b810165120be838b909e7e64285"
 record = "Brand::elements#6"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"Identity from content\" verbatim"
+reason = "derived from sources that do not hold its text \"Identity from content\" verbatim"
 
 [[residue]]
 kappa = "3a752dced79f7ee53a880520fd62e85a44906584f6bd850c35b20473bb31fc7d"
 record = "Brand::elements#7"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"No central authority\" verbatim"
+reason = "derived from sources that do not hold its text \"No central authority\" verbatim"
 
 [[residue]]
 kappa = "53d1c5ec6814fa9aea09aaf1bee3a73c45c8464e1beac6a94020c0d4029f437e"
 record = "Brand::tokens#11"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"#0a0a0a\" verbatim"
+reason = "derived from sources that do not hold its text \"#0a0a0a\" verbatim"
 
 [[residue]]
 kappa = "f5a17f22823abf259e5b5450ac54a95daa19972364b80018cd55017dcd03e7cd"
 record = "Brand::tokens#12"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"#121212\" verbatim"
+reason = "derived from sources that do not hold its text \"#121212\" verbatim"
 
 [[residue]]
 kappa = "85a2753d1cfaac245e17641c6b63c64e7b699eefaeb64c15a0c81f129abbea5f"
 record = "Brand::tokens#13"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"#fafafa\" verbatim"
+reason = "derived from sources that do not hold its text \"#fafafa\" verbatim"
 
 [[residue]]
 kappa = "fd7520bcfb84eac0fe30a70cb3d0df334df7deb92be458a594b93f1b86516524"
 record = "Brand::tokens#14"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"#999999\" verbatim"
+reason = "derived from sources that do not hold its text \"#999999\" verbatim"
 
 [[residue]]
 kappa = "5be51b0ee802fd0496f8b601814e04163e2f0032ce8c0cc3f7ba593f9ca773a9"
 record = "Brand::tokens#15"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"#333333\" verbatim"
+reason = "derived from sources that do not hold its text \"#333333\" verbatim"
 
 [[residue]]
 kappa = "0ecba25a926d067085a1fc69dd78687e99e08aced15c52f828624b51c2c3691f"
 record = "Brand::tokens#16"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"#616161\" verbatim"
+reason = "derived from sources that do not hold its text \"#616161\" verbatim"
 
 [[residue]]
 kappa = "0154d4ee44753762d4e0adaf6b50a99bf51e19561bd9aecb995515ef205f7ce6"
 record = "Brand::tokens#17"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"#fafafa\" verbatim"
+reason = "derived from sources that do not hold its text \"#fafafa\" verbatim"
 
 [[residue]]
 kappa = "e542b1365305f97286e92391cecc9381944e2e766bc492250511d92442d49b33"
 record = "Brand::tokens#20"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"100deg, #fb5661 0, #fa792e 0.07, #f9cf24 0.14, #f6e41e 0.19, #25d05e 0.25, #20d0f3 0.31, #4f81f8 0.38, #ae6ff6 0.45, #f368c5 0.48, #fb5661 0.5, #fa792e 0.57, #f9cf24 0.64, #f6e41e 0.69, #25d05e 0.75, #20d0f3 0.81, #4f81f8 0.88, #ae6ff6 0.95, #f368c5 0.98, #fb5661 1\" verbatim"
+reason = "derived from sources that do not hold its text \"100deg, #fb5661 0, #fa792e 0.07, #f9cf24 0.14, #f6e41e 0.19, #25d05e 0.25, #20d0f3 0.31, #4f81f8 0.38, #ae6ff6 0.45, #f368c5 0.48, #fb5661 0.5, #fa792e 0.57, #f9cf24 0.64, #f6e41e 0.69, #25d05e 0.75, #20d0f3 0.81, #4f81f8 0.88, #ae6ff6 0.95, #f368c5 0.98, #fb5661 1\" verbatim"
 
 [[residue]]
 kappa = "fecea31ff9fef82c6ca92e89825f01abb063ae4ff52c3c50e8438bb1f4ee0999"
 record = "Brand::tokens#28"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"Space Grotesk, system-ui, sans-serif\" verbatim"
+reason = "derived from sources that do not hold its text \"Space Grotesk, system-ui, sans-serif\" verbatim"
 
 [[residue]]
 kappa = "73f056518785c8d09019e4f1f480eafcbad7b2e7d03cb2d7fe4ca576e452a833"
 record = "Brand::tokens#29"
 axis = "derived"
-reason = "derived from spans that do not hold its text \"JetBrains Mono, ui-monospace, monospace\" verbatim"
+reason = "derived from sources that do not hold its text \"JetBrains Mono, ui-monospace, monospace\" verbatim"
 
 [[residue]]
 kappa = "7972dc187b93c49e412c1b2bb86e5f39744dd741d219ba9372d2a1c69f9fa4c2"
@@ -5859,22 +6133,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "bbaf55dab65c8fb82e664a72686ca722454c6f4465f39f78fd7c39dc5588efc0"
-record = "Catalog::recordsPart1#18"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "e331cfabf0905d1b855dd6a44994ae3d9414fa8b8348a88221c9a87aa9af8861"
 record = "Catalog::recordsPart1#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "b54557fa2c5e889727f6a60158ed923cbf56ebc4947ceeb47057e9e8b1f63932"
-record = "Catalog::recordsPart1#19"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "8d2121732dab996c8ca7bcbf9c2d5473691fef3accb4783c189b8c9784592267"
@@ -5895,12 +6157,6 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "1170e62e01736eb02a01a0a3009b031004d41494c2c50b32c82395b52662deca"
-record = "Catalog::recordsPart1#20"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "f1f84962a2b80092e141fd4e604bf3182f230c9c1a9275f305b7c0487e0f76e3"
 record = "Catalog::recordsPart1#20"
 axis = "meant"
@@ -5919,12 +6175,6 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b99704e6fa0ba8750043f5712c9c5c5930f1552dc1062d52dd36c73c80eb6622"
-record = "Catalog::recordsPart1#22"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "08ab17eb13ce2e1fad30fc27959a6695d9a45b7acf493409d930e752b0370433"
 record = "Catalog::recordsPart1#22"
 axis = "meant"
@@ -5934,7 +6184,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "f126bb13b316c4a576ec6e5bf0819ebf23cbdbc43c15a9ec37b2cb96ea6b30e3"
 record = "Catalog::recordsPart1#23"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::standardIso42010"
 
 [[residue]]
 kappa = "dc6a6d88f3b1e10b1c130d66a13c5965b5adc784fe6ab0154a2693fe460ec954"
@@ -6966,7 +7216,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "b6b2ed4fad01b1d93e171a8eca8175abeec4e9ff2681961a6648ab2d5645de35"
 record = "Catalog::recordsPart13#14"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Users::authority"
 
 [[residue]]
 kappa = "c90207d95c471357ab82e7e67655c1efb42f9732c518324550cfc278636aad98"
@@ -7206,7 +7456,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "360ec0c8a1049a5dfec73a0bb5520efc09c5ae12383a60d79160a8e32279c984"
 record = "Catalog::recordsPart2#15"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Brand::authority"
 
 [[residue]]
 kappa = "9429df1252a7bb303001cab022c4512f3b56831bd6b1a8187afa7aac606ea922"
@@ -8070,7 +8320,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "91bc0960944ca5e62907ee6e2fa72377f7e639673a90d7c075bf2df3cd7cb577"
 record = "Catalog::recordsPart5#15"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents"
 
 [[residue]]
 kappa = "5df89a749ebe5660a4213549235af654bec36aa19843b31fe064d528613ad8bb"
@@ -8382,7 +8632,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "de920e53da8775d19e1cb0a6341bf0435e39a8490408cbaac013e3a77e2ee8c1"
 record = "Catalog::recordsPart6#17"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Quality::characteristicFunctionalSuitability"
 
 [[residue]]
 kappa = "11ea395680f93a5a8b0a7f24e7f660492ea395aa0433cdec5602546146c0b994"
@@ -8394,7 +8644,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "36df3cbd1028be35f36a9a5d75ca4d329ea0cc628eaca8c5b7a8e8ca3846e662"
 record = "Catalog::recordsPart6#18"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Quality::characteristicMaintainability"
 
 [[residue]]
 kappa = "68e0e66b8a50a327ee6ebabeaf2b2f68b17d9961022ad340cc8d95c9e5968313"
@@ -8406,7 +8656,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "f444c963e59ae67f5a166d5cc75b5e126c4d3cd5cf00c88ea31f130c959ffe53"
 record = "Catalog::recordsPart6#19"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Quality::characteristicPerformanceEfficiency"
 
 [[residue]]
 kappa = "b1ab53228e866c1fe15534139b4f5fe8fb13c9b0ad3963388ace19c6ab33b6f6"
@@ -8545,12 +8795,6 @@ kappa = "a5a00c908d3164ab3973fc31e3642e6751820a469d9dcc53265d964e3c3b6526"
 record = "Catalog::recordsPart6#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "e6508917f13b9978f9a361d817585b4630d1615700b17073c783ddaaed2788ab"
-record = "Catalog::recordsPart6#9"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "ed7be88f66e84222fbf4b3c1a5287f55518c5623df92b94054bf310a1d25cedb"
@@ -8886,7 +9130,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "ad44a2bd280911db8807ea89ca86fa025c205017963a8bcae1927ab2cc0f9345"
 record = "Catalog::recordsPart8#11"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Quality::subcharacteristicModifiability"
 
 [[residue]]
 kappa = "8da85226d71341fbb3ac6603a0b86885bc03e0f64a948c8bf1f5f529ab8cf559"
@@ -8910,7 +9154,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "b2bc9c39b41b14edd017c420e366bf5bb2562ecae49ea135e5b54fda95645b4c"
 record = "Catalog::recordsPart8#13"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Quality::subcharacteristicTimeBehaviour"
 
 [[residue]]
 kappa = "bbadc5fe62d80c515c696ab8a9f954ae442228a79b263485af18a8ada36538d7"
@@ -9102,7 +9346,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "208e7c126f592a83d1141572f532e8a05213f243cbb75a8bc7565cb311f11044"
 record = "Catalog::recordsPart8#7"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Quality::subcharacteristicFunctionalCompleteness"
 
 [[residue]]
 kappa = "f357ea262875e855ef971fd8f78a44dd61f41b4e5ba4c44264e74e5cd78c80d2"
@@ -9114,7 +9358,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "2a77dc686936f97e4dce4ebe4f6586f3d8a9af8942884f61604a9a8339c87016"
 record = "Catalog::recordsPart8#8"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Quality::subcharacteristicFunctionalCorrectness"
 
 [[residue]]
 kappa = "198d29f80631e6f3dd281d41aefeff3da2a802f655fbf49186d3e398c73a3d79"
@@ -9834,7 +10078,7 @@ reason = "no derivation names it (prov:wasDerivedFrom)"
 kappa = "d2efae3a7891e2780b2bad60846c84757ac6af1a982c536295f6b5ee63bfbc9e"
 record = "Design::opmAssign"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Design::processAssignCovers"
 
 [[residue]]
 kappa = "7d4e66828af1982351f5d297f55f0943bcbc84dfa22002a7af78a6fe170e81c7"
@@ -9846,7 +10090,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "31829ed2f86c2471455f2a923f5428776ae5f34c85d29b4b13227da9aa596aab"
 record = "Design::opmAssignInvokesRender"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Design::processAssignCovers, Design::processRenderPages"
 
 [[residue]]
 kappa = "8354a612e4207e260a4b6fff3ecfb4eba44f42458cfc1d29c0f7bca51b0b88a8"
@@ -9858,7 +10102,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "f99295645f6bf03fdf302c51b21bc883996fbb80cac38551ac283b2d052e7779"
 record = "Design::opmGenerate"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Design::processGenerate"
 
 [[residue]]
 kappa = "b3729757d6c8e48cb5417d8a3049a2e2d5197bd29c02ddbbc7c047b92eaaf2b4"
@@ -9870,7 +10114,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "9669f3cee2d06590718ba029dade5ae74cbc848d41f54137504379bace2820b9"
 record = "Design::opmGenerator"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Architecture::componentCatalogGenerator"
 
 [[residue]]
 kappa = "a1d64af26ecd0adc7e2df36a74e821b5e08bb8cf692c0e9a7ad63cf322861781"
@@ -9882,7 +10126,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "0a12068f14f4bd556feb97509d67f44a22150c79897ab1db082a6821344c8958"
 record = "Design::opmGeneratorAgent"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Architecture::componentCatalogGenerator, Design::processGenerate"
 
 [[residue]]
 kappa = "d226a9c6137e3857d79fdfde37720a4ac7c9fb2032d99ef59beb61e756fcf012"
@@ -9894,7 +10138,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "ab69830a21fba62cab17a4bc4907b02fd382d556aafe759bb037d416c4fcfb61"
 record = "Design::opmRead"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Design::processReadFacets"
 
 [[residue]]
 kappa = "2f9f932a5f690726854cb2f4c6b70e5c3cfcca8e31ce03df697556fd16d142f2"
@@ -9906,7 +10150,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "55973b8d33294ad606fb8fdac160a411da5a792dd6330bc1654192b49ad0f5d4"
 record = "Design::opmReadInvokesAssign"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Design::processReadFacets, Design::processAssignCovers"
 
 [[residue]]
 kappa = "3072247a6cfb24bd34bf5ef0e366c5ebde9b864d35bc638c004b786480dcc7f7"
@@ -9918,7 +10162,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "115ff4defa4019ff3ec28e938b74dde03cfdc5a4deba4d59b8d90f62d2a7b5f4"
 record = "Design::opmRender"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Design::processRenderPages"
 
 [[residue]]
 kappa = "95c393526b844d77dd83233df2066b9ddafc3200f30fce7aaa44d8bdf23dd973"
@@ -9930,7 +10174,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "7caf63a22cb94a2b4e308427babbd87d3da089964ffa663d400abaac5845da5b"
 record = "Design::opmRenderAffectsSite"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Architecture::componentCatalogSite, Design::processRenderPages"
 
 [[residue]]
 kappa = "72bb7cf2dde4eda9b3eee64c14849b2ff897b13c2c0b68cbc69a8e3aefec4e7e"
@@ -9942,7 +10186,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "5ac271c3eaabf0ca06871a1132de197f4958909ffca266b84e190271c43b5c43"
 record = "Design::opmSite"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Architecture::componentCatalogSite"
 
 [[residue]]
 kappa = "04ee23c772dca8b1c0092e9702fd5bf4768467101ff65ad305271eb033a3bd85"
@@ -9954,7 +10198,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "f62df6a3ee73ab8994206e32894d39b04ca6f7ea495c27c1ae1a83aec6e2a14e"
 record = "Design::opmSiteCurrent"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Architecture::componentCatalogSite, Design::stateCatalogCurrent"
 
 [[residue]]
 kappa = "8bb46bdc09b80ba582dc4157d3ccd702b9f114fb6236b8593578bae33d1b54f8"
@@ -9966,7 +10210,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "12af0f41ab98207fee010df7e6e8f1b51862fce42af99bc4bf857316aff93db8"
 record = "Design::opmSiteStale"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Architecture::componentCatalogSite, Design::stateCatalogStale"
 
 [[residue]]
 kappa = "863d3dcb596b782ee8a270688a8f81728b3ff50eca94851de237ab61bbda90bd"
@@ -9978,7 +10222,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "2f9c674177c237d0706f83dd99a4ee87dac9774c875ca721b5ad18c2ca2a374e"
 record = "Design::opmSubject"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Architecture::componentSubjectRepository"
 
 [[residue]]
 kappa = "7920a07ad772893c698b829a146331d8535c0649b6c2b555807efa2e924d5e8a"
@@ -9990,7 +10234,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "9116e515f866a9acc7649edd8c76e2df182565a41fa6f12c59fa7e2c465f49e8"
 record = "Design::opmSubjectInstrument"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Architecture::componentSubjectRepository, Design::processReadFacets"
 
 [[residue]]
 kappa = "3329c5cfdf5b93517d0f8ea1897bfca997d403115811db698d575536d819e2de"
@@ -10002,7 +10246,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "d5cf65aa5a7448467e3de31593bc3bad0325f6aa0c66fb9798846d3d61e38f5d"
 record = "Design::opmZoomAssign"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Design::processGenerate, Design::processAssignCovers"
 
 [[residue]]
 kappa = "6697331ff7f4a7d9a1a51c45ee6aec02fed9abfe2f9393bbedf7bfceb7abcf4e"
@@ -10014,7 +10258,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "94fbd503c536886e52305aa966f5732a8aa056fc59a273a622e4ed5bba6657e1"
 record = "Design::opmZoomRead"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Design::processGenerate, Design::processReadFacets"
 
 [[residue]]
 kappa = "253e81122ff579e112f30534a77be1bf0243b37546e75c3748eaea5e007f6ab1"
@@ -10026,7 +10270,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "974cbc718239d8453a6912e484247e9023ce285387888e490b2455e67abc0629"
 record = "Design::opmZoomRender"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewOpmGenerate, Design::processGenerate, Design::processRenderPages"
 
 [[residue]]
 kappa = "6a3badfdd409d24ba50da68abf0274a64c9cc027490e02fd6eb4e4d6a3775269"
@@ -10038,7 +10282,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "a39c0d429e98eb34d97b1f0e61a41cf50c6ab069d493d625f97f8917d4daec6f"
 record = "Design::processAnswerLookup"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentLookupGuest"
 
 [[residue]]
 kappa = "3ad7fd85b21548c7f47c2fd4ca1b1c940a6906d9f0e4d0ed9fd406934d1677ad"
@@ -10050,7 +10294,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "796f9bceef142da318be8071ad34b9865ab0fa1e8e270e72691ec4dd97aca63f"
 record = "Design::processAssignCovers"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentCatalogGenerator"
 
 [[residue]]
 kappa = "f5871b51c19a4e2cf0a2d9ebee32595a7a4bbf79b6818323a30e233f4866465f"
@@ -10062,7 +10306,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "acf6d561dffe6842e89f318b334eab074e9703a1fc97e568d58d8d5bf4fb128c"
 record = "Design::processGenerate"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentCatalogGenerator"
 
 [[residue]]
 kappa = "7009a4ccac209caefc676352a97be244056f4e7aa56b55a476572f868bedc9f5"
@@ -10074,7 +10318,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "7dc389fe51baaa074d4a6198d462d60d0e41ba7ba593e9c877aabeea9be9affa"
 record = "Design::processParseRequest"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentLookupGuest"
 
 [[residue]]
 kappa = "fa6ef6a4c878ddba14afcd201f23680cda76396f7356b3f9f26da77f93b82077"
@@ -10086,7 +10330,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "f4e441206ab05a2ec9a24b6705aad8d6ad527e5c671365a0d8f5741eb9d6d042"
 record = "Design::processReadFacets"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentCatalogGenerator"
 
 [[residue]]
 kappa = "bb741fe21e860103f2fb9b725eac62d5728ee74e32a8c1d71cce81a0d3709f85"
@@ -10098,7 +10342,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "75af2685d5e9eea4b98b6bf5ba7f9657982050a55d0b8e44bcbdc638f79d2e5b"
 record = "Design::processRenderPages"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentCatalogGenerator"
 
 [[residue]]
 kappa = "fb2c537c0160f7c28087b7d56532143b6d081d08bcc5ecd25ab81924285f321b"
@@ -10110,7 +10354,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "a8df493eff4a2e66eaa66a44a08b0ff047b5057fabaa809c0031e3c77e579cef"
 record = "Design::processRequestLookup"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentBrowser"
 
 [[residue]]
 kappa = "5fecc1b7803abee2ef2e954cb4f48390c9b4f98773b34aba480d1ad5f0877f5f"
@@ -10122,7 +10366,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "39801eb9943652f79ade4bcb8f884c4ab4829d999a81a7fd1e928f4cfa71a6a3"
 record = "Design::seqBrowser"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlLookup, Architecture::componentBrowser"
 
 [[residue]]
 kappa = "7320cb660c5b2e6d693b52f730fcebe29f4bfbbf16e8f117ba13cc8f439e14be"
@@ -10134,7 +10378,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "2c865ae2ac0434d226cf67ddde1607c698e8d1cf5a77a4a8ce06f94a888434a8"
 record = "Design::seqLookupGuest"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlLookup, Architecture::componentLookupGuest"
 
 [[residue]]
 kappa = "5622227384e92d919d0c2a7040d7d7a87b3601eef6655374f966221d0b68ca8d"
@@ -10146,7 +10390,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "f86bebdae6ecb110742a3412e73068e1ada0037e51c2f8021593225d07d391d7"
 record = "Design::seqReply"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlLookup, Architecture::componentLookupGuest, Architecture::componentBrowser, Design::processAnswerLookup"
 
 [[residue]]
 kappa = "da453ded76977915e0bb37ebfb65f664aaba133ae20b593c7cab37e99033b72a"
@@ -10158,7 +10402,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "daaa41c33abf1c30dc7ee35ad061d601200fbe98bc83998acaf2660a46207b43"
 record = "Design::seqRequest"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlLookup, Architecture::componentBrowser, Architecture::componentLookupGuest, Design::processAnswerLookup"
 
 [[residue]]
 kappa = "deb2d7ca92cd9c3cd5966b58f6864c5f42d35aad44c49f53b5d3ea880276cf4b"
@@ -10170,7 +10414,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "316dcf1365b0bd9110acdce00b1ee86f967a9cfaa42fc5cc520cb6cbd62b0478"
 record = "Design::stAnswering"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlGuestStates, Design::stateGuestAnswering"
 
 [[residue]]
 kappa = "9b3e6d0680f500fae2cb0e6ae0e4f3523b8a14c80db24dbcb5d4a8a4e902f48a"
@@ -10182,7 +10426,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "b90c639b369d79a22fed3ae57fb9b2c3bc51761a195e24bd44a8f757347e9390"
 record = "Design::stIdle"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlGuestStates, Design::stateGuestIdle"
 
 [[residue]]
 kappa = "99e52b7c8f42e0e4770ca1433c6649d1f1b36a6e7cd8037f17cc6d2d220069cd"
@@ -10194,7 +10438,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "1768d4be6d460634ffe63bbea9fdef1f20c194696fdba95f78d199fa89777b2c"
 record = "Design::stateCatalogCurrent"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentCatalogSite"
 
 [[residue]]
 kappa = "1b7b2d8fdb1c7ed6a849c97be322f5a074085ecf69e0d2bfe48aeef310a09045"
@@ -10206,7 +10450,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "7459110caaf9ef0f9a6088379d1ca63f64237923c42aff02a9e6a1df4408d430"
 record = "Design::stateCatalogStale"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentCatalogSite"
 
 [[residue]]
 kappa = "8a44574b5b0be947cc45b3b60a533ac859b1cd43f35f3f2ad2ae4bde0956028c"
@@ -10218,7 +10462,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "9760fa14e01e93cc13fc52b4c03bafb08966bf1be7c245973ad4f3bbb953104e"
 record = "Design::stateGuestAnswering"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentLookupGuest"
 
 [[residue]]
 kappa = "f31b501dc7ea8e5771b32b79d8183a11dea6ad06aa9b4fb5c6082df537f4807f"
@@ -10230,7 +10474,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "2afa73fb0cfabdce9f8b6e4d88fe221c5717c0c5a7eca73ba4cb3b17694dc5e8"
 record = "Design::stateGuestIdle"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentLookupGuest"
 
 [[residue]]
 kappa = "531778ea59343fed858c4bcf0e0d43346c8ffc3a4e8ed040dccdc0a8a4d1e289"
@@ -10242,7 +10486,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "5e61321b1331f127b975470346d20d5b268a7252d304f97edc86dbb5f9a9b2fa"
 record = "Design::trAnswer"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlGuestStates, Design::stateGuestAnswering, Design::stateGuestIdle, Design::processAnswerLookup"
 
 [[residue]]
 kappa = "fe6559cb1438bf902670928463f632ba4f6f5d3185149b6d3dc43848535f5859"
@@ -10254,7 +10498,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "c2aa9ea58f6d0931d6ccba62ecee04545a52989fe5cb111a587af07155f96447"
 record = "Design::trRequest"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlGuestStates, Design::stateGuestIdle, Design::stateGuestAnswering, Design::processParseRequest"
 
 [[residue]]
 kappa = "92e03662403e7d71df8b13dcb7294248841e034c72918900ed3c3268bf8bf899"
@@ -10266,7 +10510,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "032fedf2b656e772e454e7e0b2c6a323f22dcbc580f4a846cccbc768be7af403"
 record = "Design::umlBrowser"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::componentBrowser"
 
 [[residue]]
 kappa = "86de32c99c4fe2c49af099afd06c09507611dc230421dc2112d52c7a761e5a14"
@@ -10278,7 +10522,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "4bb68250a32f8aa97eba9cecfaa8931fd10e188b44d3e2d027cde81464d5461c"
 record = "Design::umlBrowserToGuest"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::edgeBrowserToGuest"
 
 [[residue]]
 kappa = "9aeec56732a4ba066f51a9d21629b5b9cbce810911848ab196e9670c7774f74c"
@@ -10290,7 +10534,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "49e9becc53588ff4f48831839e3c07cc7bea03079d898e8d42f7d8eb1b5d97e6"
 record = "Design::umlCatalogGenerator"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::componentCatalogGenerator"
 
 [[residue]]
 kappa = "e35b45858a32d9a257b828e7db2704b8d15c0e803194f57232990b360f1ad7a5"
@@ -10302,7 +10546,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "deeccbf8e718d89d6157baf0267d78dcd6f7b1528c622643c6a51a293b87a92a"
 record = "Design::umlCatalogSite"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::componentCatalogSite"
 
 [[residue]]
 kappa = "df1a3cc1f05b9f2ef9876db073b09a08220b5f08e359aec3c65bb4bf1a697a9b"
@@ -10314,7 +10558,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "20cdd915c5d8afb012b69c35a052cfb6130df5b0396aadb593746017e1079716"
 record = "Design::umlGeneratorToGuest"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::edgeGeneratorToGuest"
 
 [[residue]]
 kappa = "ff676183008e1eca37ef55dbb42ff1ca38902fecacbda576f7f3e8f317d6903d"
@@ -10326,7 +10570,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "ae40cda8aed3fb83778ed0ff1a9283321b9947051116bf44947173d3f1367a56"
 record = "Design::umlGeneratorToSite"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::edgeGeneratorToSite"
 
 [[residue]]
 kappa = "5e813e051251817591b92140df59ff6f0e4883e49688bccc6b40f25237a084e7"
@@ -10338,7 +10582,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "54cbc39cb5169f36fcb962d6405d3271b98276ea555a8829261b6aaa93881556"
 record = "Design::umlGuestToBrowser"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::edgeGuestToBrowser"
 
 [[residue]]
 kappa = "7c4986e923fca858f343571ec281d773612cf69929ad93a7c526a585ce307286"
@@ -10350,7 +10594,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "91f33fc637bc1a8564dbb4827b9f262a12eaf780007b7b6de4046cc7f1a02a9c"
 record = "Design::umlLookupGuest"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::componentLookupGuest"
 
 [[residue]]
 kappa = "7fac553416d50daea135bc91efb6ff483017486a3eda46877bbed2c4d00501b6"
@@ -10362,7 +10606,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "9400a6150c3b014821b69f3eea4713a22357841e155e01b601ca00c9b1d14acd"
 record = "Design::umlPagesTarget"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::componentPagesTarget"
 
 [[residue]]
 kappa = "11f64b36481cfa56b2479e908c6e443e835d222cc272955da42e6156a9168c79"
@@ -10374,7 +10618,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "919a7bd163e5a4f299c2e4bf17f4aed4e98e26417ee732ca13bd1b76e32df036"
 record = "Design::umlPagesToBrowser"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::edgePagesToBrowser"
 
 [[residue]]
 kappa = "f8a659a27d87520718db9fdba7c441b3d76d26ea9a7aab4f972292fc70caada3"
@@ -10386,7 +10630,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "e6149d4d5a1af2020a1396eab12afb449a16cc9f2e46e850cdbf420c4d594807"
 record = "Design::umlSiteToPages"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::edgeSiteToPages"
 
 [[residue]]
 kappa = "63ccb3a4aa1f70545427ffca6aedddc3aab4b76fa3edf95a410fdb89c86cb0a5"
@@ -10398,7 +10642,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "9e765a95d46c1826991e52cf2726bd4efc90f96abb330df3ccdd0b34d4ba2532"
 record = "Design::umlSubjectRepository"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::componentSubjectRepository"
 
 [[residue]]
 kappa = "f149413dc264dcb67e7384b17dc4b988cb8a4afca03fba687e229bfce2bc9673"
@@ -10410,7 +10654,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "a29275bd877620be4223fbdedf0a5803347996ea040c567d0b682846cc9b895c"
 record = "Design::umlSubjectToGenerator"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Design::viewUmlComponents, Architecture::edgeSubjectToGenerator"
 
 [[residue]]
 kappa = "9cf5b72b45261029ce3cdcf162f3e8f23c3d466d68b5910c0a64552d8a917753"
@@ -10479,22 +10723,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6da8c44a69c63145a4b1eee1f3d0e15f75eee72df9ad52723c4da39a12f396fb"
-record = "Features::featureAgents"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "0998f252d3533aabbbd7607aaa97343a0793da79f8d21de3363847babcde6397"
 record = "Features::featureAgents"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "03b027c26fc0ed690cb39cc9dd86c5d1f6378e0513ea40a6924b0361486a626e"
-record = "Features::featureArchitecture"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "2bb4d8807685eae973e287ad6172f727e5c5fcd7841a5e7434b169efa5014673"
@@ -10503,22 +10735,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "1211a3de8788326a575527452d9c47b5f4b83aa10285c59dfada3c887a53f454"
-record = "Features::featureBehavior"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "4654d3add04c5e5673e95f335ff21deb8c96126eaf29cdb90d35517dca6bd313"
 record = "Features::featureBehavior"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "365e497a9602f1b8e6c798d58c68e06b40f3e88a8153aaf890d455589fa2fff4"
-record = "Features::featureCaseStudy"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "7ac82c07edb10098a646942f847242d3b8320b9fec0d92035664191110804998"
@@ -10527,22 +10747,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "aae86a3ad506a6e3e794db87cc6d8900be6621ab9a9eef950c88d3813085841f"
-record = "Features::featureCli"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "da473c4fcbcb5579f0b71f4897d08f79b89eb3b099e462bc573aa1f731408dd5"
 record = "Features::featureCli"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "fc47d4847cc2c4be18b1245d9c9ee5bf2f0eee7a51426c05d0962cd984994e80"
-record = "Features::featureDesign"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "96c5922893fdd5b68192e99cf8043ace78462209aa37a352dbaa42580e43b342"
@@ -10551,22 +10759,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "a704eb053b97535d7f393414b992dcc5d2a635395fca0f0c3ad04a652528d79e"
-record = "Features::featureExplorer"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "41d89f6abdb4d564b3994c2249c01726d7a739e22e006e2f266a5bfeea046560"
 record = "Features::featureExplorer"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "50029402767d4161a1360e61a217bdc7bf61a16d9b4010725218dd6b1bea8e30"
-record = "Features::featureExtensions"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "e78eb8266c885e62d62573471740c12be7280aac4e4981fa2a6805bc2b51c32b"
@@ -10575,22 +10771,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7e51b454dc16aea51b1892e25a37363ce2c20eff9218daf58486425ec3e5ca93"
-record = "Features::featureFeatures"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "ccfa4fed42e87f71be59bd2b5b5ea1f2de539a86c3d67c77047e78ae8fa90158"
 record = "Features::featureFeatures"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "c552bfec6b46811fd9b5937743b45467e327192fdd6b5af6b85f98101a70d665"
-record = "Features::featureGettingStarted"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "466b8a38b918fab48c8128b0f694a53e37e28942d53fd79570de8e0dfb6c63d5"
@@ -10599,22 +10783,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "fcb769e25090d03c40440267e9f08e66a6e47f3b2cf7f9d563130a7abd71fa04"
-record = "Features::featureLookup"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "76a60d926e5fb8822e7bfdb4018a74c712c7cfb01960d61bc9cb7f9c26dcb71f"
 record = "Features::featureLookup"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "cff67b88be59b6e451ec8b8835f900298bd88a3f8e7e68fdbb137a89c374a8e2"
-record = "Features::featureQuality"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "4e464fe3238dc33a572de9f6f018b5aa1ef0a5b9024f2d3ed340ee9dcae25dfa"
@@ -10623,22 +10795,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "94aa161f9ce55109f6746392eec40e9b7a4ce992298b286fcab9126b5f087fd5"
-record = "Features::featureSecurity"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "27ada0a65350cc956d7c7883ee31c35640be591b7514958d25ba537a9b924bc8"
 record = "Features::featureSecurity"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "782c3ca898ee087cc115b52a3fabc9cab0b0ec63204c264a7d681b62ecfa98ca"
-record = "Features::featureSlides"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "3882cef476bcbf76e92e284fca4d4af5cfdc68500c35e5460e2896462ab03f2b"
@@ -10647,22 +10807,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "706ae271310eae2e1582feb905dad7fe038e69df5fb786ca63a2d56fd2d6199f"
-record = "Features::featureSystem"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "9d9c45cb5b43f839d81a6caf844bcce281c7a18518ef8422bd808ccac8c758f2"
 record = "Features::featureSystem"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "1829c1cda2b4e660d64daf1a93617c484bca5c3f26a3ee1d5b4a5086152b4f4f"
-record = "Features::journeyAuthor"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "a755a89d25d18e6e9144acb7df3a9e36a47b7f14964bfa24f09cdfabf4361c50"
@@ -10671,22 +10819,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d9cf7270fa8f3bd60cd297edadc98947f3e83be97d14e968abc67e313b84faba"
-record = "Features::journeyMaintainer"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "d145aab4958c52c478000f765454f1bd5f56f9d3a1868c5bfb979451c5ecc9c3"
 record = "Features::journeyMaintainer"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "709bada6b054c9b9b9ede77664a0c31787bb7eede72c48474278d506f35cdb4d"
-record = "Features::journeyModeler"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "988495799802033989e2c7e297ada0b78146c4f6ee589deccdff14a3a3dd8489"
@@ -10695,22 +10831,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d98b3b36f1e696d11d4709f05387b2d987634a50387393b62bdd8f41fabd5a80"
-record = "Features::journeyNewcomer"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "dedc2eebae908fd5700b154ad94e21c44e32ed0bc1c4b7128d542bde016c5dbd"
 record = "Features::journeyNewcomer"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "b953945fab68d4ee3cb0352533d186830b5c54a8aba6bb4e987a1c06d4a67ef7"
-record = "Features::journeyReviewer"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "20795355b9d53aadfffddbf4703fec45a479ec49f1adb5d7cf1ee42161e5bfa1"
@@ -11466,7 +11590,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "c8fa3424cc4aada9694850726034ec358c3d37630922ade04edd1d31417ea483"
 record = "Security::mappingAgentInstructionInjection"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Security::threatAgentInstructionInjection"
 
 [[residue]]
 kappa = "900581cc6d4cb7a75970200a9459d52340ff38248d547e7ba094f97da5df58c2"
@@ -11478,7 +11602,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "9c74800af354178f8a1da6c6c6c81c0c50bd295cd75a252ac80e50ac0a55ae9e"
 record = "Security::mappingFabricatedCoverage"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Security::threatFabricatedCoverage"
 
 [[residue]]
 kappa = "941f1290d33d810426704c98e667f748cfd12f0d8b6223eddbe41a4bf961daf0"
@@ -11490,7 +11614,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "6db6a1bfb82fcd3c16165f8186f22c5e29c55b4d33d03f5bc3b3f86892777da0"
 record = "Security::mappingLookupExhaustion"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Security::threatLookupExhaustion"
 
 [[residue]]
 kappa = "be1f77c05e47c05b62802b96e1235154ed0fa5820ad9ec37114ef0ea402c486a"
@@ -11502,7 +11626,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "b923d03537da758316dec9952d4e24aa3c78d058044f4d4d5a474b4dcade563a"
 record = "Security::mappingMarkupInjection"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Security::threatMarkupInjection"
 
 [[residue]]
 kappa = "ce604b1713a1eac5065d21e7f3de271bdbcfae485ef7e3970fadc754283f8805"
@@ -11514,7 +11638,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "0533be22a328ce9379649390272afa3c97e78b2ea049d35d873bcd50e61508af"
 record = "Security::mappingStaleCatalog"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Security::threatStaleCatalog"
 
 [[residue]]
 kappa = "4dd424dfde2cb7464c070205124ed4746f847e154f6b3fbed7cde2057d642f94"
@@ -11526,7 +11650,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "4e10bf034028715edc8c08ce697c6576b1def34ecf174ab33ce634f00713bef8"
 record = "Security::mappingSubjectSubstitution"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Security::threatSubjectSubstitution"
 
 [[residue]]
 kappa = "fe1dd16dfc37fcc0e2e7e7db7619a7b70d8b72527f8c68e6dbe0c014dee8118d"
@@ -11922,7 +12046,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "82db08ad241dc883f38f149b8613fb4d91a5f5fc468dc13bd1c6b14a293764b2"
 record = "Users::environments#0"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentCatalogGenerator"
 
 [[residue]]
 kappa = "a2458e3d295db7cc438db31dabcfb81f5a53c59cb64e30d7f4d1cb917593caf9"
@@ -11934,7 +12058,7 @@ reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 kappa = "6b4b0f71c868e9c8cb2ae925cff5a41fa0132bff3994cc23b533b46247f20824"
 record = "Users::environments#1"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from a record that is open on the derived axis: Architecture::componentCatalogSite"
 
 [[residue]]
 kappa = "02560ee59813cfa86f93ddc4e7295ddddf34e5f0688dfafc5bd5cf94f4076909"
@@ -11943,52 +12067,10 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7c6b31d5edd8ac97b665f440dbf75eaf4ccbb1f32079d23d0cd9cd9b291347d9"
-record = "Users::goals#0"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "bf06e707b37f6a7608bb53b71f4347a582f2357ff09dda25ea55b39f1199ea8a"
-record = "Users::goals#1"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8fd8f130dc4eed61546f9447fa97bfbf0c73a1a6aeaa570a75bc74bae2097b4b"
-record = "Users::goals#2"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8ff5868ff93dc7ac374380d172a676d6da8095a472557375de02482ba64d8d7b"
-record = "Users::goals#3"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "3502f6dab7e961f356a675b866a21a0b3699a3a58a7af2c68472b4df86a0d34e"
-record = "Users::goals#4"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "675980128a817860bb7068068b28883435b5c8a1092d9f2b62697ed724fb8692"
-record = "Users::groups#0"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "4586514804e82faa0af8cf258e8a60068f81e33f413ff71f0d3d958897709e04"
 record = "Users::groups#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "434dbc2a050c23e4c3a49416b1e66afaae467c77403376c64845cc1f475fc805"
-record = "Users::groups#1"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "ce373d942be151444dbe0d07bff40278eee822492d0ac2fa5adc9798841703d7"
@@ -11997,34 +12079,16 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "aa24dc79b553b674baa648368cbf8611e9c97f69429fb87dc415ee5ed99a8dd9"
-record = "Users::groups#2"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "ade9ee32255e0ca32e20131240b4f56da293f9a00159cc6a4643b8ff54976e99"
 record = "Users::groups#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "34ccf4068675a9603b53ff25a3a79bd312174b0453759714791e1862f066129c"
-record = "Users::groups#3"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "7cc202366a6c71ddf99c806a7c07db0b2614d37b99893e1dda060f9c7280e824"
 record = "Users::groups#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "b0973edeb2379390edd22fc0fda79f10e45d285b0ca4b65a90103effff8270a4"
-record = "Users::groups#4"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "f369ea6d53817b740af3673e3d88b1aec1ae1ff9842e42617ed91701cdf1704b"
@@ -12119,137 +12183,5 @@ reason = "no derivation names it (prov:wasDerivedFrom)"
 [[residue]]
 kappa = "a4f5eb2f17e8f85b35e97362290d8ed35453b7ff8e3692929d63e25e0d7f9f90"
 record = "Users::measures#9"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "faff6a37ba4f63c49bea7e42481d125c786a7ba834cf654519c4d948b66afb07"
-record = "Users::tasks#0"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8961149e85129314a8340c3eaa79d1e959d0901523048686a2b8feaddfa4be3e"
-record = "Users::tasks#1"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "fda95d8814821889dbd2e9172ead2e9c040f3edc52b63a60cf41173a0f5a54f3"
-record = "Users::tasks#10"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "18a836cdb11c0e52737bc807fc5017bf6fa48024de11bcfd96eb7561036b9a34"
-record = "Users::tasks#11"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "0755add7fd09f098fe8c1d931ae464cf4a75d3cab8e6db0a92c8c6ccde30eaa0"
-record = "Users::tasks#12"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "d512ce719e1328a139861413bb74520a1f5df8a7430cd91883707ad112fc88ae"
-record = "Users::tasks#13"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "d9b80d5bd12827b5b48387bc5311ddc519f02a87fe8ee02d662d34b9760462a3"
-record = "Users::tasks#14"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "30df1477ac3b0eca7435d322f631ead741176f3bdf8e9d1e15189753595d868a"
-record = "Users::tasks#15"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "b6febfd7b54487d64568a02e4099e7e47eee39a5488a1493edf3c61a1af65bf0"
-record = "Users::tasks#16"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "b4fa89d8518a9aec2134612741b54651dd93488413ea53de2789c74a9df16174"
-record = "Users::tasks#17"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "ce700f6430942920edc83feed7fc77105bcd446b69be57d99e60da2d2ec5b5cc"
-record = "Users::tasks#18"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "2883437ddbf3000a9707bc27f044b7dacaf58e4035d1415128be051f955e3797"
-record = "Users::tasks#19"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "fdcb1520f800076a754166affa027cf1e7383db134a270aa47fbc6eec91604c7"
-record = "Users::tasks#2"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8a17ce1a7f8c917d726589d13acba6cc170cc38a34db9fd7031948287fa9398f"
-record = "Users::tasks#20"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "1104253edc2d457b5ae515f65276b0a0247d99dbdb926a04f35014c949585691"
-record = "Users::tasks#21"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "b07a46077038379394596de538e7be619c5bbff1b36b94e42d5e45af7a36fdd2"
-record = "Users::tasks#3"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "511f603cae4216b602941b333c1c97422018e0193ded85d6bf28b4199712260b"
-record = "Users::tasks#4"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8ebcf118135eb0022dfcbc42b2e8cdbc09b49f36b7f166fb3e2fc909e3db7253"
-record = "Users::tasks#5"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "1d67d62cba7f00156dc58dc2d91ef19b9c7d1d15f347b37a4e65e4e1bde662be"
-record = "Users::tasks#6"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "ce8d73783f1bf36c869d4034b9344697c963f3a47b901d11f6ed8ea41c38f1cf"
-record = "Users::tasks#7"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "993c6ab3a82e4097f8ccf1ea946157ab57e26ea7b296728394d5c4c7582cc399"
-record = "Users::tasks#8"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "007c6e8bc117c1bb626cabdd5a93deab71fa1218a1074c5e1bbeabd66df20c12"
-record = "Users::tasks#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"

@@ -5,6 +5,7 @@
 # model.
 spec = "prism/provenance-sources/1"
 sources = [
+  "model/charter.md",
   "README.md",
   "Cargo.toml",
   "crates/devrel/Cargo.toml",
@@ -24,3 +25,11 @@ sources = [
   "brand/foundation/src/site/copy.ts",
   "site/app.json",
 ]
+
+# The author of a source, where the repository is not (W3C PROV-O
+# wasAttributedTo): the charter states the project's purpose in its author's
+# words, and every framework term is cited from its framework instead.
+[[author]]
+name = "Alex"
+kind = "person"
+attributed = ["model/charter.md"]

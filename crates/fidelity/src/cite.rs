@@ -11,6 +11,7 @@
 use std::fmt::Write as _;
 use std::path::Path;
 
+use devrel_catalog::lean::CHUNK;
 use devrel_catalog::lextex::quote;
 
 use crate::{score_ignoring, span_kappa, FidelityError, PROV};
@@ -45,6 +46,62 @@ pub fn sources(repo: &Path, list: &str) -> Result<Vec<String>, FidelityError> {
         }
     }
     out.dedup();
+    Ok(out)
+}
+
+/// An agent a project names as the author of some of its sources: a
+/// `[[author]]` table of `model/provenance.toml` with `name`, `kind`
+/// (`person`, `organization` or `softwareAgent`) and `attributed`, the
+/// sources it wrote (W3C PROV-O `prov:wasAttributedTo`).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Author {
+    /// Its name.
+    pub name: String,
+    /// Its PROV agent kind.
+    pub kind: String,
+    /// The sources attributed to it.
+    pub attributed: Vec<String>,
+}
+
+/// The authors a project's source list names.
+pub fn authors(list: &str) -> Result<Vec<Author>, FidelityError> {
+    let mut out = Vec::new();
+    for table in list.split("\n[[author]]").skip(1) {
+        let table = table.split("\n[").next().unwrap_or("");
+        let value = |key: &str| {
+            table
+                .lines()
+                .find_map(|l| l.trim().strip_prefix(key)?.trim().strip_prefix('='))
+                .map(|v| v.trim().to_string())
+        };
+        let text = |key: &str| {
+            value(key)
+                .and_then(|v| v.strip_prefix('"')?.strip_suffix('"').map(str::to_string))
+                .ok_or_else(|| FidelityError::Register(format!("an [[author]] has no {key}")))
+        };
+        let kind = text("kind")?;
+        if !["person", "organization", "softwareAgent"].contains(&kind.as_str()) {
+            return Err(FidelityError::Register(format!(
+                "an [[author]] has kind {kind:?}, not a W3C PROV-O agent kind"
+            )));
+        }
+        let attributed = table
+            .split_once("attributed = [")
+            .and_then(|(_, b)| b.split_once(']'))
+            .map(|(b, _)| {
+                b.split('"')
+                    .skip(1)
+                    .step_by(2)
+                    .map(str::to_string)
+                    .collect()
+            })
+            .unwrap_or_default();
+        out.push(Author {
+            name: text("name")?,
+            kind,
+            attributed,
+        });
+    }
     Ok(out)
 }
 
@@ -129,29 +186,122 @@ pub fn module(project: &Path, repo: &Path, list: &str) -> Result<(String, usize)
             derivations.push((record.id.clone(), index));
         }
     }
+    // A record no source states is derived from the records it references,
+    // when those, or the records they reference in turn, hold its text.
+    let ids: std::collections::BTreeSet<&str> =
+        score.records.iter().map(|r| r.id.as_str()).collect();
+    let by_id: std::collections::BTreeMap<&str, &crate::Record> =
+        score.records.iter().map(|r| (r.id.as_str(), r)).collect();
+    let cited: std::collections::BTreeSet<&str> =
+        derivations.iter().map(|(r, _)| r.as_str()).collect();
+    let mut record_derivations: Vec<(String, String)> = Vec::new();
+    for record in &score.records {
+        if !open.contains(record.id.as_str()) || cited.contains(record.id.as_str()) {
+            continue;
+        }
+        let direct = crate::references(record, &ids);
+        if direct.is_empty() {
+            continue;
+        }
+        let mut reach: Vec<String> = direct.clone();
+        let mut at = 0;
+        while at < reach.len() {
+            if let Some(r) = by_id.get(reach[at].as_str()) {
+                for next in crate::references(r, &ids) {
+                    if next != record.id && !reach.contains(&next) {
+                        reach.push(next);
+                    }
+                }
+            }
+            at += 1;
+        }
+        let mut used = direct;
+        let mut stated = true;
+        for t in record.texts.iter().filter(|t| !ids.contains(t.as_str())) {
+            let holder = reach.iter().find(|u| {
+                by_id
+                    .get(u.as_str())
+                    .is_some_and(|r| r.texts.iter().any(|x| x.contains(t.as_str())))
+            });
+            match holder {
+                Some(u) if !used.contains(u) => used.push(u.clone()),
+                Some(_) => {}
+                None => stated = false,
+            }
+        }
+        if stated {
+            record_derivations.extend(used.into_iter().map(|u| (record.id.clone(), u)));
+        }
+    }
+    let authors = authors(list)?;
+    let mut attributions: Vec<(usize, usize)> = Vec::new();
+    for (i, (f, _, _)) in entities.iter().enumerate() {
+        if let Some(a) = authors.iter().position(|a| a.attributed.contains(f)) {
+            attributions.push((i, a + 1));
+        }
+    }
     let mut out = String::new();
     let _ = write!(
         out,
         "\\begin{{lexlean}}{{{MODULE}}}\n\\useglossary{{lexlean.std.bool@1.2.0}}\n\\useglossary{{lexlean.std.nat@1.2.0}}\n\\useglossary{{prism.arch@1.0.0}}\n\\importmodule{{{PROV}}}\n\\title{{Provenance of the model}}\n\\begin{{semanticmodule}}\n"
     );
-    let _ = writeln!(
-        out,
-        "definition{{\n  name: citer,\n  parameters: [],\n  result: {PROV}::Agent,\n  body: (record {PROV}::Agent {{index := 0, name := \"prism-fidelity\", kind := (ctor {PROV}::AgentKind.softwareAgent)}})\n}}\n"
-    );
-    let _ = writeln!(
-        out,
-        "definition{{\n  name: citing,\n  parameters: [],\n  result: {PROV}::Activity,\n  body: (record {PROV}::Activity {{index := 0, name := \"cite each record's text from its primary source\", agentIndex := 0}})\n}}\n"
-    );
+    let mut agents = vec![format!(
+        "(record {PROV}::Agent {{index := 0, name := \"prism-fidelity\", kind := (ctor {PROV}::AgentKind.softwareAgent)}})"
+    )];
+    for (i, a) in authors.iter().enumerate() {
+        agents.push(format!(
+            "(record {PROV}::Agent {{index := {}, name := {}, kind := (ctor {PROV}::AgentKind.{})}})",
+            i + 1,
+            quote(&a.name),
+            a.kind
+        ));
+    }
+    let agent_count = agents.len();
+    // A long list is declared in parts joined by the model's append, as the
+    // catalog does: the LexLean reader bounds how deep a `cons` chain nests.
     let mut list_of = |name: &str, ty: &str, items: Vec<String>| {
-        let mut body = format!("(nil {PROV}::{ty})");
-        for item in items.iter().rev() {
-            body = format!("(cons {item} {body})");
+        let literal = |items: &[String]| {
+            let mut body = format!("(nil {PROV}::{ty})");
+            for item in items.iter().rev() {
+                body = format!("(cons {item} {body})");
+            }
+            body
+        };
+        let mut define = |name: &str, body: &str| {
+            let _ = writeln!(
+                out,
+                "definition{{\n  name: {name},\n  parameters: [],\n  result: (List {PROV}::{ty}),\n  body: {body}\n}}\n"
+            );
+        };
+        if items.len() <= CHUNK {
+            define(name, &literal(&items));
+            return;
         }
-        let _ = writeln!(
-            out,
-            "definition{{\n  name: {name},\n  parameters: [],\n  result: (List {PROV}::{ty}),\n  body: {body}\n}}\n"
-        );
+        let append = format!("append{}s", ty.replace("Entity", ""));
+        let mut body = format!("(nil {PROV}::{ty})");
+        let parts: Vec<String> = items
+            .chunks(CHUNK)
+            .enumerate()
+            .map(|(i, chunk)| {
+                let part = format!("{name}Part{i}");
+                define(&part, &literal(chunk));
+                part
+            })
+            .collect();
+        for part in parts.iter().rev() {
+            body = format!("({PROV}::{append} ({part}) {body})");
+        }
+        define(name, &body);
     };
+    list_of("agents", "Agent", agents);
+    list_of(
+        "activities",
+        "Activity",
+        vec![
+            format!("(record {PROV}::Activity {{index := 0, name := \"cite each record's text from its primary source\", agentIndex := 0}})"),
+            format!("(record {PROV}::Activity {{index := 1, name := \"derive each record from the records it references or quotes\", agentIndex := 0}})"),
+        ],
+    );
     list_of(
         "sources",
         "SourceEntity",
@@ -182,10 +332,37 @@ pub fn module(project: &Path, repo: &Path, list: &str) -> Result<(String, usize)
             })
             .collect(),
     );
+    list_of(
+        "recordDerivations",
+        "RecordDerivation",
+        record_derivations
+            .iter()
+            .map(|(g, u)| {
+                format!(
+                    "(record {PROV}::RecordDerivation {{generatedEntity := {}, usedEntity := {}, activityIndex := 1}})",
+                    quote(g),
+                    quote(u)
+                )
+            })
+            .collect(),
+    );
+    list_of(
+        "attributions",
+        "Attribution",
+        attributions
+            .iter()
+            .map(|(e, a)| {
+                format!("(record {PROV}::Attribution {{entityIndex := {e}, agentIndex := {a}}})")
+            })
+            .collect(),
+    );
     let _ = write!(
         out,
-        "theorem{{\n  name: everyCitationKnown,\n  parameters: [],\n  statement: (({PROV}::derivationsKnown {} 1 (derivations)) = true),\n  proof: decide{{}}\n}}\n\\end{{semanticmodule}}\n\\end{{lexlean}}\n",
+        "theorem{{\n  name: everyCitationKnown,\n  parameters: [],\n  statement: (((({PROV}::activitiesKnown {agent_count} (activities)) && ({PROV}::derivationsKnown {} 2 (derivations))) && (({PROV}::recordDerivationsKnown 2 (recordDerivations)) && ({PROV}::attributionsKnown {} {agent_count} (attributions)))) = true),\n  proof: decide{{}}\n}}\n\\end{{semanticmodule}}\n\\end{{lexlean}}\n",
+        entities.len(),
         entities.len()
     );
-    Ok((out, derivations.len()))
+    let generated: std::collections::BTreeSet<&str> =
+        record_derivations.iter().map(|(g, _)| g.as_str()).collect();
+    Ok((out, derivations.len() + generated.len()))
 }

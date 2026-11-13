@@ -256,7 +256,7 @@ pub fn hex(bytes: &[u8]) -> String {
 /// JSON reader with a nesting limit, and every element of a `cons` chain is a
 /// level, so a long list is declared in parts joined by an append the model
 /// defines.
-const CHUNK: usize = 24;
+pub const CHUNK: usize = 24;
 
 fn chunked(decls: &mut Vec<String>, name: &str, element: &str, append: &str, items: &[String]) {
     let ty = format!("(List {MODEL}::{element})");

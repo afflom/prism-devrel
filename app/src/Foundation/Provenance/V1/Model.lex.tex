@@ -53,6 +53,64 @@ structure{
   ]
 }
 
+structure{
+  name: RecordDerivation,
+  type_parameters: [],
+  parameters: [],
+  fields: [
+    {name: generatedEntity, type: String},
+    {name: usedEntity, type: String},
+    {name: activityIndex, type: Nat}
+  ]
+}
+
+structure{
+  name: Attribution,
+  type_parameters: [],
+  parameters: [],
+  fields: [{name: entityIndex, type: Nat}, {name: agentIndex, type: Nat}]
+}
+
+definition{
+  name: appendSources,
+  parameters: [front : (List SourceEntity), back : (List SourceEntity)],
+  result: (List SourceEntity),
+  body: (match front
+    | List.nil => back
+    | List.cons item rest => (cons item (appendSources rest back))),
+  recursive_argument: front
+}
+
+definition{
+  name: appendDerivations,
+  parameters: [front : (List Derivation), back : (List Derivation)],
+  result: (List Derivation),
+  body: (match front
+    | List.nil => back
+    | List.cons item rest => (cons item (appendDerivations rest back))),
+  recursive_argument: front
+}
+
+definition{
+  name: appendRecordDerivations,
+  parameters: [front : (List RecordDerivation), back : (List RecordDerivation)],
+  result: (List RecordDerivation),
+  body: (match front
+    | List.nil => back
+    | List.cons item rest => (cons item (appendRecordDerivations rest back))),
+  recursive_argument: front
+}
+
+definition{
+  name: appendAttributions,
+  parameters: [front : (List Attribution), back : (List Attribution)],
+  result: (List Attribution),
+  body: (match front
+    | List.nil => back
+    | List.cons item rest => (cons item (appendAttributions rest back))),
+  recursive_argument: front
+}
+
 definition{
   name: spansOrdered,
   parameters: [entities : (List SourceEntity)],
@@ -81,6 +139,26 @@ definition{
     | List.nil => true
     | List.cons item rest => (((project item usedEntityIndex) <? entityCount) && (((project item activityIndex) <? activityCount) && (derivationsKnown entityCount activityCount rest)))),
   recursive_argument: derivations
+}
+
+definition{
+  name: recordDerivationsKnown,
+  parameters: [activityCount : Nat, derivations : (List RecordDerivation)],
+  result: Bool,
+  body: (match derivations
+    | List.nil => true
+    | List.cons item rest => (((project item activityIndex) <? activityCount) && (recordDerivationsKnown activityCount rest))),
+  recursive_argument: derivations
+}
+
+definition{
+  name: attributionsKnown,
+  parameters: [entityCount : Nat, agentCount : Nat, attributions : (List Attribution)],
+  result: Bool,
+  body: (match attributions
+    | List.nil => true
+    | List.cons item rest => (((project item entityIndex) <? entityCount) && (((project item agentIndex) <? agentCount) && (attributionsKnown entityCount agentCount rest)))),
+  recursive_argument: attributions
 }
 
 definition{

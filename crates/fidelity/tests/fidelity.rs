@@ -1,4 +1,4 @@
-//! The fidelity scorer's conformance rows, `FI-01` to `FI-03`.
+//! The fidelity scorer's conformance rows, `FI-01` to `FI-07`.
 
 use std::path::{Path, PathBuf};
 
@@ -283,4 +283,83 @@ fn measures_measured_by_the_kernel_fi_05() {
         "[[measure]]\nrecord = \"a\"\nmethod = \"b\"\nsource = \"c\"\ndirection = \"sideways\"\n"
     )
     .is_err());
+}
+
+/// `FI-06`: a record no source states is derived from the records it
+/// references or quotes, and is closed only when they are.
+#[test]
+fn derived_from_records_fi_06() {
+    let dir = scratch("fi06");
+    let good = span_kappa(
+        "charter.md",
+        "Maintainer: The maintainer keeps the catalog true.",
+    );
+    project(&dir, &good, false);
+    let users = "\
+definition{name: groupMaintainer, parameters: [], result: Foundation.Experience.V1.Model::UserGroup, body: (record Foundation.Experience.V1.Model::UserGroup {stakeholder := (Architecture::stakeholderMaintainer), characteristics := \"\"})}
+definition{name: groupBare, parameters: [], result: Foundation.Experience.V1.Model::UserGroup, body: (record Foundation.Experience.V1.Model::UserGroup {stakeholder := (Architecture::componentBare), characteristics := \"y\"})}
+definition{name: groupUnstated, parameters: [], result: Foundation.Experience.V1.Model::UserGroup, body: (record Foundation.Experience.V1.Model::UserGroup {stakeholder := (Architecture::stakeholderMaintainer), characteristics := \"Stated nowhere.\"})}
+";
+    std::fs::write(dir.join("app/src/Users.lex.tex"), module("Users", users)).unwrap();
+    let list = "sources = [\n  \"charter.md\",\n]\n";
+    let (module_text, _) = prism_fidelity::cite::module(&dir.join("app"), &dir, list).unwrap();
+    assert!(module_text.contains("generatedEntity := \"Users::groupMaintainer\", usedEntity := \"Architecture::stakeholderMaintainer\""));
+    assert!(module_text.contains(
+        "generatedEntity := \"Users::groupBare\", usedEntity := \"Architecture::componentBare\""
+    ));
+    assert!(!module_text.contains("generatedEntity := \"Users::groupUnstated\""));
+    std::fs::write(
+        dir.join("app/src/Cited.lex.tex"),
+        module_text.replace("{Provenance}", "{Cited}"),
+    )
+    .unwrap();
+    let s = score(&dir.join("app"), &dir).unwrap();
+    assert!(!open(&s, "Users::groupMaintainer", Axis::Derived));
+    assert!(
+        open(&s, "Users::groupBare", Axis::Derived),
+        "a record derived from an open record stays open"
+    );
+    assert!(open(&s, "Users::groupUnstated", Axis::Derived));
+
+    // A record derivation that neither references nor quotes is false.
+    let forged = module_text.replace(
+        "usedEntity := \"Architecture::stakeholderMaintainer\"",
+        "usedEntity := \"Architecture::concernTruth\"",
+    );
+    std::fs::write(
+        dir.join("app/src/Cited.lex.tex"),
+        forged.replace("{Provenance}", "{Cited}"),
+    )
+    .unwrap();
+    assert!(score(&dir.join("app"), &dir).is_err());
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+/// `FI-07`: a source a listed author wrote is attributed to that agent.
+#[test]
+fn sources_attributed_to_their_authors_fi_07() {
+    let dir = scratch("fi07");
+    let good = span_kappa(
+        "charter.md",
+        "Maintainer: The maintainer keeps the catalog true.",
+    );
+    project(&dir, &good, false);
+    let list = "sources = [\n  \"charter.md\",\n]\n\n[[author]]\nname = \"Ada\"\nkind = \"person\"\nattributed = [\"charter.md\"]\n";
+    let (module_text, _) = prism_fidelity::cite::module(&dir.join("app"), &dir, list).unwrap();
+    assert!(module_text.contains(
+        "name := \"Ada\", kind := (ctor Foundation.Provenance.V1.Model::AgentKind.person)"
+    ));
+    assert!(module_text.contains("Attribution {entityIndex := 0, agentIndex := 1}"));
+    assert!(
+        prism_fidelity::cite::authors("x = 1\n[[author]]\nname = \"A\"\nkind = \"robot\"\n")
+            .is_err()
+    );
+    let _ = std::fs::remove_dir_all(&dir);
+
+    let repo = root();
+    let list = std::fs::read_to_string(repo.join("model/provenance.toml")).unwrap();
+    let authors = prism_fidelity::cite::authors(&list).unwrap();
+    assert!(authors
+        .iter()
+        .any(|a| a.kind == "person" && a.attributed.iter().any(|s| s == "model/charter.md")));
 }

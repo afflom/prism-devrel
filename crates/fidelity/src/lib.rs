@@ -314,6 +314,27 @@ struct Entity {
     kappa: String,
 }
 
+/// The records `record` references: a declaration it names as a term, such
+/// as `(Architecture::stakeholderMaintainer)`, or a text field that is a
+/// record's identifier, such as `"Features::featureCli"`.
+pub fn references(record: &Record, ids: &BTreeSet<&str>) -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    for (at, _) in record.normalized.match_indices('(') {
+        let rest = &record.normalized[at + 1..];
+        let Some(end) = rest.find(')') else { continue };
+        let term = &rest[..end];
+        if term != record.id && ids.contains(term) && !out.iter().any(|o| o == term) {
+            out.push(term.to_string());
+        }
+    }
+    for t in &record.texts {
+        if t != &record.id && ids.contains(t.as_str()) && !out.contains(t) {
+            out.push(t.clone());
+        }
+    }
+    out
+}
+
 /// Read a project and score it.
 ///
 /// `project` is the Prism project's directory (the one holding `src/`);
@@ -348,6 +369,7 @@ pub fn score_ignoring(
     let mut theorems = Vec::new();
     let mut entities: Vec<Entity> = Vec::new();
     let mut derivations: Vec<(String, usize, String)> = Vec::new();
+    let mut record_derivations: Vec<(String, String)> = Vec::new();
     let mut indicators: Vec<(String, usize, String)> = Vec::new();
     let mut results: Vec<(String, usize, String, String)> = Vec::new();
 
@@ -383,6 +405,10 @@ pub fn score_ignoring(
                                     field(&fields, "generatedEntity").unwrap_or("").into(),
                                     nat(&fields, "usedEntityIndex").unwrap_or(usize::MAX),
                                     p.module.name.clone(),
+                                )),
+                                "RecordDerivation" => record_derivations.push((
+                                    field(&fields, "generatedEntity").unwrap_or("").into(),
+                                    field(&fields, "usedEntity").unwrap_or("").into(),
                                 )),
                                 "Indicator" => indicators.push((
                                     p.module.name.clone(),
@@ -499,6 +525,72 @@ pub fn score_ignoring(
             .or_default()
             .push(global);
     }
+    let by_id: BTreeMap<&str, &Record> = records.iter().map(|r| (r.id.as_str(), r)).collect();
+    let mut derived_from_records: BTreeMap<&str, Vec<&Record>> = BTreeMap::new();
+    for (generated, used) in &record_derivations {
+        let (Some(g), Some(u)) = (by_id.get(generated.as_str()), by_id.get(used.as_str())) else {
+            return Err(FidelityError::False(format!(
+                "a record derivation of {generated} from {used} names a record the project does not have"
+            )));
+        };
+        let quotes = g
+            .texts
+            .iter()
+            .any(|t| u.texts.iter().any(|ut| ut.contains(t.as_str())));
+        if !references(g, &ids).contains(&u.id) && !quotes {
+            return Err(FidelityError::False(format!(
+                "{generated} is said to derive from {used}, which it neither references nor quotes"
+            )));
+        }
+        derived_from_records
+            .entry(g.id.as_str())
+            .or_default()
+            .push(u);
+    }
+    // A record is derived when what it was derived from holds every text of
+    // it, and every record it was derived from is derived: the least fixed
+    // point, so a cycle derives nothing.
+    let derivation_of = |r: &Record| -> Result<Vec<&str>, String> {
+        let spans_used = derived_from.get(r.id.as_str());
+        let records_used = derived_from_records.get(r.id.as_str());
+        if spans_used.is_none() && records_used.is_none() {
+            return Err("no derivation names it (prov:wasDerivedFrom)".to_string());
+        }
+        let mut joined: Vec<&str> = spans_used
+            .into_iter()
+            .flatten()
+            .map(|&u| spans[u].as_str())
+            .collect();
+        for u in records_used.into_iter().flatten() {
+            joined.push(u.id.as_str());
+            joined.extend(u.texts.iter().map(String::as_str));
+        }
+        let joined = joined.join("\n");
+        match r.texts.iter().find(|t| !joined.contains(t.as_str())) {
+            Some(t) => Err(format!(
+                "derived from sources that do not hold its text {t:?} verbatim"
+            )),
+            None => Ok(records_used
+                .into_iter()
+                .flatten()
+                .map(|u| u.id.as_str())
+                .collect()),
+        }
+    };
+    let mut derived_records: BTreeSet<&str> = BTreeSet::new();
+    loop {
+        let before = derived_records.len();
+        for r in &records {
+            if let Ok(used) = derivation_of(r) {
+                if used.iter().all(|u| derived_records.contains(u)) {
+                    derived_records.insert(r.id.as_str());
+                }
+            }
+        }
+        if derived_records.len() == before {
+            break;
+        }
+    }
     let mut measured: BTreeSet<&str> = BTreeSet::new();
     for (module, indicator, location, kappa) in &results {
         let Some((_, _, name)) = indicators
@@ -526,20 +618,18 @@ pub fn score_ignoring(
 
     let mut score = Score::default();
     for r in &records {
-        let derived = match derived_from.get(r.id.as_str()) {
-            None => Err("no derivation names it (prov:wasDerivedFrom)".to_string()),
-            Some(used) => {
-                let joined: String = used
-                    .iter()
-                    .map(|&u| spans[u].as_str())
-                    .collect::<Vec<_>>()
-                    .join("\n");
-                match r.texts.iter().find(|t| !joined.contains(t.as_str())) {
-                    Some(t) => Err(format!(
-                        "derived from spans that do not hold its text {t:?} verbatim"
-                    )),
-                    None => Ok(()),
-                }
+        let derived = if derived_records.contains(r.id.as_str()) {
+            Ok(())
+        } else {
+            match derivation_of(r) {
+                Err(why) => Err(why),
+                Ok(used) => Err(format!(
+                    "derived from a record that is open on the derived axis: {}",
+                    used.into_iter()
+                        .filter(|u| !derived_records.contains(u))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                )),
             }
         };
         let named = |s: &String| {

@@ -42,3 +42,18 @@ Feature: fidelity
     Then each listed measure has an indicator named for it, criteria bounded by its threshold and a result whose value is its method
     And a theorem that the value satisfies the criteria is decided for each
     And the measure is closed on the measured axis of the register
+
+  @FI-06 @build
+  Scenario: A record no listed source states is derived, as a W3C PROV-O derivation between records, from the records it references or that quote its text; it is closed on the derived axis only when every record it is derived from is, and a record derivation that neither references nor quotes is refused
+    Given a record that references a record cited from a source
+    When prism-fidelity cites the project and scores it
+    Then the record is derived from the record it references
+    And it is closed only when the record it is derived from is closed
+    And a derivation from a record it neither references nor quotes is refused
+
+  @FI-07 @build
+  Scenario: Each source an [[author]] of model/provenance.toml wrote is attributed to that W3C PROV-O agent, and the charter that states Prism-DevRel's purpose is attributed to a person
+    Given model/provenance.toml names the author of model/charter.md
+    When prism-fidelity cites the project
+    Then every source entity of the charter is attributed to that agent
+    And the agent is a person
