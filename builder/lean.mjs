@@ -41,7 +41,10 @@ function layout(lead, value, indent, tail) {
 }
 
 /** A LexLean string literal: printable ASCII only, without quotes or backslashes (the journey's rule). */
-export const str = (text) => `"${String(text).replace(/[^\x20-\x7e]/g, '').replace(/["\\]/g, '')}"`;
+// LexLean has no escape for a quote or a backslash in a string literal, and
+// forbids a raw percent sign anywhere (LLL1002: TeX comments do not exist), so
+// all three are dropped, as non-ASCII is.
+export const str = (text) => `"${String(text).replace(/[^\x20-\x7e]/g, '').replace(/["\\%]/g, '')}"`;
 
 /** `(cons a (cons b (nil T)))`. */
 export const cons = (type, items) => items.reduceRight((rest, item) => `(cons ${item} ${rest})`, `(nil ${type})`);

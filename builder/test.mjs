@@ -215,6 +215,9 @@ const CASES = {
     const text = module(files, 'Compliance');
     const indexes = [...text.matchAll(/record Obligation \{index := (\d+), standard := "([^"]*)", subject := "([^"]*)"/g)];
     eq(indexes.map((x) => Number(x[1])), [...Array(derived + extra.length).keys()], 'every obligation is numbered in order, so obligationsEvidenced holds of the whole list');
+    // Prompt text reaches LexLean literals, where a raw percent sign is LLL1002.
+    const percent = await buildApp({ ...rule30(), obligations: [{ ...extra[0], evidence: ['git log --format=%(trailers:key=Signed-off-by)'] }] }, { lastModified: AT });
+    ok(!module(percent.files, 'Compliance').includes('%'), 'no raw percent sign reaches a LexLean module');
     eq(indexes.slice(derived).map((x) => [x[2], x[3]]), extra.map((o) => [o.standard, o.subject]), "the module lists the prompt's obligations after the derived ones");
     for (const o of extra) ok(o.evidence.every((e) => text.includes(`"${e}"`)), `${o.subject} names its evidence in the module`);
     ok(text.includes('name: everyObligationEvidenced,') && text.includes('statement: ((obligationsEvidenced 0 (obligations)) = true),'), 'the theorem is the one every app has');
