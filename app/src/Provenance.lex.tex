@@ -1,0 +1,43 @@
+\begin{lexlean}{Provenance}
+\useglossary{lexlean.std.bool@1.2.0}
+\useglossary{lexlean.std.nat@1.2.0}
+\useglossary{prism.arch@1.0.0}
+\importmodule{Foundation.Provenance.V1.Model}
+\title{Provenance of the model}
+\begin{semanticmodule}
+definition{
+  name: citer,
+  parameters: [],
+  result: Foundation.Provenance.V1.Model::Agent,
+  body: (record Foundation.Provenance.V1.Model::Agent {index := 0, name := "prism-fidelity", kind := (ctor Foundation.Provenance.V1.Model::AgentKind.softwareAgent)})
+}
+
+definition{
+  name: citing,
+  parameters: [],
+  result: Foundation.Provenance.V1.Model::Activity,
+  body: (record Foundation.Provenance.V1.Model::Activity {index := 0, name := "cite each record's text from its primary source", agentIndex := 0})
+}
+
+definition{
+  name: sources,
+  parameters: [],
+  result: (List Foundation.Provenance.V1.Model::SourceEntity),
+  body: (cons (record Foundation.Provenance.V1.Model::SourceEntity {index := 0, location := "README.md", firstLine := 62, lastLine := 105, kappa := "e6f2350d7c01a8604a7ae7e383bc06d2abca40103027e951c9cf7f949a2f7dbc"}) (cons (record Foundation.Provenance.V1.Model::SourceEntity {index := 1, location := "README.md", firstLine := 65, lastLine := 65, kappa := "2ab05e12eba7dffb39427d15812356a524e65513359984dbf8bce25b04b192e0"}) (cons (record Foundation.Provenance.V1.Model::SourceEntity {index := 2, location := "README.md", firstLine := 24, lastLine := 59, kappa := "f693bdff45c19eca93ef4987f0106399c930e170aa0ff6d57c2f049c1ec9f8b9"}) (cons (record Foundation.Provenance.V1.Model::SourceEntity {index := 3, location := "README.md", firstLine := 40, lastLine := 40, kappa := "f5ce3063423a0a85d1fbc6c1cbb2b1d46ac2cbd4f2a2500c94651876af3b8b38"}) (cons (record Foundation.Provenance.V1.Model::SourceEntity {index := 4, location := "devrel/site.json", firstLine := 3, lastLine := 3, kappa := "8e4541883c777ad69d24e83d3e2438d637948921b4c4de6b5f0890e6d8b70096"}) (nil Foundation.Provenance.V1.Model::SourceEntity))))))
+}
+
+definition{
+  name: derivations,
+  parameters: [],
+  result: (List Foundation.Provenance.V1.Model::Derivation),
+  body: (cons (record Foundation.Provenance.V1.Model::Derivation {generatedEntity := "Catalog::resourceBehavior", usedEntityIndex := 0, activityIndex := 0}) (cons (record Foundation.Provenance.V1.Model::Derivation {generatedEntity := "Catalog::resourceExplorer", usedEntityIndex := 1, activityIndex := 0}) (cons (record Foundation.Provenance.V1.Model::Derivation {generatedEntity := "Catalog::resourceFeatures", usedEntityIndex := 2, activityIndex := 0}) (cons (record Foundation.Provenance.V1.Model::Derivation {generatedEntity := "Catalog::sections#1", usedEntityIndex := 3, activityIndex := 0}) (cons (record Foundation.Provenance.V1.Model::Derivation {generatedEntity := "Catalog::sections#3", usedEntityIndex := 4, activityIndex := 0}) (nil Foundation.Provenance.V1.Model::Derivation))))))
+}
+
+theorem{
+  name: everyCitationKnown,
+  parameters: [],
+  statement: ((Foundation.Provenance.V1.Model::derivationsKnown 5 1 (derivations)) = true),
+  proof: decide{}
+}
+\end{semanticmodule}
+\end{lexlean}

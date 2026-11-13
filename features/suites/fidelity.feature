@@ -26,3 +26,11 @@ Feature: fidelity
     When the Lean kernel checks Fidelity::indicatorsKnown and Fidelity::everyIndicatorMeasured during lexlean verify
     Then there is one indicator per property, each with a result whose value is the register's open count on that axis
     And every result's κ recomputes from fidelity.toml
+
+  @FI-04 @build
+  Scenario: A record no writer derives is cited from the smallest span of a primary source listed in model/provenance.toml that holds every text field of it verbatim, as a W3C PROV-O derivation by prism-fidelity; a record no listed source states stays open, and the committed citations are the ones the sources give
+    Given a project whose stakeholder text is stated in charter.md and whose component text is stated nowhere
+    When prism-fidelity cites it from the sources model/provenance.toml lists
+    Then the stakeholder is derived from the one line of charter.md that states it
+    And the component stays open on the derived axis
+    And app/src/Provenance.lex.tex is what prism-fidelity cites for app/

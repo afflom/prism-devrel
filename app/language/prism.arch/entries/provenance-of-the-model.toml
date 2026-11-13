@@ -1,0 +1,17 @@
+spec = "lexlean/entry/1"
+id = "provenance-of-the-model"
+category = "label-word"
+surface_arity = 0
+frame = "atom"
+
+[denotation]
+kind = "document"
+module = "Provenance"
+component = "derivations"
+
+[[form]]
+id = "provenance-of-the-model"
+channel = "text"
+surface = "Provenance of the model"
+canonical_source = true
+features = ["sentence-case", "singular"]

@@ -495,6 +495,31 @@ record = "Brand::tokens#9"
 axis = "meant"
 
 [[closed]]
+kappa = "2c62465471e0c319fa11dcb25f056d84edd1fb7b8d1b8e1a067414f595c1f2f2"
+record = "Catalog::resourceBehavior"
+axis = "derived"
+
+[[closed]]
+kappa = "db4826b289e7d265a7d6b4f5c06bba5f7ba3cc459c9612088e2b026344adce6b"
+record = "Catalog::resourceExplorer"
+axis = "derived"
+
+[[closed]]
+kappa = "e3da8171565d0ae93aee802cecc404427a93f62cb00f015c44933ac8fb9e1fd1"
+record = "Catalog::resourceFeatures"
+axis = "derived"
+
+[[closed]]
+kappa = "ded5df1df410d912a42523aa8f16bce9174cfb5f9e5fb05d009399e3e2353252"
+record = "Catalog::sections#1"
+axis = "derived"
+
+[[closed]]
+kappa = "b71dec9e9fa3d9f290d84982473df2ba60c80924d82414b79b4c5e93f18d290d"
+record = "Catalog::sections#3"
+axis = "derived"
+
+[[closed]]
 kappa = "af57451486da6107b64955c388f824a065655db9297695bb0cf86314d48f812c"
 record = "Catalog::subject"
 axis = "meant"
@@ -9412,12 +9437,6 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "2c62465471e0c319fa11dcb25f056d84edd1fb7b8d1b8e1a067414f595c1f2f2"
-record = "Catalog::resourceBehavior"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "1f4c35fdf094d4736cdecb7768b9e708a62f870151134c3e672108db0025996c"
 record = "Catalog::resourceBehavior"
 axis = "meant"
@@ -9460,12 +9479,6 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "db4826b289e7d265a7d6b4f5c06bba5f7ba3cc459c9612088e2b026344adce6b"
-record = "Catalog::resourceExplorer"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "415461910ce30ed06ea6bb081f96c5ba217e046610b2918f310d38dead7dbdd1"
 record = "Catalog::resourceExplorer"
 axis = "meant"
@@ -9482,12 +9495,6 @@ kappa = "08eb48b52476cb858628aa98b6184b9a368759235eaa3303b64931993b964781"
 record = "Catalog::resourceExtensions"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "e3da8171565d0ae93aee802cecc404427a93f62cb00f015c44933ac8fb9e1fd1"
-record = "Catalog::resourceFeatures"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "80ae42a6e98ab66acdc13d53fca87960ae5b61015e08b0e95529e631fb90c936"
@@ -9568,12 +9575,6 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ded5df1df410d912a42523aa8f16bce9174cfb5f9e5fb05d009399e3e2353252"
-record = "Catalog::sections#1"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "d4b3e1893e9c402f70eef16589af336cbdfd776fc873b8bf7421ea2ee8a33257"
 record = "Catalog::sections#1"
 axis = "meant"
@@ -9590,12 +9591,6 @@ kappa = "3c934396c9b361c56bb46b061a0fe86e06bc2f95d663ca21e8fcf5d361484a63"
 record = "Catalog::sections#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "b71dec9e9fa3d9f290d84982473df2ba60c80924d82414b79b4c5e93f18d290d"
-record = "Catalog::sections#3"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
 kappa = "2706552aca5cfa5238d2a287ea5f0a6ddef4367a1e2721821922d095d379cdb1"

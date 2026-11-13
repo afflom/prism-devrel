@@ -31,6 +31,8 @@ use std::fmt::{self, Write as _};
 use std::path::{Path, PathBuf};
 
 use devrel_catalog::lextex;
+
+pub mod cite;
 use sha2::{Digest, Sha256};
 
 /// The register's format.
@@ -304,6 +306,8 @@ fn nat(fields: &[devrel_catalog::Field], name: &str) -> Option<usize> {
 }
 
 struct Entity {
+    module: String,
+    index: usize,
     location: String,
     first: usize,
     last: usize,
@@ -316,6 +320,16 @@ struct Entity {
 /// `repo` is the root that provenance and measurement locations are relative
 /// to.
 pub fn score(project: &Path, repo: &Path) -> Result<Score, FidelityError> {
+    score_ignoring(project, repo, None)
+}
+
+/// [`score`], reading no provenance or measurement rows from the module
+/// named `ignore`: the citations [`cite`] writes are not an input of its own.
+pub fn score_ignoring(
+    project: &Path,
+    repo: &Path,
+    ignore: Option<&str>,
+) -> Result<Score, FidelityError> {
     let mut files = Vec::new();
     collect(&project.join("src"), &mut files)?;
     files.sort();
@@ -333,9 +347,9 @@ pub fn score(project: &Path, repo: &Path) -> Result<Score, FidelityError> {
     let mut records = Vec::new();
     let mut theorems = Vec::new();
     let mut entities: Vec<Entity> = Vec::new();
-    let mut derivations: Vec<(String, usize)> = Vec::new();
-    let mut indicators: Vec<(usize, String)> = Vec::new();
-    let mut results: Vec<(usize, String, String)> = Vec::new();
+    let mut derivations: Vec<(String, usize, String)> = Vec::new();
+    let mut indicators: Vec<(String, usize, String)> = Vec::new();
+    let mut results: Vec<(String, usize, String, String)> = Vec::new();
 
     for p in &parsed {
         for decl in &p.module.declarations {
@@ -352,12 +366,15 @@ pub fn score(project: &Path, repo: &Path) -> Result<Score, FidelityError> {
                         .and_then(|r| r.strip_suffix(')'))
                         .unwrap_or(result);
                     if p.module.name != FIDELITY_MODULE
+                        && Some(p.module.name.as_str()) != ignore
                         && (element.starts_with(PROV) || element.starts_with(MEAS))
                     {
                         for item in record_items(body) {
                             let fields = lextex::record_fields(&item);
                             match short(element) {
                                 "SourceEntity" => entities.push(Entity {
+                                    module: p.module.name.clone(),
+                                    index: nat(&fields, "index").unwrap_or(usize::MAX),
                                     location: field(&fields, "location").unwrap_or("").into(),
                                     first: nat(&fields, "firstLine").unwrap_or(0),
                                     last: nat(&fields, "lastLine").unwrap_or(0),
@@ -366,12 +383,15 @@ pub fn score(project: &Path, repo: &Path) -> Result<Score, FidelityError> {
                                 "Derivation" => derivations.push((
                                     field(&fields, "generatedEntity").unwrap_or("").into(),
                                     nat(&fields, "usedEntityIndex").unwrap_or(usize::MAX),
+                                    p.module.name.clone(),
                                 )),
                                 "Indicator" => indicators.push((
+                                    p.module.name.clone(),
                                     nat(&fields, "index").unwrap_or(usize::MAX),
                                     field(&fields, "name").unwrap_or("").into(),
                                 )),
                                 "MeasurementResult" => results.push((
+                                    p.module.name.clone(),
                                     nat(&fields, "indicatorIndex").unwrap_or(usize::MAX),
                                     field(&fields, "source").unwrap_or("").into(),
                                     field(&fields, "kappa").unwrap_or("").into(),
@@ -461,24 +481,33 @@ pub fn score(project: &Path, repo: &Path) -> Result<Score, FidelityError> {
         spans.push(span);
     }
     let mut derived_from: BTreeMap<&str, Vec<usize>> = BTreeMap::new();
-    for (record, used) in &derivations {
+    for (record, used, module) in &derivations {
         if !ids.contains(record.as_str()) {
             return Err(FidelityError::False(format!(
                 "a derivation generates {record}, which is not a record of the project"
             )));
         }
-        if *used >= spans.len() {
+        let Some(global) = entities
+            .iter()
+            .position(|e| &e.module == module && e.index == *used)
+        else {
             return Err(FidelityError::False(format!(
-                "the derivation of {record} uses source entity {used}, which is not declared"
+                "the derivation of {record} uses source entity {used} of {module}, which is not declared"
             )));
-        }
-        derived_from.entry(record.as_str()).or_default().push(*used);
+        };
+        derived_from
+            .entry(record.as_str())
+            .or_default()
+            .push(global);
     }
     let mut measured: BTreeSet<&str> = BTreeSet::new();
-    for (indicator, location, kappa) in &results {
-        let Some((_, name)) = indicators.iter().find(|(i, _)| i == indicator) else {
+    for (module, indicator, location, kappa) in &results {
+        let Some((_, _, name)) = indicators
+            .iter()
+            .find(|(m, i, _)| m == module && i == indicator)
+        else {
             return Err(FidelityError::False(format!(
-                "a measurement result names indicator {indicator}, which is not declared"
+                "a measurement result names indicator {indicator} of {module}, which is not declared"
             )));
         };
         let path = repo.join(location);

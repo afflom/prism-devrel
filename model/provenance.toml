@@ -1,0 +1,26 @@
+# The primary sources prism-fidelity cites a record's text from (W3C PROV-O
+# wasDerivedFrom), in priority order: what the repository itself states. A
+# record whose text none of them states stays open on the derived axis; state
+# it in its primary source rather than adding a source that only repeats the
+# model.
+spec = "prism/provenance-sources/1"
+sources = [
+  "README.md",
+  "Cargo.toml",
+  "crates/devrel/Cargo.toml",
+  "crates/fidelity/Cargo.toml",
+  "crates/model/Cargo.toml",
+  "crates/conformance/Cargo.toml",
+  "model/ids.toml",
+  "features/suites/*.feature",
+  ".github/workflows/*.yml",
+  "devrel/*.json",
+  "Justfile",
+  "AGENTS.md",
+  "lighthouserc.json",
+  "app/language/prism.arch/entries/*.toml",
+  "app/language/prism.sec/entries/*.toml",
+  "app/language/prism.qual/entries/*.toml",
+  "brand/foundation/src/site/copy.ts",
+  "site/app.json",
+]

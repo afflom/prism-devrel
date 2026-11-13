@@ -2,6 +2,7 @@
 //!
 //! ```text
 //! prism-fidelity --project app --repo . --register fidelity.toml
+//!                [--cite model/provenance.toml app/src/Provenance.lex.tex]
 //!                [--lean app/src/Fidelity.lex.tex] [--json scorecard.json] [--check]
 //! ```
 //!
@@ -22,6 +23,7 @@ fn main() -> ExitCode {
     let mut lean_out: Option<PathBuf> = None;
     let mut json_out: Option<PathBuf> = None;
     let mut check = false;
+    let mut cite: Option<(PathBuf, PathBuf)> = None;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         let mut path = |d: PathBuf| args.next().map(PathBuf::from).unwrap_or(d);
@@ -32,10 +34,21 @@ fn main() -> ExitCode {
             "--lean" => lean_out = Some(path(PathBuf::new())),
             "--json" => json_out = Some(path(PathBuf::new())),
             "--check" => check = true,
+            "--cite" => {
+                let list = path(PathBuf::new());
+                let out = path(PathBuf::new());
+                cite = Some((list, out));
+            }
             other => {
                 eprintln!("prism-fidelity: unknown argument {other}");
                 return ExitCode::from(64);
             }
+        }
+    }
+    if let Some((list, out)) = &cite {
+        if let Err(why) = run_cite(&project, &repo, list, out, check) {
+            eprintln!("prism-fidelity: {why}");
+            return ExitCode::FAILURE;
         }
     }
     match run(&project, &repo, &register, lean_out, json_out, check) {
@@ -48,6 +61,30 @@ fn main() -> ExitCode {
             ExitCode::FAILURE
         }
     }
+}
+
+fn run_cite(
+    project: &std::path::Path,
+    repo: &std::path::Path,
+    list: &std::path::Path,
+    out: &std::path::Path,
+    check: bool,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let text = std::fs::read_to_string(list).map_err(|e| format!("{}: {e}", list.display()))?;
+    let (module, derived) = prism_fidelity::cite::module(project, repo, &text)?;
+    if check {
+        if std::fs::read_to_string(out).unwrap_or_default() != module {
+            return Err(format!(
+                "{} is not what the sources cite: run prism-fidelity without --check",
+                out.display()
+            )
+            .into());
+        }
+    } else {
+        std::fs::write(out, module).map_err(|e| format!("{}: {e}", out.display()))?;
+    }
+    println!("{derived} records cited from their primary sources");
+    Ok(())
 }
 
 fn run(

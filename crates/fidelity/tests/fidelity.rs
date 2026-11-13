@@ -200,3 +200,44 @@ fn own_fidelity_measured_fi_03() {
         "the Lean kernel checks the module"
     );
 }
+
+/// `FI-04`: a record is cited from the smallest span of a listed source that
+/// states its text; one stated nowhere stays open.
+#[test]
+fn cited_from_primary_sources_fi_04() {
+    let dir = scratch("fi04");
+    let good = span_kappa(
+        "charter.md",
+        "Maintainer: The maintainer keeps the catalog true.",
+    );
+    project(&dir, &good, false);
+    let list = "sources = [\n  \"charter.md\",\n]\n";
+    let (module, cited) = prism_fidelity::cite::module(&dir.join("app"), &dir, list).unwrap();
+    assert_eq!(
+        cited, 1,
+        "only the stakeholder's text is stated in a source"
+    );
+    assert!(module.contains("location := \"charter.md\", firstLine := 2, lastLine := 2"));
+    std::fs::write(
+        dir.join("app/src/Cited.lex.tex"),
+        module.replace("{Provenance}", "{Cited}"),
+    )
+    .unwrap();
+    let s = score(&dir.join("app"), &dir).unwrap();
+    assert!(!open(
+        &s,
+        "Architecture::stakeholderMaintainer",
+        Axis::Derived
+    ));
+    assert!(open(&s, "Architecture::componentBare", Axis::Derived));
+    let _ = std::fs::remove_dir_all(&dir);
+
+    let repo = root();
+    let list = std::fs::read_to_string(repo.join("model/provenance.toml")).unwrap();
+    let (module, _) = prism_fidelity::cite::module(&repo.join("app"), &repo, &list).unwrap();
+    assert_eq!(
+        std::fs::read_to_string(repo.join("app/src/Provenance.lex.tex")).unwrap(),
+        module,
+        "app/src/Provenance.lex.tex is stale: run `just fidelity-write`"
+    );
+}
