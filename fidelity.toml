@@ -605,6 +605,11 @@ record = "Catalog::sections#1"
 axis = "derived"
 
 [[closed]]
+kappa = "90bfb79e1bcffd8acd84e039852782caffd954f3fd6bdcae82ceb7742bbc0826"
+record = "Catalog::sections#1"
+axis = "derived"
+
+[[closed]]
 kappa = "d40e4a227acb6e998988d71b966985761a2ac5b60515e57266dfb19068d8fdd6"
 record = "Catalog::sections#1"
 axis = "derived"
@@ -636,6 +641,11 @@ axis = "meant"
 
 [[closed]]
 kappa = "42bea270e8ba7345a33da0555e49dc1d9cc2408c426e4a8345066f27fde1ae38"
+record = "Catalog::subject"
+axis = "meant"
+
+[[closed]]
+kappa = "7629487fac2cb778568dc810d932638c74985de3009627b05548b572c567ea53"
 record = "Catalog::subject"
 axis = "meant"
 
@@ -1657,13 +1667,13 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4794f69b128b532654cbab6a1365a15db1c00a9d05c9f2cb4b223dc495226518"
+kappa = "af0b05c73a7406f1e4a49cae506305650000019b5ce665b0d01bf285d18212ba"
 record = "Brand::authority"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b906d518f3b00a2a06f167db80b82edb415610cc896b34f222e14b52b3de51c2"
+kappa = "1242769ebfa6da71f7ec18bab01155819be117c090373a34744ce401ae7da23e"
 record = "Brand::authority"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -78841,7 +78851,7 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "63665025174bd04a2034bac9c8a61deafb5207c298654943ab8dadf276f027d5"
+kappa = "c19cf422b452080d577730d5623a4328f223c1c97c8e52683d7a6fcd70b4c4ac"
 record = "Catalog::sections#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -78865,7 +78875,7 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "88bb114163830f8980623ab8f7ed1fa9250e3a18220addc7ec5f6b04deafa599"
+kappa = "b1f1fa0ce50b118788f9e905658c7eb5295cba3c3055aee84cd063b0a6816196"
 record = "Catalog::subject"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
