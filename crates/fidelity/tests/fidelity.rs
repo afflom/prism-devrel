@@ -68,8 +68,8 @@ fn open(score: &prism_fidelity::Score, record: &str, axis: Axis) -> bool {
         .any(|r| r.record == record && r.axis == axis)
 }
 
-/// `FI-01`: every record is scored on derived, meant and measured, and a false
-/// provenance or measurement row is refused.
+/// `FI-01`: every record is scored on derived, meant and measured, a false κ
+/// is refused, and a span without the record's text leaves it underived.
 #[test]
 fn scored_against_standards_fi_01() {
     let dir = scratch("fi01");
@@ -114,8 +114,13 @@ fn scored_against_standards_fi_01() {
         ),
     )
     .unwrap();
-    let err = score(&dir.join("app"), &dir).expect_err("refused");
-    assert!(err.to_string().contains("do not contain its text"), "{err}");
+    let s = score(&dir.join("app"), &dir).expect("scores");
+    assert!(
+        s.residue.iter().any(|r| r.record == "Architecture::stakeholderMaintainer"
+            && r.axis == Axis::Derived
+            && r.reason.contains("verbatim")),
+        "a span that does not hold the record's text leaves it underived"
+    );
     let _ = std::fs::remove_dir_all(&dir);
 }
 

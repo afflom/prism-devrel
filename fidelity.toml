@@ -5,9 +5,19 @@
 spec = "prism/fidelity/1"
 
 [[closed]]
+kappa = "3b6103663e4cf23d35faddfa6f78cea0e9a72ceec21d184031ad87eeabe6cb87"
+record = "Brand::contrasts#0"
+axis = "derived"
+
+[[closed]]
 kappa = "5f72e7de8aa5c6ad0a39c5e483ecca18dc785c8c43b10d63c7276d7f87d90027"
 record = "Brand::contrasts#0"
 axis = "meant"
+
+[[closed]]
+kappa = "91798f76d40a65175fde417b15f33c61f59850b283589172b8bb66374ef81d44"
+record = "Brand::contrasts#1"
+axis = "derived"
 
 [[closed]]
 kappa = "8a5a2d4d9ad889dcb499b1d772857538a50668f0edba95e6c21a377a2f9b4a4c"
@@ -15,9 +25,19 @@ record = "Brand::contrasts#1"
 axis = "meant"
 
 [[closed]]
+kappa = "765c59e9aa0b89bc9755503e6cd193ef1f5ae77e9eb4d8956706ecf86a9d9247"
+record = "Brand::contrasts#10"
+axis = "derived"
+
+[[closed]]
 kappa = "2d767f82a1ce4e2936f1362103a8668e03c2f125423b98b5294d01cb6b331178"
 record = "Brand::contrasts#10"
 axis = "meant"
+
+[[closed]]
+kappa = "c44070dbfd2dfba112cb768ba3e6f0e9191bc750e1edcb46882f0d9be1bf7447"
+record = "Brand::contrasts#11"
+axis = "derived"
 
 [[closed]]
 kappa = "1ab19660d3a36b20ae1eb11747dcc91e124c680206a4e641689ffc6e78e59c93"
@@ -25,9 +45,19 @@ record = "Brand::contrasts#11"
 axis = "meant"
 
 [[closed]]
+kappa = "1b4a62c2af7b3eb12cd8ddee2c9b5f93fad97d37634299bd8b972f3a1a06b342"
+record = "Brand::contrasts#2"
+axis = "derived"
+
+[[closed]]
 kappa = "4bf5de74075a410d76e0410af41121a44fd080cd888260edd2db4ba3d68bb57a"
 record = "Brand::contrasts#2"
 axis = "meant"
+
+[[closed]]
+kappa = "b1ddcba038d262b1623caf05ad48d49d1e96285591db8e9899b015fa29a7e136"
+record = "Brand::contrasts#3"
+axis = "derived"
 
 [[closed]]
 kappa = "ae48934b5abd3cd64a73a8ab80a1de96c1fddeee9a2620371640022ba003aaa9"
@@ -35,9 +65,19 @@ record = "Brand::contrasts#3"
 axis = "meant"
 
 [[closed]]
+kappa = "0dd49e77e29c4c869aab70a71aa2471019b974dd3237aee1e9e565ef93214378"
+record = "Brand::contrasts#4"
+axis = "derived"
+
+[[closed]]
 kappa = "3fcaec6565102ac9e280602a9effe3622d1279b7aa28f3f2cdcb407e83b4b089"
 record = "Brand::contrasts#4"
 axis = "meant"
+
+[[closed]]
+kappa = "7705406e8f16de51433e69a11895e052a602b152796553465f1d77b6a2d24719"
+record = "Brand::contrasts#5"
+axis = "derived"
 
 [[closed]]
 kappa = "db1558b6bf50f4c55371e0a7dc2eada5b5227f038d790242eed39103af765161"
@@ -45,9 +85,19 @@ record = "Brand::contrasts#5"
 axis = "meant"
 
 [[closed]]
+kappa = "c570e712bc2c8cc80896711e7a8ea5f1b4ea28b3e78fe93ea8bebf09906d9278"
+record = "Brand::contrasts#6"
+axis = "derived"
+
+[[closed]]
 kappa = "7ac454661a3cf2c8aa0f266584da090096717cea752ef868d454c810e0d8f2ca"
 record = "Brand::contrasts#6"
 axis = "meant"
+
+[[closed]]
+kappa = "dcf746ea043eff005f1c6a12f65aa1e8af8358fbfc6b9f74ed0c758ea73e07bc"
+record = "Brand::contrasts#7"
+axis = "derived"
 
 [[closed]]
 kappa = "290d960334284fd1f1d2133e2edaea3ccf8c0abf0457e54f9d4421e3b003b546"
@@ -55,9 +105,19 @@ record = "Brand::contrasts#7"
 axis = "meant"
 
 [[closed]]
+kappa = "55e4c04566fe3873dd56e8660acb307ff85ad9c5004a1d1497b7c8ff65460939"
+record = "Brand::contrasts#8"
+axis = "derived"
+
+[[closed]]
 kappa = "3678a291fb0589c57d1ffc6bd5c0ae8bbd2f52ecce4f6c38e7058f6edd226246"
 record = "Brand::contrasts#8"
 axis = "meant"
+
+[[closed]]
+kappa = "efc8f1e6d539a1826d55fd94e4a04ebe970fb8215214250b869cc9ca257ce6a3"
+record = "Brand::contrasts#9"
+axis = "derived"
 
 [[closed]]
 kappa = "fe4a8350f5b2ea846a14d124f7051bd312fee059faab905e47d66bf2291e41c3"
@@ -65,9 +125,19 @@ record = "Brand::contrasts#9"
 axis = "meant"
 
 [[closed]]
+kappa = "060b74da76a39c13e4490119c6d3e980fbe46ea5a630dca583bf1eee86ebff8a"
+record = "Brand::elements#0"
+axis = "derived"
+
+[[closed]]
 kappa = "2b14028d2055cfb839d143a7020837b0e5a3503f29e96818abd5e965a7e1b88c"
 record = "Brand::elements#0"
 axis = "meant"
+
+[[closed]]
+kappa = "071d9547adfda2c814aac0deddfefcb06d1d92b9db3e5e08e784006cd7f3ebfc"
+record = "Brand::elements#1"
+axis = "derived"
 
 [[closed]]
 kappa = "11d1f85bbf302f3e021d8d15628c2be052fbbc33e3b4eee366ca332314894ab6"
@@ -90,9 +160,19 @@ record = "Brand::elements#12"
 axis = "meant"
 
 [[closed]]
+kappa = "7baada2a42059cb3053980ba498b1521bde9d9380dc1682f0a2b7016e9465aa4"
+record = "Brand::elements#13"
+axis = "derived"
+
+[[closed]]
 kappa = "cb994241dc5dfaa5abc721a1341512671b33397ae980da98df6605698104b6c7"
 record = "Brand::elements#13"
 axis = "meant"
+
+[[closed]]
+kappa = "ce04e9889cadc4042b8c819be67584cc26af5fa3c08c322dba605f2543486c40"
+record = "Brand::elements#14"
+axis = "derived"
 
 [[closed]]
 kappa = "d3f74cb31bd8d4b90bfd54d821f4b6760205e10642406ce2a3d90fc51af368ce"
@@ -100,14 +180,29 @@ record = "Brand::elements#14"
 axis = "meant"
 
 [[closed]]
+kappa = "f515e24dfb7e1c54a86f3780c782ec1bf84bf8e24dc4a7217c5db59e537e1228"
+record = "Brand::elements#2"
+axis = "derived"
+
+[[closed]]
 kappa = "e25e7c9701c550df2094bf8685f2508f57607244ce90166949633b200d91d393"
 record = "Brand::elements#2"
 axis = "meant"
 
 [[closed]]
+kappa = "d990a278eefdf9822611549b94ec79af883c8207545a35603b83fa5a2ee3c598"
+record = "Brand::elements#3"
+axis = "derived"
+
+[[closed]]
 kappa = "e99417f473229daa51bc0e2dc1f16e87ae3a0b2115fa852f962e5d57781f7173"
 record = "Brand::elements#3"
 axis = "meant"
+
+[[closed]]
+kappa = "f4c43160ca933b39be8e3b4db18a8c116e9007c7bbcdab23f20755c1e4306548"
+record = "Brand::elements#4"
+axis = "derived"
 
 [[closed]]
 kappa = "399bc3b53af5dacf6bf775de14bcd9143a9e8e4dc097776469f16ff0204a33ee"
@@ -130,9 +225,19 @@ record = "Brand::elements#7"
 axis = "meant"
 
 [[closed]]
+kappa = "b90ada11352f54b9ef72bd4a09d864c5f8caf3d560ba4fbf880392b96a6a528a"
+record = "Brand::elements#8"
+axis = "derived"
+
+[[closed]]
 kappa = "958652cfae88069cc50f59a0a092b0a1ea1a53a41c4a342ef9b3d1a7f79dcc05"
 record = "Brand::elements#8"
 axis = "meant"
+
+[[closed]]
+kappa = "8be09eec1d917e4e2089951360f5d0c414c5140bdc9a5c414962f985daef96ce"
+record = "Brand::elements#9"
+axis = "derived"
 
 [[closed]]
 kappa = "14c2146ca0c187638719e014b885968f227427d9ae829447ee8dd8ef8b16e0b4"
@@ -140,14 +245,29 @@ record = "Brand::elements#9"
 axis = "meant"
 
 [[closed]]
+kappa = "3a3a86ccff74d8d32f5c08726ffcdf3d01a34a10d7d46438f256be706a86f334"
+record = "Brand::tokens#0"
+axis = "derived"
+
+[[closed]]
 kappa = "06b83d50308c5aab570507a17b2ed5769d30d90f8c5ef763b140e4fb2e5eb366"
 record = "Brand::tokens#0"
 axis = "meant"
 
 [[closed]]
+kappa = "385df4cc417f8bee312b12812b4c0ecc3c0a5fcc9ce548ac02dd47839a5d917d"
+record = "Brand::tokens#1"
+axis = "derived"
+
+[[closed]]
 kappa = "19fe8da88e547c19322a0062989ce106ba3a0018a1ec17be99637d795f47e4e1"
 record = "Brand::tokens#1"
 axis = "meant"
+
+[[closed]]
+kappa = "f62a3d6b8fca0b11ae5c2c356bfb518f7d60159f4ecf9103a07004a6aea25b9f"
+record = "Brand::tokens#10"
+axis = "derived"
 
 [[closed]]
 kappa = "2de46ee4670a6975c3d05a2dfb2e5af35c074b7e40240df8de138b936ee6d781"
@@ -190,14 +310,29 @@ record = "Brand::tokens#17"
 axis = "meant"
 
 [[closed]]
+kappa = "112ff9fda7ca3439948abb4833f0fe8ee3b0b5e2172805ac673876742c5c7193"
+record = "Brand::tokens#18"
+axis = "derived"
+
+[[closed]]
 kappa = "f6e0ca09c4f5a63d5121461bc49fa00a82f1aff429995975b26dd5c5c520bff3"
 record = "Brand::tokens#18"
 axis = "meant"
 
 [[closed]]
+kappa = "c8b6fb71fd9e33ea62df42d04bd83fee3fb66604d54a8024bf526ce0ba08d90b"
+record = "Brand::tokens#19"
+axis = "derived"
+
+[[closed]]
 kappa = "cde0af9a7845ed39e6d4fc700c034f9e5876cd1d8253bae8661be9b34081f4f1"
 record = "Brand::tokens#19"
 axis = "meant"
+
+[[closed]]
+kappa = "3e8986d58439a805b2f43cf7f8ac64d3a437a6996aa51d99f4b9db7fce6da239"
+record = "Brand::tokens#2"
+axis = "derived"
 
 [[closed]]
 kappa = "5db155c282de13910da972894feec05cd99968b3fc02a681e896535dbf8beae2"
@@ -210,9 +345,19 @@ record = "Brand::tokens#20"
 axis = "meant"
 
 [[closed]]
+kappa = "7eb0ba7aba5420dbf6f3741ed61a13ee1af6a58962b690d1929142a139a1a3e6"
+record = "Brand::tokens#21"
+axis = "derived"
+
+[[closed]]
 kappa = "08aa972a9e9d8a62aed9e475d94030aa3184fcdfcebe75f03f688b0cedb18edc"
 record = "Brand::tokens#21"
 axis = "meant"
+
+[[closed]]
+kappa = "68648ea4ca64f3fc08a200b80436b4f544308d43209b87a7e00b7f9143d2898d"
+record = "Brand::tokens#22"
+axis = "derived"
 
 [[closed]]
 kappa = "6640ba7000cc37d4b96e4046b673b00db62ffad987149c66b030ec152f35786c"
@@ -220,9 +365,19 @@ record = "Brand::tokens#22"
 axis = "meant"
 
 [[closed]]
+kappa = "f9128cd753077cd47e6336c61b22c305063e1bd627191e928db8d0cef6618c61"
+record = "Brand::tokens#23"
+axis = "derived"
+
+[[closed]]
 kappa = "7cccdcec158009166ec8ce0ebb24f0cd72a76135bde519ac243373aae2cdcbb5"
 record = "Brand::tokens#23"
 axis = "meant"
+
+[[closed]]
+kappa = "e6f3fda66581379251e0660fdee822c94e905045166f9a0e29a2274ef0d69316"
+record = "Brand::tokens#24"
+axis = "derived"
 
 [[closed]]
 kappa = "9d431ef6bd7ff1cb983632ada078e0c7222bbec2cb09983394d7cc5eb8cb1488"
@@ -230,14 +385,29 @@ record = "Brand::tokens#24"
 axis = "meant"
 
 [[closed]]
+kappa = "6400d88ee3de2d471c31c8cb2dba7564848b04933ed29be7abb6725dfdadd2ff"
+record = "Brand::tokens#25"
+axis = "derived"
+
+[[closed]]
 kappa = "196c93a6dc26fbcc2175bb10fecbb4fd5e5448b3942b4c5732fdb0d5efd23c8d"
 record = "Brand::tokens#25"
 axis = "meant"
 
 [[closed]]
+kappa = "eaf0d7680c72edc912a8b0b57a17553e9abc31b58a7096b73b48ed5c432ff0f6"
+record = "Brand::tokens#26"
+axis = "derived"
+
+[[closed]]
 kappa = "93f49764456e22326a1397276d87031d82633d4b3429443163d6618c95bf5758"
 record = "Brand::tokens#26"
 axis = "meant"
+
+[[closed]]
+kappa = "9e5d55325f5954967752ab072bf5fd5523f6a90ca2206598be0f2d779442514e"
+record = "Brand::tokens#27"
+axis = "derived"
 
 [[closed]]
 kappa = "64d22a5c162ba351412292462f09a6a02231070fa6b00466b5a74eb91c08e1c1"
@@ -255,9 +425,19 @@ record = "Brand::tokens#29"
 axis = "meant"
 
 [[closed]]
+kappa = "7237818e65be586bf70fc90c43b27f7a26d2bfc872062b4a615924ff416334fa"
+record = "Brand::tokens#3"
+axis = "derived"
+
+[[closed]]
 kappa = "d8998867eefe4989ee148b5b91fc0504a1800a3296b5f50c927fba35980f8f55"
 record = "Brand::tokens#3"
 axis = "meant"
+
+[[closed]]
+kappa = "55734847593bfc6850afb05da5a2b939d2b40e17351f711a88a2aff2d76fa93a"
+record = "Brand::tokens#4"
+axis = "derived"
 
 [[closed]]
 kappa = "ecd5cc7abe472ddc5aa6386dd0ff19a4e68f12b83e0c08e0d249c503c6ce7674"
@@ -265,9 +445,19 @@ record = "Brand::tokens#4"
 axis = "meant"
 
 [[closed]]
+kappa = "19b625ec9b4fb8bd1280d70a56f2820c0c60af12f911f90755f02a9b88febd86"
+record = "Brand::tokens#5"
+axis = "derived"
+
+[[closed]]
 kappa = "74e208e57eb9596400ec4cdb30ef52b0868b9fec73272115afc05739ec5a34be"
 record = "Brand::tokens#5"
 axis = "meant"
+
+[[closed]]
+kappa = "8f7ca79306b5e35d215b476383bd740707f9ffaa1f881689cdd36c00549056c6"
+record = "Brand::tokens#6"
+axis = "derived"
 
 [[closed]]
 kappa = "d17d7f8ded91247e0d963335588fba55acd8ebe0946a455cb5b3674bebea5898"
@@ -275,14 +465,29 @@ record = "Brand::tokens#6"
 axis = "meant"
 
 [[closed]]
+kappa = "83aaa67569bd31eb6744290b854434f124cab4875c398a30655799422094e04b"
+record = "Brand::tokens#7"
+axis = "derived"
+
+[[closed]]
 kappa = "c1c269a1e2dbe119b7087fe897a1cd908fb77a187e8dd38587bd6d12122e37d3"
 record = "Brand::tokens#7"
 axis = "meant"
 
 [[closed]]
+kappa = "e4a964adc0c59b98cd07dab2c5363491aea94f27e6244c107cf700e4b671b2c5"
+record = "Brand::tokens#8"
+axis = "derived"
+
+[[closed]]
 kappa = "aefd90b74d734d6973848039471f11144e8f5073a5b05b069a7a5e7f48a9edae"
 record = "Brand::tokens#8"
 axis = "meant"
+
+[[closed]]
+kappa = "7ddba28be0fef6eef85dc23d20e355e5cd3664af1ba32aab361e3e29ca9a0f9e"
+record = "Brand::tokens#9"
+axis = "derived"
 
 [[closed]]
 kappa = "06dcf3ec86db248a87c9a9e57b41ebe0b2b9e70c30a3ba9c64b0b6e0d5caf6f6"
@@ -1095,1006 +1300,100 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3b6103663e4cf23d35faddfa6f78cea0e9a72ceec21d184031ad87eeabe6cb87"
-record = "Brand::contrasts#0"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "91798f76d40a65175fde417b15f33c61f59850b283589172b8bb66374ef81d44"
-record = "Brand::contrasts#1"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "765c59e9aa0b89bc9755503e6cd193ef1f5ae77e9eb4d8956706ecf86a9d9247"
-record = "Brand::contrasts#10"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "c44070dbfd2dfba112cb768ba3e6f0e9191bc750e1edcb46882f0d9be1bf7447"
-record = "Brand::contrasts#11"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "1b4a62c2af7b3eb12cd8ddee2c9b5f93fad97d37634299bd8b972f3a1a06b342"
-record = "Brand::contrasts#2"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "b1ddcba038d262b1623caf05ad48d49d1e96285591db8e9899b015fa29a7e136"
-record = "Brand::contrasts#3"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "0dd49e77e29c4c869aab70a71aa2471019b974dd3237aee1e9e565ef93214378"
-record = "Brand::contrasts#4"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "7705406e8f16de51433e69a11895e052a602b152796553465f1d77b6a2d24719"
-record = "Brand::contrasts#5"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "c570e712bc2c8cc80896711e7a8ea5f1b4ea28b3e78fe93ea8bebf09906d9278"
-record = "Brand::contrasts#6"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "dcf746ea043eff005f1c6a12f65aa1e8af8358fbfc6b9f74ed0c758ea73e07bc"
-record = "Brand::contrasts#7"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "55e4c04566fe3873dd56e8660acb307ff85ad9c5004a1d1497b7c8ff65460939"
-record = "Brand::contrasts#8"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "efc8f1e6d539a1826d55fd94e4a04ebe970fb8215214250b869cc9ca257ce6a3"
-record = "Brand::contrasts#9"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "060b74da76a39c13e4490119c6d3e980fbe46ea5a630dca583bf1eee86ebff8a"
-record = "Brand::elements#0"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "071d9547adfda2c814aac0deddfefcb06d1d92b9db3e5e08e784006cd7f3ebfc"
-record = "Brand::elements#1"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
 kappa = "61062a14e42a78bc5059956706ab343f3f684b0385d6bc6045e287a146d781bb"
 record = "Brand::elements#10"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"public/favicon.png\" verbatim"
 
 [[residue]]
 kappa = "dffefe8d2a9aa3dbd441dd41790abcbc8ca2b86bea6617aedb82362e2184a606"
 record = "Brand::elements#11"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"fd-bg #0a0a0a, fd-panel #121212, fd-fg #fafafa, fd-dim #999999, fd-line #333333, fd-line-strong #616161, fd-accent #fafafa\" verbatim"
 
 [[residue]]
 kappa = "cfc1ae6b73749c3e8248a20e3b595348a595482d4e4f57313e2920133fcbec31"
 record = "Brand::elements#12"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "7baada2a42059cb3053980ba498b1521bde9d9380dc1682f0a2b7016e9465aa4"
-record = "Brand::elements#13"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "ce04e9889cadc4042b8c819be67584cc26af5fa3c08c322dba605f2543486c40"
-record = "Brand::elements#14"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "f515e24dfb7e1c54a86f3780c782ec1bf84bf8e24dc4a7217c5db59e537e1228"
-record = "Brand::elements#2"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "d990a278eefdf9822611549b94ec79af883c8207545a35603b83fa5a2ee3c598"
-record = "Brand::elements#3"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "f4c43160ca933b39be8e3b4db18a8c116e9007c7bbcdab23f20755c1e4306548"
-record = "Brand::elements#4"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"Space Grotesk, system-ui, sans-serif; JetBrains Mono, ui-monospace, monospace\" verbatim"
 
 [[residue]]
 kappa = "57aade71c786b80788170284cb072c1519796b57933e6bc5b762829e1e31d2f8"
 record = "Brand::elements#5"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"Open by default\" verbatim"
 
 [[residue]]
 kappa = "56f7e02f30d211a2016402ed5bbf59614d675b810165120be838b909e7e64285"
 record = "Brand::elements#6"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"Identity from content\" verbatim"
 
 [[residue]]
 kappa = "3a752dced79f7ee53a880520fd62e85a44906584f6bd850c35b20473bb31fc7d"
 record = "Brand::elements#7"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "b90ada11352f54b9ef72bd4a09d864c5f8caf3d560ba4fbf880392b96a6a528a"
-record = "Brand::elements#8"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8be09eec1d917e4e2089951360f5d0c414c5140bdc9a5c414962f985daef96ce"
-record = "Brand::elements#9"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "bcbb2c5ba0e22cd406e677faafcef24a93d9a40d1c79e102d744bc4f8c39ce6e"
-record = "Brand::sources#0"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "b12ae2f0dff8ec94cb1663a4e7d5811c0c62515592bf41653ca62cd1394caff9"
-record = "Brand::sources#0"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "b45f846122bd2609ec04513abb545df4cc4918e1b4a50c4aeb977ade9547a9c9"
-record = "Brand::sources#1"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "562bd6f3b1330d095afc4080c30e347cdfa2eb9b14e9d14172228857c936d07c"
-record = "Brand::sources#1"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "ad48f3b41d797e7adab541f94f00e8ac2cc5435197d0a0be26371e1027e9517f"
-record = "Brand::sources#10"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "fb071b0200d07cdbe064ea901c0e6a1bf7a6ec413debc2aee6b734f1422d02fb"
-record = "Brand::sources#10"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "3b28b4c2baa234020f70465a2fea830fca2472e0a384f2c738b7dc546022e296"
-record = "Brand::sources#11"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "a48a1f481f3ce5ef7f3c81daded502018b0bb981cd84edd88827894bd40ddf3a"
-record = "Brand::sources#11"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "1c4e6bf3fc2e83dfc25d8bae31b9559c432cb01669cc35735942a0516d07de92"
-record = "Brand::sources#12"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "b20b49b80dbe013e0201c3396e2a170aad1709be8e3105574cc02657287a19ac"
-record = "Brand::sources#12"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "a2dd39424b7436eee9064ad3257e3d6b7a4b4df9aa5e483934b7047e59c644d6"
-record = "Brand::sources#13"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "308d232e6e8583044659fe56ef362246720f939e0dd5bf3ef293a63b257c04c2"
-record = "Brand::sources#13"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "bf08b77dde01f7f9e26682f4b67fbb7e8ffb73a11cda33fb14d55a7741a44601"
-record = "Brand::sources#14"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "6c134f6d68ae235124b5cd709578e258dcabd7fec3f67558f763715e289d8dc6"
-record = "Brand::sources#14"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "97cfa08a22184511e1d100c3e4dc7d5305d4a4047895affa6786d42aff1f17bf"
-record = "Brand::sources#15"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "a3639fd3f8435b01bab372d4f8082a53186dcb6daf166f3ec0efc137130f78cd"
-record = "Brand::sources#15"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "d22fc2f74cc911d55316c7f4bf62c05f587372bad6a421358084e4d7d7583e78"
-record = "Brand::sources#16"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "d9d19e1eafa3d8b36bc38c6a6f519d4aadbe952644af2e39fcd3c79e87410bbb"
-record = "Brand::sources#16"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "eb1a078eb1a0b29778374abcd52f6a8ffba204a95fd4833566d0638442439c06"
-record = "Brand::sources#17"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "0bb7c27bad081ca811c315cd9c3ca2347a557328e3969746e3fd0a30a3aba0da"
-record = "Brand::sources#17"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "abc688cfb77e9c03ca2b7e6b95c61533bf74861f07ee177f75e794bdd69b0618"
-record = "Brand::sources#18"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "b2904361409517b42ba811641e5b00991cde4718061062ea0066c7de7f23b25d"
-record = "Brand::sources#18"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "cf7e4e5f0a30e7b348126628ead4168c4201a496b4bc09c4fac60407f1fb8679"
-record = "Brand::sources#19"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "08103f80b3d8600b7fb272e767dd65933127e2da810f3fc642080d1b1dc92ffe"
-record = "Brand::sources#19"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "b68a4fbe44d2f0baa102271ee639c806104a4c4976c82decd001363370e980b4"
-record = "Brand::sources#2"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8911f9f60160348598907d79e0c0eb2f462b96654ece3242d3bfdd52f781f375"
-record = "Brand::sources#2"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "455c14303bc368f917da658080ad292536bea50a80816930996e64682660d16c"
-record = "Brand::sources#20"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "ec5bf88577459b61ed90609878eb5360fef4bd58db29bca39aafcad80811a0c3"
-record = "Brand::sources#20"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "e783962a0457382d69022ee3b8b63c6f5d4b99c66106fef06913504b92826eac"
-record = "Brand::sources#21"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "603eb8209024c21cf6a286601c00185f4106ac04b26e19060a0634cf8f8abb0a"
-record = "Brand::sources#21"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "2bd03342e74b7f5ec21e8671d0d5c32386a19d6cbc85f471fef60e891c67dcb5"
-record = "Brand::sources#22"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "7c89471f7022197104b171ce899d0bd42b064561aac2ff488d574306eb69c666"
-record = "Brand::sources#22"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "062d34ed4fc648573648615487019e41cf3e681c61c363926c8e45480727b494"
-record = "Brand::sources#23"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "d2a79c51e2acfefed8bd65a6c9c3c838fa0b9be761824c2e438c34940d37a0b9"
-record = "Brand::sources#23"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "263bcad75a9bb7142835e13e79f9e8f6f0eb5ed9162698f862a88178c2e61074"
-record = "Brand::sources#24"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "c90e882a60955a9e6b2d31455c0dd85c8d1ce2e9e16b99bac6ed0b1829567741"
-record = "Brand::sources#24"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "c122ac599a0ae4973e55f25a48b265bca880f5ff092c3411e1cf41b11c5dd329"
-record = "Brand::sources#25"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "804f11c22596fe3ec84d00e13a5146e9e1b958bc2d331a487185987e4c6e06ed"
-record = "Brand::sources#25"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "7da2ba8832b894c37b75abcd85b907efd7f5d7c60eb967b18921f0b6cc42bbf6"
-record = "Brand::sources#26"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "c4680f394afcbd9125c9c7d47193d4063e1bd800f51f8c8f097023613158977b"
-record = "Brand::sources#26"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "f68855ebb9862fdc2bc2b5444a58db1246a525c4c5ca34db2f5f259cf1913c13"
-record = "Brand::sources#27"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "4ea6411b4264fa8df6f6afd8fd1adbe812942fd994c16b250557c7864517cf8f"
-record = "Brand::sources#27"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "3a2aed7940bf34475cd38acf838328b2d6300804f46fd67da930e3e92c22acfd"
-record = "Brand::sources#28"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "6e2ef4c70a391683891f493d0ad14a85c63f48f49e9ba276f6eb497c3c03bfd1"
-record = "Brand::sources#28"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "7baff5affef29f2331b0f952da2b7bc4534e0320fee43d8a7a6b8db6ce6655fc"
-record = "Brand::sources#29"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "82cf582eb55cc1f177c5bf53f9d2cf1d80ad882b619e8bad25078bf42b326351"
-record = "Brand::sources#29"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "deb92ec69ebbebe289aef7d8b66275bfbe174202b430d4f3fca99cab25633071"
-record = "Brand::sources#3"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "ed14fe91c98cff2e75412e55c6aa6c4894d386dddc371780c48e7d9e98325bf5"
-record = "Brand::sources#3"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "ba778681705575b78078e327352e34022036fd1443e8893ef44d5b4f690f4c82"
-record = "Brand::sources#30"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "f553b14f8bd781e51e394353c0e943c6d05be5fdaa443ff186660b744419166e"
-record = "Brand::sources#30"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "504ebc39325c64a03710afa1843e60f5517c4acfebf6f47e850053269f547ca5"
-record = "Brand::sources#31"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8c2506bfef121d026642eedc91e89f7638f067fe4f89db8067881fd05dc1558f"
-record = "Brand::sources#31"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "0e0583e2865813d82fbe5d2aa09712f9c5cafae32d30a7684b16c97b79b2c6a8"
-record = "Brand::sources#32"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "9f8d8e7dc3b53ca8ed85504e0686c75bce2a4ce6f164cd3c7e779aa2dbd8f1d4"
-record = "Brand::sources#32"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "d050a779ef6ee752ea20ed962fe9b891e9bd9520fbc173965e0023b4bcb23581"
-record = "Brand::sources#33"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "6438e5fe37c5048f00040c044a4a02d6a0ed6e35f98e4a0518dd1f3fecd87613"
-record = "Brand::sources#33"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "1a278f50d2d1bd1bcc8a05c1f953311cb19da1c2ef7645d9022ac59f8a80e5f4"
-record = "Brand::sources#34"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "859bbd38dedfbe65db297d5137ab5535b2eff456c4f4cd90166473240c125455"
-record = "Brand::sources#34"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "887789280a7f3a1a010427c020afb64391c6d36929d6df669cac3d404c94f7ac"
-record = "Brand::sources#35"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "3157d63051cf55e4c63db7bc7342fd653de51c5b15424432734e7b1a0f32db3e"
-record = "Brand::sources#35"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "a162aaafd30ce0b6c26aafedf6b54feede13f088c228324c7945304de2242c1a"
-record = "Brand::sources#36"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "78072b787c3e7977c4b9e8019c17457e1503599f818040cd557a96bb461aa5cf"
-record = "Brand::sources#36"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "4a515e5550a3a1092b8e00bda52b71b3175b6adf6a3443ad345895f06246ba31"
-record = "Brand::sources#37"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "30a8d1bb0fe5d75c528d121919e35196e31e78a0bf72871dd0c4466075daa35c"
-record = "Brand::sources#37"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "dd4139af1864a7da643fea438b0393859138407256bf0907abb842670c3884b0"
-record = "Brand::sources#38"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "91ff7c9ce806100f2e66b180f55bd5f388bad4a0baa6b7a94a13df38b4f5d4d7"
-record = "Brand::sources#38"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "8aaced69e6b5dde7e9288d256006d178e3208272c0bcc8159dcf7bdf43e5d36e"
-record = "Brand::sources#39"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "14d242ccc3b8f70cebc5681e25f2ce6f26946490c549a62e2f106ee1ce7dfc80"
-record = "Brand::sources#39"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "06c707c223fd1e16c30d3886c5035758ded487ede1f0c911fc8d42e3aefa60a8"
-record = "Brand::sources#4"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "3ec66b45e538d008ad7f0f15d216ec86242aa4d94d106d9c0a6b0dfe8e73aa65"
-record = "Brand::sources#4"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "1cf53020fa40e009d22b52f8236afa3f6563852c4fe0c01be9425a15a8be7ee5"
-record = "Brand::sources#40"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8f3588c4e1c61fb87a95e4a6562c64a5783467b0d40d2a856c6992d4ff460dbf"
-record = "Brand::sources#40"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "66be5211cd81beaa0ca56d9eab8e5b5baf4fb5202d083d926ca24f11eb94d21e"
-record = "Brand::sources#41"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "fc16920f4077f3bec8541e217052e73fda2a1c73bac3bf7ed9ff52a50f1c3fc3"
-record = "Brand::sources#41"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "69568b7f0067b38382bba419dee3e03bef35197f7ea8bd47e004bac5a5a20440"
-record = "Brand::sources#42"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "21f4812fded8bd092254d7d104f3fb1356f185d462e3f3eeda04570efcee338c"
-record = "Brand::sources#42"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "29f9a5d4702583ee8ca6f4ffd00614787608d06dcb1a6ce3c785b2d942847bca"
-record = "Brand::sources#43"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "0fc0c2e5e7450172ea85578c7d2491d31d0c2507b343a760a213e4a4be8e0f51"
-record = "Brand::sources#43"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "221482d0c78306cf4a093058343e16c16959aedc892df1cd3cf150df5dd21f15"
-record = "Brand::sources#44"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "034c13c20d344c4e134c6aff9526420cea07eff6518d8014673d36e19bcaea7c"
-record = "Brand::sources#44"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "092d49f6eb58b3e30b8ccfab884289028413999bc20af0816564d6c1c2bce69d"
-record = "Brand::sources#45"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "13a3bf53ae1cb1f78b3d0b3dd21294eeef1e9a5eb327ecfaaf45fa32c1a84d2e"
-record = "Brand::sources#45"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "c5f061e6419d4ab95f20a85092cafc1a1257a2c016a4ec4cf1f8b87a654943e8"
-record = "Brand::sources#46"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "4726c90ab848e652913a3085d58f7de46b5c520b199082804b65aad94c9d202c"
-record = "Brand::sources#46"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "1312ae50e9c21b093894a2964dafc59fbb121d79bcc8789458a672d69559b772"
-record = "Brand::sources#47"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8201fedf1047067313e62c16d925bc62218b5b37f334c1b138419b2c559dbbe9"
-record = "Brand::sources#47"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "b55152f6348e04621419a9fc8783bd0b635b17629dd7cac4e04039703df4c6fa"
-record = "Brand::sources#48"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "5a8e69f73a7f20b40e2ade379d5a3b2fad395987a1ba5cb4029b3fb8303822e9"
-record = "Brand::sources#48"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "d2f921f8c19719733a61e5918ed1611c676c3a8f5ad49dcbf0ef65d648c7ce4d"
-record = "Brand::sources#49"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "04eb37fabc113c5cbc8a704df7a192097681257dd7b5d7839ce5f820fb93035d"
-record = "Brand::sources#49"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "69216d9439c63a3ddbee6238849ae2d8681dbc01cc571aa3baf06182245ada7d"
-record = "Brand::sources#5"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "e8dc305577c7c18cea119dd0a294eedc17ce4758fe37292cd67dec74a9fa9425"
-record = "Brand::sources#5"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "7aea55fff56a2bcc90ddf2e4e080d778754e8b944dcdc3efab8d64fd853ec064"
-record = "Brand::sources#50"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "f5e6ca58d7627a3c981df53150360eb6a7661423f9536594abb4ff12a8b97562"
-record = "Brand::sources#50"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "3dd780ce30893a11ed54a402c3ac89ad13c7189a039618f9697229bcaecca934"
-record = "Brand::sources#51"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "c2ea85304113fc20273cf193ab0d1f5f97f9e5778b906148d77414efcede3dd5"
-record = "Brand::sources#51"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "cf6f5461cef3e4305ed4246894a370a2ac7850ed683e481e50238fafdc204677"
-record = "Brand::sources#52"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "d3fd4e0f67af36255988ca8690cdbe93552e2ad82337198e899e8f92678c20e0"
-record = "Brand::sources#52"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "386dfc53af45b345012ab5b16e68034171546dd264f1a8a39ac22aa6498ca411"
-record = "Brand::sources#53"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "2fbfbb6cf724d551ddde4b32e8038b25e5d937d9b4c05875a3b9272eb82a4913"
-record = "Brand::sources#53"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "ee4aa2591c43a8d2812c1073f82a94cff10901fa3bf23ae1cc822da64202ef51"
-record = "Brand::sources#54"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "a73ee700b30f25aa8d0d04f3d653d8808c1b0a7c5a75d63aaff16487eb719ba9"
-record = "Brand::sources#54"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "2191502bab521d74cefc63b6f2f90ec9b1d51f55509e3442b3aa9b3b76fb889c"
-record = "Brand::sources#6"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "1035e40afd735c4669410ea0bd0850752f7e1d4ec440a1de1d114d49d9497865"
-record = "Brand::sources#6"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "5b73a2d08709b345c99948a46efbc73a76b60901a282709d90087b0e56681fcb"
-record = "Brand::sources#7"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "9c788544098c67ba3a91a91f8883d6c1bf00c0a7cc00ee15d422883c9e20ce33"
-record = "Brand::sources#7"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "8164f51f88239aca3c8cbd835a2203c4fb800131f5f146d6b8032715b81ed2c9"
-record = "Brand::sources#8"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "0698b5d9711c26e161e7a896fbd64a1b6d8cca2c3c1bcab52d1922b7516ee459"
-record = "Brand::sources#8"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "9b9b8e3376dc87854702535145cbab11c7eee0a710945b370feef8499054ca11"
-record = "Brand::sources#9"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "9ae27e0e4e3877608cf24507eccfe9e075057a0baf2ee4871a622af1455f8fb1"
-record = "Brand::sources#9"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "3a3a86ccff74d8d32f5c08726ffcdf3d01a34a10d7d46438f256be706a86f334"
-record = "Brand::tokens#0"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "385df4cc417f8bee312b12812b4c0ecc3c0a5fcc9ce548ac02dd47839a5d917d"
-record = "Brand::tokens#1"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "f62a3d6b8fca0b11ae5c2c356bfb518f7d60159f4ecf9103a07004a6aea25b9f"
-record = "Brand::tokens#10"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"No central authority\" verbatim"
 
 [[residue]]
 kappa = "53d1c5ec6814fa9aea09aaf1bee3a73c45c8464e1beac6a94020c0d4029f437e"
 record = "Brand::tokens#11"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"#0a0a0a\" verbatim"
 
 [[residue]]
 kappa = "f5a17f22823abf259e5b5450ac54a95daa19972364b80018cd55017dcd03e7cd"
 record = "Brand::tokens#12"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"#121212\" verbatim"
 
 [[residue]]
 kappa = "85a2753d1cfaac245e17641c6b63c64e7b699eefaeb64c15a0c81f129abbea5f"
 record = "Brand::tokens#13"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"#fafafa\" verbatim"
 
 [[residue]]
 kappa = "fd7520bcfb84eac0fe30a70cb3d0df334df7deb92be458a594b93f1b86516524"
 record = "Brand::tokens#14"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"#999999\" verbatim"
 
 [[residue]]
 kappa = "5be51b0ee802fd0496f8b601814e04163e2f0032ce8c0cc3f7ba593f9ca773a9"
 record = "Brand::tokens#15"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"#333333\" verbatim"
 
 [[residue]]
 kappa = "0ecba25a926d067085a1fc69dd78687e99e08aced15c52f828624b51c2c3691f"
 record = "Brand::tokens#16"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"#616161\" verbatim"
 
 [[residue]]
 kappa = "0154d4ee44753762d4e0adaf6b50a99bf51e19561bd9aecb995515ef205f7ce6"
 record = "Brand::tokens#17"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "112ff9fda7ca3439948abb4833f0fe8ee3b0b5e2172805ac673876742c5c7193"
-record = "Brand::tokens#18"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "c8b6fb71fd9e33ea62df42d04bd83fee3fb66604d54a8024bf526ce0ba08d90b"
-record = "Brand::tokens#19"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "3e8986d58439a805b2f43cf7f8ac64d3a437a6996aa51d99f4b9db7fce6da239"
-record = "Brand::tokens#2"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"#fafafa\" verbatim"
 
 [[residue]]
 kappa = "e542b1365305f97286e92391cecc9381944e2e766bc492250511d92442d49b33"
 record = "Brand::tokens#20"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "7eb0ba7aba5420dbf6f3741ed61a13ee1af6a58962b690d1929142a139a1a3e6"
-record = "Brand::tokens#21"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "68648ea4ca64f3fc08a200b80436b4f544308d43209b87a7e00b7f9143d2898d"
-record = "Brand::tokens#22"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "f9128cd753077cd47e6336c61b22c305063e1bd627191e928db8d0cef6618c61"
-record = "Brand::tokens#23"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "e6f3fda66581379251e0660fdee822c94e905045166f9a0e29a2274ef0d69316"
-record = "Brand::tokens#24"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "6400d88ee3de2d471c31c8cb2dba7564848b04933ed29be7abb6725dfdadd2ff"
-record = "Brand::tokens#25"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "eaf0d7680c72edc912a8b0b57a17553e9abc31b58a7096b73b48ed5c432ff0f6"
-record = "Brand::tokens#26"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "9e5d55325f5954967752ab072bf5fd5523f6a90ca2206598be0f2d779442514e"
-record = "Brand::tokens#27"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"100deg, #fb5661 0, #fa792e 0.07, #f9cf24 0.14, #f6e41e 0.19, #25d05e 0.25, #20d0f3 0.31, #4f81f8 0.38, #ae6ff6 0.45, #f368c5 0.48, #fb5661 0.5, #fa792e 0.57, #f9cf24 0.64, #f6e41e 0.69, #25d05e 0.75, #20d0f3 0.81, #4f81f8 0.88, #ae6ff6 0.95, #f368c5 0.98, #fb5661 1\" verbatim"
 
 [[residue]]
 kappa = "fecea31ff9fef82c6ca92e89825f01abb063ae4ff52c3c50e8438bb1f4ee0999"
 record = "Brand::tokens#28"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"Space Grotesk, system-ui, sans-serif\" verbatim"
 
 [[residue]]
 kappa = "73f056518785c8d09019e4f1f480eafcbad7b2e7d03cb2d7fe4ca576e452a833"
 record = "Brand::tokens#29"
 axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "7237818e65be586bf70fc90c43b27f7a26d2bfc872062b4a615924ff416334fa"
-record = "Brand::tokens#3"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "55734847593bfc6850afb05da5a2b939d2b40e17351f711a88a2aff2d76fa93a"
-record = "Brand::tokens#4"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "19b625ec9b4fb8bd1280d70a56f2820c0c60af12f911f90755f02a9b88febd86"
-record = "Brand::tokens#5"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "8f7ca79306b5e35d215b476383bd740707f9ffaa1f881689cdd36c00549056c6"
-record = "Brand::tokens#6"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "83aaa67569bd31eb6744290b854434f124cab4875c398a30655799422094e04b"
-record = "Brand::tokens#7"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "e4a964adc0c59b98cd07dab2c5363491aea94f27e6244c107cf700e4b671b2c5"
-record = "Brand::tokens#8"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "7ddba28be0fef6eef85dc23d20e355e5cd3664af1ba32aab361e3e29ca9a0f9e"
-record = "Brand::tokens#9"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
+reason = "derived from spans that do not hold its text \"JetBrains Mono, ui-monospace, monospace\" verbatim"
 
 [[residue]]
 kappa = "7972dc187b93c49e412c1b2bb86e5f39744dd741d219ba9372d2a1c69f9fa4c2"

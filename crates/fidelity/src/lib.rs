@@ -178,6 +178,16 @@ pub fn span_kappa(location: &str, lines: &str) -> String {
     hex(&h.finalize())
 }
 
+/// κ of a whole file a record was read from, a source entity at lines 0 to 0.
+pub fn whole_file_kappa(location: &str, bytes: &[u8]) -> String {
+    let mut h = Sha256::new();
+    for part in ["prism/source-file/1".as_bytes(), location.as_bytes(), bytes] {
+        h.update((part.len() as u64).to_be_bytes());
+        h.update(part);
+    }
+    hex(&h.finalize())
+}
+
 /// κ of a whole file the measurement was read from.
 pub fn file_kappa(location: &str, bytes: &[u8]) -> String {
     let mut h = Sha256::new();
@@ -425,14 +435,23 @@ pub fn score(project: &Path, repo: &Path) -> Result<Score, FidelityError> {
     };
     let mut spans = Vec::new();
     for (i, e) in entities.iter().enumerate() {
-        let text = read(&e.location)?;
-        let span = lines(&text, e.first, e.last).ok_or_else(|| {
-            FidelityError::False(format!(
-                "source entity {i} spans lines {}..{} of {}, which it does not have",
-                e.first, e.last, e.location
-            ))
-        })?;
-        let k = span_kappa(&e.location, &span);
+        let (k, span) = if e.first == 0 && e.last == 0 {
+            let path = repo.join(&e.location);
+            let bytes = std::fs::read(&path).map_err(|err| FidelityError::Io(path, err))?;
+            (
+                whole_file_kappa(&e.location, &bytes),
+                String::from_utf8(bytes).unwrap_or_default(),
+            )
+        } else {
+            let text = read(&e.location)?;
+            let span = lines(&text, e.first, e.last).ok_or_else(|| {
+                FidelityError::False(format!(
+                    "source entity {i} spans lines {}..{} of {}, which it does not have",
+                    e.first, e.last, e.location
+                ))
+            })?;
+            (span_kappa(&e.location, &span), span)
+        };
         if k != e.kappa {
             return Err(FidelityError::False(format!(
                 "source entity {i} ({} lines {}..{}) has κ {k}, not {}",
@@ -484,12 +503,9 @@ pub fn score(project: &Path, repo: &Path) -> Result<Score, FidelityError> {
                     .collect::<Vec<_>>()
                     .join("\n");
                 match r.texts.iter().find(|t| !joined.contains(t.as_str())) {
-                    Some(t) => {
-                        return Err(FidelityError::False(format!(
-                            "{} is derived from spans that do not contain its text {t:?}",
-                            r.id
-                        )))
-                    }
+                    Some(t) => Err(format!(
+                        "derived from spans that do not hold its text {t:?} verbatim"
+                    )),
                     None => Ok(()),
                 }
             }

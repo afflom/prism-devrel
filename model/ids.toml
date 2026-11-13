@@ -199,7 +199,7 @@ statement = "Every subject pin moves only forward, to the newest main commit who
 id = "FI-01"
 level = "build"
 suite = "fidelity"
-statement = "Every record of a Prism project is scored as derived (W3C PROV-O wasDerivedFrom a source span whose κ recomputes and which holds its text), meant (a theorem names it, ISO/IEC/IEEE 29148) and, for a measure, measured (an ISO/IEC/IEEE 15939 measurement result whose κ recomputes); a provenance or measurement row that states something false is refused"
+statement = "Every record of a Prism project is scored as derived (W3C PROV-O wasDerivedFrom a source span whose κ recomputes and which holds its text), meant (a theorem names it, ISO/IEC/IEEE 29148) and, for a measure, measured (an ISO/IEC/IEEE 15939 measurement result whose κ recomputes); a source entity or result whose κ does not recompute is refused, and a span that does not hold the record's text verbatim leaves it underived"
 
 [[id]]
 id = "FI-02"

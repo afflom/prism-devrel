@@ -24,9 +24,11 @@ source and each modeled after an established framework, cited in the records:
              observed from the model, or recorded open where nothing measures
              it.
 
-Every record carries the span it was read from and that span's kappa, the
-SHA-256 of the domain, the path and the span's bytes, so a change of the
-source is a change of the model.
+Every record names the W3C PROV-O source entity it was read from (a line span,
+or a whole file at lines 0 to 0) and is prov:wasDerivedFrom it. The entity's
+kappa is the SHA-256 of the length-prefixed domain, path and bytes, as
+prism-fidelity recomputes it, so a change of the source is a change of the
+model.
 
     python3 -I experience.py OUT_ROOT [SOURCE_ROOT]
 
@@ -44,7 +46,8 @@ PRODUCT = CONFIG["product"]
 SLUG = re.sub(r"[^a-z0-9]+", "-", PRODUCT.lower()).strip("-")
 LOCK = json.loads((SRC / "brand/foundation.lock").read_text())
 AUTH = SRC / "brand/foundation"
-SPAN_DOMAIN = "prism/experience-span/1"
+SPAN_DOMAIN = "prism/source-span/1"
+FILE_DOMAIN = "prism/source-file/1"
 
 # The criteria of WCAG 2.2 that bound a contrast, as the standard states them:
 # (success criterion, what it covers, minimum ratio as numerator:denominator).
@@ -64,18 +67,23 @@ def lines_of(path):
     return (SRC / path).read_text(encoding="utf-8").split("\n")
 
 
-def kappa_bytes(path, data):
-    return hashlib.sha256(SPAN_DOMAIN.encode() + b"\0" + path.encode() + b"\0" + data).hexdigest()
+def kappa_bytes(domain, path, data):
+    """κ of a W3C PROV-O source entity, as prism-fidelity recomputes it."""
+    h = hashlib.sha256()
+    for part in (domain.encode(), path.encode(), data):
+        h.update(len(part).to_bytes(8, "big"))
+        h.update(part)
+    return h.hexdigest()
 
 
 def cite(record, path, first, last):
     text = "\n".join(lines_of(path)[first - 1:last]).encode()
-    SOURCES.append((record, path, first, last, kappa_bytes(path, text)))
+    SOURCES.append((record, path, first, last, kappa_bytes(SPAN_DOMAIN, path, text)))
     return len(SOURCES) - 1
 
 
 def cite_file(record, path):
-    SOURCES.append((record, path, 0, 0, kappa_bytes(path, (SRC / path).read_bytes())))
+    SOURCES.append((record, path, 0, 0, kappa_bytes(FILE_DOMAIN, path, (SRC / path).read_bytes())))
     return len(SOURCES) - 1
 
 
@@ -462,19 +470,6 @@ structure{
 }
 
 structure{
-  name: Source,
-  type_parameters: [],
-  parameters: [],
-  fields: [
-    {name: record, type: String},
-    {name: path, type: String},
-    {name: firstLine, type: Nat},
-    {name: lastLine, type: Nat},
-    {name: kappa, type: String}
-  ]
-}
-
-structure{
   name: BrandElement,
   type_parameters: [],
   parameters: [],
@@ -605,14 +600,15 @@ model += all_of("measuresOfGoals", "UsabilityMeasure", "((project head goal) <? 
 model += FOOTER
 
 # Brand.lex.tex
+P = "Foundation.Provenance.V1.Model"
 auth = LOCK["source"]
-brand = header("Brand", f"{PRODUCT} brand identity", [M])
+brand = header("Brand", f"{PRODUCT} brand identity", [M, "Foundation.Provenance.V1.Model"])
 brand += defn("authority", f"{M}::Authority",
               f"(record {M}::Authority {{framework := {q('Alina Wheeler, Designing Brand Identity, 5th ed., Wiley, 2017; W3C Design Tokens Format Module 2025.10; WCAG 2.2')}, "
               f"repository := {q(auth['repository'])}, commit := {q(auth['commit'])}}})")
-brand += defn("sources", f"(List {M}::Source)", lst(
-    [f"(record {M}::Source {{record := {q(r)}, path := {q(p)}, firstLine := {a}, lastLine := {b}, kappa := {q(k)}}})"
-     for r, p, a, b, k in SOURCES], f"{M}::Source"))
+brand += defn("sources", f"(List {P}::SourceEntity)", lst(
+    [f"(record {P}::SourceEntity {{index := {i}, location := {q(p)}, firstLine := {a}, lastLine := {b}, kappa := {q(k)}}})"
+     for i, (_, p, a, b, k) in enumerate(SOURCES)], f"{P}::SourceEntity"))
 brand += defn("elements", f"(List {M}::BrandElement)", lst(
     [f"(record {M}::BrandElement {{kind := (ctor {M}::BrandElementKind.{k}), text := {q(t)}, source := {s}}})"
      for k, t, s in elements], f"{M}::BrandElement"))
@@ -624,6 +620,19 @@ brand += defn("contrasts", f"(List {M}::ContrastPair)", lst(
      for f, b, a, c, o, r, s in contrasts], f"{M}::ContrastPair"))
 for criterion, (sc, covers, (num, den)) in WCAG.items():
     brand += defn(f"required{criterion[0].upper()}{criterion[1:]}Milli", "Nat", f"{num * SCALE // den}")
+# W3C PROV-O: every record read from a cited source prov:wasDerivedFrom it,
+# by this writer (FI-01); the sources above are the prov:Entity rows.
+derivations = [(f"Brand::elements#{i}", s) for i, (_, _, s) in enumerate(elements)]
+derivations += [(f"Brand::tokens#{i}", s) for i, (*_, s) in enumerate(tokens)]
+derivations += [(f"Brand::contrasts#{i}", s) for i, (*_, s) in enumerate(contrasts)]
+brand += defn("writer", f"{P}::Agent",
+              f"(record {P}::Agent {{index := 0, name := {q('scripts/experience/experience.py')}, kind := (ctor {P}::AgentKind.softwareAgent)}})")
+brand += defn("reading", f"{P}::Activity",
+              f"(record {P}::Activity {{index := 0, name := {q('read the brand authority')}, agentIndex := 0}})")
+brand += defn("derivations", f"(List {P}::Derivation)", lst(
+    [f"(record {P}::Derivation {{generatedEntity := {q(r)}, usedEntityIndex := {u}, activityIndex := 0}})"
+     for r, u in derivations], f"{P}::Derivation"))
+brand += theorem("everyBrandRecordIsDerived", f"(({P}::derivationsKnown {len(SOURCES)} 1 (derivations)) = true)")
 n_src, n_tok = len(SOURCES), len(tokens)
 brand += theorem("everyElementIsSourced", f"(({M}::elementsSourced (elements) {n_src}) = true)")
 brand += theorem("everyTokenIsSourced", f"(({M}::tokensSourced (tokens) {n_src}) = true)")

@@ -6,11 +6,12 @@ Feature: fidelity
   questions are kept in a register that only shrinks.
 
   @FI-01 @build
-  Scenario: Every record of a Prism project is scored as derived (W3C PROV-O wasDerivedFrom a source span whose κ recomputes and which holds its text), meant (a theorem names it, ISO/IEC/IEEE 29148) and, for a measure, measured (an ISO/IEC/IEEE 15939 measurement result whose κ recomputes); a provenance or measurement row that states something false is refused
+  Scenario: Every record of a Prism project is scored as derived (W3C PROV-O wasDerivedFrom a source span whose κ recomputes and which holds its text), meant (a theorem names it, ISO/IEC/IEEE 29148) and, for a measure, measured (an ISO/IEC/IEEE 15939 measurement result whose κ recomputes); a source entity or result whose κ does not recompute is refused, and a span that does not hold the record's text verbatim leaves it underived
     Given a Prism project with a record derived from a source span, one named by a theorem, a quality measure with a measurement result, and one with none of these
     When prism-fidelity scores it
     Then each record's questions are closed or open exactly as its rows and theorems say
-    And a source entity whose κ does not recompute, or a derived record whose text is not in its span, is refused
+    And a source entity whose κ does not recompute is refused
+    And a record derived from a span that does not hold its text verbatim stays open on the derived axis
 
   @FI-02 @build
   Scenario: The fidelity register only shrinks: every question is keyed by its κ, a κ once closed that a later projection finds open is refused, and the committed register is byte for byte the one the model scores to
