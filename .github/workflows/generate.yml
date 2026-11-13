@@ -78,5 +78,5 @@ jobs:
             message="Pin $moved and regenerate the catalogs"
           fi
           scripts/ci/push.sh "$message" \
-            "CONFORMANCE.md devrel/subjects.json app brand builder/assets.mjs" \
+            "CONFORMANCE.md devrel/subjects.json app brand builder/assets.mjs fidelity.toml" \
             bootstrap.yml pages.yml
