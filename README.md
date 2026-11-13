@@ -146,6 +146,22 @@ node builder/cli.mjs schema                                     # the MCP tool p
 node builder/cli.mjs axioms my.prompt.json verify.log          # record observed axiom sets
 ```
 
+Several decisions that belong to one system go in one application: a
+`prism/prompt-set/1` file lists their prompts, and `build-set` writes each app's
+model and proofs, one set of facet modules describing them all (shared
+stakeholders and components are one record), and a router module, the
+project's one application root, whose guest answers `<app> <fields>` as that
+app does and replays every app's acceptance vectors. Claim ids take the
+initials of every word of an app's name. Rows, entrypoints and files the set
+does not own are kept, and `--check` writes nothing and fails on any stale
+file. UOR-Foundation/community builds its decision apps this way
+(`apps/set.json`).
+
+```sh
+node builder/cli.mjs build-set apps/set.json --out .            # many apps, one guest
+node builder/cli.mjs build-set apps/set.json --out . --check    # fail if a generated file is stale
+```
+
 A prompt the builder cannot make into a sound app is refused with the reason
 (exit code 2): an example the rules contradict, a property with a
 counterexample, a threat with neither a control with evidence nor an accepted

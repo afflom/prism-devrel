@@ -46,6 +46,25 @@ export const str = (text) => `"${String(text).replace(/[^\x20-\x7e]/g, '').repla
 /** `(cons a (cons b (nil T)))`. */
 export const cons = (type, items) => items.reduceRight((rest, item) => `(cons ${item} ${rest})`, `(nil ${type})`);
 
+/**
+ * The most items one definition's list literal holds. LexLean links a module
+ * through JSON whose nesting depth is bounded, and each cons nests one level,
+ * so a longer list is written in parts, each part's tail a reference to the
+ * next. The list stays a closed term, with no call, as the SDK reads an
+ * application's metadata.
+ */
+export const LIST_PART = 64;
+
+/** A list as one definition `name`, continued by `name1`, `name2`, ... when it is longer than LIST_PART. */
+export function listDefinitions(name, type, items) {
+  const parts = [];
+  for (let i = 0; i < items.length; i += LIST_PART) parts.push(items.slice(i, i + LIST_PART));
+  if (parts.length <= 1) return [definition(name, `(List ${type})`, cons(type, items))];
+  const part = (i) => (i === 0 ? name : `${name}${i}`);
+  // A definition is declared before it is referenced, so the last part comes first.
+  return parts.map((items_, i) => definition(part(i), `(List ${type})`, items_.reduceRight((rest, item) => `(cons ${item} ${rest})`, i + 1 < parts.length ? `(${part(i + 1)})` : `(nil ${type})`))).reverse();
+}
+
 /** `(record T {k := v, ...})`. */
 export const rec = (type, fields) => `(record ${type} {${Object.entries(fields).map(([k, v]) => `${k} := ${v}`).join(', ')}})`;
 
@@ -78,7 +97,8 @@ export function moduleText({ name, glossaries, imports, title, declarations }) {
     ...imports.map((m) => `\\importmodule{${m}}`),
     `\\title{${title}}`,
     '\\begin{semanticmodule}',
-    declarations.map(declarationText).join('\n\n'),
+    // An append is declared once however many lists of its type a module holds.
+    declarations.filter((d, i) => declarations.findIndex((e) => e.name === d.name) === i).map(declarationText).join('\n\n'),
     '\\end{semanticmodule}',
     '\\end{lexlean}',
     '',
