@@ -1,7 +1,13 @@
 {
   "schema": "prism/prompt/1",
   "pattern": "stateMachine",
-  "machine": { "state": "stage", "initial": "proposed", "final": ["archived"] },
+  "machine": {
+    "state": "stage",
+    "initial": "proposed",
+    "final": [
+      "archived"
+    ]
+  },
   "goal": "Move a UOR Foundation project through Sandbox, Incubation, Graduated and Archived only by an act of the Technical Oversight Committee on complete evidence.",
   "repository": "UOR-Foundation/.github",
   "app": {
@@ -9,14 +15,73 @@
     "title": "TOC project lifecycle",
     "purpose": "Give the next lifecycle stage of a UOR Foundation project from its stage now, the application before the TOC, whether a quorum met, the TOC's recorded vote, whether the stage's evidence is complete and how many days the public comment period ran.",
     "fields": [
-      { "name": "stage", "kind": "choice", "values": ["proposed", "sandbox", "incubation", "graduated", "archived"], "means": "the project's lifecycle stage now; proposed is a project not yet admitted" },
-      { "name": "application", "kind": "choice", "values": ["sandbox", "incubation", "graduation", "archival"], "means": "the stage change the issue in UOR-Foundation/.github asks for" },
-      { "name": "quorum", "kind": "choice", "values": ["met", "unmet"], "means": "whether a majority of the whole committee was present (Bylaws 6.5)" },
-      { "name": "vote", "kind": "choice", "values": ["none", "rejected", "majority", "twothirds"], "means": "the TOC's recorded act: no vote yet, rejected, carried by a majority of members present, or carried by at least two thirds" },
-      { "name": "evidence", "kind": "choice", "values": ["complete", "partial"], "means": "whether the application carries every evidence item toc/README.md lists for that stage" },
-      { "name": "comment", "kind": "number", "min": 0, "max": 365, "means": "days the public comment period ran before the vote" }
+      {
+        "name": "stage",
+        "kind": "choice",
+        "values": [
+          "proposed",
+          "sandbox",
+          "incubation",
+          "graduated",
+          "archived"
+        ],
+        "means": "the project's lifecycle stage now; proposed is a project not yet admitted"
+      },
+      {
+        "name": "application",
+        "kind": "choice",
+        "values": [
+          "sandbox",
+          "incubation",
+          "graduation",
+          "archival"
+        ],
+        "means": "the stage change the issue in UOR-Foundation/.github asks for"
+      },
+      {
+        "name": "quorum",
+        "kind": "choice",
+        "values": [
+          "met",
+          "unmet"
+        ],
+        "means": "whether a majority of the whole committee was present (Bylaws 6.5)"
+      },
+      {
+        "name": "vote",
+        "kind": "choice",
+        "values": [
+          "none",
+          "rejected",
+          "majority",
+          "twothirds"
+        ],
+        "means": "the TOC's recorded act: no vote yet, rejected, carried by a majority of members present, or carried by at least two thirds"
+      },
+      {
+        "name": "evidence",
+        "kind": "choice",
+        "values": [
+          "complete",
+          "partial"
+        ],
+        "means": "whether the application carries every evidence item toc/README.md lists for that stage"
+      },
+      {
+        "name": "comment",
+        "kind": "number",
+        "min": 0,
+        "max": 365,
+        "means": "days the public comment period ran before the vote"
+      }
     ],
-    "outcomes": ["proposed", "sandbox", "incubation", "graduated", "archived"],
+    "outcomes": [
+      "proposed",
+      "sandbox",
+      "incubation",
+      "graduated",
+      "archived"
+    ],
     "meanings": {
       "proposed": "not admitted: no TOC act has admitted the project to Sandbox",
       "sandbox": "early fit and potential, admitted by TOC approval",
@@ -25,65 +90,521 @@
       "archived": "inactive, superseded or no longer recommended, the final stage"
     },
     "rules": [
-      { "when": [{ "field": "stage", "op": "is", "value": "archived" }], "then": "archived", "why": "toc/README.md: Archived is the stage of inactive, superseded or no longer recommended projects; GOVERNANCE.md 11: an archived repository is a read-only historical state" },
-      { "when": [{ "field": "stage", "op": "is", "value": "proposed" }, { "field": "application", "op": "is", "value": "sandbox" }, { "field": "quorum", "op": "is", "value": "met" }, { "field": "vote", "op": "is not", "value": "none" }, { "field": "vote", "op": "is not", "value": "rejected" }, { "field": "evidence", "op": "is", "value": "complete" }], "then": "sandbox", "why": "toc/README.md: Sandbox needs a clear use case, an active maintainer and the README.md, LICENSE and CODE_OF_CONDUCT.md baseline, by TOC approval; Bylaws 6.5: the act of a majority of members present at a quorum is the act of the committee" },
-      { "when": [{ "field": "stage", "op": "is", "value": "sandbox" }, { "field": "application", "op": "is", "value": "incubation" }, { "field": "quorum", "op": "is", "value": "met" }, { "field": "vote", "op": "is not", "value": "none" }, { "field": "vote", "op": "is not", "value": "rejected" }, { "field": "evidence", "op": "is", "value": "complete" }], "then": "incubation", "why": "toc/README.md: Incubation needs ongoing maintenance and contributor activity, CONTRIBUTING.md and maintainership clarity, versioned releases or APIs and at least one adopter, by TOC vote (simple majority)" },
-      { "when": [{ "field": "stage", "op": "is", "value": "incubation" }, { "field": "application", "op": "is", "value": "graduation" }, { "field": "quorum", "op": "is", "value": "met" }, { "field": "vote", "op": "is", "value": "twothirds" }, { "field": "evidence", "op": "is", "value": "complete" }, { "field": "comment", "op": ">=", "value": 14 }], "then": "graduated", "why": "toc/README.md: Graduation needs multi-organization maintainership, security posture, proven adoption and release and review discipline, by TOC vote (2/3), after a public comment period of at least 2 weeks" },
-      { "when": [{ "field": "stage", "op": "is not", "value": "proposed" }, { "field": "application", "op": "is", "value": "archival" }, { "field": "quorum", "op": "is", "value": "met" }, { "field": "vote", "op": "is not", "value": "none" }, { "field": "vote", "op": "is not", "value": "rejected" }, { "field": "evidence", "op": "is", "value": "complete" }], "then": "archived", "why": "toc/README.md: Archived on sustained inactivity, maintainer request or supersession, by TOC vote (simple majority)" },
-      { "when": [{ "field": "stage", "op": "is", "value": "sandbox" }], "then": "sandbox", "why": "toc/README.md: a project stays at its stage until a TOC decision moves it" },
-      { "when": [{ "field": "stage", "op": "is", "value": "incubation" }], "then": "incubation", "why": "toc/README.md: a project stays at its stage until a TOC decision moves it" },
-      { "when": [{ "field": "stage", "op": "is", "value": "graduated" }], "then": "graduated", "why": "toc/README.md: a project stays at its stage until a TOC decision moves it" }
+      {
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "archived"
+          }
+        ],
+        "then": "archived",
+        "why": "toc/README.md: Archived is the stage of inactive, superseded or no longer recommended projects; GOVERNANCE.md 11: an archived repository is a read-only historical state"
+      },
+      {
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "proposed"
+          },
+          {
+            "field": "application",
+            "op": "is",
+            "value": "sandbox"
+          },
+          {
+            "field": "quorum",
+            "op": "is",
+            "value": "met"
+          },
+          {
+            "field": "vote",
+            "op": "is not",
+            "value": "none"
+          },
+          {
+            "field": "vote",
+            "op": "is not",
+            "value": "rejected"
+          },
+          {
+            "field": "evidence",
+            "op": "is",
+            "value": "complete"
+          }
+        ],
+        "then": "sandbox",
+        "why": "toc/README.md: Sandbox needs a clear use case, an active maintainer and the README.md, LICENSE and CODE_OF_CONDUCT.md baseline, by TOC approval; Bylaws 6.5: the act of a majority of members present at a quorum is the act of the committee"
+      },
+      {
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "sandbox"
+          },
+          {
+            "field": "application",
+            "op": "is",
+            "value": "incubation"
+          },
+          {
+            "field": "quorum",
+            "op": "is",
+            "value": "met"
+          },
+          {
+            "field": "vote",
+            "op": "is not",
+            "value": "none"
+          },
+          {
+            "field": "vote",
+            "op": "is not",
+            "value": "rejected"
+          },
+          {
+            "field": "evidence",
+            "op": "is",
+            "value": "complete"
+          }
+        ],
+        "then": "incubation",
+        "why": "toc/README.md: Incubation needs ongoing maintenance and contributor activity, CONTRIBUTING.md and maintainership clarity, versioned releases or APIs and at least one adopter, by TOC vote (simple majority)"
+      },
+      {
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "incubation"
+          },
+          {
+            "field": "application",
+            "op": "is",
+            "value": "graduation"
+          },
+          {
+            "field": "quorum",
+            "op": "is",
+            "value": "met"
+          },
+          {
+            "field": "vote",
+            "op": "is",
+            "value": "twothirds"
+          },
+          {
+            "field": "evidence",
+            "op": "is",
+            "value": "complete"
+          },
+          {
+            "field": "comment",
+            "op": ">=",
+            "value": 14
+          }
+        ],
+        "then": "graduated",
+        "why": "toc/README.md: Graduation needs multi-organization maintainership, security posture, proven adoption and release and review discipline, by TOC vote (2/3), after a public comment period of at least 2 weeks"
+      },
+      {
+        "when": [
+          {
+            "field": "stage",
+            "op": "is not",
+            "value": "proposed"
+          },
+          {
+            "field": "application",
+            "op": "is",
+            "value": "archival"
+          },
+          {
+            "field": "quorum",
+            "op": "is",
+            "value": "met"
+          },
+          {
+            "field": "vote",
+            "op": "is not",
+            "value": "none"
+          },
+          {
+            "field": "vote",
+            "op": "is not",
+            "value": "rejected"
+          },
+          {
+            "field": "evidence",
+            "op": "is",
+            "value": "complete"
+          }
+        ],
+        "then": "archived",
+        "why": "toc/README.md: Archived on sustained inactivity, maintainer request or supersession, by TOC vote (simple majority)"
+      },
+      {
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "sandbox"
+          }
+        ],
+        "then": "sandbox",
+        "why": "toc/README.md: a project stays at its stage until a TOC decision moves it"
+      },
+      {
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "incubation"
+          }
+        ],
+        "then": "incubation",
+        "why": "toc/README.md: a project stays at its stage until a TOC decision moves it"
+      },
+      {
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "graduated"
+          }
+        ],
+        "then": "graduated",
+        "why": "toc/README.md: a project stays at its stage until a TOC decision moves it"
+      }
     ],
     "otherwise": "proposed",
     "otherwiseWhy": "toc/README.md: projects usually enter at Sandbox; until the TOC admits one it is only proposed",
     "properties": [
-      { "kind": "never", "when": [{ "field": "quorum", "op": "is", "value": "unmet" }, { "field": "stage", "op": "is", "value": "incubation" }], "then": "graduated", "why": "Bylaws 6.5: without a quorum there is no act of the committee" },
-      { "kind": "never", "when": [{ "field": "vote", "op": "is", "value": "majority" }, { "field": "stage", "op": "is", "value": "incubation" }], "then": "graduated", "why": "toc/README.md: Graduation takes two thirds, not a simple majority" },
-      { "kind": "never", "when": [{ "field": "comment", "op": "<", "value": 14 }, { "field": "stage", "op": "is", "value": "incubation" }], "then": "graduated", "why": "toc/README.md: Graduation requires a public comment period of at least 2 weeks before voting" },
-      { "kind": "never", "when": [{ "field": "stage", "op": "is", "value": "proposed" }], "then": "incubation", "why": "toc/README.md: projects enter at Sandbox; no stage is skipped" },
-      { "kind": "never", "when": [{ "field": "stage", "op": "is", "value": "sandbox" }], "then": "graduated", "why": "toc/README.md: Graduation is applied for from Incubation" },
-      { "kind": "never", "when": [{ "field": "evidence", "op": "is", "value": "partial" }, { "field": "stage", "op": "is", "value": "proposed" }], "then": "sandbox", "why": "toc/README.md: the minimum repository baseline is required for Sandbox" },
-      { "kind": "always", "when": [{ "field": "stage", "op": "is", "value": "graduated" }, { "field": "application", "op": "is not", "value": "archival" }], "then": "graduated", "why": "toc/README.md: a graduated project leaves its stage only by archival" }
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "quorum",
+            "op": "is",
+            "value": "unmet"
+          },
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "incubation"
+          }
+        ],
+        "then": "graduated",
+        "why": "Bylaws 6.5: without a quorum there is no act of the committee"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "vote",
+            "op": "is",
+            "value": "majority"
+          },
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "incubation"
+          }
+        ],
+        "then": "graduated",
+        "why": "toc/README.md: Graduation takes two thirds, not a simple majority"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "comment",
+            "op": "<",
+            "value": 14
+          },
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "incubation"
+          }
+        ],
+        "then": "graduated",
+        "why": "toc/README.md: Graduation requires a public comment period of at least 2 weeks before voting"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "proposed"
+          }
+        ],
+        "then": "incubation",
+        "why": "toc/README.md: projects enter at Sandbox; no stage is skipped"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "sandbox"
+          }
+        ],
+        "then": "graduated",
+        "why": "toc/README.md: Graduation is applied for from Incubation"
+      },
+      {
+        "kind": "never",
+        "when": [
+          {
+            "field": "evidence",
+            "op": "is",
+            "value": "partial"
+          },
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "proposed"
+          }
+        ],
+        "then": "sandbox",
+        "why": "toc/README.md: the minimum repository baseline is required for Sandbox"
+      },
+      {
+        "kind": "always",
+        "when": [
+          {
+            "field": "stage",
+            "op": "is",
+            "value": "graduated"
+          },
+          {
+            "field": "application",
+            "op": "is not",
+            "value": "archival"
+          }
+        ],
+        "then": "graduated",
+        "why": "toc/README.md: a graduated project leaves its stage only by archival"
+      }
     ],
     "examples": [
-      { "request": "proposed sandbox met majority complete 0", "response": "sandbox" },
-      { "request": "proposed sandbox unmet majority complete 0", "response": "proposed" },
-      { "request": "proposed sandbox met rejected complete 0", "response": "proposed" },
-      { "request": "proposed sandbox met majority partial 0", "response": "proposed" },
-      { "request": "proposed incubation met twothirds complete 30", "response": "proposed" },
-      { "request": "sandbox incubation met majority complete 0", "response": "incubation" },
-      { "request": "sandbox graduation met twothirds complete 30", "response": "sandbox" },
-      { "request": "incubation graduation met twothirds complete 14", "response": "graduated" },
-      { "request": "incubation graduation met twothirds complete 13", "response": "incubation" },
-      { "request": "incubation graduation met majority complete 30", "response": "incubation" },
-      { "request": "incubation graduation unmet twothirds complete 30", "response": "incubation" },
-      { "request": "graduated archival met majority complete 0", "response": "archived" },
-      { "request": "graduated incubation met twothirds complete 0", "response": "graduated" },
-      { "request": "archived sandbox met twothirds complete 30", "response": "archived" },
-      { "request": "proposed archival met majority complete 0", "response": "proposed" }
+      {
+        "request": "proposed sandbox met majority complete 0",
+        "response": "sandbox"
+      },
+      {
+        "request": "proposed sandbox unmet majority complete 0",
+        "response": "proposed"
+      },
+      {
+        "request": "proposed sandbox met rejected complete 0",
+        "response": "proposed"
+      },
+      {
+        "request": "proposed sandbox met majority partial 0",
+        "response": "proposed"
+      },
+      {
+        "request": "proposed incubation met twothirds complete 30",
+        "response": "proposed"
+      },
+      {
+        "request": "sandbox incubation met majority complete 0",
+        "response": "incubation"
+      },
+      {
+        "request": "sandbox graduation met twothirds complete 30",
+        "response": "sandbox"
+      },
+      {
+        "request": "incubation graduation met twothirds complete 14",
+        "response": "graduated"
+      },
+      {
+        "request": "incubation graduation met twothirds complete 13",
+        "response": "incubation"
+      },
+      {
+        "request": "incubation graduation met majority complete 30",
+        "response": "incubation"
+      },
+      {
+        "request": "incubation graduation unmet twothirds complete 30",
+        "response": "incubation"
+      },
+      {
+        "request": "graduated archival met majority complete 0",
+        "response": "archived"
+      },
+      {
+        "request": "graduated incubation met twothirds complete 0",
+        "response": "graduated"
+      },
+      {
+        "request": "archived sandbox met twothirds complete 30",
+        "response": "archived"
+      },
+      {
+        "request": "proposed archival met majority complete 0",
+        "response": "proposed"
+      }
     ]
   },
   "stakeholders": [
-    { "name": "Project applicant", "text": "Opens a Sandbox, Incubation or Graduation issue in UOR-Foundation/.github and needs to know which evidence and which vote move the project.", "concerns": ["Correct answers", "Proved guarantees"] },
-    { "name": "TOC member", "text": "Votes on applications and needs no transition to happen without a quorum, the required majority and complete evidence.", "concerns": ["Proved guarantees", "Refused malformed requests"] },
-    { "name": "Community and Outreach Committee", "text": "Publishes each project's stage to the community and needs the published stage to be the one the TOC's acts determine.", "concerns": ["Correct answers"] }
+    {
+      "name": "Project applicant",
+      "text": "Opens a Sandbox, Incubation or Graduation issue in UOR-Foundation/.github and needs to know which evidence and which vote move the project.",
+      "concerns": [
+        "Correct answers",
+        "Proved guarantees"
+      ]
+    },
+    {
+      "name": "TOC member",
+      "text": "Votes on applications and needs no transition to happen without a quorum, the required majority and complete evidence.",
+      "concerns": [
+        "Proved guarantees",
+        "Refused malformed requests"
+      ]
+    },
+    {
+      "name": "Community and Outreach Committee",
+      "text": "Publishes each project's stage to the community and needs the published stage to be the one the TOC's acts determine.",
+      "concerns": [
+        "Correct answers"
+      ]
+    }
   ],
   "components": [
-    { "name": "TOC application issues", "kind": "externalSystem", "text": "The Sandbox, Incubation and Graduation issues in UOR-Foundation/.github that carry each application and its evidence." },
-    { "name": "TOC minutes", "kind": "externalSystem", "text": "The committee's recorded acts (Bylaws 6.3), which give quorum and vote." }
+    {
+      "name": "TOC application issues",
+      "kind": "externalSystem",
+      "text": "The Sandbox, Incubation and Graduation issues in UOR-Foundation/.github that carry each application and its evidence."
+    },
+    {
+      "name": "TOC minutes",
+      "kind": "externalSystem",
+      "text": "The committee's recorded acts (Bylaws 6.3), which give quorum and vote."
+    }
   ],
   "threats": [
-    { "name": "Stage skipped", "text": "A proposed or Sandbox project is published as Incubation or Graduated without passing each stage.", "stride": "elevationOfPrivilege", "asset": "answer", "likelihood": "medium", "impact": "major", "control": { "name": "One stage per act", "text": "Each rule fires only from the stage below the one it admits.", "evidence": [{ "kind": "proof", "reference": "INV-004" }, { "kind": "proof", "reference": "INV-005" }, { "kind": "review", "reference": "UOR-Foundation/.github toc/README.md" }] } },
-    { "name": "Graduation without comment", "text": "A Graduation vote is held before the community could comment.", "stride": "repudiation", "asset": "answer", "likelihood": "medium", "impact": "major", "control": { "name": "Comment period floor", "text": "Graduation needs a comment period of at least 14 days.", "evidence": [{ "kind": "proof", "reference": "INV-003" }] } },
-    { "name": "Vote miscounted", "text": "The tally of members present is recorded wrongly before it reaches the app.", "stride": "tampering", "asset": "request", "likelihood": "low", "impact": "major", "accepted": "The app is given the committee's recorded act; counting members present and keeping minutes belongs to the TOC chair under Bylaws 6.3 and 6.5." }
+    {
+      "name": "Stage skipped",
+      "text": "A proposed or Sandbox project is published as Incubation or Graduated without passing each stage.",
+      "stride": "elevationOfPrivilege",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "One stage per act",
+        "text": "Each rule fires only from the stage below the one it admits.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "INV-004"
+          },
+          {
+            "kind": "proof",
+            "reference": "INV-005"
+          },
+          {
+            "kind": "review",
+            "reference": "UOR-Foundation/.github toc/README.md"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Graduation without comment",
+      "text": "A Graduation vote is held before the community could comment.",
+      "stride": "repudiation",
+      "asset": "answer",
+      "likelihood": "medium",
+      "impact": "major",
+      "control": {
+        "name": "Comment period floor",
+        "text": "Graduation needs a comment period of at least 14 days.",
+        "evidence": [
+          {
+            "kind": "proof",
+            "reference": "INV-003"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vote miscounted",
+      "text": "The tally of members present is recorded wrongly before it reaches the app.",
+      "stride": "tampering",
+      "asset": "request",
+      "likelihood": "low",
+      "impact": "major",
+      "accepted": "The app is given the committee's recorded act; counting members present and keeping minutes belongs to the TOC chair under Bylaws 6.3 and 6.5."
+    }
   ],
   "quality": [
-    { "characteristic": "Functional suitability", "subcharacteristic": "Functional completeness", "requirement": "Every stage decision modeled", "text": "Each Decision row of the toc/README.md stage table is one rule of the machine.", "measure": "Unmodeled stage decisions", "measureText": "Stage table rows with no rule.", "threshold": 0 },
-    { "characteristic": "Security", "subcharacteristic": "Accountability", "requirement": "Every move is a committee act", "text": "No transition fires without a quorum and a carried vote.", "measure": "Transitions without an act", "measureText": "Rules that change the stage without quorum met and a carried vote.", "threshold": 0 }
+    {
+      "characteristic": "Functional suitability",
+      "subcharacteristic": "Functional completeness",
+      "requirement": "Every stage decision modeled",
+      "text": "Each Decision row of the toc/README.md stage table is one rule of the machine.",
+      "measure": "Unmodeled stage decisions",
+      "measureText": "Stage table rows with no rule.",
+      "threshold": 0
+    },
+    {
+      "characteristic": "Security",
+      "subcharacteristic": "Accountability",
+      "requirement": "Every move is a committee act",
+      "text": "No transition fires without a quorum and a carried vote.",
+      "measure": "Transitions without an act",
+      "measureText": "Rules that change the stage without quorum met and a carried vote.",
+      "threshold": 0
+    }
   ],
   "journeys": [
-    { "stakeholder": "Project applicant", "steps": ["otherwise", "REQ-002", "REQ-003", "REQ-004"] },
-    { "stakeholder": "TOC member", "steps": ["INV-001", "INV-002", "INV-003", "REQ-005", "refuse"] },
-    { "stakeholder": "Community and Outreach Committee", "steps": ["REQ-001", "INV-007"] }
-  ]
+    {
+      "stakeholder": "Project applicant",
+      "steps": [
+        "otherwise",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004"
+      ]
+    },
+    {
+      "stakeholder": "TOC member",
+      "steps": [
+        "INV-001",
+        "INV-002",
+        "INV-003",
+        "REQ-005",
+        "refuse"
+      ]
+    },
+    {
+      "stakeholder": "Community and Outreach Committee",
+      "steps": [
+        "REQ-001",
+        "INV-007"
+      ]
+    }
+  ],
+  "axioms": {
+    "inv007Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "inv008Holds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  }
 }
