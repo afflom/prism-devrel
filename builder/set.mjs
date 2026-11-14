@@ -76,17 +76,20 @@ export function readSet(set) {
   return { license: 'MIT OR Apache-2.0', axioms: {}, ...set };
 }
 
-/** Claim ids: the initials of every word of the app's name. Refused when two apps would share them. */
-function idPrefixes(models) {
+/**
+ * Claim ids: the initials of every word of the app's name. A prefix a row of
+ * another suite already holds (`taken`) is lengthened by the next letters of
+ * the name's last word until it is free. Refused when two apps would share one.
+ */
+function idPrefixes(models, taken = new Set()) {
   const out = new Map();
   for (const m of models) {
-    const p = m.spec.name
-      .split(/[^a-z0-9]+/)
-      .filter(Boolean)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
-    const prefix = p === 'CM' ? 'CN' : p;
+    const words = m.spec.name.split(/[^a-z0-9]+/).filter(Boolean);
+    const p = words.map((w) => w[0]).join('').toUpperCase();
+    let prefix = p === 'CM' ? 'CN' : p;
+    const last = words.at(-1).toUpperCase();
+    for (let k = 1; taken.has(prefix) && k < last.length; k++) prefix = `${p}${last.slice(1, k + 1)}`;
+    if (taken.has(prefix)) throw new SpecError(`Every id prefix of ${m.spec.name} is held by another suite's rows; rename the app.`, 'prompts');
     if ([...out.values()].includes(prefix)) throw new SpecError(`Two apps of the set would both claim ${prefix}-xx; rename one.`, 'prompts');
     out.set(m, prefix);
   }
@@ -470,7 +473,11 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   if (new Set(names_).size !== names_.length) throw new SpecError('Two prompts of the set name the same app.', 'prompts');
   const router = routerOf(set, models);
   if (models.some((m) => m.module === router.module)) throw new SpecError(`The set's router module ${router.module} is also an app's module; rename the set.`, 'name');
-  const prefixes = idPrefixes(models);
+  const setSuite = suiteOf({ name: set.name });
+  const owns = new Set([setSuite, ...models.map((m) => m.suite)]);
+  // The prefixes rows of suites the set does not own already hold.
+  const taken = new Set([...(current('model/ids.toml') ?? '').matchAll(/^id = "([A-Z0-9]+)-\d+"\n(?:[a-z]+ = .*\n)*?suite = "([^"]+)"/gm)].filter((x) => !owns.has(x[2])).map((x) => x[1]));
+  const prefixes = idPrefixes(models, taken);
   const files = {};
   const app = (path, text) => (files[`app/${path}`] = text);
   for (const [path, text] of Object.entries(ASSETS)) app(path, text);
@@ -528,7 +535,6 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   if (!host) app('prismpm.toml', TEMPLATE['app/prismpm.toml'].replace(/^project = ".*"$/m, `project = "${router.module}"`));
 
   // Claims: each app's properties under its own prefix and suite, then the facet theorems under the set's.
-  const setSuite = suiteOf({ name: set.name });
   const claims = [];
   for (const m of models) {
     const prefix = prefixes.get(m);
