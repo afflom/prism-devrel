@@ -149,9 +149,8 @@ export function security(m) {
     definition('afterRun', '(List StridePair)', `(match pairs
     | List.nil => (nil StridePair)
     | List.cons pair rest => (if ((project pair element) =? element) then (afterRun element rest) else (cons pair rest)))`, { parameters: ['element : Nat', 'pairs : (List StridePair)'], recursive: 'pairs' }),
-    definition('pairsEmpty', 'Bool', `(match pairs
-    | List.nil => true
-    | List.cons pair rest => false)`, { parameters: ['pairs : (List StridePair)'] }),
+    // One line: a match that is not recursive is written on one line by lexlean fmt.
+    definition('pairsEmpty', 'Bool', '(match pairs | List.nil => true | List.cons pair rest => false)', { parameters: ['pairs : (List StridePair)'] }),
     exactlyOne,
     definition('categoriesStated', 'Bool', `(match categories
     | List.nil => true
