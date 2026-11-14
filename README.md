@@ -155,7 +155,11 @@ app does and replays every app's acceptance vectors. Claim ids take the
 initials of every word of an app's name. Rows, entrypoints and files the set
 does not own are kept, and `--check` writes nothing and fails on any stale
 file. UOR-Foundation/community builds its decision apps this way
-(`apps/set.json`).
+(`apps/set.json`). A repository that already has its own application root
+names it in the set (`"root": {"module": "Prism"}`): the set then writes no
+router, and leaves the root, `lakefile.toml`, `prismpm.toml`, `site/app.json`
+and every line of `app/lexlean.toml` but its entrypoints and lexicons to the
+repository; its facets cite that root's `application`.
 
 ```sh
 node builder/cli.mjs build-set apps/set.json --out .            # many apps, one guest
