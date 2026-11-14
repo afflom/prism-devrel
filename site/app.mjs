@@ -33,7 +33,9 @@ function chip(element, text, state) {
   element.className = `chip chip-${state}`;
 }
 
-// The canonical <prism-frame>, run only if it matches the pointer's SHA-256.
+// The canonical <prism-frame>, run only if its bytes match the pointer's
+// SHA-256, so a template change reaches every app and nothing stands in for
+// it. ?frame=<sha256> pins one; offline, the service worker serves the last.
 async function frame() {
   if (customElements.get("prism-frame")) return;
   const host = new URL(data.frame);
@@ -119,7 +121,10 @@ function answerState(text) {
   return "";
 }
 
-// Heavy work waits for first contentful paint (or a timer), to keep LCP low.
+// The frame, runtime and holo wait for the first contentful paint (the fonts
+// are optional, so the first frame may have no text): fetched earlier, they
+// pushed every app's LCP past 1.5 s on a simulated phone. A background tab
+// never paints, so a timer stands in.
 const afterFirstFrame = () => new Promise((resolve) => {
   const after = () => requestAnimationFrame(() => setTimeout(resolve, 0));
   setTimeout(resolve, 1000);
@@ -136,55 +141,58 @@ const afterFirstFrame = () => new Promise((resolve) => {
   }
 });
 
-// The holo loads and verifies on the first touch, key, scroll or focus, not
-// on load, to keep the page within its size and blocking-time budget.
-const firstIntent = () => new Promise((resolve) => {
-  const events = ["pointerdown", "keydown", "touchstart", "wheel", "focusin"];
-  const start = () => {
-    for (const name of events) removeEventListener(name, start, true);
-    removeEventListener("hashchange", start);
-    resolve();
+// Verification belongs to the worker too: loading a large model can block
+// the UI before the guest ever runs. Only unavailable/broken worker transport
+// falls back to the same fully verified runtime on the page. A runtime refusal
+// is final, not evidence that workers are unavailable.
+async function offThread(source) {
+  const onPage = async () => {
+    const { load } = await import("./vendor/prism-code/src/browser.mjs");
+    return load(source);
   };
-  if (location.hash || $("input")?.value) return start();
-  for (const name of events) addEventListener(name, start, { capture: true, passive: true });
-  addEventListener("hashchange", start);
-});
-
-// The verified guest runs in a worker, so nothing blocks the page; without
-// workers it runs here.
-async function offThread(app) {
-  if (typeof Worker !== "function") return app;
-  const { resolveArchive } = await import("./vendor/prism-code/src/index.mjs");
-  const wasm = resolveArchive(app.archive).guest.content;
-  const worker = new Worker("./guest-worker.mjs", { type: "module" });
+  if (typeof Worker !== "function") return onPage();
+  let worker;
+  try {
+    worker = new Worker("./guest-worker.mjs", { type: "module" });
+  } catch {
+    return onPage();
+  }
   const waiting = new Map();
   let next = 0;
-  worker.onmessage = ({ data: reply }) => {
-    const settle = waiting.get(reply.id);
-    waiting.delete(reply.id);
-    if (reply.ok) settle.resolve(reply.value);
-    else settle.reject(new Error(reply.error));
-  };
-  // A crashed worker fails every call; the page falls back to the instance.
-  worker.onerror = (event) => {
-    event.preventDefault?.();
-    for (const settle of waiting.values()) settle.reject(new Error("the guest worker failed"));
+  let failure = null;
+  const stop = () => {
+    failure ??= Object.assign(new Error("the guest worker failed"), { code: "frame.worker" });
+    worker.terminate();
+    for (const settle of waiting.values()) settle.reject(failure);
     waiting.clear();
   };
-  const call = (kind, payload) => new Promise((resolve, reject) => {
+  worker.onmessage = ({ data: reply }) => {
+    const settle = waiting.get(reply?.id);
+    if (!settle || typeof reply.ok !== "boolean") { stop(); return; }
+    waiting.delete(reply.id);
+    if (reply.ok) settle.resolve(reply.value);
+    else settle.reject(Object.assign(new Error(reply.error), { code: reply.code, runtimeRefusal: true }));
+  };
+  worker.onerror = (event) => { event.preventDefault?.(); stop(); };
+  worker.onmessageerror = stop;
+  const call = (kind, payload = {}) => new Promise((resolve, reject) => {
+    if (failure) { reject(failure); return; }
     const id = next++;
     waiting.set(id, { resolve, reject });
-    worker.postMessage({ id, kind, ...payload });
+    try { worker.postMessage({ id, kind, ...payload }); } catch { stop(); }
   });
+  let identities;
   try {
-    await call("init", { wasm, limits: app.limits ?? {} });
-  } catch {
+    identities = await call("init", { source });
+  } catch (error) {
     worker.terminate();
-    return app;
+    if (error.runtimeRefusal) throw error;
+    return onPage();
   }
   return {
+    identities,
     dispatch: (request) => call("dispatch", { request }),
-    acceptance: () => call("acceptance", { vectors: app.vectors }),
+    acceptance: () => call("acceptance"),
   };
 }
 
@@ -238,60 +246,16 @@ const report = (result) => {
   specModule?.apply(checked);
 };
 
-// The form, live from first paint; the answer shows under it with its state.
-const STATES = { good: "Answer", bad: "Refused", refuse: "Not understood", wait: "Verifying", error: "Error" };
-function workspace(ready) {
+// Answer as the visitor types; keep a request once they pause, press Enter or pick one.
+function workspace(runner) {
   const input = $("input");
-  const form = $("ask");
-  if (!input || !form) return;
+  if (!input) return;
   const out = $("out");
-  const tag = $("state");
   const hist = $("hist");
+  const size = () => input.style.setProperty("--chars", String(Math.max((input.value || input.placeholder).length, 4)));
   let seq = 0;
-  let shown = 0;
+  let settle = 0;
   let last = "";
-  let settled;
-  ready.then((runner) => { settled = runner; }, () => { settled = null; });
-  const links = data.answerLinks ?? {};
-  // "key value" lines; answerLinks link a value.
-  const line = (text) => {
-    const row = document.createElement("li");
-    const at = text.indexOf(" ");
-    if (at <= 0) { row.textContent = text; return row; }
-    const key = text.slice(0, at);
-    const value = text.slice(at + 1);
-    const k = document.createElement("span");
-    k.className = "key";
-    k.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-    let v;
-    if (links[key] && /^[\w.:-]+$/.test(value)) {
-      v = document.createElement("a");
-      v.href = links[key].split("{}").join(encodeURIComponent(value));
-    } else {
-      v = document.createElement("span");
-    }
-    v.className = "val";
-    v.textContent = value;
-    row.append(k, v);
-    return row;
-  };
-  const say = (state, text, lines) => {
-    out.className = state;
-    if (lines) {
-      const list = document.createElement("ul");
-      list.className = "lines";
-      list.append(...lines.map(line));
-      out.replaceChildren(list);
-    } else {
-      out.textContent = text;
-    }
-    // Counted, so a test can tell a new answer.
-    if (state !== "idle" && state !== "wait") out.dataset.answers = String(++shown);
-    tag.hidden = state === "idle";
-    tag.className = `tag ${state}`;
-    tag.textContent = STATES[state] ?? "";
-    form.setAttribute("aria-busy", String(state === "wait"));
-  };
   const remember = (text, response) => {
     if (!text || text === last) return;
     last = text;
@@ -301,58 +265,46 @@ function workspace(ready) {
     again.className = "again";
     const req = document.createElement("span");
     req.textContent = text.length > 22 ? `${text.slice(0, 20)}…` : text;
-    const t = document.createElement("span");
-    t.className = `tag ${answerState(response)}`;
-    t.textContent = STATES[answerState(response)] ?? "Answer";
-    again.append(req, t);
-    again.addEventListener("click", () => { input.value = text; answer(); });
+    const tag = document.createElement("span");
+    tag.className = `tag ${answerState(response)}`;
+    tag.textContent = response.length > 18 ? `${response.length} bytes` : response;
+    again.append(req, tag);
+    again.addEventListener("click", () => { input.value = text; answer(true); input.focus(); });
     row.append(again);
     hist.prepend(row);
     while (hist.children.length > 30) hist.lastChild.remove();
   };
-  async function answer() {
+  async function answer(commit = false) {
     const text = input.value;
     const n = ++seq;
-    if (text.trim() === "") {
-      say("refuse", `Type a ${(data.inputLabel || "request").toLowerCase()} first, or pick an example.`);
-      input.focus({ preventScroll: true });
+    size();
+    clearTimeout(settle);
+    if (text === "") {
+      out.textContent = "—";
+      out.className = "idle";
       return;
     }
-    let runner = settled;
-    if (runner === undefined) {
-      say("wait", "Checking this app in your browser before it answers. This takes a moment, once.");
-      runner = await ready;
-      if (n !== seq) return;
-    }
-    if (!runner) {
-      say("error", "This app could not be verified in your browser, so it will not answer. Reload the page to try again.");
-      return;
-    }
+    if (!runner) return;
     let response;
     try {
       response = show(await runner.dispatch(parse(text)));
     } catch (error) {
-      if (n !== seq) return;
-      if (error?.message === "malformed hex") response = data.answers?.refusal ?? "invalid request";
-      else {
-        say("error", `The app could not run this request: ${describe(error)}`);
-        return;
-      }
+      response = error?.message === "malformed hex" ? data.answers?.refusal ?? "invalid request" : `dispatch failed: ${describe(error)}`;
     }
     if (n !== seq) return;
     const state = answerState(response);
-    if (state === "refuse") say("refuse", `That is not a valid ${(data.inputLabel || "request").toLowerCase()}. Try one of the examples.`);
-    else {
-      const lines = response.split("\n").map((x) => x.trim()).filter(Boolean);
-      say(state, response, lines.length ? lines : [response]);
-    }
-    remember(text, response);
+    out.textContent = state === "refuse" ? `Not a valid ${(data.inputLabel || "request").toLowerCase()}` : response.charAt(0).toUpperCase() + response.slice(1);
+    out.className = state;
+    if (commit) remember(text, response);
+    else settle = setTimeout(() => remember(text, response), 900);
   }
-  form.addEventListener("submit", (event) => { event.preventDefault(); answer(); });
-  input.addEventListener("input", () => { seq++; if (out.className !== "idle") say("idle", data.idle ?? ""); });
+  input.addEventListener("input", () => answer());
+  input.addEventListener("keydown", (event) => { if (event.key === "Enter") answer(true); });
   for (const button of $("tries").querySelectorAll("button[data-request]")) {
-    button.addEventListener("click", () => { input.value = button.dataset.request; answer(); });
+    button.addEventListener("click", () => { input.value = button.dataset.request; answer(true); input.focus({ preventScroll: true }); });
   }
+  size();
+  if (input.value) answer();
 }
 
 async function main() {
@@ -361,33 +313,24 @@ async function main() {
   offline();
   spec();
 
-  let ready;
-  const verified = new Promise((resolve) => { ready = resolve; });
-  workspace(verified);
-
   let app;
   try {
     await afterFirstFrame();
-    verdict("wait", "Verifies when you start");
-    await firstIntent();
-    verdict("wait", "Verifying in this browser");
-    const { load } = await import("./vendor/prism-code/src/browser.mjs");
-    app = await load("./app.holo");
+    app = await offThread(new URL("./app.holo", document.baseURI).href);
   } catch (error) {
     verdict("bad", "The app failed to load");
     replayed("error");
     report({ error: `the app failed to load: ${describe(error)}` });
-    ready(null);
     await card(null, "no app");
     return;
   }
 
   const { identities } = app;
-  const runner = await offThread(app);
+  const runner = app;
   const ok = identities.verified;
   verdict(ok ? "good" : "bad", ok ? "Verified in this browser" : "NOT verified", identities.archiveFingerprint);
   checked.fingerprint = identities.archiveFingerprint;
-  ready(ok ? runner : null);
+  workspace(ok ? runner : null);
   card(ok ? runner : null, ok ? "" : "not verified");
   if (!ok) {
     replayed("error");
