@@ -112,6 +112,9 @@ export function security(m) {
   const T = 'Production.ThreatModel';
   const evidence = (items) => cons(`${T}::Evidence`, items.map((e) => rec(`${T}::Evidence`, { kind: ctor(`${T}::EvidenceKind`, e.kind), reference: str(e.reference) })));
   const ref = (decl) => str(`Security::${decl}`);
+  const byElement = (a, b) => a.element - b.element || a.category - b.category;
+  const threatPairs = threats.map((t) => ({ element: t.target.index, category: STRIDE.indexOf(t.stride), name: ref(t.decl) })).sort(byElement);
+  const openPairs = strideOpen.map((p) => ({ element: p.element.index, category: STRIDE.indexOf(p.category), name: str(p.name) })).sort(byElement);
   const decls = [
     ...assets.map((x) => definition(x.decl, `${S}::Asset`, rec(`${S}::Asset`, { index: x.index, componentIndex: x.component.index }))),
     ...threats.map((x) => definition(x.decl, `${S}::Threat`, rec(`${S}::Threat`, { index: x.index }))),
@@ -129,28 +132,38 @@ export function security(m) {
     // spoofing, tampering, repudiation, informationDisclosure, denialOfService,
     // elevationOfPrivilege. Every pair the method opens is answered by a
     // threat or stated open, never both, and no other pair is stated open.
+    // threatPairs and openPairs are written in element order, so an element's
+    // pairs are the run at the head of each list when the walk reaches it: the
+    // check reads both lists once, and its cost grows with the pairs, not with
+    // elements times pairs. A pair out of order is left over, and refused.
     structure('StrideElement', ['{name: index, type: Nat}', '{name: kind, type: Nat}', '{name: name, type: String}']),
     structure('StridePair', ['{name: element, type: Nat}', '{name: category, type: Nat}', '{name: name, type: String}']),
     ...listDefinitions('strideElements', 'StrideElement', elements.map((x) => rec('StrideElement', { index: x.index, kind: DFD_KINDS.indexOf(x.dfd), name: str(x.name) }))),
-    ...listDefinitions('threatPairs', 'StridePair', threats.map((t) => rec('StridePair', { element: t.target.index, category: STRIDE.indexOf(t.stride), name: ref(t.decl) }))),
-    ...listDefinitions('openPairs', 'StridePair', strideOpen.map((p) => rec('StridePair', { element: p.element.index, category: STRIDE.indexOf(p.category), name: str(p.name) }))),
+    ...listDefinitions('threatPairs', 'StridePair', threatPairs.map((p) => rec('StridePair', { element: p.element, category: p.category, name: p.name }))),
+    ...listDefinitions('openPairs', 'StridePair', openPairs.map((p) => rec('StridePair', { element: p.element, category: p.category, name: p.name }))),
     ...nats('strideCategories', STRIDE.map((_, i) => i)),
     definition('strideApplies', 'Bool', '(if (kind =? 0) then ((category =? 0) || (category =? 2)) else (if (kind =? 1) then (category <? 6) else (if (kind =? 2) then ((0 <? category) && (category <? 5)) else ((category =? 1) || ((category =? 3) || (category =? 4))))))', { parameters: ['kind : Nat', 'category : Nat'] }),
-    definition('pairListed', 'Bool', `(match pairs
+    definition('runListed', 'Bool', `(match pairs
     | List.nil => false
-    | List.cons pair rest => ((((project pair element) =? element) && ((project pair category) =? category)) || (pairListed element category rest)))`, { parameters: ['element : Nat', 'category : Nat', 'pairs : (List StridePair)'], recursive: 'pairs' }),
+    | List.cons pair rest => (if ((project pair element) =? element) then (((project pair category) =? category) || (runListed element category rest)) else false))`, { parameters: ['element : Nat', 'category : Nat', 'pairs : (List StridePair)'], recursive: 'pairs' }),
+    definition('afterRun', '(List StridePair)', `(match pairs
+    | List.nil => (nil StridePair)
+    | List.cons pair rest => (if ((project pair element) =? element) then (afterRun element rest) else (cons pair rest)))`, { parameters: ['element : Nat', 'pairs : (List StridePair)'], recursive: 'pairs' }),
+    definition('pairsEmpty', 'Bool', `(match pairs
+    | List.nil => true
+    | List.cons pair rest => false)`, { parameters: ['pairs : (List StridePair)'] }),
     exactlyOne,
     definition('categoriesStated', 'Bool', `(match categories
     | List.nil => true
-    | List.cons category rest => ((if (strideApplies kind category) then (exactlyOne (pairListed element category (threatPairs)) (pairListed element category (openPairs))) else (if (pairListed element category (openPairs)) then false else true)) && (categoriesStated element kind rest)))`, { parameters: ['element : Nat', 'kind : Nat', 'categories : (List Nat)'], recursive: 'categories' }),
+    | List.cons category rest => ((if (strideApplies kind category) then (exactlyOne (runListed element category answered) (runListed element category stated)) else (if (runListed element category stated) then false else true)) && (categoriesStated element kind answered stated rest)))`, { parameters: ['element : Nat', 'kind : Nat', 'answered : (List StridePair)', 'stated : (List StridePair)', 'categories : (List Nat)'], recursive: 'categories' }),
     definition('elementsStated', 'Bool', `(match records
-    | List.nil => true
-    | List.cons item rest => (((project item index) =? position) && ((categoriesStated position (project item kind) (strideCategories)) && (elementsStated (position + 1) rest))))`, { parameters: ['position : Nat', 'records : (List StrideElement)'], recursive: 'records' }),
+    | List.nil => ((pairsEmpty answered) && (pairsEmpty stated))
+    | List.cons item rest => (((project item index) =? position) && ((categoriesStated position (project item kind) answered stated (strideCategories)) && (elementsStated (position + 1) rest (afterRun position answered) (afterRun position stated)))))`, { parameters: ['position : Nat', 'records : (List StrideElement)', 'answered : (List StridePair)', 'stated : (List StridePair)'], recursive: 'records' }),
     definition('pairsKnown', 'Bool', `(match pairs
     | List.nil => true
     | List.cons pair rest => (((project pair element) <? count) && (((project pair category) <? 6) && (pairsKnown count rest))))`, { parameters: ['count : Nat', 'pairs : (List StridePair)'], recursive: 'pairs' }),
     listLength('pairCount', 'StridePair'),
-    definition('securityValid', 'Bool', conj(['(elementsStated 0 (strideElements))', `(pairsKnown ${elements.length} (threatPairs))`, `(pairsKnown ${elements.length} (openPairs))`])),
+    definition('securityValid', 'Bool', conj(['(elementsStated 0 (strideElements) (threatPairs) (openPairs))', `(pairsKnown ${elements.length} (threatPairs))`, `(pairsKnown ${elements.length} (openPairs))`])),
     theorem('strideEnumerated', '((securityValid) = true)'),
     // The open pairs are a measure: a change that answers or opens one moves this number.
     theorem('strideOpenCount', `((pairCount (openPairs)) = ${strideOpen.length})`),
