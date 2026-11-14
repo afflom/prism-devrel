@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { buildApp } from './build.mjs';
 import { buildSet, routerRespond } from './set.mjs';
 import { WIDTH } from './vendor/prism-code/src/journey/render.mjs';
-import { machineDeclarations } from './machine.mjs';
+import { MAX_DEPTH, machineDeclarations } from './machine.mjs';
 import { deriveModel } from './model.mjs';
 import { render as renderAssets } from './pack.mjs';
 import { DIATAXIS, EXAMPLES, JOURNEY, OVERVIEW, PATTERN_TEXT, cliCommands, examplePage, groupOf, guidePath, guideTitle, page, prismSource, verifyScript, workflowStep, writeSite } from './site.mjs';
@@ -126,6 +126,45 @@ const CASES = {
     wide.app.examples = [{ request: `closed push 0 ${'v0 '.repeat(5).trim()}`, response: 'open' }];
     const wm = deriveModel(wide).machine;
     ok(!wm.exhaustive && wm.unreachable.length === 0 && wm.derived.length === 1, 'a partial sample claims only the final state');
+    // A table nested past MAX_DEPTH is factored by choice fields until no path is, and answers as the flat first-match chain.
+    const tall = rule30();
+    tall.app.fields = [{ name: 'a', kind: 'choice', values: ['a0', 'a1', 'a2', 'a3', 'a4'], means: 'a' }, { name: 'b', kind: 'choice', values: ['b0', 'b1', 'b2', 'b3'], means: 'b' }, { name: 'c', kind: 'choice', values: ['c0', 'c1', 'c2', 'c3'], means: 'c' }, { name: 'd', kind: 'choice', values: ['d0', 'd1'], means: 'd' }];
+    const at = (f, v, op = 'is') => ({ field: f, op, value: v });
+    const tallRules = [[at('d', 'd1')], [at('a', 'a3')], [at('a', 'a4')], [at('c', 'c3')], [at('b', 'b3')], [at('b', 'b2'), at('a', 'a2')], [at('b', 'b2')], [at('a', 'a2'), at('b', 'b1')], [at('a', 'a2')], [at('c', 'c1'), at('b', 'b0')], [at('c', 'c1')], [at('a', 'a0'), at('b', 'b0')], [at('a', 'a0')], [at('b', 'b1')], ...['c0', 'c1', 'c2'].flatMap((c) => ['b0', 'b1', 'b2'].map((b) => [at('c', c), at('b', b)]))];
+    tall.app.outcomes = ['on', 'off'];
+    tall.app.rules = tallRules.map((when, i) => ({ id: `REQ-${String(i + 1).padStart(3, '0')}`, when, then: i % 2 ? 'on' : 'off', says: `rule ${i + 1}`, why: 'a tall table' }));
+    tall.app.otherwise = 'on';
+    tall.app.properties = [{ id: 'INV-001', kind: 'always', when: [at('d', 'd1')], then: 'off', says: 'd1 is off', why: 'first rule' }];
+    tall.app.examples = [{ request: 'a0 b0 c0 d1', response: 'off' }];
+    delete tall.journeys;
+    delete tall.app.journeys;
+    const tm = deriveModel(tall);
+    const tallOwned = machineDeclarations(tm.spec, null);
+    const defs = Object.fromEntries(tallOwned.decls.map((d) => [d.name, d]));
+    const code = (x) => +defs[x].body;
+    const term = (text) => {
+      const ts = text.match(/\(|\)|=\?|<=\?|<\?|\|\||[A-Za-z_][A-Za-z0-9_]*|\d+/g);
+      let i = 0;
+      const read = () => (ts[i] === '(' ? (i++, (() => { const xs = []; while (ts[i] !== ')') xs.push(read()); i++; return xs; })()) : ts[i++]);
+      return read();
+    };
+    const evalTerm = (x, req) => {
+      if (typeof x === 'string') return /^\d+$/.test(x) ? +x : code(x);
+      if (x.length === 1) return evalTerm(x[0], req);
+      if (x[0] === 'if') return evalTerm(x[1], req) ? evalTerm(x[3], req) : evalTerm(x[5], req);
+      if (x[0] === 'project') return req[x[2]];
+      if (x[1] === 'request') return evalTerm(term(defs[x[0]].body), req);
+      const [l, r] = [evalTerm(x[0], req), evalTerm(x[2], req)];
+      return { '=?': l === r, '<?': l < r, '<=?': l <= r, '||': l || r }[x[1]];
+    };
+    const nest = (x) => (typeof x === 'string' ? 0 : x[0] === 'if' ? 1 + Math.max(nest(x[3]), nest(x[5])) : x[1] === 'request' && tallOwned.stepNames.includes(x[0]) ? nest(term(defs[x[0]].body)) : Math.max(0, ...x.map(nest)));
+    const tn = tm.names;
+    const codeOf = (f, v) => code(tn.fields[f].choices[v]);
+    const answerOf = Object.fromEntries(Object.entries(tn.answers).map(([o, d]) => [code(d), o]));
+    const everyTall = tall.app.fields.reduce((reqs, f) => reqs.flatMap((r) => f.values.map((v) => ({ ...r, [f.name]: v }))), [{}]);
+    ok(tallOwned.stepNames.length > tallOwned.steps.length, 'a branch still too deep is factored again');
+    ok(nest(term(defs.judge.body)) <= MAX_DEPTH, `no path of the decision nests past ${MAX_DEPTH} ifs`);
+    ok(everyTall.every((r) => answerOf[evalTerm(term(defs.judge.body), Object.fromEntries(Object.entries(r).map(([f, v]) => [tn.fields[f].id, codeOf(f, v)])))] === judge(tm.spec, r).outcome), 'the factored decision answers as the first-match chain, for every request');
     // A request takes up to sixteen fields (the prism-code-wide-requests patch, UOR-Foundation/PrismPM#679).
     const pad = (p, n) => ({ ...p, app: { ...p.app, fields: [...p.app.fields, ...Array.from({ length: n - p.app.fields.length }, (_, i) => ({ name: `pad${i}`, kind: 'choice', values: ['a', 'b'] }))], examples: p.app.examples.map((e) => ({ ...e, request: `${e.request}${' a'.repeat(n - p.app.fields.length)}` })) } });
     ok(deriveModel(pad(rule30(), 16)).spec.fields.length === 16, 'a decision of sixteen fields is built');
@@ -330,6 +369,11 @@ const CASES = {
     const hostedIds = hosted.claims.map((c) => c.id);
     ok(hostedIds.includes('PCLI-01') && hostedIds.filter((id) => id === 'PCL-01').length === 0 && hosted.files['model/ids.toml'].split('id = "PCL-01"').length === 2, "a prefix another suite's rows hold is lengthened from the app's last word");
     await refused(() => buildSet({ ...set, root: { module: 'host' } }, prompts, { lastModified: AT }), /root\.module/, 'a root is a module name');
+    // Two apps of one set with the same initials: the first keeps them, the later one is lengthened from its last word.
+    const twin = readPrompt({ ...JSON.parse(readFileSync(join(examples, `${names[1]}.prompt.json`), 'utf8')), app: { ...JSON.parse(readFileSync(join(examples, `${names[1]}.prompt.json`), 'utf8')).app, name: 'prismpm-container-life' } });
+    const twins = await buildSet({ ...set, prompts: [...set.prompts, 'twin.prompt.json'] }, [...prompts, twin], { lastModified: AT });
+    const twinIds = twins.claims.map((c) => c.id);
+    ok(twinIds.includes('PCL-01') && twinIds.includes('PCLI-01') && new Set(twinIds).size === twinIds.length, "a prefix an earlier app of the set holds is lengthened from the later app's last word");
   },
   async 'DR-07'() {
     const good = rule30();
