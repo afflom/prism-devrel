@@ -44,3 +44,12 @@ repository = "UOR-Foundation/template"
 pull = 62
 release = { kind = "branch" }
 repin = "frame"
+
+[[patch]]
+id = "prism-code-wide-requests"
+what = "builder/vendor/prism-code takes a request of up to sixteen fields, not eight: spec.mjs refuses past sixteen, render.mjs reserves decodeField1 to decodeField16, mcp.mjs declares maxItems 16 (VENDOR.md)."
+pinned = "builder/vendor/prism-code"
+repository = "UOR-Foundation/PrismPM"
+pull = 679
+release = { kind = "npm", package = "prism-code" }
+repin = "issue"
