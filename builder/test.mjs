@@ -16,7 +16,7 @@ import { machineDeclarations } from './machine.mjs';
 import { deriveModel } from './model.mjs';
 import { render as renderAssets } from './pack.mjs';
 import { DIATAXIS, EXAMPLES, JOURNEY, OVERVIEW, PATTERN_TEXT, cliCommands, examplePage, groupOf, guidePath, guideTitle, page, prismSource, verifyScript, workflowStep, writeSite } from './site.mjs';
-import { PATTERNS, XACML_DECISIONS, readPrompt } from './prompt.mjs';
+import { PATTERNS, STRIDE_PER_ELEMENT, XACML_DECISIONS, readPrompt } from './prompt.mjs';
 import { ASSETS } from './assets.mjs';
 import { SPEC_INPUT, TOOL } from './tool.mjs';
 import { zip, crc32 } from './zip.mjs';
@@ -299,12 +299,22 @@ const CASES = {
   async 'DR-08'() {
     for (const { file, prompt } of prompts()) {
       const { files, model: m } = await buildApp(prompt, { lastModified: AT });
-      for (const [name, theorem] of [['Architecture', 'architectureDescriptionHolds'], ['Quality', 'qualityModelHolds'], ['Compliance', 'everyObligationEvidenced']]) ok(module(files, name).includes(`name: ${theorem},`), `${file}: ${name} proves ${theorem}`);
+      for (const [name, theorem] of [['Architecture', 'architectureDescriptionHolds'], ['Quality', 'qualityModelHolds'], ['Security', 'strideEnumerated'], ['Compliance', 'everyObligationEvidenced']]) ok(module(files, name).includes(`name: ${theorem},`), `${file}: ${name} proves ${theorem}`);
       ok(module(files, 'Design').includes('DesignDiagram.opmObjectProcess') && module(files, 'Design').includes('DesignDiagram.umlStateMachine'), `${file}: OPM and UML views`);
       ok(m.design.transitions.filter((t) => t.trigger.rule && t.view === m.design.views[3]).length === m.spec.rules.length, `${file}: one guest state-machine transition per rule`);
       ok(m.features.features.length === m.spec.rules.length + m.spec.properties.length + 2, `${file}: a feature per rule and property, plus otherwise and refuse`);
       ok(m.features.journeys.length === m.architecture.stakeholders.length, `${file}: a journey per stakeholder`);
-      ok(m.security.threats.every((t) => t.control || t.accepted), `${file}: every threat is controlled or accepted`);
+      ok(m.security.threats.every((t) => t.control || t.reuse || t.accepted), `${file}: every threat is controlled or accepted`);
+      ok(m.security.mappings.every((x) => x.controls.length > 0 && x.controls.every(Boolean)), `${file}: every mapped threat names a declared control`);
+      // STRIDE per element: the answered and open pairs partition the pairs the method opens.
+      const opened = m.security.elements.flatMap((x) => STRIDE_PER_ELEMENT[x.dfd].map((c) => `${x.index}:${c}`));
+      const answered = new Set(m.security.threats.map((t) => `${t.target.index}:${t.stride}`));
+      eq(m.security.strideOpen.map((p) => `${p.element.index}:${p.category}`), opened.filter((k) => !answered.has(k)), `${file}: the open STRIDE pairs are exactly the unanswered ones`);
+      eq(m.security.elements.length, m.architecture.components.length + m.architecture.edges.length, `${file}: every component and data flow is a STRIDE element`);
+      // ISO/IEC 25010:2023 whole: 9 characteristics, 40 subcharacteristics, each stated or open.
+      eq([m.quality.characteristics.length, m.quality.subcharacteristics.length], [9, 40], `${file}: the whole ISO/IEC 25010:2023 model`);
+      eq(m.quality.openSubcharacteristics.length + new Set(m.quality.requirements.map((r) => r.subcharacteristic)).size, 40, `${file}: each subcharacteristic is stated or open`);
+      ok(m.compliance.some((o) => o.standard === 'NIST OSCAL 1.1.0') && m.compliance.filter((o) => o.holds).every((o) => o.evidence.some((e) => module(files, e.split('::')[0]).includes(`name: ${e.split('::')[1]},`))), `${file}: OSCAL is an obligation and each decided obligation cites its facet theorem`);
       ok(m.spec.properties.every((p) => m.security.controls.some((c) => c.evidence.some((e) => e.kind === 'proof' && e.reference.endsWith(`::${m.names.properties[p.id].theorem}`)))), `${file}: every property is a control's proof evidence`);
       ok(m.quality.measures.some((x) => x.threshold === m.limits.requestMaximum), `${file}: the request bound is a quality threshold, read from the spec`);
       ok(module(files, m.module).includes('Foundation.View.Text.V1.Model::TextApplication'), `${file}: one text application`);
