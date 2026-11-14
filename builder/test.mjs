@@ -126,6 +126,10 @@ const CASES = {
     wide.app.examples = [{ request: `closed push 0 ${'v0 '.repeat(5).trim()}`, response: 'open' }];
     const wm = deriveModel(wide).machine;
     ok(!wm.exhaustive && wm.unreachable.length === 0 && wm.derived.length === 1, 'a partial sample claims only the final state');
+    // A request takes up to sixteen fields (the prism-code-wide-requests patch, UOR-Foundation/PrismPM#679).
+    const pad = (p, n) => ({ ...p, app: { ...p.app, fields: [...p.app.fields, ...Array.from({ length: n - p.app.fields.length }, (_, i) => ({ name: `pad${i}`, kind: 'choice', values: ['a', 'b'] }))], examples: p.app.examples.map((e) => ({ ...e, request: `${e.request}${' a'.repeat(n - p.app.fields.length)}` })) } });
+    ok(deriveModel(pad(rule30(), 16)).spec.fields.length === 16, 'a decision of sixteen fields is built');
+    await refused(async () => deriveModel(pad(rule30(), 17)), /at most sixteen fields/, 'a seventeenth field is refused');
     const d = door();
     await refused(async () => deriveModel({ ...d, app: { ...d.app, outcomes: [...d.app.outcomes, 'ajar'] } }), /answers are exactly the states/, 'answers that are not the states are refused');
     await refused(async () => deriveModel({ ...d, machine: { ...d.machine, initial: 'ajar' } }), /not a state/, 'an initial state that is not a state is refused');
