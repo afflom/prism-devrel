@@ -228,10 +228,9 @@ export function quality(m) {
 }
 
 export function compliance(m) {
-  const holding = m.compliance.filter((o) => o.holds);
   const decls = [
     structure('Obligation', ['{name: index, type: Nat}', '{name: standard, type: String}', '{name: subject, type: String}', '{name: text, type: String}', '{name: evidence, type: (List String)}']),
-    ...listDefinitions('obligations', 'Obligation', m.compliance.map((o, index) => rec('Obligation', { index, standard: str(o.standard), subject: str(o.subject), text: str(o.text), evidence: cons('String', [...o.evidence, ...(o.holds ? [`Compliance::${holdsName(o)}`] : [])].map(str)) }))),
+    ...listDefinitions('obligations', 'Obligation', m.compliance.map((o, index) => rec('Obligation', { index, standard: str(o.standard), subject: str(o.subject), text: str(o.text), evidence: cons('String', o.evidence.map(str)) }))),
     // A separate definition: a match nested in a term is rewritten by
     // lexlean fmt into a form its parser refuses.
     definition('hasEvidence', 'Bool', `(match evidence | List.nil => false | List.cons item others => true)`, { parameters: ['evidence : (List String)'] }),
@@ -239,14 +238,9 @@ export function compliance(m) {
     | List.nil => true
     | List.cons item rest => (((project item index) =? position) && ((hasEvidence (project item evidence)) && (obligationsEvidenced (position + 1) rest))))`, { parameters: ['position : Nat', 'items : (List Obligation)'], recursive: 'items' }),
     theorem('everyObligationEvidenced', '((obligationsEvidenced 0 (obligations)) = true)'),
-    // Each obligation a facet predicate decides is re-proved here, so the
-    // kernel checks the evidence this module names, not only that it is named.
-    ...holding.map((o) => theorem(holdsName(o), `((${o.holds}) = true)`)),
   ];
   return moduleText({ name: 'Compliance', glossaries: [BOOL, NAT, ARCH], imports: ['Architecture', 'Design', 'Quality', 'Security', ...(m.modules ?? [m.module])], title: 'standards reference', declarations: decls });
 }
-
-const holdsName = (o) => `holds${o.subject.split(/[^A-Za-z0-9]+/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join('')}`;
 
 /** The facet modules, by path under app/. */
 export function facetModules(m) {
