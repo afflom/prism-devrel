@@ -318,7 +318,6 @@
   ],
   "axioms": {
     "inv001Holds": [
-      "Classical.choice",
       "Quot.sound",
       "propext"
     ]

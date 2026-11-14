@@ -23,7 +23,7 @@
  * repository with other generated modules.
  */
 import { declarationText, names } from './vendor/prism-code/src/journey/render.mjs';
-import { renderModel, renderProofs, renderSpecDocument, declarations } from './vendor/prism-code/src/journey/render.mjs';
+import { renderSpecDocument, declarations } from './vendor/prism-code/src/journey/render.mjs';
 import { TEMPLATE_EXAMPLE, claims as propertyClaims, suiteOf } from './vendor/prism-code/src/journey/template.mjs';
 import { SpecError, describeConditions, respond, requestLimits } from './vendor/prism-code/src/journey/spec.mjs';
 import { ASSETS, TEMPLATE } from './assets.mjs';
@@ -278,7 +278,7 @@ export function mergeModels(set, models) {
  */
 function scope(m) {
   const lead = m.module[0].toLowerCase() + m.module.slice(1);
-  const model = m.machine ? renderMachineModel(m.spec, m.machine, {}) : renderModel(m.spec, {});
+  const model = renderMachineModel(m.spec, m.machine ?? null, {});
   const decls = [...model.matchAll(/^(?:definition|structure|inductive)\{(?:\n  )?name: ([A-Za-z_][A-Za-z0-9_]*),/gm)].map((x) => x[1]).filter((x) => x !== 'application');
   const map = new Map(decls.map((d) => [d, d === 'Request' ? `${m.module}Request` : `${lead}${d[0].toUpperCase()}${d.slice(1)}`]));
   const word = new RegExp(`(?<![A-Za-z0-9_:.])(${decls.join('|')})(?![A-Za-z0-9_])`, 'g');
@@ -485,11 +485,11 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   for (const m of models) {
     const axioms = Object.fromEntries(Object.entries(m.prompt.axioms).map(([name, s]) => [name, `[${s.join(', ')}]`]));
     // A project has one application root (PP2001): the router's. An app module keeps everything but its own.
-    const model = m.machine ? renderMachineModel(m.spec, m.machine, { axioms }) : renderModel(m.spec, { axioms });
+    const model = renderMachineModel(m.spec, m.machine ?? null, { axioms });
     const withoutRoot = model.replace(/\n\ndefinition\{\n  name: application,\n[\s\S]*?\n\}\n(?=\\end\{semanticmodule\})/, '\n');
     if (withoutRoot === model) throw new Error(`no application declaration found in ${m.module}`);
     app(`src/${m.module}.lex.tex`, scoped.get(m).text(withoutRoot));
-    if (m.hasProofs) app(`src/${m.proofs}.lex.tex`, scoped.get(m).refs(m.machine ? renderMachineProofs(m.spec, m.machine, { axioms }) : renderProofs(m.spec, { axioms })));
+    if (m.hasProofs) app(`src/${m.proofs}.lex.tex`, scoped.get(m).refs(renderMachineProofs(m.spec, m.machine ?? null, { axioms })));
     files[`openspec/specs/${m.spec.name}/spec.md`] = renderSpecDocument(m.spec, {});
   }
   app(`src/${router.module}.lex.tex`, renderRouter(set, router));

@@ -14,7 +14,7 @@
  * `buildApp` is a pure function of the prompt and the fixed assets, so the same
  * prompt writes the same bytes, in Node and in the browser alike.
  */
-import { renderModel, renderProofs, renderSpecDocument } from './vendor/prism-code/src/journey/render.mjs';
+import { renderSpecDocument } from './vendor/prism-code/src/journey/render.mjs';
 import { TEMPLATE_EXAMPLE, appJson, featureText as propertyScenarios } from './vendor/prism-code/src/journey/template.mjs';
 import { describeConditions } from './vendor/prism-code/src/journey/spec.mjs';
 import { ASSETS, LOCK_PACKAGES, TEMPLATE } from './assets.mjs';
@@ -178,8 +178,8 @@ export async function buildApp(input, { lastModified } = {}) {
   // The observed axiom sets, in the form prism-code's renderer takes them.
   const axioms = Object.fromEntries(Object.entries(m.prompt.axioms).map(([name, set]) => [name, `[${set.join(', ')}]`]));
   // A state machine's decision is owned by its states (builder/machine.mjs); any other app's is prism-code's chain.
-  app(`src/${m.module}.lex.tex`, m.machine ? renderMachineModel(m.spec, m.machine, { axioms }) : renderModel(m.spec, { axioms }));
-  if (m.hasProofs) app(`src/${m.proofs}.lex.tex`, m.machine ? renderMachineProofs(m.spec, m.machine, { axioms }) : renderProofs(m.spec, { axioms }));
+  app(`src/${m.module}.lex.tex`, renderMachineModel(m.spec, m.machine ?? null, { axioms }));
+  if (m.hasProofs) app(`src/${m.proofs}.lex.tex`, renderMachineProofs(m.spec, m.machine ?? null, { axioms }));
   const entrypoints = Object.keys(files)
     .filter((p) => p.startsWith('app/src/') && !p.startsWith('app/src/Foundation/') && !p.startsWith('app/src/Production/'))
     .map((p) => p.slice('app/'.length))
