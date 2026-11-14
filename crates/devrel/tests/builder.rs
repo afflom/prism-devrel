@@ -114,3 +114,9 @@ fn gallery_dr_20() {
 fn guides_dr_21() {
     builder("DR-21");
 }
+
+/// `DR-22`: Build-set writes one application from a prompt set: every app's model and proofs under names scoped by its module and laid out as lexlean fmt lays them out, one router that is the only application root and answers each app's vectors by name as the app does, distinct claim ids for every app and the set's facets, and the same bytes for the same set
+#[test]
+fn build_set_dr_22() {
+    builder("DR-22");
+}

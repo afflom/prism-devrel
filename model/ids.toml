@@ -172,6 +172,12 @@ suite = "devrel"
 statement = "Every pattern the builder offers has a how-to guide that builds an app of that pattern from a prompt, and every example page belongs to the Examples collection under its pattern"
 
 [[id]]
+id = "DR-22"
+level = "build"
+suite = "devrel"
+statement = "build-set writes one application from a prompt set: every app's model and proofs under names scoped by its module and laid out as lexlean fmt lays them out, one router that is the only application root and answers each app's vectors by name as the app does, distinct claim ids for every app and the set's facets, and the same bytes for the same set"
+
+[[id]]
 id = "DR-50"
 level = "build"
 suite = "devrel"

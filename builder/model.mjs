@@ -29,11 +29,15 @@ const pascal = (s) =>
     .map((w) => w[0].toUpperCase() + w.slice(1))
     .join('') || 'X';
 
-/** Declaration names, unique within one module. */
-function namer() {
+/**
+ * Declaration names, unique within one module. A scope (an app's module name,
+ * when several apps share one set of facet modules) is put after the prefix,
+ * so the records of two apps never share a name.
+ */
+function namer(scope = '') {
   const used = new Set();
   return (prefix, name) => {
-    const base = `${prefix}${pascal(name)}`;
+    const base = `${prefix}${scope}${pascal(name)}`;
     let decl = base;
     for (let i = 2; used.has(decl); i++) decl = `${base}${i}`;
     used.add(decl);
@@ -138,7 +142,7 @@ export function machineSpec(prompt) {
   };
 }
 
-export function deriveModel(input) {
+export function deriveModel(input, { scope = '' } = {}) {
   const prompt = readPrompt(input);
   const { app, machine } = machineSpec(prompt);
   const spec = checkedSpec(app);
@@ -154,7 +158,7 @@ export function deriveModel(input) {
   const hasProofs = spec.properties.length > 0;
 
   // ---- Architecture -------------------------------------------------------
-  const arch = namer();
+  const arch = namer(scope);
   const concernsIn = [
     ...prompt.concerns,
     { name: 'Correct answers', text: `Every well-formed request is answered by the first rule that matches it, or ${spec.otherwise} when none does, as the spec states.`, model: 'quality', derived: true },
@@ -210,7 +214,7 @@ export function deriveModel(input) {
   const viewpointFor = (concernName) => viewpoints.find((v) => v.concern.name === concernName) ?? viewpoints[0];
 
   // ---- Design -------------------------------------------------------------
-  const design = namer();
+  const design = namer(scope);
   const a = (c) => `Architecture::${c.decl}`;
   const d = (decl) => `Design::${decl}`;
   const process = (name, owner, text) => ({ decl: design('process', name), name, owner, text });
@@ -282,7 +286,7 @@ export function deriveModel(input) {
   }
 
   // ---- Features and journeys ---------------------------------------------
-  const feat = namer();
+  const feat = namer(scope);
   const proofOf = Object.fromEntries(spec.properties.map((p) => [p.id, n.properties[p.id]]));
   const features = [
     ...spec.rules.map((r, i) => ({ key: r.id, decl: feat('feature', `Rule ${i + 1}`), statement: r.says, calls: [`${M}::${n.rules[r.id]}`, `${M}::judge`], acceptance: [`${M}::application`], why: r.why })),
@@ -309,7 +313,7 @@ export function deriveModel(input) {
   const journeys = stakeholders.map((s) => ({ decl: feat('journey', s.name), actor: s, steps: journeySteps(s) }));
 
   // ---- Security and threat model -----------------------------------------
-  const sec = namer();
+  const sec = namer(scope);
   const assetsIn = [
     { key: 'request', name: 'Request bytes', text: `The bytes a caller sends, at most ${limits.requestMaximum} of them.`, component: comp('guest') },
     { key: 'answer', name: 'Answer', text: `The answer the guest returns: one of ${spec.outcomes.join(', ')}, or invalid.`, component: comp('guest') },
@@ -443,7 +447,7 @@ export function deriveModel(input) {
   );
 
   // ---- Quality (ISO/IEC 25010:2023) --------------------------------------
-  const qual = namer();
+  const qual = namer(scope);
   const shortest = vectors.reduce((m, v) => Math.min(m, v.bytes.length), Infinity);
   const qualityIn = [
     { characteristic: 'Functional suitability', subcharacteristic: 'Functional correctness', requirement: 'Examples answered as stated', text: `Every one of the ${spec.examples.length} example${spec.examples.length === 1 ? '' : 's'} of the spec is answered as it states.`, measure: 'Example mismatches', measureText: 'Examples the guest answers otherwise than they state.', threshold: 0 },
