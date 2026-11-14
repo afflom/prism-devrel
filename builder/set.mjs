@@ -23,7 +23,7 @@
  * repository with other generated modules.
  */
 import { declarationText, names } from './vendor/prism-code/src/journey/render.mjs';
-import { renderModel, renderProofs, renderSpecDocument, declarations } from './vendor/prism-code/src/journey/render.mjs';
+import { renderSpecDocument, declarations } from './vendor/prism-code/src/journey/render.mjs';
 import { TEMPLATE_EXAMPLE, claims as propertyClaims, suiteOf } from './vendor/prism-code/src/journey/template.mjs';
 import { SpecError, describeConditions, respond, requestLimits } from './vendor/prism-code/src/journey/spec.mjs';
 import { ASSETS, TEMPLATE } from './assets.mjs';
@@ -72,20 +72,24 @@ export function readSet(set) {
   for (const key of ['name', 'title', 'purpose', 'repository']) if (typeof set[key] !== 'string' || !set[key].trim()) throw new SpecError(`The set needs \`${key}\`.`, key);
   if (!/^[a-z][a-z0-9-]*$/.test(set.name)) throw new SpecError('The set name is lowercase words joined by hyphens.', 'name');
   if (!Array.isArray(set.prompts) || set.prompts.length < 1) throw new SpecError('The set lists at least one prompt.', 'prompts');
+  if (set.root !== undefined && !(set.root && typeof set.root.module === 'string' && /^[A-Z][A-Za-z0-9]*$/.test(set.root.module))) throw new SpecError('`root.module` names the repository\'s own root module, such as Prism.', 'root');
   return { license: 'MIT OR Apache-2.0', axioms: {}, ...set };
 }
 
-/** Claim ids: the initials of every word of the app's name. Refused when two apps would share them. */
-function idPrefixes(models) {
+/**
+ * Claim ids: the initials of every word of the app's name. A prefix a row of
+ * another suite already holds (`taken`) is lengthened by the next letters of
+ * the name's last word until it is free. Refused when two apps would share one.
+ */
+function idPrefixes(models, taken = new Set()) {
   const out = new Map();
   for (const m of models) {
-    const p = m.spec.name
-      .split(/[^a-z0-9]+/)
-      .filter(Boolean)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
-    const prefix = p === 'CM' ? 'CN' : p;
+    const words = m.spec.name.split(/[^a-z0-9]+/).filter(Boolean);
+    const p = words.map((w) => w[0]).join('').toUpperCase();
+    let prefix = p === 'CM' ? 'CN' : p;
+    const last = words.at(-1).toUpperCase();
+    for (let k = 1; taken.has(prefix) && k < last.length; k++) prefix = `${p}${last.slice(1, k + 1)}`;
+    if (taken.has(prefix)) throw new SpecError(`Every id prefix of ${m.spec.name} is held by another suite's rows; rename the app.`, 'prompts');
     if ([...out.values()].includes(prefix)) throw new SpecError(`Two apps of the set would both claim ${prefix}-xx; rename one.`, 'prompts');
     out.set(m, prefix);
   }
@@ -278,7 +282,7 @@ export function mergeModels(set, models) {
  */
 function scope(m) {
   const lead = m.module[0].toLowerCase() + m.module.slice(1);
-  const model = m.machine ? renderMachineModel(m.spec, m.machine, {}) : renderModel(m.spec, {});
+  const model = renderMachineModel(m.spec, m.machine ?? null, {});
   const decls = [...model.matchAll(/^(?:definition|structure|inductive)\{(?:\n  )?name: ([A-Za-z_][A-Za-z0-9_]*),/gm)].map((x) => x[1]).filter((x) => x !== 'application');
   const map = new Map(decls.map((d) => [d, d === 'Request' ? `${m.module}Request` : `${lead}${d[0].toUpperCase()}${d.slice(1)}`]));
   const word = new RegExp(`(?<![A-Za-z0-9_:.])(${decls.join('|')})(?![A-Za-z0-9_])`, 'g');
@@ -469,7 +473,11 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   if (new Set(names_).size !== names_.length) throw new SpecError('Two prompts of the set name the same app.', 'prompts');
   const router = routerOf(set, models);
   if (models.some((m) => m.module === router.module)) throw new SpecError(`The set's router module ${router.module} is also an app's module; rename the set.`, 'name');
-  const prefixes = idPrefixes(models);
+  const setSuite = suiteOf({ name: set.name });
+  const owns = new Set([setSuite, ...models.map((m) => m.suite)]);
+  // The prefixes rows of suites the set does not own already hold.
+  const taken = new Set([...(current('model/ids.toml') ?? '').matchAll(/^id = "([A-Z0-9]+)-\d+"\n(?:[a-z]+ = .*\n)*?suite = "([^"]+)"/gm)].filter((x) => !owns.has(x[2])).map((x) => x[1]));
+  const prefixes = idPrefixes(models, taken);
   const files = {};
   const app = (path, text) => (files[`app/${path}`] = text);
   for (const [path, text] of Object.entries(ASSETS)) app(path, text);
@@ -478,21 +486,23 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   renameStrings(merged.features, new Map(models.flatMap((m) => [...scoped.get(m).qualified])));
   for (const o of merged.compliance) o.evidence = o.evidence.map((e) => models.reduce((x, m) => scoped.get(m).qualified.get(x) ?? x, e));
   // What each app's application accepted, the router's application now accepts.
-  const roots = new Map(models.map((m) => [`${m.module}::application`, `${router.module}::application`]));
+  // A set hosted by a repository's own root (`root.module`) leaves that root, its build and its page to the repository.
+  const host = set.root?.module ?? null;
+  const roots = new Map(models.map((m) => [`${m.module}::application`, `${host ?? router.module}::application`]));
   renameStrings(merged.features, roots);
   for (const o of merged.compliance) o.evidence = [...new Set(o.evidence.map((e) => roots.get(e) ?? e))];
   for (const [path, text] of Object.entries(facetModules(merged))) app(path, text);
   for (const m of models) {
     const axioms = Object.fromEntries(Object.entries(m.prompt.axioms).map(([name, s]) => [name, `[${s.join(', ')}]`]));
     // A project has one application root (PP2001): the router's. An app module keeps everything but its own.
-    const model = m.machine ? renderMachineModel(m.spec, m.machine, { axioms }) : renderModel(m.spec, { axioms });
+    const model = renderMachineModel(m.spec, m.machine ?? null, { axioms });
     const withoutRoot = model.replace(/\n\ndefinition\{\n  name: application,\n[\s\S]*?\n\}\n(?=\\end\{semanticmodule\})/, '\n');
     if (withoutRoot === model) throw new Error(`no application declaration found in ${m.module}`);
     app(`src/${m.module}.lex.tex`, scoped.get(m).text(withoutRoot));
-    if (m.hasProofs) app(`src/${m.proofs}.lex.tex`, scoped.get(m).refs(m.machine ? renderMachineProofs(m.spec, m.machine, { axioms }) : renderProofs(m.spec, { axioms })));
+    if (m.hasProofs) app(`src/${m.proofs}.lex.tex`, scoped.get(m).refs(renderMachineProofs(m.spec, m.machine ?? null, { axioms })));
     files[`openspec/specs/${m.spec.name}/spec.md`] = renderSpecDocument(m.spec, {});
   }
-  app(`src/${router.module}.lex.tex`, renderRouter(set, router));
+  if (!host) app(`src/${router.module}.lex.tex`, renderRouter(set, router));
 
   // lexlean.toml: the set's modules, and every other entrypoint the project already has.
   const ownedSrc = Object.keys(files).filter((p) => p.startsWith('app/src/') && !p.startsWith('app/src/Foundation/') && !p.startsWith('app/src/Production/'));
@@ -500,7 +510,10 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   const kept = [...(/^entrypoints = \[(.*)\]$/m.exec(before)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map((x) => x[1]).filter((e) => !ownedSrc.includes(`app/${e}`) && current(`app/${e}`) !== undefined);
   const entrypoints = [...new Set([...ownedSrc.map((p) => p.slice('app/'.length)), ...kept])].sort();
   const lexicons = before.includes('[[lexicon_source]]') ? before.slice(before.indexOf('[[lexicon_source]]'), before.indexOf('[limits]')).replace(/\n*$/, '\n\n') : [['lexlean.std.nat', 'builtin'], ...['prism.arch', 'prism.qual', 'prism.sec'].map((p) => [p, 'path'])].map(([p, k]) => (k === 'builtin' ? `[[lexicon_source]]\npackage = "${p}"\nkind = "builtin"\n` : `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n`)).join('\n') + '\n';
-  app(
+  if (host) {
+    const missing = ['prism.arch', 'prism.qual', 'prism.sec'].filter((p) => !before.includes(`package = "${p}"`)).map((p) => `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n\n`).join('');
+    app('lexlean.toml', before.replace(/^entrypoints = \[.*\]$/m, `entrypoints = [${entrypoints.map((e) => `"${e}"`).join(', ')}]`).replace('[limits]', `${missing}[limits]`));
+  } else app(
     'lexlean.toml',
     [
       'spec = "lexlean/project/1"',
@@ -517,12 +530,11 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
       lexicons.replace(/\n+$/, '\n\n'),
     ].join('\n') + TEMPLATE['app/lexlean.toml'].slice(TEMPLATE['app/lexlean.toml'].indexOf('[limits]')),
   );
-  app('lakefile.toml', `name = "${router.prefix}"\nversion = "0.1.0"\ndefaultTargets = ["${router.prefix}"]\n\n[[lean_lib]]\nname = "${router.prefix}"\n`);
-  app('lake-manifest.json', `{"version":"1.2.0","packagesDir":".lake/packages","packages":[],"name":"${router.prefix}","lakeDir":".lake","fixedToolchain":false}`);
-  app('prismpm.toml', TEMPLATE['app/prismpm.toml'].replace(/^project = ".*"$/m, `project = "${router.module}"`));
+  if (!host) app('lakefile.toml', `name = "${router.prefix}"\nversion = "0.1.0"\ndefaultTargets = ["${router.prefix}"]\n\n[[lean_lib]]\nname = "${router.prefix}"\n`);
+  if (!host) app('lake-manifest.json', `{"version":"1.2.0","packagesDir":".lake/packages","packages":[],"name":"${router.prefix}","lakeDir":".lake","fixedToolchain":false}`);
+  if (!host) app('prismpm.toml', TEMPLATE['app/prismpm.toml'].replace(/^project = ".*"$/m, `project = "${router.module}"`));
 
   // Claims: each app's properties under its own prefix and suite, then the facet theorems under the set's.
-  const setSuite = suiteOf({ name: set.name });
   const claims = [];
   for (const m of models) {
     const prefix = prefixes.get(m);
@@ -548,7 +560,7 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   files[`crates/conformance/tests/${setSuite}.rs`] = rustTests({ suite: setSuite }, facets);
   const owned = new Set([setSuite, ...models.map((m) => m.suite)]);
   files['model/ids.toml'] = idsToml(current('model/ids.toml') ?? TEMPLATE['model/ids.toml'], owned, claims);
-  files['site/app.json'] = siteJson(set, router, claims);
+  if (!host) files['site/app.json'] = siteJson(set, router, claims);
   return { files, remove: [...TEMPLATE_EXAMPLE, 'app/prompt.json'], set, models, router, claims };
 }
 

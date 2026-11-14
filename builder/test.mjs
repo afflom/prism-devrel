@@ -315,6 +315,17 @@ const CASES = {
     eq(new Set(ids).size, ids.length, 'every claim id is distinct');
     ok(['KNAP-01', 'PCL-01', 'DPC-01', 'GS-01'].every((id) => ids.includes(id)), `${ids.join(' ')}: claims take the initials of each app's name, the facets the set's`);
     ok(files['model/ids.toml'].includes('id = "GS-01"'), 'the facet claims are registered');
+    // A set hosted by the repository's own root writes no router and leaves the root's build to it.
+    const lexlean = 'spec = "lexlean/project/1"\nname = "host"\nmodule_prefix = "Host"\nentrypoints = ["src/Host.lex.tex"]\n\n[[lexicon_source]]\npackage = "prism.arch"\nkind = "path"\npath = "language/prism.arch"\n\n[limits]\nchild_timeout_ms = 1\n';
+    const have = { 'app/lexlean.toml': lexlean, 'app/src/Host.lex.tex': 'host', 'model/ids.toml': '[[id]]\nid = "PCL-01"\nlevel = "build"\nsuite = "other"\nstatement = "held"\n' };
+    const hosted = await buildSet({ ...set, root: { module: 'Host' } }, prompts, { lastModified: AT, current: (p) => have[p] });
+    ok(!(`app/src/${hosted.router.module}.lex.tex` in hosted.files) && !('app/prismpm.toml' in hosted.files) && !('app/lakefile.toml' in hosted.files) && !('site/app.json' in hosted.files), 'a hosted set writes no router, project, lakefile or page');
+    const kept = hosted.files['app/lexlean.toml'];
+    ok(kept.includes('name = "host"') && kept.includes('module_prefix = "Host"') && kept.includes('child_timeout_ms = 1') && kept.includes('"src/Host.lex.tex"') && kept.includes('package = "prism.qual"') && kept.includes('package = "prism.sec"') && kept.split('package = "prism.arch"').length === 2, "a hosted set keeps the host's lexlean.toml and adds only its entrypoints and missing lexicons");
+    ok(hosted.files['app/src/Compliance.lex.tex'].includes('Host::application') && !hosted.files['app/src/Compliance.lex.tex'].includes(`${hosted.router.module}::application`), "a hosted set's facets cite the host's root");
+    const hostedIds = hosted.claims.map((c) => c.id);
+    ok(hostedIds.includes('PCLI-01') && hostedIds.filter((id) => id === 'PCL-01').length === 0 && hosted.files['model/ids.toml'].split('id = "PCL-01"').length === 2, "a prefix another suite's rows hold is lengthened from the app's last word");
+    await refused(() => buildSet({ ...set, root: { module: 'host' } }, prompts, { lastModified: AT }), /root\.module/, 'a root is a module name');
   },
   async 'DR-07'() {
     const good = rule30();
