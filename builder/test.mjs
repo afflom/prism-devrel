@@ -314,7 +314,7 @@ const CASES = {
       // ISO/IEC 25010:2023 whole: 9 characteristics, 40 subcharacteristics, each stated or open.
       eq([m.quality.characteristics.length, m.quality.subcharacteristics.length], [9, 40], `${file}: the whole ISO/IEC 25010:2023 model`);
       eq(m.quality.openSubcharacteristics.length + new Set(m.quality.requirements.map((r) => r.subcharacteristic)).size, 40, `${file}: each subcharacteristic is stated or open`);
-      ok(m.compliance.some((o) => o.standard === 'NIST OSCAL 1.1.0') && m.compliance.filter((o) => o.holds).every((o) => module(files, 'Compliance').includes(`statement: ((${o.holds}) = true)`)), `${file}: OSCAL is an obligation and each decided obligation is re-proved`);
+      ok(m.compliance.some((o) => o.standard === 'NIST OSCAL 1.1.0') && m.compliance.filter((o) => o.holds).every((o) => o.evidence.some((e) => module(files, e.split('::')[0]).includes(`name: ${e.split('::')[1]},`))), `${file}: OSCAL is an obligation and each decided obligation cites its facet theorem`);
       ok(m.spec.properties.every((p) => m.security.controls.some((c) => c.evidence.some((e) => e.kind === 'proof' && e.reference.endsWith(`::${m.names.properties[p.id].theorem}`)))), `${file}: every property is a control's proof evidence`);
       ok(m.quality.measures.some((x) => x.threshold === m.limits.requestMaximum), `${file}: the request bound is a quality threshold, read from the spec`);
       ok(module(files, m.module).includes('Foundation.View.Text.V1.Model::TextApplication'), `${file}: one text application`);
