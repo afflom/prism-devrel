@@ -69,6 +69,13 @@ function missCondition(n, c) {
  */
 export const MAX_DEPTH = 12;
 
+/**
+ * The longest chain of rule tests one branch keeps. A rule's test can be a
+ * disjunction of misses, which costs `split` more than a dispatch atom: a
+ * 12-rule chain of compound misses does not split where 12 dispatch atoms do.
+ */
+export const MAX_CHAIN = 10;
+
 /** A rule with the conditions on `fixed` fields dropped: inside that branch they hold. */
 const specialize = (r, fixed) => ({ ...r, when: r.when.filter((c) => !fixed.has(c.field)), whole: r.whole ?? r });
 
@@ -95,7 +102,7 @@ function bestField(spec, rules, fixed) {
 
 /** Kept for callers that ask which field a table is factored by first. */
 export function factorField(spec) {
-  const field = truncate(spec.rules).tests.length > MAX_DEPTH ? bestField(spec, spec.rules, new Set()) : null;
+  const field = truncate(spec.rules).tests.length > MAX_CHAIN ? bestField(spec, spec.rules, new Set()) : null;
   return field ? { state: field } : null;
 }
 
@@ -168,7 +175,7 @@ export function machineDeclarations(spec, machine, n = names(spec)) {
     return { body, steps, rest };
   };
   const build = (rules, fixed, prefix, budget) => {
-    if (truncate(rules).tests.length <= budget) return chain(rules);
+    if (truncate(rules).tests.length <= Math.min(budget, MAX_CHAIN)) return chain(rules);
     const field = bestField(spec, rules, fixed);
     return field ? factor(rules, fixed, prefix, field, budget).body : chain(rules);
   };
