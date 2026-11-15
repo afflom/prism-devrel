@@ -31,6 +31,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildApp, claimLines } from './build.mjs';
 import { buildSet } from './set.mjs';
+import { productUi } from './ui.mjs';
 import { TOOL } from './tool.mjs';
 import { SpecError } from './vendor/prism-code/src/journey/spec.mjs';
 
@@ -100,6 +101,8 @@ try {
     // The newest commit of the set or any of its prompts dates the threat model.
     const lastModified = flag('--last-modified') ?? [file, ...set.prompts.map((p) => join(dirname(file), p))].map(committed).sort().pop();
     const built = await buildSet(set, prompts, { lastModified, current });
+    const product = current('prism/product.json');
+    if (product) Object.assign(built.files, productUi(set, prompts, JSON.parse(product)));
     if (rest.includes('--check')) {
       const stale = [...Object.entries(built.files).filter(([path, text]) => current(path) !== text).map(([path]) => path), ...built.remove.filter((path) => current(path) !== undefined)];
       for (const path of stale) console.error(`stale: ${path}`);
