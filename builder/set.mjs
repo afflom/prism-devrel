@@ -425,6 +425,7 @@ function scenarios(suite, purpose, claims) {
 
 function siteJson(set, router, claims) {
   const app = JSON.parse(TEMPLATE['site/app.json']);
+  app.promise = set.promise ?? { headline: set.title, detail: set.purpose };
   const url = `https://github.com/${set.repository}`;
   const [owner, repo] = set.repository.split('/');
   const props = claims.filter((c) => c.kind === 'property');
@@ -446,7 +447,7 @@ function siteJson(set, router, claims) {
       claim: props.map((c) => `${c.id}: ${c.statement.replace(/^The app/, `the ${c.app} app`)}.`).join(' '),
       proposition: { name: 'dispatch', text: router.apps.map((m) => `${m.spec.name} request := ${m.module}.judge request`).join('\n'), plain: set.purpose },
       theorems: props.map((c) => ({ name: c.theorem, statement: `no request meets ${c.breaks}: ${c.statement.replace(/^The app/, `the ${c.app} app`)}`, how: 'Proved by linear arithmetic, checked by the Lean kernel by prismpm verify in CI', where: `app/src/${c.proofs}.lex.tex` })),
-      pinned: props.map((c) => ({ name: c.test, what: `${c.id}'s condition and the theorem that no request meets it. A string-matching test, not a theorem: a planted defect fails it.`, where: `crates/conformance/tests/${c.suite}.rs` })),
+      pinned: props.map((c) => ({ name: c.test, what: `${c.id}'s condition and the theorem that no request meets it. A string-matching test, not a theorem: a planted defect fails it.`, where: `crates/conformance/tests/${setSuiteOf(set)}.rs` })),
       attestations: {
         proof: { id: 'not recorded: the proof ran in the SDK image, not on the UOR MCP server', url: `${url}/actions/workflows/bootstrap.yml` },
         build: { id: 'printed by prismpm verify in every pages run', url: `${url}/actions/workflows/pages.yml` },
@@ -510,9 +511,10 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   // lexlean.toml: the set's modules, and every other entrypoint the project already has.
   const ownedSrc = Object.keys(files).filter((p) => p.startsWith('app/src/') && !p.startsWith('app/src/Foundation/') && !p.startsWith('app/src/Production/'));
   const before = current('app/lexlean.toml') ?? '';
-  const kept = [...(/^entrypoints = \[(.*)\]$/m.exec(before)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map((x) => x[1]).filter((e) => !ownedSrc.includes(`app/${e}`) && current(`app/${e}`) !== undefined);
+  const kept = [...(/^entrypoints = \[(.*)\]$/m.exec(before)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map((x) => x[1]).filter((e) => !ownedSrc.includes(`app/${e}`) && !(host ? [] : TEMPLATE_EXAMPLE).includes(`app/${e}`) && current(`app/${e}`) !== undefined);
   const entrypoints = [...new Set([...ownedSrc.map((p) => p.slice('app/'.length)), ...kept])].sort();
-  const lexicons = before.includes('[[lexicon_source]]') ? before.slice(before.indexOf('[[lexicon_source]]'), before.indexOf('[limits]')).replace(/\n*$/, '\n\n') : [['lexlean.std.nat', 'builtin'], ...['prism.arch', 'prism.qual', 'prism.sec'].map((p) => [p, 'path'])].map(([p, k]) => (k === 'builtin' ? `[[lexicon_source]]\npackage = "${p}"\nkind = "builtin"\n` : `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n`)).join('\n') + '\n';
+  const declared = (text) => text + ['prism.arch', 'prism.qual', 'prism.sec'].filter((p) => !text.includes(`package = "${p}"`)).map((p) => `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n\n`).join('');
+  const lexicons = before.includes('[[lexicon_source]]') ? declared(before.slice(before.indexOf('[[lexicon_source]]'), before.indexOf('[limits]')).replace(/\n*$/, '\n\n')) : [['lexlean.std.nat', 'builtin'], ...['prism.arch', 'prism.qual', 'prism.sec'].map((p) => [p, 'path'])].map(([p, k]) => (k === 'builtin' ? `[[lexicon_source]]\npackage = "${p}"\nkind = "builtin"\n` : `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n`)).join('\n') + '\n';
   if (host) {
     const missing = ['prism.arch', 'prism.qual', 'prism.sec'].filter((p) => !before.includes(`package = "${p}"`)).map((p) => `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n\n`).join('');
     app('lexlean.toml', before.replace(/^entrypoints = \[.*\]$/m, `entrypoints = [${entrypoints.map((e) => `"${e}"`).join(', ')}]`).replace('[limits]', `${missing}[limits]`));
@@ -549,7 +551,6 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
     claims.push(...own);
     if (own.length) {
       files[`features/suites/${suite}.feature`] = scenarios(suite, m.spec.purpose, own);
-      files[`crates/conformance/tests/${suite}.rs`] = rustTests({ suite, proofs: m.proofs }, own);
     }
   }
   const setPrefix = pascal(set.name).replace(/[a-z0-9]/g, '');
@@ -560,11 +561,67 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   if ([...prefixes.values()].includes(setPrefix)) throw new SpecError(`The set's prefix ${setPrefix} is also an app's; rename the set.`, 'name');
   claims.push(...facets);
   files[`features/suites/${setSuite}.feature`] = scenarios(setSuite, set.purpose, facets);
-  files[`crates/conformance/tests/${setSuite}.rs`] = rustTests({ suite: setSuite }, facets);
-  const owned = new Set([setSuite, ...models.map((m) => m.suite)]);
+  files[`crates/conformance/tests/${setSuite}.rs`] = setRustTests(setSuite, claims);
+  // The template's example app (suite `contract`) is replaced, so its register row goes with it.
+  const owned = new Set([setSuite, ...models.map((m) => m.suite), ...(host ? [] : ['contract'])]);
   files['model/ids.toml'] = idsToml(current('model/ids.toml') ?? TEMPLATE['model/ids.toml'], owned, claims);
   if (!host) files['site/app.json'] = siteJson(set, router, claims);
-  return { files, remove: [...TEMPLATE_EXAMPLE, 'app/prompt.json'], set, models, router, claims };
+  const perApp = models.map((m) => `crates/conformance/tests/${m.suite}.rs`).filter((p) => !(p in files));
+  return { files, remove: [...TEMPLATE_EXAMPLE, 'app/prompt.json', ...perApp], set, models, router, claims };
+}
+
+const setSuiteOf = (set) => suiteOf({ name: set.name });
+
+/**
+ * `crates/conformance/tests/<set>.rs`: one test per claim of the whole set, in
+ * one file, in the layout `cargo fmt` gives it. Each test pins what its theorem
+ * is about (a property's condition and that no request meets it; a facet
+ * theorem's statement and that `decide` proves it), so a weakened statement
+ * that still verifies fails the gate. One table line per claim keeps the
+ * generated Rust small, as the template's only-Prism ratchet asks.
+ */
+export function setRustTests(suite, claims) {
+  const lit = (s) => JSON.stringify(s);
+  const rows = claims.map((c) =>
+    c.kind === 'property'
+      ? `    // ${c.id}: ${c.statement.replace(/\s+/g, ' ')}\n    ${c.test}: ${lit(c.proofs)}, ${lit(c.breaks)} => ${lit(`body: ${c.condition}`)}, ${lit(c.theorem)} => ${lit(`statement: ((${c.breaks} request) = false),`)};`
+      : `    // ${c.id}: ${c.statement.replace(/\s+/g, ' ')}\n    ${c.test}: ${lit(c.module)}, ${lit(c.theorem)} => ${lit(`statement: ${c.holds},`)}, ${lit(c.theorem)} => "proof: decide{}";`,
+  );
+  return [
+    `//! The \`${suite}\` suite: one test per claim of the prompt set, each named for its ID.`,
+    '//!',
+    '//! Written by the Prism-DevRel builder from the prompt set. The theorems are',
+    '//! checked by the Lean kernel when `just vv` runs `prismpm verify` on `app/`.',
+    '//! What these tests hold fixed is what each theorem is about, so a weakened',
+    '//! statement that still verifies fails the gate.',
+    '',
+    '/// The top-level declaration `name` of `app/src/<module>.lex.tex` contains `needle`.',
+    'fn pins(module: &str, name: &str, needle: &str) {',
+    '    let root = env!("CARGO_MANIFEST_DIR");',
+    '    let path = format!("{root}/../../app/src/{module}.lex.tex");',
+    '    let model = std::fs::read_to_string(path).expect("the module");',
+    '    let start = model',
+    '        .find(&format!("\\n  name: {name},\\n"))',
+    '        .unwrap_or_else(|| panic!("{name} is not declared"));',
+    '    let end = model[start..].find("\\n}\\n").expect("closed");',
+    '    let found = &model[start..start + end];',
+    '    assert!(found.contains(needle), "{name}: {needle}\\n{found}");',
+    '}',
+    '',
+    'macro_rules! claims {',
+    '    ($($test:ident: $module:literal $(, $name:literal => $needle:literal)+;)*) => {$(',
+    '        #[test]',
+    '        fn $test() {',
+    '            $(pins($module, $name, $needle);)+',
+    '        }',
+    '    )*};',
+    '}',
+    '',
+    'claims! {',
+    ...rows,
+    '}',
+    '',
+  ].join('\n');
 }
 
 export { describeConditions };
