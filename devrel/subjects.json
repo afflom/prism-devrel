@@ -52,7 +52,7 @@
       "slug": "foundry",
       "name": "Foundry",
       "repository": "https://github.com/UOR-Foundation/foundry",
-      "commit": "c0675bb509cf3a784bcf0d92b77d8235e538720d",
+      "commit": "9ccde14c10202a7c67cdc63e539918cfdc10a428",
       "path": "app",
       "gate": "bootstrap.yml"
     }
