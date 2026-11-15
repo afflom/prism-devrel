@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{TITLE}}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/*TOKENS*/
+/* Components: AnswerHero, JourneyMap, DecisionPanel, Disclosure, Seal. Nothing else is drawn. */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 400 var(--t-md)/1.6 var(--f-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 68rem; margin: 0 auto; padding-left: max(var(--s-4), env(safe-area-inset-left, 0px)); padding-right: max(var(--s-4), env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--f-display); margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+h1 { font-size: var(--t-xxl); line-height: 1.1; }
+h2 { font-size: var(--t-xl); line-height: 1.2; }
+h3 { font-size: var(--t-lg); font-weight: 500; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.eyebrow { font: 600 var(--t-xs)/1.4 var(--f-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+code, .mono { font-family: var(--f-mono); font-size: .88em; overflow-wrap: anywhere; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.stack > * + * { margin-top: var(--s-3); }
+
+/* Top bar */
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.bar { display: flex; align-items: center; gap: var(--s-3); padding-block: var(--s-3); flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: var(--s-2); font: 700 var(--t-md) var(--f-display); text-decoration: none; color: var(--fg); margin-right: auto; min-height: 24px; }
+.brand i { width: 14px; height: 14px; border-radius: 50%; background: conic-gradient(#e5484d, #f5a524, #46a758, #12a5b5, #3e63dd, #8e4ec6, #e5484d); }
+.seal { display: inline-flex; align-items: center; gap: var(--s-2); font-size: var(--t-sm); padding: var(--s-1) var(--s-3); border-radius: 999px; border: 1px solid var(--line); background: var(--surface); min-height: 32px; }
+.seal::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--caution); }
+.seal[data-state="ok"]::before { background: var(--positive); }
+.seal[data-state="bad"]::before { background: var(--negative); }
+.toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); padding: 2px; }
+.toggle button { border: 0; background: none; color: var(--muted); font: 500 var(--t-sm) var(--f-body); padding: var(--s-1) var(--s-3); border-radius: 999px; cursor: pointer; min-height: 28px; }
+.toggle button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+nav.who { display: flex; gap: var(--s-1); overflow-x: auto; padding-bottom: var(--s-2); scrollbar-width: none; }
+nav.who a { flex: none; text-decoration: none; color: var(--muted); font: 500 var(--t-sm) var(--f-body); padding: var(--s-2) var(--s-3); border-radius: var(--r-sm); min-height: 36px; display: flex; align-items: center; }
+nav.who a:hover { color: var(--fg); background: var(--sunken); }
+nav.who a[aria-current="page"] { color: var(--fg); background: var(--surface); box-shadow: inset 0 -2px 0 var(--accent); }
+nav.who .sep { flex: none; width: 1px; background: var(--line); margin: var(--s-2) var(--s-2); }
+
+main { padding-block: var(--s-6) var(--s-8); }
+main > section + section, main > details + section, main > section + details, main > details + details { margin-top: var(--s-7); }
+.section-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s-2); margin-bottom: var(--s-4); }
+
+/* AnswerHero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: "q v" "j v"; gap: var(--s-5) var(--s-6); align-items: start; }
+.hero > .q { grid-area: q; } .hero > .verdict { grid-area: v; } .hero > .jobs { grid-area: j; margin: 0; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; grid-template-areas: "q" "v" "j"; } }
+.hero .context { margin-top: var(--s-3); font-size: var(--t-lg); color: var(--muted); max-width: 34rem; }
+.jobs { list-style: none; padding: 0; margin: var(--s-5) 0 0; display: grid; gap: var(--s-2); }
+.jobs li { padding-left: var(--s-4); border-left: 2px solid var(--line); color: var(--muted); font-size: var(--t-sm); }
+.verdict { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s-5); }
+.verdict .word { font: 700 var(--t-hero)/1 var(--f-display); letter-spacing: -.02em; margin: var(--s-2) 0 var(--s-3); }
+.verdict[data-tone="positive"] .word { color: var(--positive); }
+.verdict[data-tone="negative"] .word { color: var(--negative); }
+.verdict[data-tone="caution"] .word { color: var(--caution); }
+.verdict .why { font-size: var(--t-md); }
+.verdict .inputs { margin-top: var(--s-5); padding-top: var(--s-4); border-top: 1px solid var(--line); display: grid; gap: var(--s-3); }
+@media (prefers-reduced-motion: no-preference) { .verdict .word.changed { animation: settle .3s ease-out; } @keyframes settle { from { opacity: .3; transform: translateY(4px); } } }
+
+/* Choices: one labelled group per input */
+.choice { display: grid; gap: var(--s-1); }
+.choice > span { font-size: var(--t-sm); color: var(--muted); }
+.options { display: flex; flex-wrap: wrap; gap: var(--s-1); }
+.options button { min-height: 32px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: var(--r-sm); padding: var(--s-1) var(--s-3); font: 500 var(--t-sm) var(--f-body); cursor: pointer; }
+.options button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+.stepper { display: flex; align-items: center; gap: var(--s-2); }
+.stepper button { width: 32px; height: 32px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: var(--r-sm); font: 600 var(--t-md) var(--f-body); cursor: pointer; }
+.stepper output { font: 600 var(--t-md) var(--f-mono); min-width: 3ch; text-align: center; }
+
+/* JourneyMap */
+.map { list-style: none; padding: 0; margin: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(14rem, 1fr); gap: var(--s-3); overflow-x: auto; padding-bottom: var(--s-2); counter-reset: st; }
+.map li { counter-increment: st; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s-4); display: grid; gap: var(--s-2); align-content: start; position: relative; }
+.map li .n { font: 700 var(--t-sm) var(--f-display); color: var(--accent); }
+.map li .n::before { content: "Stage " counter(st) " · "; color: var(--muted); font-weight: 500; }
+.map li h3 { font-size: var(--t-md); font-weight: 700; }
+.map li .req { font: var(--t-xs) var(--f-mono); color: var(--muted); }
+.tag { display: inline-block; font: 600 var(--t-xs) var(--f-mono); padding: 2px var(--s-2); border-radius: 999px; background: var(--sunken); }
+.tag.positive { background: var(--positive-soft); color: var(--positive); }
+.tag.negative { background: var(--negative-soft); color: var(--negative); }
+.tag.caution { background: var(--caution-soft); color: var(--caution); }
+
+/* Disclosure */
+details.disclosure { border-top: 1px solid var(--line); padding-top: var(--s-4); }
+details.disclosure > summary { cursor: pointer; list-style: none; display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-2) var(--s-3); min-height: 32px; }
+details.disclosure > summary::-webkit-details-marker { display: none; }
+details.disclosure > summary::before { content: "+"; font: 600 var(--t-lg) var(--f-mono); color: var(--accent); width: 1ch; }
+details.disclosure[open] > summary::before { content: "−"; }
+details.disclosure > summary h2 { font-size: var(--t-lg); }
+details.disclosure > .body { margin-top: var(--s-4); }
+
+/* DecisionPanel */
+.panels { display: grid; gap: var(--s-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s-5); display: grid; gap: var(--s-4); align-content: start; min-width: 0; }
+.panel .head { display: flex; justify-content: space-between; gap: var(--s-2); flex-wrap: wrap; align-items: baseline; }
+.panel .std { font: var(--t-xs) var(--f-mono); color: var(--muted); }
+.result { display: flex; gap: var(--s-3); align-items: baseline; flex-wrap: wrap; padding: var(--s-3) var(--s-4); border-radius: var(--r-sm); background: var(--sunken); }
+.result b { font: 700 var(--t-lg) var(--f-display); }
+.result[data-tone="positive"] { background: var(--positive-soft); } .result[data-tone="positive"] b { color: var(--positive); }
+.result[data-tone="negative"] { background: var(--negative-soft); } .result[data-tone="negative"] b { color: var(--negative); }
+.result[data-tone="caution"] { background: var(--caution-soft); } .result[data-tone="caution"] b { color: var(--caution); }
+.panel details { font-size: var(--t-sm); }
+.panel details summary { cursor: pointer; color: var(--accent); font-weight: 500; min-height: 24px; }
+.panel details .body { margin-top: var(--s-2); display: grid; gap: var(--s-2); }
+.promise { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--s-2); padding: var(--s-2); border-radius: var(--r-sm); }
+.promise.applies { background: var(--accent-soft); }
+.promise .id { font: 600 var(--t-xs) var(--f-mono); }
+
+/* Words, served-by table, home */
+.cards { display: grid; gap: var(--s-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s-4); display: grid; gap: var(--s-1); align-content: start; }
+a.card { text-decoration: none; color: inherit; }
+a.card:hover { border-color: var(--accent); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: var(--t-sm); }
+th, td { text-align: left; padding: var(--s-2) var(--s-3); border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); }
+.steps { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--s-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); counter-reset: s; }
+.steps li { counter-increment: s; padding: var(--s-4); border-radius: var(--r-md); background: var(--sunken); }
+.steps li::before { content: counter(s); display: block; font: 700 var(--t-lg) var(--f-display); color: var(--accent); }
+.dz { border: 2px dashed var(--line); border-radius: var(--r-md); padding: var(--s-5); text-align: center; background: var(--sunken); }
+.dz.over { border-color: var(--accent); }
+textarea { width: 100%; min-height: 5rem; font: var(--t-sm) var(--f-mono); color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm); padding: var(--s-3); }
+.bytes { display: flex; flex-wrap: wrap; gap: 3px; }
+.bytes button { font: var(--t-xs) var(--f-mono); border: 0; border-radius: 3px; padding: 2px 4px; background: var(--sunken); color: var(--fg); cursor: pointer; min-width: 24px; min-height: 24px; }
+.addr { font: var(--t-sm) var(--f-mono); word-break: break-all; padding: var(--s-3); border-radius: var(--r-sm); background: var(--surface); border: 1px solid var(--line); }
+svg { display: block; max-width: 100%; height: auto; }
+.sm rect { fill: var(--sunken); stroke: var(--line); stroke-width: 1.5; transition: fill .3s, stroke .3s; }
+.sm .final rect { stroke-width: 3; }
+.sm .on rect { fill: var(--accent-soft); stroke: var(--accent); }
+.sm path { stroke: var(--line); stroke-width: 1.5; fill: none; }
+.sm path.fired { stroke: var(--accent); stroke-width: 3; }
+.sm text { fill: var(--fg); font: 600 13px var(--f-body); }
+footer { border-top: 1px solid var(--line); padding-block: var(--s-5); color: var(--muted); font-size: var(--t-sm); }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="bar">
+      <a class="brand" href="#home"><i aria-hidden="true"></i><span id="brand"></span></a>
+      <span class="seal" id="seal" data-state="wait" role="status">Checking the seal…</span>
+      <div class="toggle" role="group" aria-label="Where this platform runs" id="site"></div>
+    </div>
+    <nav class="who" id="nav" aria-label="Views"></nav>
+  </div>
+</header>
+<main class="wrap" id="main" tabindex="-1"></main>
+<footer><div class="wrap" id="foot"></div></footer>
+
+<script type="module">
+/*LOADER*/
+const M = /*MODEL*/;
+const { set, prompts, product } = M;
+const $ = (s) => document.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat()) if (kid != null && kid !== false) e.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  return e;
+};
+const s = (tag, attrs = {}, ...kids) => { const e = document.createElementNS("http://www.w3.org/2000/svg", tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); for (const kid of kids.flat()) e.append(kid.nodeType ? kid : document.createTextNode(String(kid))); return e; };
+const enc = new TextEncoder(), dec = new TextDecoder();
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+
+// ---- The guest answers; the model explains ----------------------------------
+let guest;
+const ask = async (app, values) => dec.decode(await guest.dispatch(enc.encode(`${app} ${values.join(" ")}`)));
+const NEG = /^(deny|no-go|rejected|nonconformant|not-shown|outside-view|config-error|network-error|abandoned|indeterminate)$/;
+const CAU = /^(hold|retain|open|receiving|not-applicable)$/;
+const tone = (a) => NEG.test(a) ? "negative" : CAU.test(a) ? "caution" : "positive";
+const holds = (c, f, v) => { const x = f.kind === "number" ? +v : v, y = f.kind === "number" ? +c.value : c.value; return ({ "is": x === y, "=": x === y, "is not": x !== y, "!=": x !== y, "<": x < y, "<=": x <= y, ">": x > y, ">=": x >= y })[c.op]; };
+const bind = (app, values) => Object.fromEntries(prompts[app].app.fields.map((f, i) => [f.name, [f, values[i]]]));
+const matches = (app, values, when) => { const b = bind(app, values); return when.every((c) => holds(c, ...b[c.field])); };
+const fired = (app, values) => { const a = prompts[app].app; const i = a.rules.findIndex((r) => matches(app, values, r.when)); return i < 0 ? { id: "otherwise", why: a.otherwiseWhy } : { id: `REQ-${String(i + 1).padStart(3, "0")}`, ...a.rules[i] }; };
+const claim = (app, i) => `${app.split("-").map((w) => w[0].toUpperCase()).join("")}-${String(i + 1).padStart(2, "0")}`;
+const cond = (c) => `${c.field} ${c.op} ${c.value}`;
+const STD = { decisionTable: "DMN decision table", policyDecision: "XACML policy decision", stateMachine: "UML state machine" };
+
+// ---- Layers: what this view shows, what serves it -----------------------------
+let site = store.get("pp.site") ?? "online";
+async function layout(view) {
+  const out = {};
+  for (const surface of ["answer", "reason", "rules", "proof", "journey", "words", "seal"]) {
+    const feature = await ask("frontend-feature", [view, surface]);
+    out[surface] = feature === "not-shown" ? null : { feature, capability: await ask("backend-capability", [feature, site]) };
+  }
+  return out;
+}
+
+// ---- Components ---------------------------------------------------------------
+function Choice(f, value, onchange) {
+  if (f.kind === "number") {
+    const out = h("output", {}, value);
+    const step = (d) => { const v = Math.max(f.min, Math.min(f.max, +out.textContent + d)); out.textContent = v; onchange(String(v)); };
+    return h("div", { class: "choice" }, h("span", {}, f.means), h("div", { class: "stepper" }, h("button", { type: "button", "aria-label": `fewer ${f.name}`, onclick: () => step(-1) }, "−"), out, h("button", { type: "button", "aria-label": `more ${f.name}`, onclick: () => step(1) }, "+")));
+  }
+  const group = h("div", { class: "options", role: "group", "aria-label": f.means });
+  for (const v of f.values) group.append(h("button", { type: "button", "aria-pressed": String(v === value), onclick: () => { for (const b of group.children) b.setAttribute("aria-pressed", String(b.textContent === v)); onchange(v); } }, v));
+  return h("div", { class: "choice" }, h("span", {}, f.means), group);
+}
+
+async function AnswerHero(v, L) {
+  const p = v.primary, a = prompts[p.app].app;
+  const values = p.request.split(" ");
+  const word = h("div", { class: "word" }), why = h("p", { class: "why" }), box = h("div", { class: "verdict", "aria-live": "polite" });
+  const plain = v.audience !== "technical";
+  async function paint() {
+    const answer = await ask(p.app, values);
+    box.dataset.tone = tone(answer);
+    word.textContent = answer; word.classList.remove("changed"); void word.offsetWidth; word.classList.add("changed");
+    const r = fired(p.app, values);
+    why.textContent = plain || !L.rules ? (a.meanings?.[answer] ?? r.why) : `${a.meanings?.[answer] ?? ""}${a.meanings?.[answer] ? ". " : ""}${r.why}.`.replace(/\.\./g, ".");
+  }
+  const inputs = h("div", { class: "inputs" }, h("p", { class: "eyebrow" }, "change the situation"),
+    p.inputs.map((name) => { const i = a.fields.findIndex((f) => f.name === name); return Choice(a.fields[i], values[i], (x) => { values[i] = x; paint(); }); }));
+  box.append(h("p", { class: "eyebrow" }, `${a.title} · answered by the verified guest`), word, why, inputs);
+  await paint();
+  return h("section", { class: "hero", "aria-labelledby": "q" },
+    h("div", { class: "q" }, h("p", { class: "eyebrow" }, `${v.persona.name}`), h("h1", { id: "q" }, p.lead), h("p", { class: "context" }, v.question)),
+    box,
+    h("ul", { class: "jobs", "aria-label": "What you came to do" }, v.jobs.map((j) => h("li", {}, j))));
+}
+
+async function JourneyMap(v) {
+  const list = h("ol", { class: "map" });
+  for (const j of v.journey) {
+    const got = await ask(j.app, j.request.split(" "));
+    list.append(h("li", {}, h("span", { class: "n" }, j.stage ?? ""), h("h3", {}, j.says), h("span", {}, h("span", { class: `tag ${tone(got)}` }, got)), h("span", { class: "req" }, `${j.app} ${j.request}`)));
+  }
+  return list;
+}
+
+function DecisionPanel(app, L, initial) {
+  const p = prompts[app], a = p.app;
+  const values = initial ? initial.split(" ") : a.fields.map((f) => f.kind === "number" ? String(f.name === "digits" ? 64 : f.name === "colons" ? 1 : f.min) : f.values[0]);
+  const result = h("div", { class: "result", "aria-live": "polite" });
+  const detail = h("div", { class: "body" });
+  const panel = h("article", { class: "panel" },
+    h("div", { class: "head" }, h("h3", {}, a.title), h("span", { class: "std" }, STD[p.pattern ?? "decisionTable"])),
+    h("p", { class: "muted" }, p.goal),
+    a.fields.map((f, i) => Choice(f, values[i], (x) => { values[i] = x; run(); })),
+    result,
+    (L.rules || L.proof) ? h("details", {}, h("summary", {}, "Why, and what is proved"), detail) : null);
+  async function run() {
+    const answer = await ask(app, values);
+    result.dataset.tone = tone(answer);
+    result.replaceChildren(h("b", {}, answer), h("span", { class: "muted" }, a.meanings?.[answer] ?? ""));
+    const r = fired(app, values);
+    detail.replaceChildren(
+      L.rules ? h("p", {}, h("span", { class: "mono" }, r.id), r.when ? ` · when ${r.when.map(cond).join(" and ")}: ` : ": ", r.why) : null,
+      L.proof ? a.properties.map((q, i) => h("div", { class: `promise${matches(app, values, q.when) ? " applies" : ""}` }, h("span", { class: "id" }, claim(app, i)), h("span", {}, `${q.kind === "never" ? "Never" : "Always"} ${q.then} when ${q.when.map(cond).join(" and ")}. `, h("span", { class: "muted" }, q.why), matches(app, values, q.when) ? h("b", {}, " Applies here.") : null))) : null,
+      h("p", { class: "mono muted" }, `${app} ${values.join(" ")}`));
+  }
+  run();
+  return panel;
+}
+
+function Disclosure(id, mode, title, summary, body) {
+  if (mode === "open") return h("section", { id, "aria-labelledby": `${id}-h` }, h("div", { class: "section-head" }, h("h2", { id: `${id}-h` }, title), summary ? h("p", { class: "muted" }, summary) : null), body);
+  return h("details", { class: "disclosure", id, open: false }, h("summary", {}, h("h2", {}, title), summary ? h("span", { class: "muted" }, summary) : null), h("div", { class: "body" }, body));
+}
+
+// ---- Views ---------------------------------------------------------------------
+const lex = (k) => product.lexicon.find((x) => x.key === k);
+async function viewPage(v) {
+  const L = await layout(v.key);
+  const out = [];
+  for (const { section, disclosure } of v.ia) {
+    if (section === "answer") out.push(await AnswerHero(v, L));
+    if (section === "journey" && L.journey) out.push(Disclosure("journey", disclosure, "Your journey", `${v.journey.length} stages, each a checked answer`, await JourneyMap(v)));
+    if (section === "decisions") out.push(Disclosure("decisions", disclosure, "Every decision behind this view", v.apps.map((a) => prompts[a].app.title).join(", "), h("div", { class: "panels" }, v.apps.map((a) => a === "upload-session" ? UploadSession() : DecisionPanel(a, L, v.journey.find((j) => j.app === a)?.request)))));
+    if (section === "words" && L.words) out.push(Disclosure("words", disclosure, "The words, in your terms", (v.lexicon ?? []).map((k) => lex(k)?.uor).filter(Boolean).join(", "), h("div", { class: "cards" }, (v.lexicon ?? []).map(lex).filter(Boolean).map((x) => h("div", { class: "card" }, h("h3", {}, x.uor), h("p", {}, x.plain), v.audience === "technical" ? h("p", { class: "mono muted" }, x.technical) : null)))));
+    if (section === "served") {
+      const rows = Object.entries(L).map(([k, x]) => h("tr", {}, h("td", {}, k), h("td", {}, x ? x.feature : h("span", { class: "muted" }, "not shown in this view")), h("td", {}, x ? x.capability : "")));
+      const table = h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Part of the answer"), h("th", {}, "Front end feature"), h("th", {}, "Served by"))), h("tbody", {}, rows));
+      out.push(Disclosure("served", disclosure, "How this view is put together", `modelled by frontend-feature and backend-capability, ${site === "online" ? "online" : "air-gapped"}`, h("div", { class: "tw" }, table)));
+    }
+  }
+  return out;
+}
+
+async function home() {
+  const cards = [];
+  for (const v of product.viewpoints) {
+    const p = v.primary, got = await ask(p.app, p.request.split(" "));
+    cards.push(h("a", { class: "card", href: `#${v.key}` }, h("span", { class: "eyebrow" }, v.persona.name), h("h3", {}, p.lead), h("p", { class: "muted" }, v.persona.context), h("span", {}, h("span", { class: `tag ${tone(got)}` }, got))));
+  }
+  return [
+    h("section", { class: "hero" }, h("div", { class: "q" }, h("p", { class: "eyebrow" }, "Built with Prism from the UOR Framework"), h("h1", {}, product.brand.tagline), h("p", { class: "context" }, product.brand.summary)),
+      h("div", { class: "verdict", "data-tone": "positive" }, h("p", { class: "eyebrow" }, "checked in your browser"), h("div", { class: "word" }, `${guest.passed}/${guest.vectors.length}`), h("p", { class: "why" }, "acceptance vectors replayed by the sealed decision guest before this page answered anything."), h("p", { class: "mono muted", style: "margin-top:var(--s-3);font-size:var(--t-xs)" }, guest.identities.applicationKappa ?? ""))),
+    h("section", {}, h("div", { class: "section-head" }, h("h2", {}, "Start with your question")), h("div", { class: "cards" }, cards)),
+    h("section", {}, h("div", { class: "section-head" }, h("h2", {}, "How an answer earns trust")), h("ol", { class: "steps" }, [["Written as a prompt", "Each decision cites the spec line behind every rule."], ["Proved in Lean", "Every promise is a theorem checked for every possible request."], ["Sealed", "All decisions compile to one fingerprinted WebAssembly guest."], ["Checked here", "Your browser verifies the seal and replays every vector, then answers."]].map(([t, d]) => h("li", {}, h("h3", {}, t), h("p", { class: "muted" }, d))))),
+  ];
+}
+
+function UploadSession() {
+  const p = prompts["upload-session"], a = p.app, m = p.machine;
+  const pos = { open: [70, 110], receiving: [250, 110], committed: [460, 34], rejected: [460, 110], abandoned: [460, 186] };
+  const g = s("svg", { viewBox: "0 0 540 220", class: "sm", role: "img", "aria-label": "Upload session state machine" });
+  const edges = {}, nodes = {};
+  for (const [f, t] of [["open", "receiving"], ["receiving", "committed"], ["receiving", "rejected"], ["receiving", "abandoned"]]) { const [x1, y1] = pos[f], [x2, y2] = pos[t]; const e = s("path", { d: `M${x1 + 58},${y1} C${(x1 + x2) / 2},${y1} ${(x1 + x2) / 2},${y2} ${x2 - 60},${y2}` }); g.append(e); edges[`${f}>${t}`] = e; }
+  for (const st of Object.keys(pos)) { const [x, y] = pos[st]; const n = s("g", { class: m.final.includes(st) ? "final" : "" }, s("rect", { x: x - 58, y: y - 20, width: 116, height: 40, rx: 20 }), s("text", { x, y: y + 5, "text-anchor": "middle" }, st)); g.append(n); nodes[st] = n; }
+  let state = m.initial, label = "match";
+  const log = h("p", { class: "muted", "aria-live": "polite" }, "A new session is open.");
+  const paint = (from) => { for (const [k, n] of Object.entries(nodes)) n.classList.toggle("on", k === state); for (const [k, e] of Object.entries(edges)) e.classList.toggle("fired", k === `${from}>${state}`); };
+  paint();
+  const fire = async (ev) => { const from = state; state = await ask("upload-session", [from, ev, label]); paint(from); log.textContent = `${from} + ${ev} → ${state}. ${a.meanings[state]}.`; };
+  return h("article", { class: "panel" }, h("div", { class: "head" }, h("h3", {}, a.title), h("span", { class: "std" }, STD.stateMachine)), h("p", { class: "muted" }, p.goal), g,
+    h("div", { class: "options", role: "group", "aria-label": "Send an event" }, a.fields[1].values.map((ev) => h("button", { type: "button", onclick: () => fire(ev) }, ev)), h("button", { type: "button", onclick: () => { state = m.initial; paint(); log.textContent = "A new session is open."; } }, "new session")),
+    Choice(a.fields[2], label, (x) => { label = x; }), log);
+}
+
+async function labPage() {
+  const area = h("textarea", { "aria-label": "Bytes to address", spellcheck: "false" }, '{"schemaVersion":2,"mediaType":"application/vnd.oci.image.manifest.v1+json"}');
+  let data = enc.encode(area.value), name = "the text above";
+  const out = h("div", { class: "stack", "aria-live": "polite" }), strip = h("div", { class: "bytes" });
+  const hex = (u) => Array.from(u, (b) => b.toString(16).padStart(2, "0")).join("");
+  async function show() {
+    const sha = hex(new Uint8Array(await crypto.subtle.digest("SHA-256", data)));
+    const rows = [];
+    for (const [axis, d] of [["sha256", sha], ["blake3", blake3Hex(data)]]) { const ok = await ask("kappa-label-check", [axis, 1, "lower", d.length]); rows.push(h("div", { class: "addr" }, h("b", {}, `${axis}:`), d, " ", h("span", { class: `tag ${tone(ok)}` }, ok))); }
+    const up = await ask("kappa-label-check", ["sha256", 1, "other", 64]);
+    out.replaceChildren(h("p", {}, h("b", {}, `${data.length} bytes`), ` from ${name}. Their content addresses:`), ...rows, h("p", { class: "muted" }, "Written in uppercase, the same sha256 digest is ", h("span", { class: `tag ${tone(up)}` }, up), ": the spec admits one written form, so one object has exactly one name."));
+    strip.replaceChildren(...Array.from(data.slice(0, 40), (b, i) => h("button", { type: "button", "aria-label": `flip a bit in byte ${i}`, onclick: () => { data = data.slice(); data[i] ^= 1; name = `the same bytes with byte ${i} changed`; show(); } }, b.toString(16).padStart(2, "0"))));
+  }
+  area.addEventListener("input", () => { data = enc.encode(area.value); name = "the text above"; show(); });
+  const load = async (f) => { if (!f) return; data = new Uint8Array(await f.arrayBuffer()); name = f.name; show(); };
+  const dz = h("div", { class: "dz" }, h("p", {}, h("b", {}, "Drop a file"), " (a layer, a disk image, a manifest) or choose one. Nothing leaves your browser."), h("input", { type: "file", "aria-label": "Choose a file", onchange: (e) => load(e.target.files[0]) }));
+  dz.addEventListener("dragover", (e) => { e.preventDefault(); dz.classList.add("over"); }); dz.addEventListener("dragleave", () => dz.classList.remove("over")); dz.addEventListener("drop", (e) => { e.preventDefault(); dz.classList.remove("over"); load(e.dataTransfer.files[0]); });
+  await show();
+  return [
+    h("section", { class: "hero" }, h("div", { class: "q" }, h("p", { class: "eyebrow" }, "content addressing"), h("h1", {}, "Name things by what they are"), h("p", { class: "context" }, "An object's address is computed from its bytes: same bytes, same name, anywhere. Change one bit and it is a different object.")), h("div", { class: "verdict stack" }, dz, area, h("p", { class: "eyebrow" }, "first bytes · press one to flip a bit"), strip)),
+    h("section", {}, h("div", { class: "section-head" }, h("h2", {}, "The addresses, checked by the guest")), out),
+    h("section", {}, h("div", { class: "section-head" }, h("h2", {}, "Send it through an upload session")), h("div", { class: "panels" }, UploadSession())),
+  ];
+}
+
+async function proofsPage() {
+  const rows = Object.entries(prompts).flatMap(([app, p]) => p.app.properties.map((q, i) => h("tr", {}, h("td", { class: "mono" }, claim(app, i)), h("td", {}, p.app.title), h("td", {}, `${q.kind === "never" ? "Never" : "Always"} ${q.then} when ${q.when.map(cond).join(" and ")}`), h("td", { class: "muted" }, q.why))));
+  const threats = Object.values(prompts).flatMap((p) => (p.threats ?? []).map((t) => h("div", { class: "card" }, h("span", { class: "eyebrow" }, `${t.stride} · ${t.impact ?? ""} impact`), h("h3", {}, t.name), h("p", { class: "muted" }, t.text), t.control ? h("p", {}, h("b", {}, `${t.control.name}. `), t.control.text) : null)));
+  return [
+    h("section", {}, h("p", { class: "eyebrow" }, "every promise"), h("h1", {}, "What is proved, for every request"), h("p", { class: "context" }, "Each row is a theorem the Lean kernel checked before the guest was sealed. It holds for every possible request, not a sample.")),
+    h("section", { class: "tw" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "ID"), h("th", {}, "Decision"), h("th", {}, "Promise"), h("th", {}, "Why it matters"))), h("tbody", {}, rows))),
+    h("section", {}, h("div", { class: "section-head" }, h("h2", {}, "What could go wrong, and what stops it"), h("p", { class: "muted" }, "STRIDE per element")), h("div", { class: "cards" }, threats)),
+  ];
+}
+
+// ---- Router ----------------------------------------------------------------------
+const ROUTES = { home: () => home(), lab: () => labPage(), proofs: () => proofsPage() };
+for (const v of product.viewpoints) ROUTES[v.key] = () => viewPage(v);
+let turn = 0;
+async function route() {
+  const k = ROUTES[(location.hash || "#home").slice(1)] ? (location.hash || "#home").slice(1) : "home";
+  for (const a of document.querySelectorAll("nav.who a")) a.toggleAttribute("aria-current", false), a.dataset.k === k && a.setAttribute("aria-current", "page");
+  const mine = ++turn, kids = await ROUTES[k]();
+  if (mine !== turn) return;
+  $("#main").replaceChildren(...kids);
+  window.scrollTo(0, 0);
+}
+
+$("#brand").textContent = product.brand.name;
+$("#nav").append(...product.viewpoints.map((v) => h("a", { href: `#${v.key}`, "data-k": v.key }, v.persona.name)), h("span", { class: "sep", "aria-hidden": "true" }), h("a", { href: "#lab", "data-k": "lab" }, "Address lab"), h("a", { href: "#proofs", "data-k": "proofs" }, "Proofs"));
+$("#foot").append(`Generated by the Prism builder from ${set.repository}'s model; every answer is computed in your browser by the verified guest. `, h("a", { href: `https://github.com/${set.repository}` }, "Source"), " · ", h("a", { href: "../" }, "The guest's own page"), " · ", h("a", { href: "https://uor.foundation" }, "uor.foundation"));
+for (const x of ["online", "airgapped"]) $("#site").append(h("button", { type: "button", "aria-pressed": String(site === x), onclick: (e) => { site = x; store.set("pp.site", x); for (const b of $("#site").children) b.setAttribute("aria-pressed", String(b === e.target)); route(); } }, x === "online" ? "Online" : "Air-gapped"));
+const seal = $("#seal");
+try {
+  guest = await openHolo();
+  if (!guest.identities.verified) throw new Error("the archive's identities do not verify");
+  guest.passed = 0;
+  for (const v of guest.vectors) { const got = await guest.dispatch(v.request); if (got.length === v.response.length && got.every((b, i) => b === v.response[i])) guest.passed++; }
+  seal.dataset.state = guest.passed === guest.vectors.length ? "ok" : "bad";
+  seal.textContent = `Verified · ${guest.passed}/${guest.vectors.length}`;
+  seal.title = guest.identities.applicationKappa ?? "";
+} catch (error) {
+  seal.dataset.state = "bad"; seal.textContent = "Not verified";
+  $("#main").replaceChildren(h("section", {}, h("h1", {}, "The guest did not verify, so nothing is answered."), h("p", { class: "muted" }, String(error?.message ?? error))));
+  throw error;
+}
+addEventListener("hashchange", route);
+route();
+</script>
+</html>
