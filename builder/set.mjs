@@ -244,7 +244,8 @@ export function mergeModels(set, models) {
   // ---- Compliance: one obligation per standard and subject, with every app's evidence.
   const obligations = new Map();
   for (const m of models)
-    for (const o of m.compliance) {
+    // prismpm verify does not regenerate the design/ files a set's merged views emit (PP5004), so a set ships no Design module yet.
+    for (const o of m.compliance.filter((x) => x.subject !== 'Design views')) {
       // The three facet theorems are the set's; every other obligation is an app's, so no evidence list outgrows a list part.
       const own = !['Architecture description', 'Product quality', 'Application security and risk', 'Control set'].includes(o.subject);
       const subject = own ? `${m.title}: ${o.subject}` : o.subject;
@@ -272,6 +273,7 @@ export function mergeModels(set, models) {
     security,
     quality,
     compliance: [...obligations.values()],
+    withoutDesign: true,
   };
 }
 
@@ -425,6 +427,7 @@ function scenarios(suite, purpose, claims) {
 
 function siteJson(set, router, claims) {
   const app = JSON.parse(TEMPLATE['site/app.json']);
+  app.promise = set.promise ?? { headline: set.title, detail: set.purpose };
   const url = `https://github.com/${set.repository}`;
   const [owner, repo] = set.repository.split('/');
   const props = claims.filter((c) => c.kind === 'property');
@@ -446,7 +449,7 @@ function siteJson(set, router, claims) {
       claim: props.map((c) => `${c.id}: ${c.statement.replace(/^The app/, `the ${c.app} app`)}.`).join(' '),
       proposition: { name: 'dispatch', text: router.apps.map((m) => `${m.spec.name} request := ${m.module}.judge request`).join('\n'), plain: set.purpose },
       theorems: props.map((c) => ({ name: c.theorem, statement: `no request meets ${c.breaks}: ${c.statement.replace(/^The app/, `the ${c.app} app`)}`, how: 'Proved by linear arithmetic, checked by the Lean kernel by prismpm verify in CI', where: `app/src/${c.proofs}.lex.tex` })),
-      pinned: props.map((c) => ({ name: c.test, what: `${c.id}'s condition and the theorem that no request meets it. A string-matching test, not a theorem: a planted defect fails it.`, where: `crates/conformance/tests/${c.suite}.rs` })),
+      pinned: props.map((c) => ({ name: c.test, what: `${c.id}'s condition and the theorem that no request meets it. A string-matching test, not a theorem: a planted defect fails it.`, where: SET_TESTS })),
       attestations: {
         proof: { id: 'not recorded: the proof ran in the SDK image, not on the UOR MCP server', url: `${url}/actions/workflows/bootstrap.yml` },
         build: { id: 'printed by prismpm verify in every pages run', url: `${url}/actions/workflows/pages.yml` },
@@ -510,9 +513,10 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   // lexlean.toml: the set's modules, and every other entrypoint the project already has.
   const ownedSrc = Object.keys(files).filter((p) => p.startsWith('app/src/') && !p.startsWith('app/src/Foundation/') && !p.startsWith('app/src/Production/'));
   const before = current('app/lexlean.toml') ?? '';
-  const kept = [...(/^entrypoints = \[(.*)\]$/m.exec(before)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map((x) => x[1]).filter((e) => !ownedSrc.includes(`app/${e}`) && current(`app/${e}`) !== undefined);
+  const kept = [...(/^entrypoints = \[(.*)\]$/m.exec(before)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map((x) => x[1]).filter((e) => !ownedSrc.includes(`app/${e}`) && !(host ? [] : [...TEMPLATE_EXAMPLE, 'app/src/Design.lex.tex']).includes(`app/${e}`) && current(`app/${e}`) !== undefined);
   const entrypoints = [...new Set([...ownedSrc.map((p) => p.slice('app/'.length)), ...kept])].sort();
-  const lexicons = before.includes('[[lexicon_source]]') ? before.slice(before.indexOf('[[lexicon_source]]'), before.indexOf('[limits]')).replace(/\n*$/, '\n\n') : [['lexlean.std.nat', 'builtin'], ...['prism.arch', 'prism.qual', 'prism.sec'].map((p) => [p, 'path'])].map(([p, k]) => (k === 'builtin' ? `[[lexicon_source]]\npackage = "${p}"\nkind = "builtin"\n` : `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n`)).join('\n') + '\n';
+  const declared = (text) => text + ['prism.arch', 'prism.qual', 'prism.sec'].filter((p) => !text.includes(`package = "${p}"`)).map((p) => `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n\n`).join('');
+  const lexicons = before.includes('[[lexicon_source]]') ? declared(before.slice(before.indexOf('[[lexicon_source]]'), before.indexOf('[limits]')).replace(/\n*$/, '\n\n')) : [['lexlean.std.nat', 'builtin'], ...['prism.arch', 'prism.qual', 'prism.sec'].map((p) => [p, 'path'])].map(([p, k]) => (k === 'builtin' ? `[[lexicon_source]]\npackage = "${p}"\nkind = "builtin"\n` : `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n`)).join('\n') + '\n';
   if (host) {
     const missing = ['prism.arch', 'prism.qual', 'prism.sec'].filter((p) => !before.includes(`package = "${p}"`)).map((p) => `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n\n`).join('');
     app('lexlean.toml', before.replace(/^entrypoints = \[.*\]$/m, `entrypoints = [${entrypoints.map((e) => `"${e}"`).join(', ')}]`).replace('[limits]', `${missing}[limits]`));
@@ -549,7 +553,6 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
     claims.push(...own);
     if (own.length) {
       files[`features/suites/${suite}.feature`] = scenarios(suite, m.spec.purpose, own);
-      files[`crates/conformance/tests/${suite}.rs`] = rustTests({ suite, proofs: m.proofs }, own);
     }
   }
   const setPrefix = pascal(set.name).replace(/[a-z0-9]/g, '');
@@ -560,11 +563,16 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   if ([...prefixes.values()].includes(setPrefix)) throw new SpecError(`The set's prefix ${setPrefix} is also an app's; rename the set.`, 'name');
   claims.push(...facets);
   files[`features/suites/${setSuite}.feature`] = scenarios(setSuite, set.purpose, facets);
-  files[`crates/conformance/tests/${setSuite}.rs`] = rustTests({ suite: setSuite }, facets);
-  const owned = new Set([setSuite, ...models.map((m) => m.suite)]);
+  // A new test file is new non-Prism code, so a fresh instance keeps the set's suite in the template's.
+  files[host ? `crates/conformance/tests/${setSuite}.rs` : SET_TESTS] = rustTests(setSuite, claims);
+  // The template's example app (suite `contract`) is replaced, so its register row goes with it.
+  const owned = new Set([setSuite, ...models.map((m) => m.suite), ...(host ? [] : ['contract'])]);
   files['model/ids.toml'] = idsToml(current('model/ids.toml') ?? TEMPLATE['model/ids.toml'], owned, claims);
   if (!host) files['site/app.json'] = siteJson(set, router, claims);
-  return { files, remove: [...TEMPLATE_EXAMPLE, 'app/prompt.json'], set, models, router, claims };
+  const perApp = [setSuite, ...models.map((m) => m.suite)].map((s) => `crates/conformance/tests/${s}.rs`);
+  return { files, remove: [...TEMPLATE_EXAMPLE, 'app/prompt.json', 'app/src/Design.lex.tex', ...perApp].filter((p) => !(p in files)), set, models, router, claims };
 }
+
+const SET_TESTS = 'crates/conformance/tests/contract.rs';
 
 export { describeConditions };

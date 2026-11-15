@@ -52,7 +52,6 @@ function allClaims(m) {
 }
 
 const tomlString = (text) => JSON.stringify(text);
-const rustString = (text) => `"${text.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
 
 function idsToml(m, claims) {
   const current = TEMPLATE['model/ids.toml'];
@@ -69,86 +68,49 @@ function scenarios(m, claims) {
   return `${text.replace(/\n$/, '')}${facet.join('')}\n`;
 }
 
-/** `crates/conformance/tests/<suite>.rs`, in the layout `cargo fmt` gives it. */
-export function rustTests(m, claims) {
-  const props = claims.filter((c) => c.kind === 'property');
-  const facets = claims.filter((c) => c.kind === 'facet');
-  const helpers = [
-    'use std::path::PathBuf;',
-    '',
-    'fn root() -> PathBuf {',
-    '    PathBuf::from(env!("CARGO_MANIFEST_DIR"))',
-    '        .ancestors()',
-    '        .nth(2)',
-    '        .expect("crates/conformance is two below the root")',
-    '        .to_path_buf()',
-    '}',
-    '',
-    '/// The body of the top-level declaration named `name`, up to its closing brace.',
-    "fn declaration<'a>(model: &'a str, name: &str) -> &'a str {",
-    '    let start = model',
-    '        .find(&format!("\\n  name: {name},\\n"))',
-    '        .unwrap_or_else(|| panic!("{name} is not declared"));',
-    '    let end = model[start..]',
-    '        .find("\\n}\\n")',
-    '        .unwrap_or_else(|| panic!("{name} is not closed"));',
-    '    &model[start..start + end]',
-    '}',
-    '',
-    'fn module(path: &str) -> String {',
-    '    std::fs::read_to_string(root().join(path)).expect("the module")',
-    '}',
-  ];
-  if (props.length)
-    helpers.push(
-      '',
-      '/// The condition no request may meet, and the theorem that says none does.',
-      'fn pinned(breaks: &str, condition: &str, theorem: &str) {',
-      `    let model = module(${rustString(`app/src/${m.proofs}.lex.tex`)});`,
-      '    let found = declaration(&model, breaks);',
-      '    assert!(',
-      '        found.contains(condition),',
-      '        "the condition of {breaks} changed:\\n{found}"',
-      '    );',
-      '    let holds = declaration(&model, theorem);',
-      '    let statement = format!("statement: (({breaks} request) = false),");',
-      '    assert!(',
-      '        holds.contains(&statement),',
-      '        "{theorem} must state that no request meets {breaks}:\\n{holds}"',
-      '    );',
-      '}',
-    );
-  if (facets.length)
-    helpers.push(
-    '',
-    '/// A facet theorem: proved by `decide`, about exactly this predicate.',
-    'fn holds(path: &str, theorem: &str, statement: &str) {',
-    '    let model = module(path);',
-    '    let found = declaration(&model, theorem);',
-    '    assert!(',
-    '        found.contains(&format!("statement: {statement},")),',
-    '        "{theorem} must state {statement}:\\n{found}"',
-    '    );',
-    '    assert!(',
-    '        found.contains("proof: decide{}"),',
-    '        "{theorem} is proved by decide"',
-    '    );',
-    '}',
-  );
-  const tests = [
-    ...props.map((c) => ['', `/// \`${c.id}\`: ${c.statement}`, '#[test]', `fn ${c.test}() {`, '    pinned(', `        ${rustString(c.breaks)},`, `        ${rustString(`body: ${c.condition}`)},`, `        ${rustString(c.theorem)},`, '    );', '}'].join('\n')),
-    ...facets.map((c) => ['', `/// \`${c.id}\`: ${c.statement}`, '#[test]', `fn ${c.test}() {`, '    holds(', `        ${rustString(`app/src/${c.module}.lex.tex`)},`, `        ${rustString(c.theorem)},`, `        ${rustString(c.holds)},`, '    );', '}'].join('\n')),
-  ];
+/**
+ * `crates/conformance/tests/<suite>.rs`: one test per claim, of one app or a whole
+ * set, in one file: a helper `cargo fmt` lays out, then the tests, one line each, in a
+ * `#[rustfmt::skip]` module. Each test pins what its theorem
+ * is about (a property's condition and that no request meets it; a facet
+ * theorem's statement and that `decide` proves it), so a weakened statement
+ * that still verifies fails the gate. One line per claim keeps the generated
+ * Rust small, as the template's only-Prism ratchet asks.
+ */
+export function rustTests(suite, claims, proofs) {
+  const lit = (s) => JSON.stringify(s);
+  const pins = (c) =>
+    c.kind === 'property'
+      ? [[c.proofs ?? proofs, c.breaks, `body: ${c.condition}`], [c.proofs ?? proofs, c.theorem, `statement: ((${c.breaks} request) = false),`]]
+      : [[c.module, c.theorem, `statement: ${c.holds},`], [c.module, c.theorem, 'proof: decide{}']];
+  // The repository's honesty gate reads each test's name from a `#[test]` line and the `fn` line after it.
+  const rows = claims.flatMap((c) => [
+    `    // ${c.id}: ${c.statement.replace(/\s+/g, ' ')}`,
+    '    #[test]',
+    `    fn ${c.test}() { ${pins(c).map((p) => `super::pins(${p.map(lit).join(', ')});`).join(' ')} }`,
+  ]);
   return [
-    `//! The \`${m.suite}\` suite: one test per scenario in \`features/suites/${m.suite}.feature\`.`,
+    `//! The \`${suite}\` suite: one test per claim, each named for its ID.`,
     '//!',
-    '//! Written by the Prism-DevRel builder from the app\'s prompt. The theorems are',
+    '//! Written by the Prism-DevRel builder from the prompts. The theorems are',
     '//! checked by the Lean kernel when `just vv` runs `prismpm verify` on `app/`.',
     '//! What these tests hold fixed is what each theorem is about, so a weakened',
-    '//! statement that still verifies fails the gate.',
+    '//! statement that still verifies fails the gate. One line per claim keeps the',
+    '//! generated Rust small, as the template\'s only-Prism ratchet asks.',
     '',
-    ...helpers,
-    ...tests,
+    '/// The top-level declaration `name` of `app/src/<module>.lex.tex` contains `needle`.',
+    'fn pins(module: &str, name: &str, needle: &str) {',
+    '    let model = std::fs::read_to_string(format!("../../app/src/{module}.lex.tex")).unwrap();',
+    '    let found = &model[model.find(&format!("\\n  name: {name},\\n")).expect(name)..];',
+    '    let found = &found[..found.find("\\n}\\n").expect("closed")];',
+    '    assert!(found.contains(needle), "{name}: {needle}\\n{found}");',
+    '}',
+    '',
+    '#[rustfmt::skip]',
+    'mod claims {',
+    '',
+    ...rows,
+    '}',
     '',
   ].join('\n');
 }
@@ -219,7 +181,7 @@ export async function buildApp(input, { lastModified } = {}) {
   const claims = allClaims(m);
   files['model/ids.toml'] = idsToml(m, claims);
   files[`features/suites/${m.suite}.feature`] = scenarios(m, claims);
-  files[`crates/conformance/tests/${m.suite}.rs`] = rustTests(m, claims);
+  files[`crates/conformance/tests/${m.suite}.rs`] = rustTests(m.suite, claims, m.proofs);
   files['CONFORMANCE.md'] = conformance(m, claims);
   files['site/app.json'] = appJson(m.spec, TEMPLATE['site/app.json'], { repository: m.prompt.repository ?? `OWNER/prism-${m.spec.name}` });
   files[`openspec/specs/${m.spec.name}/spec.md`] = renderSpecDocument(m.spec, {});
