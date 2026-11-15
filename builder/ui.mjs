@@ -23,9 +23,26 @@ async function openHolo() {
   return { identities: resolved.identities, vectors, dispatch, acceptance: () => runAcceptance(vectors, dispatch) };
 }`;
 
+/** The design system's tokens as CSS custom properties, light and dark, from `product.design`. */
+function tokens(d) {
+  const kebab = (k) => k.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+  const colors = (c) => Object.entries(c).map(([k, v]) => `--${kebab(k)}: ${v};`).join(' ');
+  const fixed = [
+    `--f-display: "${d.type.display}", system-ui, sans-serif; --f-body: "${d.type.body}", system-ui, sans-serif; --f-mono: "${d.type.mono}", ui-monospace, monospace;`,
+    Object.entries(d.type.scale).map(([k, v]) => `--t-${k}: ${v};`).join(' '),
+    Object.entries(d.space).map(([k, v]) => `--s-${k}: ${v};`).join(' '),
+    Object.entries(d.radius).map(([k, v]) => `--r-${k}: ${v};`).join(' '),
+  ].join('\n  ');
+  return `/* Design system: ${d.accessibility.standard} ${d.accessibility.level}. Generated from prism/product.json. */
+:root {\n  ${fixed}\n  ${colors(d.color.light)} color-scheme: light;\n}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { ${colors(d.color.dark)} color-scheme: dark; } }
+:root[data-theme="dark"] { ${colors(d.color.dark)} color-scheme: dark; }`;
+}
+
 export function productUi(set, prompts, product) {
   const model = { set, prompts: Object.fromEntries(prompts.map((p) => [p.app.name, p])), product };
   const page = PAGE.replace('/*LOADER*/', () => LOADER)
+    .replace('/*TOKENS*/', () => tokens(product.design))
     .replace('/*MODEL*/', () => JSON.stringify(model).replace(/</g, '\\u003c'))
     .replaceAll('{{TITLE}}', product.brand.name);
   const files = { 'site/product/index.html': page };
