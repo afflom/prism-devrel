@@ -561,7 +561,7 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   if ([...prefixes.values()].includes(setPrefix)) throw new SpecError(`The set's prefix ${setPrefix} is also an app's; rename the set.`, 'name');
   claims.push(...facets);
   files[`features/suites/${setSuite}.feature`] = scenarios(setSuite, set.purpose, facets);
-  files[`crates/conformance/tests/${setSuite}.rs`] = setRustTests(setSuite, claims);
+  files[`crates/conformance/tests/${setSuite}.rs`] = rustTests(setSuite, claims);
   // The template's example app (suite `contract`) is replaced, so its register row goes with it.
   const owned = new Set([setSuite, ...models.map((m) => m.suite), ...(host ? [] : ['contract'])]);
   files['model/ids.toml'] = idsToml(current('model/ids.toml') ?? TEMPLATE['model/ids.toml'], owned, claims);
@@ -571,58 +571,5 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
 }
 
 const setSuiteOf = (set) => suiteOf({ name: set.name });
-
-/**
- * `crates/conformance/tests/<set>.rs`: one test per claim of the whole set, in
- * one file: a helper `cargo fmt` lays out, then the tests, one line each, in a
- * `#[rustfmt::skip]` module. Each test pins what its theorem
- * is about (a property's condition and that no request meets it; a facet
- * theorem's statement and that `decide` proves it), so a weakened statement
- * that still verifies fails the gate. One line per claim keeps the generated
- * Rust small, as the template's only-Prism ratchet asks.
- */
-export function setRustTests(suite, claims) {
-  const lit = (s) => JSON.stringify(s);
-  const pins = (c) =>
-    c.kind === 'property'
-      ? [[c.proofs, c.breaks, `body: ${c.condition}`], [c.proofs, c.theorem, `statement: ((${c.breaks} request) = false),`]]
-      : [[c.module, c.theorem, `statement: ${c.holds},`], [c.module, c.theorem, 'proof: decide{}']];
-  // The repository's honesty gate reads each test's name from a `#[test]` line and the `fn` line after it.
-  const rows = claims.flatMap((c) => [
-    `    // ${c.id}: ${c.statement.replace(/\s+/g, ' ')}`,
-    '    #[test]',
-    `    fn ${c.test}() { ${pins(c).map((p) => `pins(${p.map(lit).join(', ')});`).join(' ')} }`,
-  ]);
-  return [
-    `//! The \`${suite}\` suite: one test per claim of the prompt set, each named for its ID.`,
-    '//!',
-    '//! Written by the Prism-DevRel builder from the prompt set. The theorems are',
-    '//! checked by the Lean kernel when `just vv` runs `prismpm verify` on `app/`.',
-    '//! What these tests hold fixed is what each theorem is about, so a weakened',
-    '//! statement that still verifies fails the gate. One line per claim keeps the',
-    '//! generated Rust small, as the template\'s only-Prism ratchet asks.',
-    '',
-    '/// The top-level declaration `name` of `app/src/<module>.lex.tex` contains `needle`.',
-    'fn pins(module: &str, name: &str, needle: &str) {',
-    '    let root = env!("CARGO_MANIFEST_DIR");',
-    '    let path = format!("{root}/../../app/src/{module}.lex.tex");',
-    '    let model = std::fs::read_to_string(path).expect("the module");',
-    '    let start = model',
-    '        .find(&format!("\\n  name: {name},\\n"))',
-    '        .unwrap_or_else(|| panic!("{name} is not declared"));',
-    '    let end = model[start..].find("\\n}\\n").expect("closed");',
-    '    let found = &model[start..start + end];',
-    '    assert!(found.contains(needle), "{name}: {needle}\\n{found}");',
-    '}',
-    '',
-    '#[rustfmt::skip]',
-    'mod claims {',
-    '    use super::pins;',
-    '',
-    ...rows,
-    '}',
-    '',
-  ].join('\n');
-}
 
 export { describeConditions };
