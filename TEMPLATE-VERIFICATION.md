@@ -29,6 +29,7 @@ or test is added without the other two.
 | --- | --- | --- |
 | `check-model` | `CONFORMANCE.md` disagrees with the register | rejected |
 | `audit-deferral` | a deferral marker in a crate and in the gate's own source | both rejected |
+| `audit-prism` | a new non-Prism file, or net growth in non-Prism lines over the first parent (the template's planted defects, UOR-Foundation/template#91) | both rejected; installed here at 22,053 lines in 106 files, with `frame/` and `identity/` bound by `frame.lock` since the re-pin to `0851bb4` |
 | honesty meta-gate | an ID with no test | rejected |
 | `prismpm check` (threat model) | the `ThreatMapping` of `Security::threatStaleCatalog` removed | rejected (PP2019) |
 | `prismpm check` (facet records) | `Architecture::stakeholderPrismModeler` given index 3 instead of 2 | rejected (PP4004) |
