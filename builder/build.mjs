@@ -17,7 +17,7 @@
 import { renderSpecDocument } from './vendor/prism-code/src/journey/render.mjs';
 import { TEMPLATE_EXAMPLE, appJson, featureText as propertyScenarios } from './vendor/prism-code/src/journey/template.mjs';
 import { describeConditions } from './vendor/prism-code/src/journey/spec.mjs';
-import { ASSETS, COMPILER_SEMANTICS, LOCK_PACKAGES, TEMPLATE } from './assets.mjs';
+import { ASSETS, LOCK_PACKAGES, TEMPLATE } from './assets.mjs';
 import { facetModules } from './facets.mjs';
 import { renderMachineModel, renderMachineProofs } from './machine.mjs';
 import { deriveModel } from './model.mjs';
@@ -208,9 +208,7 @@ export async function buildApp(input, { lastModified } = {}) {
   app('lake-manifest.json', `{"version":"1.2.0","packagesDir":".lake/packages","packages":[],"name":"${n.prefix}","lakeDir":".lake","fixedToolchain":false}`);
   app('prismpm.toml', TEMPLATE['app/prismpm.toml'].replace(/^project = ".*"$/m, `project = "${m.module}"`));
   const lockHead = TEMPLATE['app/lexlean.lock'].slice(0, TEMPLATE['app/lexlean.lock'].indexOf('[[package]]'));
-  let lock = lockHead
-    .replace(/^compiler_semantics = "[0-9a-f]{64}"$/m, `compiler_semantics = "${COMPILER_SEMANTICS}"`)
-    .replace(/^project_config_sha256 = "[0-9a-f]{64}"$/m, `project_config_sha256 = "${await sha256(files['app/lexlean.toml'])}"`);
+  let lock = lockHead.replace(/^project_config_sha256 = "[0-9a-f]{64}"$/m, `project_config_sha256 = "${await sha256(files['app/lexlean.toml'])}"`);
   for (const path of ['lake-manifest.json', 'lakefile.toml', 'lean-toolchain']) {
     const entry = new RegExp(`(\\[\\[workspace_file\\]\\]\\npath = "${path.replace(/\./g, '\\.')}"\\nsha256 = ")[0-9a-f]{64}"`);
     lock = lock.replace(entry, `$1${await sha256(files[`app/${path}`])}"`);
