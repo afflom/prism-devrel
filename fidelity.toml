@@ -655,6 +655,11 @@ record = "Catalog::sections#1"
 axis = "derived"
 
 [[closed]]
+kappa = "67cc3c1b6f48f5315b459b58eb900da58fcfa71a8d09cfe5a7f02c4d9d93756c"
+record = "Catalog::sections#1"
+axis = "derived"
+
+[[closed]]
 kappa = "6dbbaf65bc5006003ae307f548bacd238671048a27bc81960e5a905d68040ebe"
 record = "Catalog::sections#1"
 axis = "derived"
@@ -681,6 +686,11 @@ axis = "derived"
 
 [[closed]]
 kappa = "a569d389ac4a4c0caee5ff042a5156236f4e1ae9fbf09e080c93599424f1d326"
+record = "Catalog::sections#1"
+axis = "derived"
+
+[[closed]]
+kappa = "d1d36c630c17d046fdb0a8166484d742d3581396b41fe272dd478f3472808350"
 record = "Catalog::sections#1"
 axis = "derived"
 
@@ -780,6 +790,11 @@ record = "Catalog::subject"
 axis = "meant"
 
 [[closed]]
+kappa = "42fba2c0aa8879b0083d97ac71ac34ed65e10e6d0e90e51eb69ee83865c2ff46"
+record = "Catalog::subject"
+axis = "meant"
+
+[[closed]]
 kappa = "44fe78aaaae034f9ce68413f93d7ba4c866bbd6ba849bbb3447d917a1bf068d8"
 record = "Catalog::subject"
 axis = "meant"
@@ -851,6 +866,11 @@ axis = "meant"
 
 [[closed]]
 kappa = "c3d05c3c8c89392c0e61d7df3c8c7bcf82d7a99ca848e223eb7128e70c148476"
+record = "Catalog::subject"
+axis = "meant"
+
+[[closed]]
+kappa = "cb112dce2eb63d5900a1b0d35100715cfaa3056cc8ad82fae1b489dbbf81a3c6"
 record = "Catalog::subject"
 axis = "meant"
 
@@ -21471,13 +21491,13 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "cc4441b66298847b0b68dc1489084d3535ee92bd929ec6cb7fa06c982fc41501"
+kappa = "d9e90f8901dfc89d080033e0032050d8dbeb074f830f08100870e4dfbf3759ea"
 record = "Catalog::coversPart159#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d3b4e9c3af42b31ff275844706c94a2c57a89bc61cea1cb5772cf08fe89b2ba8"
+kappa = "3c609e5c2cee343b5ff6fb2f7744e3325bed340526758ee7fb009b64f6d3ae5e"
 record = "Catalog::coversPart159#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -21867,25 +21887,25 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "a930717507572a5d648aef3aa193145fb0f20474664470ff9509b3e54105a29e"
+kappa = "51b1bd288dab7826f67d7fbddf2767c4443deaa898a13229e15a005de30d7e98"
 record = "Catalog::coversPart160#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "949238e34649abf8fe4ecedd9c9deb42d3851ddb116cfb8cdb056347a1ae9d9e"
+kappa = "18cc9e716bc5fcc8fe509a6ae24385b4c688327f2a9c533e37489a362c3e4d3b"
 record = "Catalog::coversPart160#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "13ea82540165a37feafedfaa34a08af53f298f0b3d7735392d5181cb02caa7a5"
+kappa = "3e93c61b1ef94471baa1da9877c9cc63214212ccc4b9a7b9432261eaa14d4b9d"
 record = "Catalog::coversPart160#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e69a2a3657480aee1b95d5802cbdad699623ca23bbc8e2ed0539c36249e94f7d"
+kappa = "b6900203bb5b8d060301eceba4ad8b82dc7219ce8cc286f5d98f8a777fce8287"
 record = "Catalog::coversPart160#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -22575,13 +22595,13 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d21876c09bf04494bca2a3b9ef92e7cd190ac8592b52fe33dc2b758e2f424669"
+kappa = "44fb1f549f37990d53f810830c8e5a1c9483c8f19a72669718ae480837807ef4"
 record = "Catalog::coversPart162#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d080807cd6abd1853dc848edd753a8de57682b33e384c4f98fde1042967bea17"
+kappa = "24d7d67f85383f5d4fd30deb68f4af0fc6538b8cc0ba4cc9b1ed665433b7f3f0"
 record = "Catalog::coversPart162#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -22599,25 +22619,25 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "217913772b76aa742027d2c87d40916d907399f4db3788386697237219536c77"
+kappa = "0ed7423eabe080fccc8c2f4c1a8c0ddbc31112574bdc8605e6130460e0a35e7c"
 record = "Catalog::coversPart162#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "604a1710b39811443d028c17b4bb522376b2ec337ea0e7a5201d30d064375f48"
+kappa = "579b543e51c0185447d0a92cc5d62d43f5c421b4160e5b42665fff33f22066a1"
 record = "Catalog::coversPart162#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4895425e4766f7fa85e594673d6a0ccffdaf3226fba2f51130c8425870634a71"
+kappa = "da487730b06f2e9eb9cf8f770926fdd1a78cd02826c6c2158579dd7d2899ea0e"
 record = "Catalog::coversPart162#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "668680622ad650e572d7408b61ad8e2b40bc2914d597d833b8aaa7f2b65bd9c5"
+kappa = "2ee163e826cd0a8d3327f5a0be6674f3e44ca08d621e3d0880073c23eb920320"
 record = "Catalog::coversPart162#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -22935,49 +22955,49 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c75ed5cb3cbda4ee60154a00764721966b833bdf11d8ec11ea105496a79acfb0"
+kappa = "78a617dcae1564f479f81a2ae777c4db024f1c4b763ade329989e524d0c7a213"
 record = "Catalog::coversPart163#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5b32a6a258606b5286006e5748adcb6bc02cb6d366c27d3c896140eaf60cb222"
+kappa = "84e51b151c675a1e874dc915430d6f1f4765fade32b0cbb91c637c85b3985d60"
 record = "Catalog::coversPart163#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "da257798c5646c348a67fa49a034b49ea0ce64f0410658378709c84701858b59"
+kappa = "0e32c0f7fda3eaf4ad974b081505dd5ca49b0caca53078516d8e24794cf03999"
 record = "Catalog::coversPart163#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b08c16d76ab2f07ddc75a3457c0f78810b007f1bdb00f8cd8627953fb2909279"
+kappa = "499bfb25bfff95456dd5b5a880399be4adb6ee1ef5fb30b2f53400f5100ebb06"
 record = "Catalog::coversPart163#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ea3808f094471bc98c5ce1cb93646a4602d7dd86d235559ceee91443a437af34"
+kappa = "3d0ae5e4cfa6aba6627fbf648537ae6b4ddcefa5f1d57ca722f5d570887dfe13"
 record = "Catalog::coversPart163#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9b2ef08a2a67c3504b09e60e4d7cc9d4b56e0b97f6e77ee84a4703c3061210dd"
+kappa = "cf0270e29f34f36c6404fd31b010b1e263054a244529e9956849491bf48fe2bc"
 record = "Catalog::coversPart163#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3f00f9b88f8178dbf6ed225c799e24fd63bacc5188b428d202742a850d44dac3"
+kappa = "0e7363c8a1473290197c0f95b70b09043bbdf43521f67e638e748bb7217c80a6"
 record = "Catalog::coversPart163#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0546641a1c61046253f5590ebfb512f72f216cce4af855b575a4125b8e5758a7"
+kappa = "9fd789109275711f4532d7b5ecff8d0be31c2be825539bd56b2b34065bd95272"
 record = "Catalog::coversPart163#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -23643,25 +23663,25 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d240cde5aa396c16e6ebdcde6359079c81126b64f7b39ef55c3e44c4003ef718"
+kappa = "ca42c44de64f343002c4be7c25a9a700769b79acb1f6145847aed90a441e2933"
 record = "Catalog::coversPart166#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "291c0c50bc66fe7c6da23df66cdb37e36f8bc4f053be45c8b3f3918c73a8cd88"
+kappa = "3022ccf3afefbb717b9d3bbaf667c2631971f68686b2c436dacf2e841e9fefe2"
 record = "Catalog::coversPart166#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "58646b241951a4fe3ffa4488e3cbae2e121362f3e7bfd4b1a7ad84582e068b30"
+kappa = "603c69508372eea3ef2fcd79ae4f027fb38e445850331903e3fc4426194f0209"
 record = "Catalog::coversPart166#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "6edaec2e199faa93fe4d653fc876a4a30682fdf60ee0c4c923cc4a0931028b9e"
+kappa = "daa7c388d7f5bf25909c564907239bac5e05eec046856298b401799791d6ab94"
 record = "Catalog::coversPart166#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -23691,25 +23711,25 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4f01792b90d1d52677eadd5d8ddfc951caa1b93ed470c68a15c6adba53252a78"
+kappa = "96015b9d5d76c47a12ebf3e62db9e4a787e495acb99ae65ee11b110548ae6a06"
 record = "Catalog::coversPart166#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2713d58e4af4656c6b4a2a3a3250894a3fd52714bcbddc458e57c7a74c916dd0"
+kappa = "76e5b246660c67215f46890b0ee6f250d32a1d867988a14e23a22e883ebdd994"
 record = "Catalog::coversPart166#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "1ae6b4d58d4f4ce1e30a507fc5b2b90f3285586bdd7b192a98e3d38821b2d8b8"
+kappa = "713f3c1b7970f6951c84f31dd0d1855e6bad64863db0931ed8970e654efa0ad4"
 record = "Catalog::coversPart166#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5fa558d773eede10ded24d3e939076ffe4cfe7a5ded81656b24d1b16b3933f83"
+kappa = "03123650f699c2308f542b823e91a1c5a7ed9e2cb98e1486b23f356429f115f1"
 record = "Catalog::coversPart166#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -24111,61 +24131,61 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "a10cd3da19e2d396cbaa592ffecd1cde50bbd38434cd6a232065746131b0e7a2"
+kappa = "c81ff7b8138e657bdacd51939f33477fbf8975a7b961ac8d112e8a8d63624a00"
 record = "Catalog::coversPart167#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "92bd6bd90d1eea09a2e1b7dd52905f8d642f749e01e3da1fdc93f13ca307ef19"
+kappa = "8bcb1e1267f27abd357b6040fecfb9e0236cfd9178182a5b4ae666c10aaf3141"
 record = "Catalog::coversPart167#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "9f89eba89e0efcc93be925603a8e4977cfc9d0e3bedf4a6af945556973466235"
+kappa = "4f5f059199d32cde81e771cc21f4df22f540963b71bb3990f564fa21fdcdfdaa"
 record = "Catalog::coversPart167#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "22144214522d1f931cba67dfcaed486dad165305031862ea0aa27f9a4ae838fb"
+kappa = "7fcac8542e2d35d7117bccd62bd681e306cab760086c1c1075db4a5104d07e2b"
 record = "Catalog::coversPart167#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c0062f4e7bc52d3667507d62457e6ece845b9f672d91389f4dce370ff351b240"
+kappa = "35ab0a8ce76ee218abb1c1ba965be0f26728b5545168aa4b95b1e070566faeb8"
 record = "Catalog::coversPart167#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "920bbbeccd7833a5ca05137ce73e0c5d36ca72f1f52f20545e6027fedfa99ad6"
+kappa = "ac87066e42f6c4fc18568152cbfa7ccd341ec33bc38a4df31199dc8d563fcc72"
 record = "Catalog::coversPart167#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c5290b57000be9fdba9de22a602689e615d0bea246b14dfa43c2223afc8e42a5"
+kappa = "a8f9f33f0d3d3ccac6b367dabfb51396ddb21d0b675abacf0e740cc0c9df4971"
 record = "Catalog::coversPart167#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9eb06815371c165b204fc6a70c1e7c8f853f3bf767c9b1c29d8c359cf01dac5d"
+kappa = "2661a7730efcdaa6c72625c4e88bd8b58b1a2fb36a9855bd51e63f4501d28ca7"
 record = "Catalog::coversPart167#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "fe72d5fa42a7331679974b0805588039797063b4e32158338d144f8bb7ce834c"
+kappa = "d42358e3357a14c24917016687adca082d2d1102e19a5d50614d5886712db28c"
 record = "Catalog::coversPart167#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "69a9fc4c324252a46f9057180c54b69451d8111e38497e730d51033067a257b2"
+kappa = "a19fb780cd00b12bdd31042e55a279afc801b15db61ad6407b077c212681541d"
 record = "Catalog::coversPart167#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -24375,13 +24395,13 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d8bae1222dd20267c95dfc46613b3c993646c24f5c12855347ffa806da2316ad"
+kappa = "e4f6be6dc7bb035185f8578b52c6ef72f498fe3869aac3bfed427ef34d1b80e8"
 record = "Catalog::coversPart168#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "098f8980e5942c4b0dd41fcb774faae5109e83980e3ce0dd1250ae293e130b23"
+kappa = "5adbedb66b55ff732072a703970b5c7f473ed3d7a7b9a1470525534c37c0ad39"
 record = "Catalog::coversPart168#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -24435,13 +24455,13 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8f88f8a77a27032c7a763b9051c4c17a3f32e9ff9851ac31d063985326b98d58"
+kappa = "046bb6fb9b388fecf6fcc5097f6bcd500dff5c292f34c052578c7fe324f92ca2"
 record = "Catalog::coversPart168#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ae31b54e537ab88efb1151de8f1c3070037d28d955b625f878fbc35fa5708504"
+kappa = "2e67a1cdfc6100f3b9967bf68a85a3e82b3bbeadc724a574d247b8098743b955"
 record = "Catalog::coversPart168#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -25227,18 +25247,6 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c40e8149cdc34831a53c7e8a11673441cd2c6b9f9e193721646c024e1dd27e34"
-record = "Catalog::coversPart170#23"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "884ef07ce33a7924cdf75924b77541413c224eca85cb4db49806a138f69a1488"
-record = "Catalog::coversPart170#23"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
 kappa = "ac1236e358a2b839720422054fefb08f21c6dd9637d1ecbf90c70696351204de"
 record = "Catalog::coversPart170#3"
 axis = "derived"
@@ -25319,54 +25327,6 @@ reason = "no derivation names it (prov:wasDerivedFrom)"
 [[residue]]
 kappa = "6e67363a0b89fa9d77ae9a4c7b4978d5d8c832c5225a05a804a2fb025bd1ea9e"
 record = "Catalog::coversPart170#9"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "65e3be9534242f5238616e70e9c751a16f0f27e8159c37bdcfe24f28ff2e93e0"
-record = "Catalog::coversPart171#0"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "e6682b32300be87b730278d50ec759826097e6af3717f8878c040615ad644504"
-record = "Catalog::coversPart171#0"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "3e5f4c3bbf635b7c452c619abe966b7502657bc218678665dbec1f5f2f5b3f34"
-record = "Catalog::coversPart171#1"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "529294a122f16bf1ea74eb454d71f9a3a0759b84b5d9569c113f1f25ae1fbec7"
-record = "Catalog::coversPart171#1"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "d1d2a0d7f79b54fdd766258858878b87568200eaa719c7fac6a83ad002c837a7"
-record = "Catalog::coversPart171#2"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "9aeeed8b535e0451dada09af4706edce0e04079dc68c5b1d3b6aac6ff3fe5961"
-record = "Catalog::coversPart171#2"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "91bff48c2e8b76597684fc80817d184f4e357b19e675418ab8589bcc1ca25ede"
-record = "Catalog::coversPart171#3"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "4ab2f456c11568aaf813524ffbf93774408584a0deb834b42a0def0a140513ba"
-record = "Catalog::coversPart171#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
@@ -51303,25 +51263,25 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b96fed17d37e15ffa11d08eb7196145624424bdea33d7566742bd96c567de9e8"
+kappa = "230a3b3ea79528c874e87970e31e0395ddeda93839c6bf84fcc3fa592a6b57a1"
 record = "Catalog::examples#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "72453aac303ec237f2edc4aaa34c5aae1e2d15ad6409e2ec50d806329a577d7d"
+kappa = "30135b127da6320d5c389e84f1dedb4fafdc9b24b5f73843aeb715098f72d27d"
 record = "Catalog::examples#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7a29151b0b439c29c2d81abf6fb303946f41742f33b1bb0bddf60b8bccee703c"
+kappa = "699a2515a903be7022db8dda83900e32760a8d603865b47684e96aead7b96937"
 record = "Catalog::examples#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "20c82f0a9b150086784fdc5ceb6c162f883efc7e0b1200328df218aa22acf9f8"
+kappa = "87b23df98bd6ca97513fa8b5e8b28e179d1bdee1b37ac274604be50aedc80f89"
 record = "Catalog::examples#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -70659,121 +70619,121 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c6d4f8b3f6bd49380f8dcb2cd7bfd8b399d557d939c4f327582412e8ec70b408"
+kappa = "9fb41dad30135e7a04a78c7ffa0dd55b180086e2b25894e22580c95bdf3ebbf6"
 record = "Catalog::recordsPart159#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a53b3086dd1ebc2624b810f49eac518969a637975c9f7631796d40853a0d0a55"
+kappa = "7e87dc376a78ab5ee51575a36b8fc6da2e1c6377fc0aa1033cd5abf307077c9a"
 record = "Catalog::recordsPart159#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4180701a5fd375e7c96e65b027235746ea64098974dbe7c8c87169fb377d5d81"
+kappa = "27a91ea0d02e737c1d7678a54b85adbaab17be979b2c0c21d032025fd1996678"
 record = "Catalog::recordsPart159#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "561f856fde0e88f39754f3cdcd4afe8486f1f8d99575d54b76a1957d633c6c47"
+kappa = "1613ecf3acf01c79bb2428f2310c56db1ca080d4aa30bc7781ca526edc599ddd"
 record = "Catalog::recordsPart159#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c3785cda8f5f53269c7c0fc033ca5553818a0cda7ff6e86dc35465bb969eb327"
+kappa = "edafb8e1e890ab9e3ac6adc54be7dcdd86817d7d540e2635cfbaa70530a2d1e8"
 record = "Catalog::recordsPart159#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e1281c4c2d22da1d9acc76a9e4909a6c2261fc7d17b25a68448a4d43c583b30f"
+kappa = "120931234f1984ee99ca1b0394705e0d233760fdbe3a1e4bf2685927f787b96f"
 record = "Catalog::recordsPart159#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e7a7a56abebbc702ebe57f6ce35e61783317ddc229c2cbc188f5c067b2b3e862"
+kappa = "57ac13f0a623006bd07035edb6fef5f028c5e8cea958104b575a040f8e9aba03"
 record = "Catalog::recordsPart159#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "24fed83541595649cc345c264570ba3b6dffb649504e18b9327f33c59c3181f9"
+kappa = "047f314434502232abc56edc5a1a61027a960109d79ab0e71063450ce94163a2"
 record = "Catalog::recordsPart159#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4dd99f3067c40af40b729203d7fb2dc6510e3e2d789d914095fe1a27a0d96fc5"
+kappa = "7786c0bc177235c133782adc41f49a6932dd3692fc4e1a76525ed6fbc42f331b"
 record = "Catalog::recordsPart159#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "53272337aa88070acd3e67931c6b33393c3eeab76bde9ab47c8eb9b075286a2c"
+kappa = "ed7e1e96dbbaf1a26dd64f37979df4255613ee6f43e4208df578a434e353fff0"
 record = "Catalog::recordsPart159#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "2f9d445bac704296f29ea5c154a4545cd0bcd34f5c8526fed2828f5ca3d960a2"
+kappa = "73c26c449103f3850cf6756250cc3f39abcbc6c1ea999f5d6ea2e2857cad6a2d"
 record = "Catalog::recordsPart159#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "20d8cdc917860fdd300b16be8c17f5db98fe77032b0f57428866ef4805d0e125"
+kappa = "8adc23c60e589fdac19049f71df34e5e4ff9dd83198dfcc852f91b727b404751"
 record = "Catalog::recordsPart159#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e37c1aa452da81de3a51d71a8c815d6da57344fccafc1b53cb237f64e6dcae83"
+kappa = "ab3c96aa879f3a48ef4480afc2f061bb4d76d5fb0b82fe7b9e6ec2dbe4b570b4"
 record = "Catalog::recordsPart159#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8909375020f7b8ddc705dbf34874c93fc740872c56b7fefb7b201a4ca456a31f"
+kappa = "cdbcdadf41f86dbee172254dcd6817a6f87bbb1762bb523c6a519f4bd049bea0"
 record = "Catalog::recordsPart159#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "cdbb12f6eaa1792636c563c7485e00b930c245e8afdd20f2487c433181502e7f"
+kappa = "97ec554121e6ffd7083a8b40a0a194d23b84556b31e592ea0840f6604f58eb71"
 record = "Catalog::recordsPart159#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2807170d5a4604956b7cf818020584d48e4b6a18d6e8e49762bcc56e8fa958f9"
+kappa = "f4aee83bbe4484594f1e100409b32cd510d9d9f0b943aa6e452684168b82a982"
 record = "Catalog::recordsPart159#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "852261adfde70a7df40057e68a0087fee101beb2a280416e09c278ddd9d17634"
+kappa = "36a36fe8a2c20a7675d7407979029c8d8e3eff9ab8e4a1f4a8f5ac441ea18d66"
 record = "Catalog::recordsPart159#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7ac50d23dc2a07ab6edf9630ed96943f5d07c6fad3847c5394f129dcfa631271"
+kappa = "45382eabf9cb6103e75de264882c8d568ac6b1c2030f72dc9b56266ea4377a10"
 record = "Catalog::recordsPart159#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "848842a0249fba30f86081fc88e97e6544b39cd08b75c722f25a5fb273f44645"
+kappa = "c61df2f96afc792e813232c12dc82673eeb4b77eded071f314d9b28f88324c9e"
 record = "Catalog::recordsPart159#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "205a57d91512d42bd49d99ca910b5f842e9863c68f3a469346cd1f5eeb306300"
+kappa = "c85c28def99354bb46d0a7bfb195ceba7de09e8a6a393e3a7506c2c60e4666a0"
 record = "Catalog::recordsPart159#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -70791,49 +70751,49 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "66c9899a5256b03cbac06dfae1fe348249fac1ace3d6419e74720ec622e70c8b"
+kappa = "fbc8d6826245231bec7185d086f8949b69870cda2feb12939e0d536a61f7d114"
 record = "Catalog::recordsPart159#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "42374a5b0d43551d81362af4aefa22ecb855baa0d0951df0ae421fc07f52dcee"
+kappa = "5ae9f2989770ce5939ec9e4b12b79c048552795db2e0544a2e622c4e6302c025"
 record = "Catalog::recordsPart159#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b58d59641d54048441025802ab15fcd544586bfa1dc6eb1faf1b1d9530b6c881"
+kappa = "326718d7ad3ed17f71f63c8f284ac2f54c5ce7efd79b3f677a3bcb882e80448f"
 record = "Catalog::recordsPart159#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ed6000fb6f056e2986953155d11f637bfea7af583fbf91af1b5d07f9111f4500"
+kappa = "618e42f8229c7e584758d7d190ab1e823d97df5a826d12e088538d8045cad367"
 record = "Catalog::recordsPart159#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b570a54dec92552ebb521361a82bbcc3e35ab0d07fe2681b2f00389e638ce95b"
+kappa = "3f3cb145f7850e974f1759ba7830d0d5587f62e8f93dfd92e64f0f7fe3029bd1"
 record = "Catalog::recordsPart159#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "c8e9318c2d9a8d7d93fe75107782b64418778cfbc5ad3504d8842b6c0d3bd01a"
+kappa = "5b5d8670c13fb40ad16273d21995f1f967326ee3b9d29b1202b1f37afb26b7eb"
 record = "Catalog::recordsPart159#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6078e4678afea8b010d684902e9d462e14c9712d4abd6a9f3f1bfb688ba4d271"
+kappa = "cb510b00fd923d1bc4edfe3660903c719a930e5649b16626a61594c336963540"
 record = "Catalog::recordsPart159#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "fde33b2d8437a6bc4a05e3569cd29645665c9d7116c2acc7938e0e3b6a10b091"
+kappa = "c9f86c07159fe82e8f32ae083793b5ede96db08659a732e510bf72232fd4920d"
 record = "Catalog::recordsPart159#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -70875,49 +70835,49 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "88fe90ff90dbc3dbadc74794f1e45520c15a4d8f7102159307492f6013417f9f"
+kappa = "bc42687ebb0468de3d5a7b3393d91db5e1ea8278decf919b9ce7bfd5fef44b14"
 record = "Catalog::recordsPart159#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8c25e4143e2537b316ccc41d693623f4d257eb1a66874e77bc38165bdb75bdb0"
+kappa = "4d4cca026a76d820a9460d531e02012997ffd3d81c1d2eeaec3bcbd9c14272f5"
 record = "Catalog::recordsPart159#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8f7b100ecd37b2e49009c05602f32890fe02fa4c9532a59ce0ab68c7080c9d61"
+kappa = "e4edc490b75aabbe0bdd92ed5a8505b6af456e5af357c0f845d825dd05befe8f"
 record = "Catalog::recordsPart159#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "1b311f85065eafeef5e593a6e61e32f5a9fedb93543c8b8e2cb3a92c5dca9d0b"
+kappa = "c212002dc6a08376663a93b58783a24ff5db7ca82970359460c22fdcc0f71b58"
 record = "Catalog::recordsPart159#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "152dadde17ced067b5ed2972016c72eca984713f72c90871fb18e0edce3a4a66"
+kappa = "88ad57328a0b33a5816ebe69c5c722eca76cb3dfae68ebba9f2c573f8a9a0392"
 record = "Catalog::recordsPart159#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d7015e6a47ad17ab73b5ae5d1c667d819e09f96f0fbb01cbc5961599dbc847f0"
+kappa = "5155f7572445d8c5d6f9ae62fa0e9998f65026c8d67a180af101bb7348773452"
 record = "Catalog::recordsPart159#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "94cdf3a4cb24c58ef0be370a5bf49fb5599ffc845134eee4e1fa0b68605b71d2"
+kappa = "155e2274b26b16af871ff180d90c5d13ba736e10bd7fb025e9ce75c71fa5b22b"
 record = "Catalog::recordsPart159#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "edd587b01852be08fbebca3e30debd6515fe9f2ac06fed0ce647e4ac163a4ec9"
+kappa = "f6e7957507076b654adcf4e3847bf89d10de1ec6b8c941d98d5e088316cf974d"
 record = "Catalog::recordsPart159#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -71211,1177 +71171,1177 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c71ae92fa32a1f274bec07d841b5acce5f1481cba87d1dda3a12901a41fb17ff"
+kappa = "7901ad8818cdf06afb06e081ee597914b77ad2dd3c4afad401675211ea57f8b2"
 record = "Catalog::recordsPart160#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7b69da5f769d9d619038f049f00e81c652962478f8a1f25227b854038366e01b"
+kappa = "b310473989574ab166f507a571269496ebd0e79c822ad22f024a6a68cea0965e"
 record = "Catalog::recordsPart160#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "9cf3b27c2d733d55f753024adec710f43155fe4de1c61cc413e0d6f19a881dea"
+kappa = "566a756fd267125e37c16f416ad0c35cf69de830ac15be8205642db558d6e3af"
 record = "Catalog::recordsPart160#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "c5d641bc24f133aae1f0b311e54541ebb22735f1527efb631ad0f859f54920c2"
+kappa = "29e1bd1d8628e860791ede23c2adf953256239102ed9e289ac64b4aef7ea6f59"
 record = "Catalog::recordsPart160#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "db737dbf74bbe7562b5aabfeab3a18f27b7e9e4411a95f410c17042f007bfbaf"
+kappa = "c894632d4e288e7478fec2aa765dcd9a691048427491640acd17e17f1906ce57"
 record = "Catalog::recordsPart160#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "96219bde3d326c5d76a9c5a98f4697448a29e06235f546e8b6b0a7851133cb96"
+kappa = "99e5ba806d7829c2561cd8ccdb61796416cb46f2ef678edb64b96b0805d11e9c"
 record = "Catalog::recordsPart160#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "2c27417398e2a447867bc41e3be284de7ad10c25f94612f6cf7526224cc17580"
+kappa = "9a361572f25a25662b1daaaa9326d4505a44677a0d3d48fb288dd333d38b6268"
 record = "Catalog::recordsPart160#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "aa95a87a65b232141cd7b78079eb840a3a9534f868ef62a2fba24b9a55aeebe5"
+kappa = "8f10730ec1a1aebfef9b95c29074e5ed4011dcb18ee52bbaf242c7f0c28ea243"
 record = "Catalog::recordsPart160#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "1be903c1c4e9f4ae4adab731534f1d0fb5ba7bfd5e48f7abb14f057081008244"
+kappa = "7686b7e11570fc25a6f06ade4b7e288d34a08ad60575955f14c0b3e714ebafcf"
 record = "Catalog::recordsPart160#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e226d74a469281dcbf3ac02ffe4105a584da4112459e890f2351a67236ebf72a"
+kappa = "3a3fc303ac33abcf6b4e28bace9debd182b4c29dbd18c9e092bd7bb15b2daefd"
 record = "Catalog::recordsPart160#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8d4c0c3712b2a7b276a17985a8683ba779f438342bd92c0852c7250debeb739e"
+kappa = "78119c445719d6068d1ce49f646c19ab0ca3eb956c6efddd10d4ae2fb6bb0a25"
 record = "Catalog::recordsPart160#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d55d45466ebd12da14f4b2a860803fdeb872cc0459bf4314ddc7d195c879b035"
+kappa = "6b62e5bea0d9115416d132e1aeca4963220bbd479a389270c5e2b4aa72a2569f"
 record = "Catalog::recordsPart160#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "57ea25632ce4dfd29d2d09cd3c46c0327850e339831c12c7adbf90d540848e79"
+kappa = "0e008f907046d8e8d62cd357bbe4fae1490cb8c655845bb64084dd34919efa97"
 record = "Catalog::recordsPart160#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "373461386c3c7f92b9a99d5a816937ab7ac8ca4cda657f7604b1d0f15fe5bf53"
+kappa = "fa9563c11f036543be3cdb19a76c0876edef7113176d795905d1e4af7f06cd9c"
 record = "Catalog::recordsPart160#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "68ab9f6372a08004e29a72ae76fd0494df5676dfeb4dc84247cf47922b1f76f3"
+kappa = "89a69294502f150cca416ae76c5a68c52e2760a6b0d4f8853937086b7c49ed22"
 record = "Catalog::recordsPart160#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2efdeb9add9243497b5621399356ad5ea346bf5a4e21af47a27f274b4a9d7735"
+kappa = "ad4600d901deef7a8519ada3e99981a6cc5477b02c0a3ec05f45090c361de6cd"
 record = "Catalog::recordsPart160#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e8c7c3a75bfc77800d7707b60eeb3dd04ee9b52b84f74cb1447b4bae65a16ba9"
+kappa = "437bd63021b76eff43e0da5b2610313524f8b29e8bf6cf208d6c5c792b927248"
 record = "Catalog::recordsPart160#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5c2c54db219b89a0f7b3196bd0f71989e08132837f0c01da7dc118608e3a7d69"
+kappa = "1665a9950535aa05221cf61b1da701460ce7a1edf28ab69e14971a17985677dd"
 record = "Catalog::recordsPart160#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ab1b07b55d1ee43d53f528a53d34c1b767e7b8a457b205cfe717f2a12a83a68d"
+kappa = "b9ce9c05e919e692b7800d8d16ffa5a0abf5fec887732ffafe998635137eb318"
 record = "Catalog::recordsPart160#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "868610c7e3d53a46cd5a7d96ef5e92cac394790912d3daad180f88420dcc6e8b"
+kappa = "6e17079486c5e80afdb0e99e26594dde5ab6e62754c9b935cfa636675ebf804a"
 record = "Catalog::recordsPart160#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "a6bb44eac8b7077641d89b5f3af413e78fd51b563f88e2a9eee98fe89ac8fe86"
+kappa = "3c2d423ef81ddffc896315570a40b07c7a9df6beabda04a8ec9288b70bf070b1"
 record = "Catalog::recordsPart160#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "68acc07a81a973d6b127ad25f15a9f648f44c2e2ce2b86f79a839cc31416fa8e"
+kappa = "6ca7ecc9087f4cb979498e056477d2b5b8ffe80b67190ed90ad98148f71ac920"
 record = "Catalog::recordsPart160#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "51cbaca4c830b87b2ccbdcab0ee89b45c5c3b77fef6ea7f995765e53a645930d"
+kappa = "99f7fd7a1431f71a36a36fe62817b6a2ea131b30922fc9f5ff8c3fefbc320eea"
 record = "Catalog::recordsPart160#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "79722b280e1f30ab81caec76b7a732b3bccdf3148be5a9cc2bfe3a77efd7ac57"
+kappa = "643a6cdb0004dd9d4094687c8dac23b3ff32fe8017e209c7fe874ece94335f4c"
 record = "Catalog::recordsPart160#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "52b386a1c5be2e78f907188cc7b1a181817359d569d4480ad335e2d7e13d9a04"
+kappa = "e981179666d4d136c9064af5a9611ded169aab7e3f36b38ce24cd56bbbb1516e"
 record = "Catalog::recordsPart160#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a707e32fa5551cccde9a1fca8fd3eab6f07cb2d21caf95b0591f4cb88a4266cc"
+kappa = "14321cbaa653bdda220dab1040e77d7a0c3e6b0e773d48f68de0046e725d35da"
 record = "Catalog::recordsPart160#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "f449a6de1965ae0307fcb579aab96311d36fefc4c4718249c507f7fcc3676c4a"
+kappa = "60391db63cc601a7674f9363a09bda2a2af0ff41d222efcc5c31c3e25d7d2f5c"
 record = "Catalog::recordsPart160#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "1249a9fd263b42a0b382f95a05dd03bc80e681566ba1932dfc619478f46e2466"
+kappa = "fdb902cef1bf833d790efa1e5e1d0c54e95721532af6778057038d118e212827"
 record = "Catalog::recordsPart160#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "1bdd2d4e9ec64d20aad1469fffcb100f8f023c7819486093ee14073c62a6b90b"
+kappa = "1e7fdd605ff23787e0c9132e02c7a4533e0d76907a5b851722078f1f9e33435c"
 record = "Catalog::recordsPart160#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0a5e031520ad230e39dd49285e1be4f523b0ad302327e42c0f8477e3fe236c60"
+kappa = "c28325d3d709aeac943a5277c0c95b18dcb18bb0c689034d36b22d2f7a9f8e11"
 record = "Catalog::recordsPart160#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "98a239dd4d4876b61c668addcd9f295bc6ba7b79f10c504ce5bc288791019e55"
+kappa = "6772d6dea9cf0a03cc783ad19d24dd85b3a4af7879db807b8297a230b4056176"
 record = "Catalog::recordsPart160#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e3deb6c30b381cb53fc5955b0f969e8672e973a76e92c5f42fa29ac30de68b0a"
+kappa = "1931df1c3eb30ee72b957662277579e1bd15d82a4ca8810c21929fccf96892b6"
 record = "Catalog::recordsPart160#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7d6a175c211495687b52da578d16fee4b160017987eec8a74eb6f9c21cb2987c"
+kappa = "6ea2fbf77a3d5266dd6387079d2125bec22ee8611d87d696db61af4775d94020"
 record = "Catalog::recordsPart160#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8840ab785943542f5a371818a3b068155ae020d0239349e07630577e9a41094c"
+kappa = "06fd5fe90b858466a1443a6d0dec6bd5ceeb3202933ae7432b6d04dc663e4b3c"
 record = "Catalog::recordsPart160#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8f014f62c0d647853daa912303d58ac54891bd39ef5cb534fe6ec0164f2be290"
+kappa = "9c379c1cceb2e7a99b737ecf98836c4efb35476cd6a28f15a17f578f4a191d7d"
 record = "Catalog::recordsPart160#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "31c54e87b26a2c3f56aa663fa94140bf4dc0f73e693746caf94eb24f3c55829e"
+kappa = "77ad6a29b874e9048a5c915fff09c5b1f1c6c255a853526d271c3a67e6bce1a4"
 record = "Catalog::recordsPart160#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e9e10cef15ca8039fc122a974d4f5c71483f0259835406b72b52bc7d833403ed"
+kappa = "7fb1d6ac7828f4c992a703ee6ab4f22a286d7c9868ef18718746ba1a7d483a5a"
 record = "Catalog::recordsPart160#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "6d0a5418cfe0cdaf59b53ddad06c09b281c5104222d89ca50970243fddc3e429"
+kappa = "8166beb9de9943db2422daefdc1a5ea328ef99990048d2cc9b1f54e5e47f37c2"
 record = "Catalog::recordsPart160#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "2470d3b95949f21def8bedda105533644363fd69ecbb7be1eef4807395b3a580"
+kappa = "b8504145a6b6ec9e75ed324aaaeb7af31da7bf367027dd402a6d7ddc11bfe99a"
 record = "Catalog::recordsPart160#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b245c79d5aacc1f3c523dcea008119e7a1ed57514e24ec576bc106742c33f0a5"
+kappa = "e60e4c3e3c89c6435ad140db5490125fd5c42582544ec09241edc91e9bbc8861"
 record = "Catalog::recordsPart160#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "1e40a2db42caf5c53a4c9010fddd5c619ccf2e2618b9b79105a34685fd41c6eb"
+kappa = "cb7bc96dd39c9bd2ba6a9466c9dfa27f64be13be48bf10cdcbe03dcc47830fbd"
 record = "Catalog::recordsPart160#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "02f40be1356f840e3bf237d653a8cd3c14e3a0c2d6a1aa9fc9a05e2321c633d9"
+kappa = "fb8107095a6e451f009d5df20e508f9b4b44a609353afdeb342e753f59a79fc9"
 record = "Catalog::recordsPart160#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c4f3964ba49abd9b0fea318621e6531b07a52dc6099eae175401c47766be5562"
+kappa = "e482bf926be66bc06cf06d541ae2d98b0618e479e2b9628926ca72f13331ee64"
 record = "Catalog::recordsPart160#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "bf2a3236df6275f861df756f022fe3080823cf018815efbe9f6492fde6e3d15a"
+kappa = "f12361487b1b00a2c4de0e0d2b69b0e57d8a79f125d01effb1295cd16e83b3c7"
 record = "Catalog::recordsPart160#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3f5718efc28c7240af74614287af062b87a17f005734b6a3b1e802045e9a2840"
+kappa = "b7941de562c6bea2efc5deb0d8ef9b3c85094d4cb91fb2f4035ed8f3a0acb4de"
 record = "Catalog::recordsPart160#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8899cdecea7a6e85f388acce76a5ba3bea9ff9bfa00a4841882f1e6540e20aca"
+kappa = "1b75246990c27d1953223d560f732020e3842b587a4a19fe0ee8e919b9e986f3"
 record = "Catalog::recordsPart160#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "41f15111df0803c593d8510865aa1a33e237f15ea7fd586c1a188754d8876a9f"
+kappa = "cd82a3047e446122974ae6b111be6e790f0a18a4b9114f4b1428006ab221dea9"
 record = "Catalog::recordsPart160#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "49c33bb4b78e21db877b3643e0346985844038badd0cecfa537f69f711e1c701"
+kappa = "c33a25f0f578285186a3238486cbf21d717ad5f92d589e5dd9235806685f0367"
 record = "Catalog::recordsPart160#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3a286d9abcb2f981c858d40af6067c6e5558da970282155f3ab69d782f444f6b"
+kappa = "8310b944a93890dedf0e79f1046909888654a61d3690b21c053525e1c5a459b3"
 record = "Catalog::recordsPart161#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "751fb355aa62c0cc1d31eb8e52c19313420c79dc60e7b945574fcf5ef14a7348"
+kappa = "98c9d4e8c1686fd7e61a5cf2866b6ca4061c8ad28059a26a534493e62c5cbe9f"
 record = "Catalog::recordsPart161#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "147acfdeb297612cbada4bf2fdbfe15919bcc123f12eeea2aa4925606cbecd5f"
+kappa = "e226a704fc5ae6d668ad1f6503d21dd311f5d74bd44a2bc5c354354d34772a77"
 record = "Catalog::recordsPart161#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a0aad739ca1059f54ff018630cbdfcb0d223e48f99033b534772c0eb7c80c373"
+kappa = "0d00bcb36d6fa2e22d8f89c4754d0a937e42aeb7e4901a9038dea6bb8c5abb9b"
 record = "Catalog::recordsPart161#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "1dd3d9da3ad63ff27f3de8c8fe726cd53b0a971a1ab08d2615c703566860e25f"
+kappa = "5f440d3bc7becc2ef93ca3f4e30c384a7e68429043e9c13211f7d474a2d58330"
 record = "Catalog::recordsPart161#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d43a891b8c8bdf0059a1bbc7cabe3799c2da027c86a996f95e155c60bf42c350"
+kappa = "6b61a53c41729f172613b011a48e1b772b8507f3339eabfc0010a819b96b1a52"
 record = "Catalog::recordsPart161#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "241d94c669cde2faf3cdd4bc67b46fdedcca2c5ccdee713a00ad22de78379ca3"
+kappa = "5492d08120b1369c331c1edbdcaf2a88abfe49cdd705747632b7431b680f320e"
 record = "Catalog::recordsPart161#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "eb580a24f8655b84f223139786ec776387a82eb44fd12c0f0b44c48952c49a6a"
+kappa = "d39afdeeeda1eed715fb50585a03dc4d5124d0ad02b995fc625025a26aba2e5b"
 record = "Catalog::recordsPart161#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "90dcf92d879baaf2380051b1c80d7f5d615be541b7e324ec6d76778d4e58139d"
+kappa = "8e8ae01aed3df53af1ee62576b96a07844a170ff8f7fb7250511be52c04b60e3"
 record = "Catalog::recordsPart161#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "1e003d734c6a3b7d6cf6447e9d90555dfdf398e287a763c478d74099ecd18a43"
+kappa = "5f599633f23f65a23b1a5d18f74e52b387defbb22bf55df213b0ecd1078f106f"
 record = "Catalog::recordsPart161#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d1c736eab926331677540eac3ca31366319075a67eae468c3ea650c526e67093"
+kappa = "724dd8ebede0e0a18c086e58369dcfbb17d0f5cacf26edf0a0d39ebeeb474c72"
 record = "Catalog::recordsPart161#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "6b4a596a0fb90b96f057319d9b2b5d3ff233bfec23909f77f645c07d4bc52e96"
+kappa = "e906509daf94cd27367f297b3d2312db57c07b2db11523c4b721b6a410d10451"
 record = "Catalog::recordsPart161#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b3778e30ea12b484e0bc1af20e2023066db684b160aad761db9e0c2c4e9a815e"
+kappa = "8e01be2b4c1433284eaca1631c9669397c14628a320cd9c9f9bf5b4151e1cff9"
 record = "Catalog::recordsPart161#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4f091501df5a8f48736687d96ccb4dd2d061826b5490507d4e870d8a4da9cd4d"
+kappa = "14ffb21ebe828e9b893ba28478df9942398a5679323e3621acc0a907bf24197f"
 record = "Catalog::recordsPart161#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "718a531a461e1198d19dfcc0f64f9826cba788676fa4ab8c66cfcc40866436f4"
+kappa = "7d9a117529202f4dd37d39b8f979f973f856bbe4fbc1586d1ac735cc542b6dd4"
 record = "Catalog::recordsPart161#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a8a4433605f1c485ab9aa53685b670c0d0ad09f3a7a8ffc6ae044032f1286696"
+kappa = "e3a0bfd70862fc614ac01bf2f1602ab433c08b9e613f4e4edca222be99370b3b"
 record = "Catalog::recordsPart161#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "bfedc8a16c3163c18befe8b2c5e05d61e28c2b84ea01fd1d531d7303d944133c"
+kappa = "6783f329609e1826f61bfc64d09be5a0327519345f700accb51c6ace46a92507"
 record = "Catalog::recordsPart161#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "3ff15617acff8a1b28789d78f7b5e74cceeacb6127d76940180f872bc11fe18a"
+kappa = "b8869cbf4e00e4772277354918a8af424c523a6da321815a05f7b35e5a6e4642"
 record = "Catalog::recordsPart161#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d174190dd6d142aecef01a357ad9221be01cd1f634b46ae0e130bf611da8f920"
+kappa = "c3efea0a4740264cd42ff7e4a3c07751acc12107fad228a855e7b5575d03bc66"
 record = "Catalog::recordsPart161#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "3800e348e0aa1b5ce31816837b81ee48c28747ea11c485260806d95cae58a92f"
+kappa = "78e6c3ebaf6f530d75fe8de36c25d7bb2f6e05ae2b7e3634cf324d99ac49363a"
 record = "Catalog::recordsPart161#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ac70e4c54eb0ae0a81ae4ab6024ea8024c55b94bdac272ac50686df3b6725f38"
+kappa = "1c2b5db57d1a5dc2d1fc29172fc14f79d2a460600fc18c8d7e9a0152b50963a2"
 record = "Catalog::recordsPart161#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "1093e77f1aa79e466625b7f2b305113d2a14657d8dfe40e59ec2e8ac36f5a845"
+kappa = "7b19743f796dd0fef20819360535c0dbdbff0230dde51b959a26deefa44d8028"
 record = "Catalog::recordsPart161#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "79de4e4929d2a75c54173f01cd977751715e585dfef819d71d4eabac159d7ed5"
+kappa = "d15a372255616d5c1e115af81c499c6865f76765c3f1633ae4048e31afa3e01a"
 record = "Catalog::recordsPart161#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ff1e0b0bda570bcb8147c57b1c70a23e339689d950b13e67c2253d3a13cd7b2a"
+kappa = "c8700b1a7d2f607007d449efa650a5f7fea8c0bce41874b05bbbb7b7d24c3bc1"
 record = "Catalog::recordsPart161#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "0cc77074551780bc03f5f279376ed304df6a12f81ee4bbb1e6b80e45c65e6801"
+kappa = "9dc92e8ed7d3ac714f9fa1e3dff8cc875593beb8d90869bd1b3aa104922e3313"
 record = "Catalog::recordsPart161#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e9b264a070d46dfa169d7739a83c8646ba6ba6393df25db4e99a6b1f6b7a2421"
+kappa = "cc91e5583e7dca0dd61393b84d69f10f79857e04b14bad826501f5854d52381a"
 record = "Catalog::recordsPart161#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "f7f75eca5fad5d4121750e203762807387b8401bd721fda0de225cf2a3ea555d"
+kappa = "b0f970f03d3c838ffd30e1e2518b71d5d7407074e8dc0980ce9ce64585515439"
 record = "Catalog::recordsPart161#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8e56acb4cc4e8d12d61096d42cafdd54083f592a2e32c42de04ae2d55a0be39e"
+kappa = "d65315282da4b6be382e1839126678127736d932467e7848634ccc76dfb689f2"
 record = "Catalog::recordsPart161#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7e7c9816540855359a52bca11bee198a9e8be9ea55bbde235abb49eb09fde7fc"
+kappa = "cd104e32113c054dacdc1499c9ea797a8e41199ff5bd5d1efd7d798c0e92c506"
 record = "Catalog::recordsPart161#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "210dd49db02ac6e56747aceb8a2693844b44018e73c8a0ec27e47ddc9dcfd061"
+kappa = "062abd1d5de8ed588abbb18f900e98cfc12c2a845a4527d12dd4976a5bcc3bfb"
 record = "Catalog::recordsPart161#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "65eadbfba2f999a8f975f2a99552f37a4077ba60181f1b319733c087d37df2d2"
+kappa = "e73e0ea0a2bcb7e6e2d4f9bbb0c51fe9d453b4278e38ea701656804fd8e180ea"
 record = "Catalog::recordsPart161#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "86ce48b2ec1cd20560a3903b5af371b3c7d0b1fd1603adbcb356ffb2d1e11177"
+kappa = "66b3e0de426db47ace2ade879ec9a6d9e448bff7b7ffcfb582c755e85d377d98"
 record = "Catalog::recordsPart161#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ec8ae78c6b9ff49c4270e1ae4e9c77b9c38e5c86936c07e93a8a5edc970e4345"
+kappa = "104e57c703b9fbea572e81da4642bb16c791a3b8e0b6a57abfdca1baf70371e5"
 record = "Catalog::recordsPart161#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "1d514ca0f92225cfad5ad6214f289f6640fe9445f970d79637f71ce78a59f7b8"
+kappa = "684f5159f909f485ce931bcb84768fd8a0125fd022d39b912ca19f5c9841e6f4"
 record = "Catalog::recordsPart161#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "9b825ffa2e24f474a2cfa4fd8296d6513c5ddf71330604b2538eaaca93e4d2d8"
+kappa = "2b9a05e5b34462dfd914c42a41c95c2e9089cbe03eddcfdc2421be0cc498a56f"
 record = "Catalog::recordsPart161#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "562412420a504ec726b7b804eb7661caf2431e0d29919eaf6c1dac439bd5295b"
+kappa = "85d58ef4fa78f0451537439d52d4cf2d179d18cc6086cce8a884dc3c303fec54"
 record = "Catalog::recordsPart161#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "230a13f0d1613cf591408f054a307d1a885a131b71dc1a4071386b4fd00af5b6"
+kappa = "62e562d1e67127bcd8af65b697dff610c74add0182eaa1e282c308ac4e921da6"
 record = "Catalog::recordsPart161#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0a9058495c7e9198ccc5bd6dcef67700990cf48f9e8ada14cd9fd7166add653c"
+kappa = "0efe141b7f7c9fd197b8a2c7c754b35f256777c127c100dc4a3d3184408b35dc"
 record = "Catalog::recordsPart161#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4cb9fdf13eef3003d7764d13f2a2e6cd65070c1f59897055dd118177369291cc"
+kappa = "5823e8d628581c421cc5b3e890f0c8d07a57c67a87543aeb30e55069d58ba592"
 record = "Catalog::recordsPart161#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d94b3f689e66df509c2b007df7d2ac8f31c8bb401f31fb4619522a5b7aca7ac2"
+kappa = "c9a1b6258605f8c5b51f15d73d87895b2440cc0fd586f85b3ecb99c36560366c"
 record = "Catalog::recordsPart161#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "a18a59605ece30c1607dac134197f06a960037c1274a2707815ea9691fe34714"
+kappa = "f6a3a20e9e4caaf5a49d45ae7c43987aa9db48e3508fcd7ba4deee44de241591"
 record = "Catalog::recordsPart161#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b1d75f9178f2f04422243d71609b445e54edf9c9a48b6befa848936ac4ee1230"
+kappa = "6f775c1f8161145c217cd2ca9ab257fe42a55480b68f430adc8582274149b1fd"
 record = "Catalog::recordsPart161#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c9cb41be7f7e74ad5038917689f5483ac330cf2647a0868098eb555cc863d553"
+kappa = "14f1215490bad41a1dd17ab7031aa2c4f901a8e0d6abb5cf8787eeb9918b221d"
 record = "Catalog::recordsPart161#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "fc3492b2df91140e48f5e07ea619e765be605686ebd3c35d5e4c02941b2c9042"
+kappa = "05d42987b7ae79520f4038a9aed80d7edd0c6837791be1c14033f5df46e955f6"
 record = "Catalog::recordsPart161#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "08f0725bd49c7a9f2924ed05914355ab4bfb457c2ff434540e9321cd2e297002"
+kappa = "ea603a849683725694a0121fb55042351b4e128c064599eb674be9d6c202fb07"
 record = "Catalog::recordsPart161#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "36d6343265ba182b01ea2f2f549d1937b49fa4815d5ce8c8403f4fbac60c5043"
+kappa = "55d2d811d0bea5e8638e53b4af379d0859b2bd6865cad7925a9c161ee3c686ed"
 record = "Catalog::recordsPart161#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "fba09b24f61b9266c13cdf93bea7b5326516c8faeb0b43a446db64a9eeda2411"
+kappa = "6f3c34e78c8a3835147d0607206dd9b540767c0169eeef6bdc287807c2ac765b"
 record = "Catalog::recordsPart161#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b558d2b01f03f0b4237af473624e3405f10c6e8f7954b2ffefb09b6baf70993e"
+kappa = "57a6fcf2cbc657f474670c097815dfdfc55c23b5f6fc20409a59e857e1b5e854"
 record = "Catalog::recordsPart161#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "5dadf130c26770b9f652f9a3f7dd33fff9631f321faf598239b40c89f7eb08af"
+kappa = "da25cdb5383c7354afe79443c02d25fd203c6ee15687fa08c51cd3ba285991c9"
 record = "Catalog::recordsPart162#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "f42f0f27123ed79ee90078239c6fb6e1363a721bd30929c9dc332bc829434f8b"
+kappa = "ad177629c52f9033a8ec839f7b1a58fd045bbf9e44e60705b709997f8dbf48cc"
 record = "Catalog::recordsPart162#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "f1232db8a613dd8dd54d15ba6e541b0e53b15fd390094cb91efeeefa8fe132dc"
+kappa = "37886d6ef0845f8bde9b0850d17552d22cbf67a05f4eca1cd67966a354b37363"
 record = "Catalog::recordsPart162#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8bbee7dac4b87c197dfb3f4b84053f4b5b339c7065ed1fec419e689c9b2a6b64"
+kappa = "9542d3f4d1388aa356a2c0a7e138cfcf1a6d345232af17719f3d994d6253bb9a"
 record = "Catalog::recordsPart162#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d3411d4e4efe956ec16dc1eabf147b824e742e51f519f329b8b50cecc46e69c9"
+kappa = "85b0a48a47db59f408ee517cd290c477988c14d4420d0bc2c564982a0e4eebbd"
 record = "Catalog::recordsPart162#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2f03ead1cf97fe72c5a0bb2953e559a1abea81f5cb70c0b3d96619a81b953ccb"
+kappa = "1f0a0ad9928b23fb682220ff7a9420d132706ab804ee37903288447be314d834"
 record = "Catalog::recordsPart162#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "813ab8cbc9a6ad13b1491d7f49b4eae5f3feb88d3ec08ea01b4786727498f386"
+kappa = "c3a2a0b8206b8ce5526cad7b9bc862bcad7e67d21513d19dba9429ceb9acd978"
 record = "Catalog::recordsPart162#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "022ebac2ac4d28bd88134f22ff38ac8da2ce680f2947a0dbe49928c5b123c0d7"
+kappa = "c7ef0249f97b674e1e4ac7754c9c381ff47aaff19e875fc78d65d32d0b4b68f6"
 record = "Catalog::recordsPart162#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4fc59e985a4966d6c69bf22a060909a492eac71ab2e8fbf38820fb1fc27e098d"
+kappa = "368e1dfe96bf0fbfd6add612f0ae15b34b64391f6d844639ced8a4828c495623"
 record = "Catalog::recordsPart162#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a1d1c60f6c231ea83fd304aebe0fa5ff236b1899e4bf9cfb9b8e88a1fe69e74a"
+kappa = "723ca91e2142eb24e4dd9cf5ea93b1de84caf42fc4e8407e0136024feb71ad0a"
 record = "Catalog::recordsPart162#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "696e15724c7cf22013baad9913af48b60c226cc7e1b1fdeeb6517bcda02b317c"
+kappa = "07eefb077de5a3b6a1afb15c8df77953c1d9ad9ff6238839eae57cb2ef9a9260"
 record = "Catalog::recordsPart162#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "c17f5c79d90e6bbd318e00d34b01ae7cc22967618f745c74bb10db771d61843d"
+kappa = "b28f3aa55fac397ec9987d576dae520e37ccf82b01e87a63257904566a8dadca"
 record = "Catalog::recordsPart162#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6ca025209720ac0f3480e9786c2105603aa50f0b6ef77a1617554ac79c206e6f"
+kappa = "bd4affe14bf9c1be6f08bc3aff1b0908cd6d86959319f36d3e67f8611b7fd5e3"
 record = "Catalog::recordsPart162#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "58aa6a4122052a689c507ceb7d6cfa51a6fdfcb1a078b4fedce725d4daf86e25"
+kappa = "35d037710f88a0aed2fae5a3a71aaa8438f3448e5fec3baf281167b33bd4beff"
 record = "Catalog::recordsPart162#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "238605deb5303ccdec2f33fa31db8d5d154301b7823cb67272d00ae9ae094889"
+kappa = "5200cbcbf95524f23f3f1ef481501744004bb2d4b943c8e02e35e99e85a896c8"
 record = "Catalog::recordsPart162#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d6e77ecbd706fffd78ed1ca7cd3c82d6b9fdc0deb5c3261ef81b6718b79b9158"
+kappa = "bea93dc39699f024675afbf47f1fad5d35863333a887430f7b93992b1438ff33"
 record = "Catalog::recordsPart162#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d7de1e30676229ab1da6146410a881b10e9059fb193a1b153bcf2b7581a0b86b"
+kappa = "c6126c52d408931628037631161f91ce91c5408eb614dc99591ee32e4c1fabb4"
 record = "Catalog::recordsPart162#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0107bee299d3518bf115bccbc183d0c918f2a92841ef94a154ff9498574a27eb"
+kappa = "3b7eddd24a6b1f3b26aa37564bb854d08f1cbade849556205ab2a5fb31b79e6e"
 record = "Catalog::recordsPart162#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "cd9aab88e3304fe2898d06bf1817f92dddf22e81085b9ce12c6eeaf5275b0e4e"
+kappa = "b8256a5750ac16cc60b6be68ecd81729d4625a554228ad37ec2d532c90cc86f7"
 record = "Catalog::recordsPart162#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b65b12312d9a9a1d2ff38e71ddc344d6d81c580f6ee4d8532b97e81b7de07bb5"
+kappa = "16913ff31b6965ef34672cde30576f76af5f5435ff6a3ce9e3efac745605f0a2"
 record = "Catalog::recordsPart162#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c26e0fe74ecfba4c4313e7e39137deb101436a981a406049716ff9716525fa5f"
+kappa = "9549a1495e745cd153d531cac0a851312b1f5abb22702037b31c7b79c8a15e54"
 record = "Catalog::recordsPart162#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "1011cb07f1187cf9dcda1b42749ba51a8fcc3ae37bcf50cf4248648723d0393f"
+kappa = "54c790bf96c2598cc76f5156ebb529719c975e0c4ccfb12470d4c303c16cc5a4"
 record = "Catalog::recordsPart162#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7d6a3d2111efae2e9384efb427fcf12803d42dd4878149b21649ce4044576ac9"
+kappa = "5bc31d4b57ca46e0deb8973538edb42de2e9884fa62eacf9da2707951807579b"
 record = "Catalog::recordsPart162#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "92dbea70a9f81b41bf607f8c21bb2b0fa407e844176657ab16ab938d1745c7d7"
+kappa = "40d94397ade82cb4866395808c079d521a9fa0beeb8c1b2f2c087bbf188a33d1"
 record = "Catalog::recordsPart162#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e453afdd4b838963ce566f5aa866fe4e3cbf34958f41d1db60e34a1ce076fc6d"
+kappa = "453dd60457000fdc8b981ae866e28787c23f073efc1e5d4eefae1314007a2488"
 record = "Catalog::recordsPart162#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8e898a4b9c753fd213b88a6781ab4d0d5460c668ff6717a389be501fbdcca59c"
+kappa = "1bbba8f096d394a9e7a59e56a0c7398f1a28da9949ea52eca908e904faa6a0f6"
 record = "Catalog::recordsPart162#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "9d9989f5dd046375ed7cd35420d77d02151904b9c56a8dff62df2a11f51e7054"
+kappa = "72e5b9e9da86999d8c83785b835b2ffa3dc71c216fc062b3ce66085e213d665d"
 record = "Catalog::recordsPart162#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "db18248d61c4dec0c8f10d4d7cc5f9a23d07d2b7be5d258b1f087f460adb2df0"
+kappa = "3eaebb38510b2903e74e520942aff5b38abdec761023264d6884b153ac4f41b3"
 record = "Catalog::recordsPart162#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "5c1ed02ab9128cea2ffe35b15e10d170b23b70a549707e448519d903002548d8"
+kappa = "705afe27876a083eff376ffd8be6a9ccc69bf6cc2c365c0708ac29feb2e36edc"
 record = "Catalog::recordsPart162#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "44f2a417d99b5d0eb78032493ed91ed9a857cd1fe783e15c5e8eb1b668974cdc"
+kappa = "e157af578d8366e920a3fb09b585d1f8c830274adc83fb5e5b5f20e8cd41ee04"
 record = "Catalog::recordsPart162#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d85880f7f3b5a53288af22b49f255004f5977a26c74f07dbdc8f563a9d94abfd"
+kappa = "e510442ebb4eb61c9e8e01be1a0052cd51af5eb2e22bfc3eb6f598e61101a661"
 record = "Catalog::recordsPart162#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "30308292028afe3070559759678cfc017fed09eeaaeecbda9b9fd385b5f06cee"
+kappa = "822b3b96665e74b3a8baafa9d5fbc872f2feaa125b63b8641d650235bc6ec88d"
 record = "Catalog::recordsPart162#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7d9f360698666b7b03b3dba8915d897b59416e32c3f7ba73063904973cc2b6c4"
+kappa = "4cce424ffb8637fe604d6ff1b62f3b4bf5a08002d8160e4c18f0ee9f3ca09eb0"
 record = "Catalog::recordsPart162#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "54e80c2cbb3ce9c0c529a9d139255f5c54172ac0c527fa5c4f5c3918a661b52d"
+kappa = "8a4afe36fa8a3fbbd814b8bae9492ab345bd5b4b434da15317cf28d69a7a98a3"
 record = "Catalog::recordsPart162#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "cfa3f2a600b0639a264a9dffee69d94e3c034cca602cb904ad336114a532e0fe"
+kappa = "7b4fad65074cf2924b6c4bb00e7301812c2fd39bace1137b9ec7ec757505745c"
 record = "Catalog::recordsPart162#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "21e40d2c2380a747e889bdde3a960756cd19908a78670a2d98b98c5d3f36114c"
+kappa = "dfe25051be32e3c42f2b33ae63b65a067b9695fd80545dcc86532da6b96b67ea"
 record = "Catalog::recordsPart162#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "f7f7b82637f2c61c9d5f3c707cf73db60b613afcd8a4ae1712cffd521f0dec36"
+kappa = "20cfacab56bb760faf89fe79248d2fca22589438be42cf4623adddbfcaf57342"
 record = "Catalog::recordsPart162#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d32bafddc7b175bbb645b544bf7f5a0f7f62d53a1a3d25849e14654ab3192463"
+kappa = "2ecb28c0eda411db70552ba0b598db69c8964ce0c90bada18957b16a4d8688df"
 record = "Catalog::recordsPart162#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ad4a75fbcfde822cd10f3268965d3f0b5fa90b94a4b023f1dc176449803fa681"
+kappa = "e0ac2b31ee3c1cab7ead465b76f627ffd4fe80e5caa75a0f4e8a967f78325f3c"
 record = "Catalog::recordsPart162#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d041b7c660d0e5d56b2672f18d878ecb429531f40de4b3b6b73352009174c778"
+kappa = "6dbc0936343c922dbb4414c53392be5baba20ceecc9ea0f649a3216c0f3ad9a9"
 record = "Catalog::recordsPart162#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e0429d20a7436a1c25454c145449917246044682c6195dec37e007c39ebc568b"
+kappa = "9c58398b33e0afa435715692ad2c633565879df26f11e1d128de25111cac74fd"
 record = "Catalog::recordsPart162#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "46afa1632ce2d72e40b6d66925a9ede67d12c83d42f13c25770782c117c67d98"
+kappa = "47815e8e464780a01ac77d0caf0b206d7be7d7e60eefe45dac939ee626ba1a1b"
 record = "Catalog::recordsPart162#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "38c41973a3439cf022c75ed01246b7343a329875a9a7eb05a21d7ed9b988d87a"
+kappa = "d1c77cbd4b0461964e8359d088518d5de461822f2ecbf1aed6a8acaf38bac83b"
 record = "Catalog::recordsPart162#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "c55386a6a857dd8e50355aa5a5808d36979f2053a932823ddaeeeb646cc4e98b"
+kappa = "8ccd4176136b901872a6eadbbfc605e21ffe40d76b9fd0739c6683bb026db52d"
 record = "Catalog::recordsPart162#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "a86c66bd8554d6d0bcbe205dd8e21aa9c545f986f5ec778951e2d622d64d2591"
+kappa = "84dbb2952938696905cdad16fe5788b902e42275f0ca7fec489e4cb5a3a17c85"
 record = "Catalog::recordsPart162#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "13e1573ddc4a734ca81b67907105c6eea24ca535252ea44d7312f8e28ed15df8"
+kappa = "cc0fa8d89d6314ccf3cf0a9590019d94e547ed76a4764cbf0d2278edc05adeb2"
 record = "Catalog::recordsPart162#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b938b61733dafbbd7744a3a9a57e735aaa1cabe83c59f0b87db7e275cd65eca9"
+kappa = "e147b40a520f51c255b6c704ce37cf1679478124b876bbeb2e17e66e779ff606"
 record = "Catalog::recordsPart162#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5a41b829088f44e3747361704b11f668cecea9049e0497eb025c17c25e24a990"
+kappa = "ccdcfdecc893346520c13c7f27293a0e2b84c82d4e1244d1ef78dd57b9403064"
 record = "Catalog::recordsPart162#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d25365e2c3c19d0e3c1a335d94eaf41b16a686e00a971a0eafbc15accc671104"
+kappa = "36841214946ae8824acab64946c79b3d0658c674b3ee0060e68fce7c1070d704"
 record = "Catalog::recordsPart163#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ca2ba5640da591eeda1b0c6b8452ec4ea6f88b2edfb87473e12d294708722a8e"
+kappa = "dc32c7ecc7036056338f3b1625e5b9754443f9e0d0fd2befe90c314944059d8f"
 record = "Catalog::recordsPart163#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3dabcc3a4811412b90970e26b8e0b553d2d899d45372a634d76306a2869ef710"
+kappa = "5152a31890522b5e868ea87ed699bb52666cdd721ee7236595bf4c703e9298ea"
 record = "Catalog::recordsPart163#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e8707c1e08678fddb64a0f58568aa1eda2caabf747aa148cd388bf139fa6d906"
+kappa = "07a5e7663d856afda47a15d8f8288b45f0df9b2860bfce1faeec08f98d3c6774"
 record = "Catalog::recordsPart163#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8f21d43233f2b51b99e376ce85fe3850a4bacb8445f04b16c68db677eacbdc5a"
+kappa = "6da70a4203acbc2941194cf91174a7c0a70625127d4f241b71a99a861a2f5081"
 record = "Catalog::recordsPart163#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "18811b3db04d8a87171c8cbf1e532f052458d0771b20f90afc598bead6e5e3be"
+kappa = "c82748a8d661902a4554946754d7e7576e30589e19482d6c776b1bc22a45286a"
 record = "Catalog::recordsPart163#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "1c1944ae3c847252dfddfd0cb6f937b8258a33c73bb1a5efcf1a615aec71fc13"
+kappa = "43264de7d64273edb94fe568799950e73ed072ccf207ce8cb2cb35ba92e592d7"
 record = "Catalog::recordsPart163#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ad3e6757cddcaeecdf9ebb6e27bec43e9468bcbdff618122610ef451c19b392a"
+kappa = "5c50d0856f02bf2aa7f3f6d6bddd7a258a4bb947c71d328fff006b26941296f6"
 record = "Catalog::recordsPart163#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "328ec2fad089075233a9e3dcc23d9f7dc3d24d60d126289a67339b952a86e75f"
+kappa = "ee638c37614597e7e6f3d917c21aa6becdc39a39866b90d6ea270f13b03e5977"
 record = "Catalog::recordsPart163#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "dc8a3cf98ebc574281edd066fb140b34a00a4bca96bc59cc0bec8535fe21df55"
+kappa = "16f0124c8c352b366c3e25813b05c6195276d6a31de89838c7fcbcfc08d85730"
 record = "Catalog::recordsPart163#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8e6c66ba131dbe63712443cad53823c6f970cea297bb18f94ef9937da8cc5d5f"
+kappa = "65989755e977eeb8df6a0fdb6bef919ad3f0b81903687d900544e5977de81f9b"
 record = "Catalog::recordsPart163#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a4529a27642abd209bd295be5d77cee654d9e9380c2a5706cfb27b045020c056"
+kappa = "e87eb838aa2563891d5e06f7754dd900abaeed2c785382a9cb18c4ddf9ee30fa"
 record = "Catalog::recordsPart163#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8c50fa8d9eb787e078b31d8d12a7f56ca8f7137ed354449b71662242415eefad"
+kappa = "279879324d63fdeaa2445230ff08cf1ed4b51d52351c807d3e55f34f24b64ccd"
 record = "Catalog::recordsPart163#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "75bcf4151aa9ba97b308ac35a5ae9d1250217a35d9bfbbd818f4126e58c86220"
+kappa = "aec61cc97876a0fcf6e0e7e739f6bf4b5f2e418949244a131ffda0df6aba4fde"
 record = "Catalog::recordsPart163#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "2efa2c7032e83079d3f5aa13848436f1fd674a08dcff6dae568a78eb245061c6"
+kappa = "e2b03f39db28b5ffc33dc0723b47336f30b88c07199499d53c22454ad04da393"
 record = "Catalog::recordsPart163#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0b168f5bf30407e7d56dc0a85a55e90af8a92ebf337fe13bdc2da37f2f13e2ad"
+kappa = "60a7c96faeede086caf3145cee6eadc101d9f0911c94d51a99bc0d2786f86149"
 record = "Catalog::recordsPart163#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e3ac77c90779049524ee586ee811e95349a78f760b8719d69828867873d04322"
+kappa = "19aa5cb15a856f8bd6e0f7ead6b35b34e279f136ce2688ed7578fb8efd466f26"
 record = "Catalog::recordsPart163#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "6e71fce899c32b97012ce005ba9693cb4f0e083a7de6f67adaedeba3e570783c"
+kappa = "7c3894980e5da1d1395e053e77b412c4aed16bb01c70cba53b30eae42bcf8ab2"
 record = "Catalog::recordsPart163#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "f7f3f075defe2968f988f8ce35be2664367f5cbbd9715c8d4a96e4b3efaaa0fa"
+kappa = "567e810f219988e4364e7e97f370ef416e856ff824c3bfeafc92a9c3b4e1f21a"
 record = "Catalog::recordsPart163#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "c3a921be588af5b5140a5fb1490fbc0c7ae997023479158da7a6bd25ac1aba2d"
+kappa = "b0e6d6ca909739e40711e4735fc65f817870c6ac61c4584a0d3cd7ef64db1242"
 record = "Catalog::recordsPart163#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "83cdf2b5efeb2645dcf9f485dcb2a851cf7dd96b95d3af36a1bcf606ca9ab03f"
+kappa = "f606fb2a97f28c244b1012c2da56d8053210b11951bfab13754c0e58f2ae5c6f"
 record = "Catalog::recordsPart163#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4bb0db8fdca8f866050f9f0ef98d8d3ac6da7f82ad7a4119bb6b554ca3dfd09b"
+kappa = "750b5202fdd3085c483c1a53f23f5df3b43546dea4a3616c3053cb84bd7e1683"
 record = "Catalog::recordsPart163#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ac50af4cd3d19a7c6c95cbeb5d5ab6f643a8a4c4499f0604c4a67923c9ec0207"
+kappa = "df75e510939f60727ec4e2622eb0d2795411aef7df572b153bc9d746f994a416"
 record = "Catalog::recordsPart163#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "11a90fdd6f41d9081b0a4ec2f71916b49ef4b3bed1ecf224ec1bf347912a0365"
+kappa = "53f9271cf346f89e16bdbbb04c80e21190e8a91e09b0e6b5389d82aa06e4acd5"
 record = "Catalog::recordsPart163#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8352bf0ee538922730bceadb86308eb5f41a21fe270c866145ef66898ffdf6ba"
+kappa = "0060cb7315e9e83a96de7b31d23240b82f80c56899fd9baaa42d5595770c73b8"
 record = "Catalog::recordsPart163#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "cc277a014170d2d532ecefea4c90507a38d7e5ccd0f74b6f6c19bea14a0cac87"
+kappa = "5966d84fa699be75f9f08c38651a7032152cf64537403fe61baff29190c445d3"
 record = "Catalog::recordsPart163#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6375dd09322a789ef5531d6e7724ce193b2d4dd97d54efaa03bedbe2d8d8d012"
+kappa = "a3fb3c896a0c999f3815c865e986440129e376814270a1af7d9e0bd3d4448175"
 record = "Catalog::recordsPart163#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8d5d7ec71db7477d4fa9ec28013805347ec1e3985c28bb53b86ab8f0cba1f571"
+kappa = "6ebdba5a9f0b14c3f72eced0c2ee09b0a1409eb087efed6db21da155495e90c9"
 record = "Catalog::recordsPart163#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "a0c163832d65adf819ffa906d1a454d0b565703a1cceaa78267b7f95ed35a4e7"
+kappa = "90ce8c4d507db32246f1cd0f047cc135d5f16379a07a35fd33a5438e4129da36"
 record = "Catalog::recordsPart163#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "83316bb5a3a0837030cc20120fc2b846654de10e0c614d0a011a6be5f8c9898a"
+kappa = "f5bb51506036d696d673fc986403b01b06f9905ec16bb3fb9fa3085fd81f2206"
 record = "Catalog::recordsPart163#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "468fe73b509de5f5f3e43880894d766ffc576e4333071c9f54d7ddd84c7eb127"
+kappa = "6729dd1ed07fc19eb423920d0101a6b6a1445c17632ae3c7e2677bc55a41b73f"
 record = "Catalog::recordsPart163#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7f5a27e5a8148bf15ed47421f78a3269f43fd1a31813dadf8013a738e4edc8b0"
+kappa = "85e57e8c71cb246b933c92e64bfa2f6bec1ceede0202b68c199b6ed2b0d0ffb3"
 record = "Catalog::recordsPart163#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4e5211ae607b94af332d00671b3808055411f004b103b1a2514c5520df36bf7f"
+kappa = "c598513c43af7338d13fbdbf98404b46d85da2ca5a9c2d660c19976453d311ed"
 record = "Catalog::recordsPart163#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b44aa760810e625b082f8ac749ac1c0c6291d0ceacbcc99a393987c99af90bab"
+kappa = "535df206c1126ec9eb5c8fc309aece5bbd565f7457804eaf8cb7c409c382ac29"
 record = "Catalog::recordsPart163#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "779976c47f284ce9ac3a411ff1a17502bf6561ccca67d86ad8ead8d0db918e11"
+kappa = "3cca789df69148034da2da5aa73a34ee7e8b890ad3d24b16c348edfaa070e802"
 record = "Catalog::recordsPart163#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2bd55b1ce6fa672123f85cbcf715266ca43840182f93b635ec0e4e149abd7717"
+kappa = "645c785155c44a163c4b882203db0a3f494b756c8336908240c4a945eae1930c"
 record = "Catalog::recordsPart163#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "9c5ab172806b1821c3abb223372865a4ead7675228754f1c831966d93169610a"
+kappa = "7492d377dfc3c0e7e6c8007148a1759766fc1e48d805a2553974ab71ab585803"
 record = "Catalog::recordsPart163#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a1e59d1727f486c5b65dcd618cf3739c75ae3d80e9e4e3e4dca597ddccc616eb"
+kappa = "af8bc764058568626c26fd485dee9ee406dfd227431b43946e47bc3dcdef8f5b"
 record = "Catalog::recordsPart163#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d7ecbfb68a727cc3a2eb6f7afdd6ebfe6a439ef5d2d14140e26cb569b37eb872"
+kappa = "7fe1a6f6f4043a4b0aaa075cae10832c303df91d1ce9304cb1adac56ad701095"
 record = "Catalog::recordsPart163#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e5c3bb1ad9550de5e87e4415998699a3f0d037ced8278748ab6b3f97cd177946"
+kappa = "0106d74034808a541b0fddf109e944960868f6f78d107184b71d3df690300a96"
 record = "Catalog::recordsPart163#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7411e2ca39840082504e5e3569fcf7628c491146a40640230d1e7ef89ed36cf0"
+kappa = "9462b0191836f06703ac5de96a1f0e0d4e119c1957d9e553a524296f1e1204c1"
 record = "Catalog::recordsPart163#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5bd696f1c76e5aa856d2b227b8a976530241da90be4e9c38381a5b335b086904"
+kappa = "28690467e654895ff60cb01824d769ebad73a1711890fe28253d51797ecfc8fd"
 record = "Catalog::recordsPart163#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e35242fa5cfcd2c7d19bad40b4b572accb1e637cb48afc644c2023afc643f6b6"
+kappa = "4da092a6e0992f9c6358f944277c90f5233cfbd12c53e663b7797a581011dc76"
 record = "Catalog::recordsPart163#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2ca8fa184c7cf51777d3dc457789a1737f8f89abb1b3cbc589aae71a25a9bd59"
+kappa = "31327b8e6e5932751b127bd126916b2b95d0292a899cc3812251d533d1c5a6dd"
 record = "Catalog::recordsPart163#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e8d204d6efa6c6833fc6d560c77836b81be4ea535dcfcf2ae05a72dfc8a93f72"
+kappa = "ece1415f622569f645a5996c2436a9b54226aced43cda48d1d1b7b5531680bca"
 record = "Catalog::recordsPart163#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "77bf52005042f80484e071e770793215f8d26d0b1e4e7f054190e008a7713451"
+kappa = "2529f3f8fb6b3b4c25852d29daef8eebf4bf6ec000498a7cef5faaeeb4d4b7ac"
 record = "Catalog::recordsPart163#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "9b4697223fd88f5037e474f5385121a65a6509792e4a80aa2e18fee3a443d870"
+kappa = "e92fd962087f47344420d47ece244bc4d391e461893ae9612683ebd30d4113e4"
 record = "Catalog::recordsPart163#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a629de7b91562346ad08cd9f8759f59756924bd9727a59ff0b888e82b77e8fb4"
+kappa = "65b21f8a1fe2750cb6da9cddbbea1b2ada79f9a5b932df40b061ff3e097afc76"
 record = "Catalog::recordsPart163#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4130543c5870864476545ce6dcbc65c36ab1c4657b71f30caa3ce7a13556c506"
+kappa = "abafb65d94ca629743c0c869a5210123c6013e2aa9079c5e98a203060dcc3753"
 record = "Catalog::recordsPart164#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "c0dc45c3bf97911d0369a33899e4c80d9292716c0a0184517571119780f201e4"
+kappa = "906b0f9d33b6cdf8f0e1e6f22beba9f069e1ad01d2205174ac08bbb83a2509af"
 record = "Catalog::recordsPart164#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "50cbb8286d07c3656bd36a44d81162088e755f152f7b076443dfe8df07b3dcb7"
+kappa = "bddfb730d4c69a9a50aa0c9256ce10d4955257759496ec9fef5fce756fa1dbc1"
 record = "Catalog::recordsPart164#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d5f00793501d8ca3e5c633c3c45cfbd33ca957c30f4921e0e78576a1906ae32f"
+kappa = "dbc106c377deac93cba1e3b07cf32dc73cefff630ba94157049c0c007599f374"
 record = "Catalog::recordsPart164#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -72483,145 +72443,145 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c46ddade6385b2ba89c35c31b2f9921a89547a87a5c359e6749fbf32ecf664f1"
+kappa = "d6f65624edad7d5dde96e2ca6ace45755b2f241d752140f92e037e3e97b07618"
 record = "Catalog::recordsPart164#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "cbac7758c12e41dfeeed14903db62efb5a7f05917a6ddccf1709c66ae043e301"
+kappa = "049de4ed8744fa88b6fdab90f54eef90ddf0d961187d1b26991e402263eddd50"
 record = "Catalog::recordsPart164#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "bea47ab732b8c7de54daad09c24d57dc1a201fca374574d6f51e7514191a82de"
+kappa = "0181cc88a88f0d419cd9198bbb1bcf00ca5b1fb5ef5a7845da6cc7b985ebe7aa"
 record = "Catalog::recordsPart164#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0a906ead7a6e713c18c5a1b808c28acac689d7037755eddad37f9bd9ca4488dd"
+kappa = "e3c125e6b862785e5103b23edb9bf6a680dd36707fab3a82d6c2ab1b99d754a3"
 record = "Catalog::recordsPart164#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "9841b15f8e6289db3452f672fee69caf32000418b70ca95bfcf3f4b61a53cf37"
+kappa = "edd1e6488aed956606c7ff2208f0ecd2d0ee0242c7ece2645200589b606b58c0"
 record = "Catalog::recordsPart164#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e57a0224f2c6a3acb01ae5112252b620b97229aa94f158f98f6911ef5ad13eda"
+kappa = "1f583b0e047eca9e3994b1587a5379e157137fd57df2fcc474ce2f14be4f6a13"
 record = "Catalog::recordsPart164#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "16cb7cc39947a6c2e884279d003f0acf1ea659f82f35635b8329aadb5c058d15"
+kappa = "59e46b9d6710f21f32a20109e4ef4a57853e6feccd6e323d9bf67252c63f5f9e"
 record = "Catalog::recordsPart164#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5bbb23e91e152ec4d4381b9357835337de2fbca2f32951a5733e6d368ec6e801"
+kappa = "0cc7a3b8a1133265a03fc343435a308cf5c6310af692ecfcb18e5b29571e4534"
 record = "Catalog::recordsPart164#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "abf5145f34b8c65fee66d39e83fd60f70e756eb0e522eaa283ae36b0d84f88f2"
+kappa = "abee7d22b6968c40ed4aa1ec13787a45ea562d1f8546fbccf717445500533003"
 record = "Catalog::recordsPart164#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "37306a1a03914c50ec38367ed35a05a83c95fa47dcd9acc1f8d8995cda64d55e"
+kappa = "435f37b6717366e8b8b9e6d641504c632989a7ddfd618f18274805689fdff193"
 record = "Catalog::recordsPart164#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6a3969e31a9bb7c7312e9ce481b4c3846f3cc938c308539c72c2c7ee7854cd03"
+kappa = "7a62ec5d2d0fdac950e5a8d8fdaffe9fc7545595ae132bb72c313be92b57282e"
 record = "Catalog::recordsPart164#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "23706e0867286853ad5c1a1cc7dd890580f93e3521d530971672379a7242b089"
+kappa = "ea95605fc46108ae6888807d716c5d4b36fbfcd9bf8f8ffb973324efa8aa64f0"
 record = "Catalog::recordsPart164#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ec13e6d53439c35770c773e468bf365576f3a93b56224990da8622dfe3d931e2"
+kappa = "f3e1788c173064438fd77e81e93ac82ca5b85627e144eae02ebfed49a33e4115"
 record = "Catalog::recordsPart164#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "79c4f5f359093dbffb33319c8886d10d1649b2b758a8c472c36212a4ed0b7512"
+kappa = "6250cda0c17edc8fb266d4f06dd617453529b2f1471dc70ecf9d9598cff81d95"
 record = "Catalog::recordsPart164#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "42c77e62ae05a29210ef4e755c0ef05e935edb306f267aa9fe2b7f436153a132"
+kappa = "48c9d9e449f4e5868b0e620c486bf247911527123eec142ad60ad9e117cf6953"
 record = "Catalog::recordsPart164#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0612f4106a2ba362274d9c7143a2239ff66c685b712223234610483b83034443"
+kappa = "f924c45a8923b2da035928d60a64206763cec0539c09e739f0efebac43a2f9ff"
 record = "Catalog::recordsPart164#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "a5273d332ba303c0d0947cbdf5ff4b39b4c22099e10d8e6a5fd16aa0eb53faa0"
+kappa = "52f3666e31d43aa90ec117bcdf39e869af44316f2123470c9cc32bdcf6b5b46c"
 record = "Catalog::recordsPart164#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "51eb9d21eb8a78add40aeb9daf7ac5516fe9b32a44cc4e4d4ad60a19d05c35b6"
+kappa = "c1e3a896fe9eb305398809c8d519cb2a208dfac01849e47855a84d12d3eacd6c"
 record = "Catalog::recordsPart164#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3030747f95965594459fe9572535e1deb957ce0c950abe81ec8a0310d3e41aa1"
+kappa = "abd92ff24d3dd223721dd457603883a489175c1218fd5cd215d1d30c31d87bc8"
 record = "Catalog::recordsPart164#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d2628d3e134201c4f41cdcbca90cace1d8ce1b02cf4a0b1364d2d84eedbd84c5"
+kappa = "3df2ccaa2dc4ea115402ca649a7a7987bc4fd2179f07e44e4dae565b99bee93b"
 record = "Catalog::recordsPart164#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7f5e2f8222adf95e795d13e2e7e4e635190e2fab16ce2eb712086d7adae7267e"
+kappa = "26efa02397903b98e253078ad3ff8981118ac86532c51bb962070cd60c35c597"
 record = "Catalog::recordsPart164#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "f27a1b286f7b57dbb211c7357c5ec88d43afba40ed0cb3157b8db8659822b24a"
+kappa = "6ab1713b495b6c323db333fef806488ee6a7c77a25afb6f841851d8a3b746e4d"
 record = "Catalog::recordsPart164#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "5789c98039e993d98b7771fac44e467384478d936bf99d5fb44c777d7302b61c"
+kappa = "7227722769b3c8c508057c44d873d46812328ae2d3683e54088849b288e10e8a"
 record = "Catalog::recordsPart164#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4c36ca04a9356b478687dc9cf877f3695246ce9d1ef9949f37ce99b4ece8ef52"
+kappa = "07fac6d6e25d32073d1e8ab7e0887b87c23bb8b4cde1ea9847c97751c77d0960"
 record = "Catalog::recordsPart164#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -72651,1441 +72611,1441 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "98adadf7dbfac3f68eb5a85a919eeac7d08b72a00821b14e0185d35ad48b2841"
+kappa = "e756adbe42366fb7313b76744ecb2b6ac17f9780c22a7cfeb0b40baaeb0cb480"
 record = "Catalog::recordsPart165#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "104be972bb4acd8c79446ecb39e375c633c3ae68494110b42308e3c5d3860d92"
+kappa = "906885fbe04112e6184488f0045c83ae86480c8df545ab00b3485b1c6c04e625"
 record = "Catalog::recordsPart165#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7f8e09062e52dd74898ed7940e1acd49800e6461047a55c0121a16d3cd458cb9"
+kappa = "bb42eaecfd0147792cd83bf43268586e513eb08f8b535d451977dec8c84f2ca8"
 record = "Catalog::recordsPart165#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "18d795b6819719b8718f1465724d658dfad5b50391d2324e83f010526585fbbf"
+kappa = "e46467b3b4d9be238ce6ec7d6ad927d8e147e77fa1a928f78e757156b08d09fa"
 record = "Catalog::recordsPart165#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e89df5ead71efd924f5fab7eaaf862188a456dc8cace1a5789d01319dcd7ff2a"
+kappa = "ba59e7c1de27e13064657b53c96ac98463efe55c6bd651a0468534df506e7bde"
 record = "Catalog::recordsPart165#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "cf09b60371734ddee59f1351967c425c3f67bf0d5eb5c7d870e516cde4b6c4ee"
+kappa = "ece0b89c71449523591a49b6ccbd15aea4e69cff9474f8c967aaad8688c7051c"
 record = "Catalog::recordsPart165#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "a4b261d1e7ecd4521d3baccc55620872b95043f3d9f8b5ee5558789d98c5d0d9"
+kappa = "550e392702c96deb6768602b34c01a4ed3e374187c2b63de79eb6de584381546"
 record = "Catalog::recordsPart165#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "519e866d8ce7e74a4db00428b60b5648ede224e18087bf98dd784c1851b32b02"
+kappa = "27161d3fe8afa2f071c23142819e86550ebd403e187d04c7f4b2d10d1bd9ba8d"
 record = "Catalog::recordsPart165#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ab4c9a1d4c02db53589f0f48b5ff42ae4ad89f2346151accb2c6c1d1853a0783"
+kappa = "860f3e482f56d2671844d5b92b762d7c87c66f7066c40e0e5232571149942aa0"
 record = "Catalog::recordsPart165#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8719b2757aeecc12e703a392bf0a1a429afc1e1321a3e501dc4a7bb8b764d86f"
+kappa = "a369fc21f9e570341699c21e6a66a1de85beefc4c624844aaeabbd3428d5afc3"
 record = "Catalog::recordsPart165#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b3882290e3fed570b5571770c13c93ccb79bd6aec77e888428568e98f7a26a21"
+kappa = "c82384e717d99b465f5954cb4bd0aba8739856b12a78cc0cb6a3e45761aea090"
 record = "Catalog::recordsPart165#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2c1d2d6e516fade8c26ff3013fee541b0f475e6f0611d1ca6745b13941e21bab"
+kappa = "5232e362c7d02a0ed0173e3e880a7a0d9e3be0bdd25321ef2d623cbf5bc0ec93"
 record = "Catalog::recordsPart165#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8dd2d2775ba4b31996a6acf8920e123c5d230a2c34fd712d398e2ce88aae8f47"
+kappa = "f3d3712f562d421be873b0d7158be8faef3078c419ee45f6ac3f23a4c9ed96bd"
 record = "Catalog::recordsPart165#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "bedf9f3a83f159f07b16324315b80f9d4848958ed9a94193c88cc671de3ee75a"
+kappa = "006d55d23bf9288b295a44f8dd6d173d54ff2f8881618edffa5501137e84e802"
 record = "Catalog::recordsPart165#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ac4f5275d8fb14137caa0779d5cb97190a1c8362884f75a13dd60d20bb696ab6"
+kappa = "6b9f3025f8bbec21cf4b70bf496f0fcf642c51c2dcc9a6943364dd5e31f20360"
 record = "Catalog::recordsPart165#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "62eb8f2b2c3be789aaad926fdf34769f7fc1ad8dd20aefb3b479587fdfa30c88"
+kappa = "c97b7329cdca3b60799d24ecd4dd3de4e4d40e4cbf10eb641dec347ae21503a7"
 record = "Catalog::recordsPart165#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "84768a5e7cceb655841864fd3ee83876475d8064fb1e5dd42649934e829598a8"
+kappa = "cc69d2c2816af3113f3d5ff56e02d79286fd3e1e04917152b9e2e4eb426e267d"
 record = "Catalog::recordsPart165#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a5be4ef972380b64617db5f45593a98fd2f9026ccee8d46bea68fdb67ebbe827"
+kappa = "a94663c5fe1c91ebc5b81cfcfb705a9523efcfcd0b0e1f6e94fa22a4fff4912d"
 record = "Catalog::recordsPart165#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "92ab90204fc4e928fad46238b08e0aa6fb819d26b436cb4ff837f69ad3b8a3df"
+kappa = "cfc8749248344970176d80aaaf90064a5e2e53a45874ff3842fbc10cdc151e93"
 record = "Catalog::recordsPart165#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9d1f103c2565451f7ce0a34df62f7830a9a20925f8094f54f93a534734429ed6"
+kappa = "c281de02eeffd2662b24d9fae36fe36cdc1ff063537a444648ae422ab01d18eb"
 record = "Catalog::recordsPart165#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "26398c5abe1b395f5008481d0b630ab9bf2a3c309346e8e73b2304bb46d48b82"
+kappa = "74aa3a98d3e97d269b9a1fd86bf6c4df9b4ab0613aecf64545e6ecdb7fa3493c"
 record = "Catalog::recordsPart165#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "731bb0416cbf0c0281e8a4928e2ec47030f4641eb3c396cf6d64068e2b530b6e"
+kappa = "3920dbebb68e27e4d197a7c9db6eb388af57c50c822949caac014324937e87aa"
 record = "Catalog::recordsPart165#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "0086f5b4ce2321abc61a99dbe830af303a03d8f4043679db3cb8f3b869085ece"
+kappa = "4e2be7cd54fd9a55f942e250ca849c99c86e3532e92b60682483b1595e2be5be"
 record = "Catalog::recordsPart165#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7c267fbdc1e8587415623d473270c81a8f6c392005a016b02c44f77019cb54d7"
+kappa = "76855a2dd5edafe643481a24537791c2a3a0c50fbf6f35dc16f47df8dd618436"
 record = "Catalog::recordsPart165#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "60d96453cbc9136d713f256d4d9cc3e68e6a4f6b3c5073df2e0885c4d5408434"
+kappa = "4b854b34cfd1f97a7372b3663357afb4ca5212b46379397e6ffe2ba7359fd090"
 record = "Catalog::recordsPart165#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5da5905b907ec014883166e4d62445e287dd29dd1c2c9063bbdaccec5d8db2fe"
+kappa = "5de5ca4ab980fe7f7f2a06762fac641ea1b42eca6818822d28fefdc570256333"
 record = "Catalog::recordsPart165#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "51075973978e152bd13040f7d03429b226d0ebc5ac6afa06d858ffea99ee50bb"
+kappa = "1b5c4ceab23a7d84e95ffb28bc1c020c6c36a01ee6ed85fcdb2396975d85fd58"
 record = "Catalog::recordsPart165#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9c05e90d43c802d00310acc08a2ea0ad7435e19a40e688481975707a842d77ff"
+kappa = "3f1b834b8f10e487d9e921812c911f387206f29d3a383566d48478183cea232a"
 record = "Catalog::recordsPart165#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "df51c64851e16531d737347093104a58a0940aa4a0edd6daa0940c970c2c6a68"
+kappa = "384f7f95e73be171cf72321e77af255bf07485445ff5fc919e9faa168c671e7f"
 record = "Catalog::recordsPart165#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4efa554b31dc2049b7b0feff85ac2782af3269b3cb557873142de074305499dc"
+kappa = "1e06fdef75839b50fdfd5bdbeb96112ef371b419f5fdb40ea15e55fd38b0725d"
 record = "Catalog::recordsPart165#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "fb7aabe498eafb07156ed870d69d546ecd22cf02c9000831733c4336b3a4b7e6"
+kappa = "7e3b506f004612bf2421d5d607168678f1b34881adf7ae09fb842df2fd345d88"
 record = "Catalog::recordsPart165#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "478cd2b84cc951be20b5331207382212186aee89de93764701c2822d41818bee"
+kappa = "3693ec840666afd5980741d1fa9b25c31f1e728da27c2434bd3c35394061c31e"
 record = "Catalog::recordsPart165#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8fd17a7a7271d0dae55b2c97c2f04b852f86345ada5b6bc0d5ba19e0742c1724"
+kappa = "694a6a14f0c0665e6ddfa579bc5c41597481b85cf603489337799921e9a82f4a"
 record = "Catalog::recordsPart165#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b3230d1ad57847b7c6b82c98ffdf71fa9e22f204018b6b7b301ed8f9b26beb79"
+kappa = "6ef7c5b8bb47faf2e813c1ce5593da4a0d5807da57fdb0f686cbb58bb3813e46"
 record = "Catalog::recordsPart165#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "0f41bf93c6f21566b38cdf00ba6f708e838160ee3dd8acb193f05f126d804139"
+kappa = "35dc19096bf0b22bab40f4e86ef7cd1873c60ac1331f58538b1dbecd6112bce9"
 record = "Catalog::recordsPart165#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9f2a05954830a99d6c26555c0fad430a671f1ae2ba7c827263c31d9b989b129f"
+kappa = "d1145445b262598bef4938affa2da4bc0c556a149b9727869415de24dce2e4c5"
 record = "Catalog::recordsPart165#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "23c9bdf7e148f12c7f646440d93f5a805004e83209630841b24f15a3bfa9b5ca"
+kappa = "51e71de11cc61a2e81f094790daa190c9fa5255b0bc5d9956d7f454a17c1c15d"
 record = "Catalog::recordsPart165#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9d842d7ef2fb21dfb69f307cbdafb8278ba057fccc78145ed51a288857d2d8ac"
+kappa = "3db74c3258b10e319067d1244bbba684b6ef050fb67f077374bc35570be6822f"
 record = "Catalog::recordsPart165#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d79237c06845b3255a0ffea7ff1015b5a36ea172c67d74db8ceeac2fce8f86cf"
+kappa = "89f3b34262a31b8b48bfa589fe9665fd0efb91a8dd23ccf3c7cad92a18812b27"
 record = "Catalog::recordsPart165#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a437f03b8c79d8de3612dd18f7e47ea9617d9e2dbcae00664bf81491799dafac"
+kappa = "d531282399654557ab7af0b5999021428c5fa98d7b99739ffeef3bbbc38ab59d"
 record = "Catalog::recordsPart165#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "11950fa836f68b10826bba3fe97e949f64f1772691a5efbd399699ba9493aefd"
+kappa = "b915077836cc77b9b3af71e780cf8a570360bb361949d48a0f5dfe731dc6db5d"
 record = "Catalog::recordsPart165#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "07fc09ad34781a31826cd4b3d2a58e07a4db9d71da8efc28e7be028b80249f68"
+kappa = "6f669a72c5ffa5f10c8b2f584065e005bcf412f1817df47766a2bdefe0baf935"
 record = "Catalog::recordsPart165#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "83320273c73e33dfa5af02ed063be38eeb22eb4a2a49e1e74b68e746f09b3865"
+kappa = "342d1330e926c9d6f68d91e7f2836e7d0d50241e9e3ec8aa44b2807540096b53"
 record = "Catalog::recordsPart165#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "222d080be663b000156393e0cb447a351ed0e25d8af87f19ddedd601a9d7533a"
+kappa = "92317d5fa3b209ac42ea694a1c214a5f88488ce5b3278c38a7d0fec603143814"
 record = "Catalog::recordsPart165#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6a640dded092136537941d72c862c4e248f6716fc34ffdda928157b337f82660"
+kappa = "7495ee30a5a87292dbf88573ad1f53c7c6cd0d672b7df399413c346f3b20f8a6"
 record = "Catalog::recordsPart165#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7a296802ab76f8c6ce370ebcb54089ccfdac902585fce68a46c102d17f0488b6"
+kappa = "601bba54e1f451901534e9736b9ce3189fd73423a741f749b27e4c322bfbe947"
 record = "Catalog::recordsPart165#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8ac1a1be18b565a5d709d580499e402c4d52a8fc6f45604d85b56242951399c9"
+kappa = "048d778f03a1492d61f9f6d46de12cdf95f82309a9c2f72cf3059a0f516831f1"
 record = "Catalog::recordsPart165#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "58c9e25cbf760a8aec9bbbbf645bfaabd49e2de83684983f191d84e79d5d23dc"
+kappa = "71994e17771a0d9abd83927e5f8db20e357d843ac6d5d1d3900b814c0c45f7ff"
 record = "Catalog::recordsPart165#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "85d1f2d03be106b887bf94815c5c372f23f0a97571ab33a63147e3d8ce2ee934"
+kappa = "db50ba7d4f38d95222c6daba3b4c675009616883b68181472c5225d98a0abad7"
 record = "Catalog::recordsPart166#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "cdb97d215e1b4ae5333a71cf8f04a3c356ac25542c048a3e757912a8f8dfe3dc"
+kappa = "cde7aa5db819bad50e147c0e9d6d9b0cb3070a193d87f68f1a90657889bb3d0e"
 record = "Catalog::recordsPart166#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "49bfc7a4a570efbbb6093132178197178b6af27b06febfe993adf1cd697f2082"
+kappa = "fe2f03bfdc9821367fbc06625cc831319476970e88669465b23e4437def54100"
 record = "Catalog::recordsPart166#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "08ef27d78af4ffc3e3b160ed2a01717cb6e25180fe0a52b6e1f6018fbda96374"
+kappa = "e26793adb035ac113d5de57db41d42409f3a70bdef64c7530e1a2c26b0a7f342"
 record = "Catalog::recordsPart166#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6f31a587da12b9c051165371c627ed80e3c4e4e26ae5ce7d47d9b213243ac9b1"
+kappa = "951686511df89a2c1565a02321bde1e804a38d08fdc80c3ab447814c6e6a5454"
 record = "Catalog::recordsPart166#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "85a6dae107056790acc14ab0ca71d99a7eddb0ae7c80fc77c912fb517f9d01c7"
+kappa = "e586fe9c2cc5750cb6591fb47f84dfd4e1beaaede561cd4da7f64ac3d48580ff"
 record = "Catalog::recordsPart166#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d69018e7f01563606b2e67b45f8606d3bcc01ff403af8bfa920e6303ea1b7300"
+kappa = "db34ee0f7d1d900adf1c001d3c2ff88172e06447d08fcc763e384a87b7bb34db"
 record = "Catalog::recordsPart166#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "31b53fc75cda66d066114901f6909ac229c5d8da000b64b5d991c03e834f8e2c"
+kappa = "b7181ac47d3503159afc1da7c12ea967b50129ea621240a31cf2d722587af9a7"
 record = "Catalog::recordsPart166#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ef9ec4a50aaa5fc393b05ebc44988b75dd43c3095378c332b8d95339ba2ef0c3"
+kappa = "0b23237b648c1b0e88b0732c09378c609a2ce6be3dc15492dbfba8481332598b"
 record = "Catalog::recordsPart166#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2a2882e511f523dd35d1564fe0b393d2f9668f55dfc0139972cbc2b540606432"
+kappa = "68a2d8acc5e47675bbb019e6c1ea5e1199a029f78f18b846d0a5a7c15b296468"
 record = "Catalog::recordsPart166#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "dd524a3d6eebe71aaa73ee1ffdd496fd9c06bf23b3c0b250bf8ee5f459424d9b"
+kappa = "4893d2801c8f7ad65b30e039210c29ce3d2b919350a11e8aa03e77e9a2bbd998"
 record = "Catalog::recordsPart166#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "60a6a91d193d9fd5522ce5f6c6b66f6ee8126b2ffc85fa59065f19c7e6e9ba1d"
+kappa = "f2bb4e2ae3a578d746f77c2a077d3f8dfc47609778cb0785521edf75ff90f420"
 record = "Catalog::recordsPart166#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "bd4c38911efd30e0d4bc5ef5dd0051789bca82db7ae8fdc4f4e3ec1c51bd45fe"
+kappa = "58455e933f71f6a9135bf1f2c98897455eaa63cb5cdf13280ff475ec0f72d9ce"
 record = "Catalog::recordsPart166#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "dc99bdcd5134ddaa13d059a9d41605008f05ccf75d943323789ce3d7fcf982c3"
+kappa = "51436c58303e403b2b51f5678e5e2483f0acb03ee261e28c728de32ec0924a65"
 record = "Catalog::recordsPart166#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6f00868155a22e3683161c3a992baa50cbf0d59a1d0c484bea83e47a49897ad8"
+kappa = "e7d13619405ea214f6d047309a34b45f3da98d9e275ba63bdd216a2ed7ad2867"
 record = "Catalog::recordsPart166#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9e0cad68ab07205036c56582e98617f9ce756bea033d40e4fe84bf92846920c0"
+kappa = "c9473054670f6c5b43a7c11e2b7ebf4292c6b3876b71e12fd6d8a41f6873d831"
 record = "Catalog::recordsPart166#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "31f15a8e1c19bfdd553500cab90eaabfd4a0287c333b739f5c397453c856f3b1"
+kappa = "8df59288e3ec801755e193e028e27aa18c1325334ecc40a396afe4ea6b0508ac"
 record = "Catalog::recordsPart166#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2065903d36a942c73af8aa0fd35969063b5a617302ab6c56b673d792657c2f95"
+kappa = "a207824fe69ed0dd2b9167dc63315e56aa0d19a4a9a82b7f720e30eb6812530a"
 record = "Catalog::recordsPart166#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d6f5a1182a4ab6750f9a40ee4f2adce1e2ab1b2c08d2011e57e6aa1385b3a1c2"
+kappa = "9afc6ffabed27be0390130e6d755d6ddfa9520061dd4acb915ef9ac60200a5d2"
 record = "Catalog::recordsPart166#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "cf16548128998265765aae0da53d7ed156de7d981045178c99a485aacc3172d5"
+kappa = "3a44998a96e23082a65a6133adc109472f2d1a8fe2a6258163a06fded6a0e3b9"
 record = "Catalog::recordsPart166#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4b7577b30bf0d6ab733944574a03f8f12442bb63968764c3f0dc3f92e30d2d72"
+kappa = "537d20b2eb268d990c2900a1ce01cc3b551035024ad4c59f38587cedfdd3261e"
 record = "Catalog::recordsPart166#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "81b2dba1be080331a288be1b3b98ef70491a9af37ba4306c3d71f7e2735e37ef"
+kappa = "f0d2d519888db87fbe2c65df2810a45c94154f60aeef27106df4934d71ae2927"
 record = "Catalog::recordsPart166#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "0f87955f706d55afc07881fa6cf67b16876b4a10c3aa9d0db964fd8576b761d0"
+kappa = "bfbe5547acd167e6e3028f7a48e85ad27033fdd11cd0cef096b19b25a1500935"
 record = "Catalog::recordsPart166#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "51079b3934145d7778863bd62a06872961a9b2e08aed5524489060c0882fff35"
+kappa = "c96b4c978da56711030756b74974c7bbf02a936b8bc1386a9b1e75e8f476345f"
 record = "Catalog::recordsPart166#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8ca2c4de10ed0f21ce894614f27d1fa70b8e7665476c57fbe1c9e263356aa87e"
+kappa = "8df712a15760e6a326570a3140a1f4e4916f50745fffe716f68b0143455a8776"
 record = "Catalog::recordsPart166#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0fe5e327a8391b686989e12bd403a4acd5265b0a2323590ea3e05f475254a9bf"
+kappa = "a2c263351f03e02875b664bb5855796a31bb20d020632c80e044115e6caf643f"
 record = "Catalog::recordsPart166#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b5a4bb0c2f1c154bddfed2af6947655ce83537d650a4df5f0f4642539476f481"
+kappa = "06d266e97d6d8ba7829eafa21d15947c31cdd2ea891b379967d203f9b4358e0d"
 record = "Catalog::recordsPart166#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0838836f5392b9787f98ad7a58dd264940fb6b3a17e0d46d4d69b680b85332dd"
+kappa = "395115f0698a487439b06e657125a749025669429b9354fa6d22cb435535bc4f"
 record = "Catalog::recordsPart166#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "5e384dd8255216fff45db40b315ed704ddd38c852ce2a5f9dc91d68b6f1d8e68"
+kappa = "46c72709d3bb3777d3dd60b6a511b17b1c356f4730be4a2dc8792162d2241a74"
 record = "Catalog::recordsPart166#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "3d3a697afe7dafdc51b111b2bbb1f4dc41b969a401e49cf2ee67d7181242686b"
+kappa = "a45121cd6dd7689e17d47c6657be971792e5228a603b680662eba084f958c6ce"
 record = "Catalog::recordsPart166#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "784ede79a965bd9971d9e517ecdb18d439e96a1cb0fbb0756c68c86b66e7f365"
+kappa = "2ef6709d786f77beb94d4b236652537611594cd46392e52fab3d1432b7e51926"
 record = "Catalog::recordsPart166#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4ca150a5b99db6155a4e0e6ef174bf90032f1e4194ceac72c52be3b28a864e7e"
+kappa = "dab1111f910b5d7fc12c6e7bc5ea467aa25007eff96e54e54646ed57c53b0c23"
 record = "Catalog::recordsPart166#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "9a4687e75820ef846feb7646122d7dd6eac5bd5c60dcab7c873e9d6f05b8567f"
+kappa = "e26ab328e6c66581ffa7973c0269ce7e4f660e5909eda10de961f9e3786b82b3"
 record = "Catalog::recordsPart166#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5c864e9dcd5bacb601381887d25241dce43564038b8fd3ace9c9c524a483d05c"
+kappa = "75790ae616592b85df572374ee301c57ddd20b3c5616d1e0d0adead91ef8a187"
 record = "Catalog::recordsPart166#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "f7d8e14ed7d0d2c92ab5e27d93ba9b207adbd446f514d2152a821809511e5f95"
+kappa = "cf75dafcdd1cdb24979b8d0dc21348ef776d48baf7cd57b4bf8be74514a233d2"
 record = "Catalog::recordsPart166#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "6326567d8d82ceb842d207fe7b881741a3104e7622e133c5b0173561608c69fb"
+kappa = "53fd60d57699d983051de54f55a401e2c63a57185afb2d3baf87de87a68c3145"
 record = "Catalog::recordsPart166#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4226ae479e304815447e5268b7c39444c75091ab871f40d617c5d4757e6f9a80"
+kappa = "8ff5819ee22dcf1c48802c5b053e6b340291e89a4aeb41f72bc515d76f1722d1"
 record = "Catalog::recordsPart166#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2f255ab68560c0d55ac4d1c5626987a66d7f3e7fe3837ea119569551a40501fd"
+kappa = "061c336dfe2c5b53c9a623bb76d9149972f6d2217728b4c043cb88df00de49b2"
 record = "Catalog::recordsPart166#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4686fd48a699e2e460c5f8a5b9c4b6b230dfeb98e54157e0bdc69370ce3923f0"
+kappa = "e2162639bbc82ddc999fdd554c311e04263d88bc72deb1f53aba0512de0bd9f5"
 record = "Catalog::recordsPart166#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "149b1856dba7c9c8e71a996d84ae34aec8be6a4a5488515e3a4b10a75ff8dab9"
+kappa = "89600acb8d3c54e54a3ea725a8b16fcd011b16f1ce2b5bd15dbd2a0afd1955da"
 record = "Catalog::recordsPart166#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "67a589f6606f6138ec725c62750e658dc1a569399b617295a63c7f83bea09343"
+kappa = "93e7f558688403eaec4bbe142f5fca41ee11388fa43b9c23b55d765a93ad1f0a"
 record = "Catalog::recordsPart166#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "009a123892076949d3fdaf60ab1e0bf698218cc7fa838e824ecf36f91a79e07a"
+kappa = "5cf8b5ced91700b9a97fabe2afd1c872126f2989fb96dd4607ad6bd40507cb3b"
 record = "Catalog::recordsPart166#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "bf961e2035ce2dc3b8d953e93c89930716125ed6defd08648c8f7590102c59fa"
+kappa = "aabaa632c502dce53808ce2f3958a319a1c5b94119e7eeeb1eda30add415b706"
 record = "Catalog::recordsPart166#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ca24407de58365c6abd8b75848eab27bd548dff71c93f54c1a3a20eed017f71a"
+kappa = "193ccd129cbdb5092c0ba5fa4f4876941f4d82593e97f9411d03a5f99a1cef32"
 record = "Catalog::recordsPart166#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "267219b0f616a8aee093047b8a0526b1ca0210257f77074f17e77f58ae7cf27a"
+kappa = "c8d935f0717fbc586f3ccfd0daaf1cb761093fdf3f20dbe860891730db65e325"
 record = "Catalog::recordsPart166#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "00ffbd956c2c535cf8a514b200ff626802815df1d34958a68c88fccbcb840aff"
+kappa = "b5dd959ce2db9aee0aa6b2735425577f4fb57212637ca4a6527b0651fe9bd86e"
 record = "Catalog::recordsPart166#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "fca6c8a9903534286e0d5f27514d04be349f11fcc353e29cc286e25d87e38352"
+kappa = "f7d1c66694f11cfa264cb19d43911aa51e23ac89c88cd4321b0566c4cd390d6b"
 record = "Catalog::recordsPart166#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "23983cc219b538531a84ce91ae01b0e0fefd839e9e0ce4559c945456a0ed4314"
+kappa = "121fdb8eb191f819623318ea430afde130a30c03428afd5e0434fdfac4cf3920"
 record = "Catalog::recordsPart166#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "0ec173595a7affb5bbe67e0c4f3b4c2cce37c547398499cc322c45061a79737e"
+kappa = "a1307ddf5ae63dcb5560f1b1688153fec9d0608bb5cced1df61b805b366262eb"
 record = "Catalog::recordsPart167#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "99c384121210a69a8dcc8d397bc22a84f57c399d86bb9819265bffac4fa72505"
+kappa = "0e31931fff0828b2b9bd26bfe54524f598daacaac4ca9d41df180c5038dd7916"
 record = "Catalog::recordsPart167#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "886088fd589256892a7c5e9b9a004083f840621ac3ad4a379e707e84554be540"
+kappa = "0fa489745acef8a74618837238452e6bbde185bc4951c1380faaee08e8c0ae21"
 record = "Catalog::recordsPart167#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "753f8895bc842780cf6bd10e4ab43d80cf4fda3fbe40905be1911d6e0777552d"
+kappa = "ddaa76649b7350e2b63006e068f1a13e1a3b50bda35df3b4d23809021b4aebf4"
 record = "Catalog::recordsPart167#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "0bf33c3b8be9565c5a3491c5cbed56c71f2de763fd54db22f5ece78931916f89"
+kappa = "ea09c49bc4a28f23b274fa5461a9383bffa8064f1a249db8227be0648b081275"
 record = "Catalog::recordsPart167#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5f35f937f0df10eb952c31b8676042b9b5bd13de8a5db5e0b0d4c20555a38d69"
+kappa = "61b10ef0bacb86873ccee131cd371ead8facb5f00af87a3700b5e8c3cd81aaa6"
 record = "Catalog::recordsPart167#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8b8b331d0a60b81ab8a8988778cf9b7499a7009fa0f4377df4a32530392d04a7"
+kappa = "30032c1bf227273f322fc194e04b5bafe13771d209e5202d2d37ea4bfbe73245"
 record = "Catalog::recordsPart167#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9626eacbb5e811a57e2f0856612b6be225afbb0d73a8eac096d045854ecd7c89"
+kappa = "8459f0b9707d51cbfe4a3523552e558ddc53c6f4cd1095452df8abf59dd9df4b"
 record = "Catalog::recordsPart167#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e93f292956ce63b53cff51e81d6a6f63cff9e28b0baf494cfaf7259d23d8b879"
+kappa = "6f0093ed4adbac291e4377965e960d2caed101216ff4dc54650fe4db43de109e"
 record = "Catalog::recordsPart167#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "517cda22dbe2ec5bbebe893bb210f4b9a08deb5affdc90abcc6e64b56a8f1ccf"
+kappa = "20aec94a92b6538d4f9f97ab1e93a6b3719808b0ce35aab47de3dea9717abfe6"
 record = "Catalog::recordsPart167#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b4d0701fff7d37a7dd591258a9f064a00576868dcd9287b59b740d4791d14e8e"
+kappa = "ab9bf0351254c8dcaf4de350af409c8d1d9097d7ac198fc7257216e59edba387"
 record = "Catalog::recordsPart167#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7c9037b109944649aa765bae9a860a64bae81f8b03f2f63039417d4ccc2fb1d6"
+kappa = "5a1072fda3c1a2465125449323b26e706085fb32b10738c1304be95d3f2c6f1c"
 record = "Catalog::recordsPart167#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "51258f97018ef94dc1ee607af96a00fc59a49d5eed882920bbf3e6a0173f0414"
+kappa = "8f46e54bb40b27aa1f70dcbcb800e74e69cfef1a604e61aa22e95923765a5520"
 record = "Catalog::recordsPart167#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "72e2f81389dea98df288c2ba7b31bd94e303d887f1de10d95e95c8fbb8d60f50"
+kappa = "a4bef99840c3200664816177f630b410b43e328333c6c89af2feefb66a1a1ab7"
 record = "Catalog::recordsPart167#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "12add3cf7673bebeb9002305e79f94e8cc86aff1949ff83b0f8b6d9ce5c1892b"
+kappa = "d7383b66f60661e74770773e270b1eda2bdc24e4be7bea7be069e9e5e7e5d199"
 record = "Catalog::recordsPart167#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "74323f8c6f66106f7c128fc723b62a6746941d034b296b2ca0e6c92d8e8a0b53"
+kappa = "10a1515c09badb23c805098751e3b3e76459dedcc0f0aebd1bdcd5bc9702ec9b"
 record = "Catalog::recordsPart167#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4a959071c22b341678e018bb58a263e2bee5c7a944b8f31f91489d819a0f0bda"
+kappa = "126264db94a5503f2621e6855c5cc9ad8f7530ee687aa355c966f8e55d74b2ff"
 record = "Catalog::recordsPart167#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4ba6ea1680d33e17c0cb20429c80a313f04cf6e22474890e4183aa99b5a0074f"
+kappa = "3086a347fa68a2169a0601c3f4feba8412b09012a1d6f25775d9d3be13c45a5b"
 record = "Catalog::recordsPart167#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "bee9d3bdc5a8f83a54e9b2339aadf06200e3142b3d2d98bc9062b321fe645b1f"
+kappa = "e8baaafb2fc0a9935609edb529b557e2ae9c90a250ebd54e47e2cd92a873d7ca"
 record = "Catalog::recordsPart167#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2e2891ad2caa6021c9aea0987997289c9d6304fc158b7c4d6961332702ba9472"
+kappa = "f54398cc335fd69379272d0e8355c680414de82672bfd7d4b1b08b47bf43ced2"
 record = "Catalog::recordsPart167#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "62c6124a337517cb258bd08dea2841ec2e016c431aac2897676cec5b3e96ad1e"
+kappa = "b611a066185b11a4a2102187c3db42d1fb983545c8bf25d9b0461429db896d93"
 record = "Catalog::recordsPart167#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "f12a1b84d12f92cc514afaf27ecc0ce6e91f76e6e81273fca9e2c980b4f645ae"
+kappa = "036f5d8fde4f26ce21a0bff673cb552720fd11fc08e87a47a8a0b98993147755"
 record = "Catalog::recordsPart167#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "fd828d3b3abfb44dcde0a084084d05f6778c79de072d83ced0af06a3a0d501e1"
+kappa = "0828f08776305937a4c9448324e15c6438f5432f32e84554ae5489f4b763fd4a"
 record = "Catalog::recordsPart167#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4f108fd233208b3aa149619168dd8ef65d45b892614923c40a026f3d647269d1"
+kappa = "79ffdc0541ba9402e46f4e17a912039b94c946886f0163d766cdf412eca86362"
 record = "Catalog::recordsPart167#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "98ed0563d7e6402a7d402ae01c9fe385279b39b78cd8741add28f75952091932"
+kappa = "2a07db8e7c1fdec99c3f1a2989864bdd900d6c051dc73eccf3bb40205b7a409a"
 record = "Catalog::recordsPart167#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "df96cb58c1c6cc4d39c23036d14ae1d1b49c446a47395783a9d7eb1be76c9aea"
+kappa = "85fc190c24bd78142a945650c01ab706e280f6bacb9b9e17406bb503ff87d45d"
 record = "Catalog::recordsPart167#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "55e16d3bf1d2896ecdd0cb16c0134ca6c1850d1474c0897c94ebd99042a9cd81"
+kappa = "16f60a8020a277044b56b9756465dd3ead83f9b115750a2c3efc43d59fde2ed3"
 record = "Catalog::recordsPart167#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "27b55a05f134b6d68a34bd38ff6d4fc80bcbac2ee576c0094360f8302b65b553"
+kappa = "2df1a78a9a43b66ebfcf90948e9f4da1a98f7dbae5635112cd1dc7f759e1c2e2"
 record = "Catalog::recordsPart167#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "04cd7e139730b92bb6c8b24e7806656416b213daa4da4f1b5dcac518bca077b5"
+kappa = "6c25bc2aea8939715a14c6bf46d902bcdcc13e874ef560c2fd377c11a4654867"
 record = "Catalog::recordsPart167#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e9db32dbe5988894c5792fecbf445aab2cff2a909f40030c5f82055b492d660d"
+kappa = "b6d43c9442df02f3bb39fa5e454aaf4f2bdcf418fb20fd2b5d5e37e715d80960"
 record = "Catalog::recordsPart167#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d9d37ff984ef5c569b57d333818b9a7607e9bc95e7e37644b5801af5f38a6a02"
+kappa = "49664016e07c327a885c746a8c0e319be22989d28a18bd68eb356ef78c7a1185"
 record = "Catalog::recordsPart167#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a925c66e4ed3dec6b7b9405646377fc783169d1305f8ef98416103fb0ad46fda"
+kappa = "97b12d279923d954e4917c320f7dbfccbcb39cb732870c1b9806ece681e476ae"
 record = "Catalog::recordsPart167#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "bb1aab5caa73ca501faeb6642615b18cce87ff40380ba012c87392ac46990228"
+kappa = "eb6c56983d663ac7c0ff08b9906f2bdf103cba9f93d72e1bc8570e85c9244f2d"
 record = "Catalog::recordsPart167#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2c91059b6d1dcbf148d1e4223a71eea23bb548f9284a82dad4d367df2310fa15"
+kappa = "7c60790d232d0239cdc39c5e5ff2f6e446bf1402898ac800cb294c75635ab640"
 record = "Catalog::recordsPart167#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7488e04ff57cdddc3687e174a318ca1868263481e3332d2930ee7d78abc0dc02"
+kappa = "4e37843e35d1f6c5799e0a85bf01c5db2b8f1f904ccad757106335d92a9915cf"
 record = "Catalog::recordsPart167#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4326531384d2105981a6a9cadd3d026d6d1f9211774c0c9cfd20ff8cb15a82cb"
+kappa = "c8e6e750ea6dbfff106468e5b33a0d927f8c9fb6bfbca6943ac987ea6205d4e3"
 record = "Catalog::recordsPart167#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3c6f676b9630d23326cf94727241f7f9e09d20e0a853bbf858789095f86d8010"
+kappa = "22a1e64eff47b6266fce0b8e14ec292e5b15e4f0d94277dc4e5ff86ceb225fba"
 record = "Catalog::recordsPart167#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "53f8faef1bdd746af5751711f444ec79fdb4517da473e5246c8ead371a9f63f4"
+kappa = "633337e24feceba3153597d8dfbfd653422e31d5cb3049fc1b1996dec3d6101c"
 record = "Catalog::recordsPart167#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "5fe318afa2fcc631999a488714fee4e36b45437d786a3242a51fd9022a12d393"
+kappa = "c7effbc6aa4d5c531da389b6b100ede1f673eeada140f74ff5bf4da0e9ff5171"
 record = "Catalog::recordsPart167#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "863d876d49a5a7c7dfb393d38e8c83b7dd6fb32eba06cb96b7fb59b5199b89b7"
+kappa = "4d0905d13341664455c1d7052d1c60e81597fc747ec1adaf3e93ac735acedbc9"
 record = "Catalog::recordsPart167#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "038cf95d5da4167faa58745c5668a1945a8cb0be6f0e67039e23958abcfd4ac7"
+kappa = "337f0002a59ea455868a5edd560f87084e5d5e4191493856fec5bea29ca3e90e"
 record = "Catalog::recordsPart167#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "16d63b4ceb69fbaec08cf44205ab9a8d948379e6a1793b4a4f9e25a8319c4c02"
+kappa = "78bbbc6c8da28a6434b27ae6c3f17a623ebd5711e0880e70cc49895be1522166"
 record = "Catalog::recordsPart167#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3347a561d63141259ad85e78c39e89e53f66351b3e6fa6123d0839725296c0df"
+kappa = "ef8edf12845ca4bc68aea70f36663b77c5371a9a2cb7532b383c3ee6fa922fa7"
 record = "Catalog::recordsPart167#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "6cc2defbb1e227e1270b9adabedf7a81f9bfc93ea362e49068c6a443cf5d0a04"
+kappa = "58a004e1305acc107f59d8ed2d87802485da4ff82e8167990b70c53a2c4734b7"
 record = "Catalog::recordsPart167#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "197db3274d433c1235a19d98b20928a37b6d456c05249001b9d41082f36835a7"
+kappa = "6521f2877ea34e1a6fc7e90579c7eb8622d262d2cb79c734f278373b4638aa04"
 record = "Catalog::recordsPart167#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "3e770ac6912dc40a4d8d83dc5f609d6a78429df97eb004ab38da305207042a51"
+kappa = "1b6cd8f25548b24a031502e014c5617689f833574d1fb302d2eba6fdeaf944ed"
 record = "Catalog::recordsPart167#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8e9fe8f8bb6124e21b4eb2e554e516cccc6ae6a42bd2650e5d54c63a3622422e"
+kappa = "93f4089ef37a9f90651a84c1bb72dfa1acbf01cc756217e59cec91d225c45231"
 record = "Catalog::recordsPart167#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d1bf501f23dc9c7ed9b79ee341333b707f34d240349f654e245f24a2a169a5d6"
+kappa = "f491f2e5fc3cc02404646da763699f15649591a1470c144689ccbb3129f4c35d"
 record = "Catalog::recordsPart167#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "844e1630814ba77470f19a938081b61f015392b49788d17880c3e20ee903a719"
+kappa = "ca34f1ef9e836d047c91e9a37d1474e42e71bd65eb5283f9c917c7357dc04c83"
 record = "Catalog::recordsPart168#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a5d9c7782e32b9fcb641b126437019a52cca0b9ca1313d06284b85deaa041ffd"
+kappa = "151d0bf4429fcb02e08745ce039c6629ce9e01e78ead4915d92c07d8c4975ee9"
 record = "Catalog::recordsPart168#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "44e3a332e15df5d87e2e46dcfbbb007ea56c3d6c6cae07ab0691e40272aa26ee"
+kappa = "9b4e9a3369bb00fd708b30099f02914a4e205d7afdf206c06de27f95dea00aa4"
 record = "Catalog::recordsPart168#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0bec12600a3e2cd2891cea36a189ec8a7f37cca2015345e29e6b3d8117ffabba"
+kappa = "101c317e976c9105084499554d1a941c154fea0925f2d4e94042a4fafd2e7985"
 record = "Catalog::recordsPart168#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e79b8e1b6d07817d0d97dcfa77ee72fdb775c24e863cee645cee5307f3012456"
+kappa = "860bad7a459b478b762f95a65bec75f4d03b2c94cd02e7199ff99e960b6548fe"
 record = "Catalog::recordsPart168#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d233d10a6ca3433d47f61c213e1c22fd23420c3b44b440749fb882f47c7e3a07"
+kappa = "8b1f380efe4e30501ccc95deee2fe7c9f86e23c507f0d620c5a8e48763189f61"
 record = "Catalog::recordsPart168#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ea6cf44bdc513702d783615ad88c4db2ec75a0675875cb7e33a2f793b8cb4ecf"
+kappa = "e2d3a02705c011924a486925802d24ad929ed0ef3a4570baf9535276f762ef7d"
 record = "Catalog::recordsPart168#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7632b7f48c3689b0c05949c0ddcb4a8fbc7fa0d80666497d6bd8906709e0a453"
+kappa = "6f2c609d1d8415be0a61acad6eadc313aeb06ac28d2fe99572a0422b2b045c95"
 record = "Catalog::recordsPart168#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8379f3c883f59c95ec94edbdbfa1a892ae891abb5cf8b910c2daeace0f1da669"
+kappa = "a26eb91cb0d42d2d2bb1bf379f7e9615319527960bd76ebf550beab58e29567e"
 record = "Catalog::recordsPart168#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a97a7202d65cd1bbea1852afa2ad44bde493fd1d30f91546c307b1aa149765e8"
+kappa = "01c16b3f0e304299f5c2901adc1336b5ae608be5bd31712514ed4964d61ee6a7"
 record = "Catalog::recordsPart168#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "56e32d25b00fd454bad0a91434579d4c561c5c8de091f979eced86c1ec105824"
+kappa = "99bac868fe506c9fb05e5309a488e5b424977861d9e118979f2635c90018dff3"
 record = "Catalog::recordsPart168#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "666a62221195832649d8ee0d625c9fdb2b8a0aa23c8043701800d434fdf032be"
+kappa = "efad95bdfc258bad2166720bab03adfcbabb174ae3fc575ce2e27c1ff959c8b5"
 record = "Catalog::recordsPart168#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6dc0bdf91df0752d8d5966eb26947f1c41984c722f18465c6f3217d4e8b6e08f"
+kappa = "9329b3920410cb37e98e0584ec26e8b21ce662e73d1194a71a15e5838696d8c7"
 record = "Catalog::recordsPart168#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "dadc314fcdb4f80dfb69308e5cab0d8b74df3a3ef81b3dea1fd9109c14641b57"
+kappa = "4310d89adad38408195732d478fb5593f37245d129e302057c50185a3636b034"
 record = "Catalog::recordsPart168#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "0067c2fa636973e2943f76e98c0ea98b76beb50e18f5a63cc1c4753623358c2c"
+kappa = "a420a12bf6aa9554364b78c871f0b3ba1cd510438b055efd939a75b25d9cbc16"
 record = "Catalog::recordsPart168#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "793c6f79bbd528d509cac22e73f38544e6136986bdfa5d3b042104e12f0150ea"
+kappa = "3b2b7c88d27d7ef44a51c753a62fef3bd294d4c9853827162165f21dbe2ed6a4"
 record = "Catalog::recordsPart168#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "798a9e1e7f0805c310a5b460da4463e0c6a283e789e7cd993ab6f400db266a55"
+kappa = "a3afcdaa203b568943a82b2eec58fb763a858c85f809836a5b4d74fa0a3855a1"
 record = "Catalog::recordsPart168#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9cb6c5eb99aef16e6876833e94d08d4d4652792e72e75f1acd39533dfa7f2440"
+kappa = "f978a4fc7846529683c2af57e8f298617de9364f25aa9b548e91a5c46ae2c745"
 record = "Catalog::recordsPart168#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3f689bbe089211880d190e2d8d18c7dcce0b6902bff9e9046d7047e7682634d8"
+kappa = "8277ab31ff3b70d1b2e77fcfed2da4f3b01816af390037d7e5682efde72c6c7f"
 record = "Catalog::recordsPart168#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "19714393a62119949687d144a6c3df2aee2571df204f737cb682d042e118d6cb"
+kappa = "6fcc15f984b39d78951b17dd3f3651a97b6e0d7c94ec710401d0a7eead6fb191"
 record = "Catalog::recordsPart168#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "67744cbad8f7c6fcf98e2ce7a8c67ee10feef2906dbf1d3656b0d309cc5a0339"
+kappa = "a1c1329414cd9763ccf2bc654a2133302b7b4b6ca61c380fc3486b83cdd2eab2"
 record = "Catalog::recordsPart168#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a67b8a70e2db7b7cb7b3b5a4808f9344269a7af600b1c135a0b81650089c1b09"
+kappa = "8f05dd9b9a51cbfd3933b7e02742bafd50aabc1f8b577581a8df7b51613e422b"
 record = "Catalog::recordsPart168#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6a857c97a313085d11babcedb51f0f219edd983c205849de4e83ed6cf2bea5b8"
+kappa = "e721905b47796c2108109da69990c20810228982d9e639be738409a0cd0480bb"
 record = "Catalog::recordsPart168#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "bbec5a7818bb0fe29da6f758122afcd315e79afa0bf8ff14b31cb616201fef2f"
+kappa = "44ac482a300bf56aad96890ec18d1bc1eb83b4852e947774536032912699d9a0"
 record = "Catalog::recordsPart168#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "997839fd5703aa8112d8a9687af2d42562e434736b7985b0cdd9b7e86fbce6e9"
+kappa = "efc0b0b3e23fd054194ffc391bc1ae7dcee3517d34c5122f26dc0590ffe7900c"
 record = "Catalog::recordsPart168#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d508e06b35f6506bd573e9b7f260e5f980e491f61f07b67e1b5fac970da99524"
+kappa = "1f17a7f5bd38f8f34b74852a10c9bff8d3cbf84129fa26420380d511e3030e25"
 record = "Catalog::recordsPart168#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e8da8a00047cd32ffde143b114c5337e71bc655c472f5a9ef2219d411ce3165e"
+kappa = "05dc5cbe8eb50ce9382c330ec2883fefbccf4af1a76b624d0b919d64ba118232"
 record = "Catalog::recordsPart168#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "c8a32e51e0c89ea8909d05d540f0a738ee4d40f5a92b61112f69d6808bd6b0fd"
+kappa = "8ae762fcd7843b622ed5306470dd6f81073c4ffb39662b361b25336949eed7c0"
 record = "Catalog::recordsPart168#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e4f7d122cff6b8208d4046a2c712181dd8dbef95fcc23e8b0b11a373577367fa"
+kappa = "f69f2fa72508a4ced1c5bb53044181e7d79faa1a08442765d542e4d4c8886771"
 record = "Catalog::recordsPart168#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ea963e678f91ede98d6484d44d7c54725894f29625b0c6a8b6af7b845540b6a0"
+kappa = "5fec3771c15a54181a227f6d175194a388ba4acf0fd2a0e44d8623f7680d1cc9"
 record = "Catalog::recordsPart168#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "2f7dc5da26ef62f4f5482f021a7e4ba8f6effbe63809b9140943e5eb6c61a6d5"
+kappa = "aafa9ccf5e70a5cc4045feac0239172530e9d592884efba1af1a9e5b6971bac0"
 record = "Catalog::recordsPart168#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "6fced12d6a2b50f2924144ff75247b733e786672dc1bb36d27b8c2032373e9e8"
+kappa = "8c1a73634a185b5ba42a9d8991e5df1d381b872267d399318716b445e677c63f"
 record = "Catalog::recordsPart168#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e0d75da789d8b0583bee91fadbf0b5d06605f7375ab03256e8141662ca0595b9"
+kappa = "ad0398b872a433dc6685077309000ea0a38f39951b56bbe23798c79e49e87750"
 record = "Catalog::recordsPart168#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ffed8e1acb29618f3c3368b86338917e4f4236a9b042811323ee0deaa22399bd"
+kappa = "f34329dd595d5540491bb40750eeb9aef41d5868d8dd54edfd2eba5be657c8ce"
 record = "Catalog::recordsPart168#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "64c5a1f08f0f4d66c157384944068717572fb20873e9466f550d5b4ec583a929"
+kappa = "6d70d6461b8e739f480390b526cd4c2409cfd15a5b9e1af4f95c560582bd79ae"
 record = "Catalog::recordsPart168#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "97e1dd12e004665a697904d02d1255929b32af95a7d755abbf116ea5ef0e2d64"
+kappa = "2536fb6e424fe8956a2eec7d5f580777feed07b64ffa5b0456ffec56126e13ce"
 record = "Catalog::recordsPart168#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "37cf5252d88616d99a37d2b8e512cd4bd5c41d1003a8c3534eeb8237d4a9d70b"
+kappa = "8bb0345ed954ff4051afb8c012c513d3be325175c86aac9886d256c07438d3e0"
 record = "Catalog::recordsPart168#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "208e314892224d43a181edbf32aa204741b67c5eebda9af40f8d5503c140549e"
+kappa = "ff0ace10dcabdbba2957b3259bc5d713b1acd6b57f9e01c15d951a6af9ed87d3"
 record = "Catalog::recordsPart168#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "256c8abb364f6aa570fa62a16cd6084045215b173ea16e486c002d4b16307590"
+kappa = "264e1d6f016c4e81d89a34165a1158fdc1c98e7d55cc8cf155afd783d75c2d89"
 record = "Catalog::recordsPart168#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "21456d87d63e2f737e7b3b799b7a7d96de5778fb99b8264073134cbecdbebe79"
+kappa = "6745b4a1d4d388eaaec8640a6ac6e93db2d2f0bac1fdabaa5447e6089f129716"
 record = "Catalog::recordsPart168#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "69772cbac096c7a9ec5386db71656c1995fd650bae4de243bdf93850f77fa68a"
+kappa = "63f5546ac47017d69a9bad9928bc7e1e6a09c32e5bf2be693733a13391e54b7c"
 record = "Catalog::recordsPart168#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "abe24a5b65fa46fa3ce634f101c82caf3b62726da5759a0096b99366b638507d"
+kappa = "efe946f70fca5e60afe73e29f0b074709cb36773fc6842a22ca85465e7ba6408"
 record = "Catalog::recordsPart168#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "bde1e38293599fde32683cf8bd84949dc3ebf61558e9f62d0e772cb79e56cced"
+kappa = "5e691a2a22f9b39b0770d539765d12a9b958f6bd3f526ef271a8b02660af1826"
 record = "Catalog::recordsPart168#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2ddb4edc3c2106c252c4ff47c6275b71eee0f8e6aac837e2e983002dddcfe841"
+kappa = "fe693d751fbfa9e43463c803a871df8b63a985ee351562602a909c5c1e7259f8"
 record = "Catalog::recordsPart168#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "eea1e4be0c93cafdb4f0acb259ac343a308592b058f9d560f26eea2816fb754c"
+kappa = "85a46cfcadeffbba2f254e2131dae7808cbb592c1d106293a1b9e3b592f55134"
 record = "Catalog::recordsPart168#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e40faa5339ac5d82bdea2291a03bc6604bb945f26848ad135b6c41dbb8c1eec1"
+kappa = "b54becac403be9a02ff80a19fa2c26d568391e09a5b595458302f5cfcd4022ce"
 record = "Catalog::recordsPart168#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7fe1c62e8055ca49e20c5b18f0b58db1c9e3658ec5c3c4dfe6c0ba6437debdc4"
+kappa = "fe5857962b9a9ca73f0b4d59e809e4850e776342bf8a98fcf533358891342748"
 record = "Catalog::recordsPart168#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b08234ad3f1011536e303bca1a34297fd1ceb1f8b5ca5d4fde35cca0c4ef1631"
+kappa = "2247c7c442e408b8e1edb3ebbcdc53365d5dd8f95ce1e5c64a4280bf2935c32e"
 record = "Catalog::recordsPart168#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b75dd616e961399e745d1db7de70b32b336f45d9710f352bcda329943bbbe5d6"
+kappa = "4c7e8401d6f908180c5d5550d290d69eb09140ff44062ee44adbfabaa6786676"
 record = "Catalog::recordsPart169#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2cfd52cc7c37f11dc66037e6792f16416672239ffea5a1c93546c3b1ea070d75"
+kappa = "3a91b1a56ffc503c252ac8ca6bda406d7ef2fa6a789575ecfa74d843360b165c"
 record = "Catalog::recordsPart169#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e2ba724a06ae1655b19e0746f66aaf2c74210345e39ca3d7a1cfe939a8dcaf3d"
+kappa = "b57b9bb9de707934e51abf6551f341af8f51824088044a07db36c31e28b8c17a"
 record = "Catalog::recordsPart169#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "bf6bd7105cf3c183a2fad8e4e105540aae1d8d8f5808e020a235c822c6a6f94e"
+kappa = "4299fcee0d6d192b6799b6dcb55bb171c812e7125c3f96633ee64aa83736a821"
 record = "Catalog::recordsPart169#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "54181aae03c4008b4e21f923c61e62e6f095cc224d2735f1fb04553571fb9903"
+kappa = "97e6652743533958d1aa7869e04a3bd4072eab3d3503a207432dae152ef1d594"
 record = "Catalog::recordsPart169#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "261e32b2e73da5af3f9c1783e76669cd2a1f054cb97abc02836b1d11e44dd51b"
+kappa = "8a61b6c75b4fcdd5052f9a65556d3a1d4c46da00f496c514998f11e57c535b0d"
 record = "Catalog::recordsPart169#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "214843969d5b93d4be05507acf2f96900e5906c257949750191787dd1b520ca8"
+kappa = "5321263cd9fe6e4d29d8def23fea22c8bcf25a3e20b8f8bf70860392e09299ef"
 record = "Catalog::recordsPart169#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5bed66e3b4466c4a4d9eb1a8896b42309077fd3e6944b4df5cf1717cc335274e"
+kappa = "7fff0f8e235f37e8310f0790c9cd4a36b061a312a998fb1aac9ca5494e9897cd"
 record = "Catalog::recordsPart169#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "119dff28ef649494095dfa7773156c7bf8542ba228f77d2761d0698812f0396d"
+kappa = "b4b073f4c4cf45f0024493730220e60dcca692966c158b949522553c00ef3df0"
 record = "Catalog::recordsPart169#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2c23c26f04439b6056e9b8b2f5abf83b4b24827dec561cb7aa209a1de5be67b0"
+kappa = "4e5c6e8436d5e484e625c8e5f8b16a15aca2dcfb4cec531956efec6f69bbc1c3"
 record = "Catalog::recordsPart169#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "94e8a21d79b82df468e35ea5cd18763de3f82da6d27dd77cf913607ae527ee26"
+kappa = "bd563cca3670ed326d8a6240f2447846e752a2f5bbd5ad4cbfa19987206c41e7"
 record = "Catalog::recordsPart169#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7260a912a3785515925a92c02526ed5d582c039927099015554455ee8afa8a2b"
+kappa = "bd712ebfe9afb9a9ddcb2e8d8add8abdf50a3fd381dbd71e34d9a4bd37aac061"
 record = "Catalog::recordsPart169#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "de38452c6dd9f62c58c5977aa2d06b856a0269fd5df5acf1c7272c69c5050e4b"
+kappa = "2cd441cc47949ec27f3052ce691a3dfde9c925a533bdaa5b2f192e9864e27066"
 record = "Catalog::recordsPart169#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "490f880c0f97a2f3e3082a0f7c38d5bf3863ce005e5a7ca6564ea0c295334635"
+kappa = "ccf11d0c7f8d8424ddc7a5ee6cb530e8b22030b56fc8fb15c358b71e7b93f172"
 record = "Catalog::recordsPart169#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ece929a1a934c798cc1bb565e5dab2b9c120549c063aa1f034c5e8665ef08b0d"
+kappa = "2d4c5402d2436524e9a34f5e45143d6a08ec8191922861ca91a625835015d755"
 record = "Catalog::recordsPart169#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "98733f5a058029d432ee10849f41e5c9d80871d96d5c1b3300921e9a8727b01f"
+kappa = "84e3d882aa121f42fb5cbe9be02ab03fb8f6a60ca888cd7fc474383132edcc56"
 record = "Catalog::recordsPart169#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3d7c79896eba1c9d046a7118e79504bd6160b1a225f091b7e0f23bb5ef44437b"
+kappa = "9b8308a2757c066f6318c015de8b43a4e01827cfda7cfdad2a5132bc69e092d3"
 record = "Catalog::recordsPart169#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ef825e22064cba384d072435e563c1df4e102272e6da505154a57bcc67811de7"
+kappa = "cd2892294144bfec65ec48389785bf5586a2864b033308c390f04b029ea2f549"
 record = "Catalog::recordsPart169#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4fd0a70c5511139ad56d18e38ccc49904a9f6104e2dd822120f573bd0e0886e5"
+kappa = "3d35e771544f42a126bc3284b09d57bf3da2d8373e48cffedd888ab23f853706"
 record = "Catalog::recordsPart169#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "a5a17e7d06ee7d8fbd6e54954fd607ebb8b8bf3b6022fd4b6e57ecd0209429b6"
+kappa = "0ba8ae5f64492229512c771422e09e16d203daac752c4fd67f67174559082ae5"
 record = "Catalog::recordsPart169#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7d96a842a9dadf436a42adeed9c10f0606bcb07a29e4df3e7bba9d3ab19bb96f"
+kappa = "04683f3aafe5393c1ab22bb08b3b79a41b9f9ba8840e97e3a92d75525364578a"
 record = "Catalog::recordsPart169#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "18c2f47a1814979ae0c93c059a72a9b544000781bb5f9e16bc0b71bd742b6a10"
+kappa = "4eb80ea93523f70a7d09db86c3716321a7b87e57ddaaae06731e480229da79f9"
 record = "Catalog::recordsPart169#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "d15da9726bd068e50bd1bd26ffcfda257980f9c1ae4192d61ed27e8953bcd624"
+kappa = "02187a5c35cc9d209a6b00e8acbf5f35ada8c03cd7253ec7ef6c6a6f55237a7c"
 record = "Catalog::recordsPart169#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "37c3dcc7fd720be7cbde27f52f8e26808cb46ce21fa106fb5f539f1f6622110a"
+kappa = "96799cc5893270a82175b0c4638d66e762dd48d46099bbe93bc34ab5a291fefc"
 record = "Catalog::recordsPart169#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "89d7312c9fb3bb8be25ba3b51dfc882347f10217a059420f016bf4d320300013"
+kappa = "b2d1c8f4c0cd551e3e973c64db05c81602ec7a7cab0ca0365881a2801202494d"
 record = "Catalog::recordsPart169#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "904e238e07e30980620fbfdf930af453de1f04812550553c997130a48a5f9ec6"
+kappa = "fda5f87da18442e2b76dca0b8b1b41fba96d49095b76f2aa9e460fada02fcadb"
 record = "Catalog::recordsPart169#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "14b85f769ef276733927b6e4e5a67cbe4546e472362bdb09e9a6adc6d91d85d2"
+kappa = "6527fb677977c56bdba27f9615ed36dc770f2409cced30231d6d0bfc14cd900c"
 record = "Catalog::recordsPart169#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "2166b517e018855cad47bee41deaa126a85d3267f5e5beffcc8dd69e455482a4"
+kappa = "ad76fa57048c4c4fe30945a147069d83e2beb6c18b0a6f863a35eeda2cdf881a"
 record = "Catalog::recordsPart169#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "dd86d7a79063ebaa8d0af9daa45159c8c891ca11261501a57fae047aef3f35c8"
+kappa = "65c93fddaeec0463389ef7878b5389205ba36f74b66258c27fd5ad35290a51d3"
 record = "Catalog::recordsPart169#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "5775bdf37926a4199349c55395957fc88ed2454cbb85c0179594e951c2554b58"
+kappa = "0dd0f9a662cf188c9f1bc4965a2586e7ded5ffb11fde104686001ad490cfd0ff"
 record = "Catalog::recordsPart169#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "02b559e360d1ba65293e95f0d50e3188be55d84a84b25c4dc0a2b452e3ce6327"
+kappa = "a36db39320151588dd3813836144453370c626432ce4cdda9bf8911daf57ba4c"
 record = "Catalog::recordsPart169#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "aaa152fd5aff1644d3cbecd45722123cf7d137d8a7a773f452e16f162adc3ebe"
+kappa = "fdc9db8756b98c4455d74d0c5db9f4f1946ff8f13915c8a8105611398d6a30f6"
 record = "Catalog::recordsPart169#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "08d4810efda06487db0b017b6cf89f092b8230265157a9d1c38cdc242683f7f3"
+kappa = "b6866827c56bd3578b3e01a49af6ba7854ad59aa488bf274669725af66b4fa5e"
 record = "Catalog::recordsPart169#23"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "286c121cbbceed2ae559804aeb55fbb16138ea2c6e7f00a03b6d297275517a5d"
+kappa = "c154d903631053fee11bc47ecfbe6d66af199635733ebba0817f039c30c452e4"
 record = "Catalog::recordsPart169#23"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6dee484ab25008438d33c46a9e0303d82729f740106c1c70b61a4fe2379cbf14"
+kappa = "d7c0ea8c8076279289ed9b4d9fc77ffd94583c991550ca1dc22186a40090ee18"
 record = "Catalog::recordsPart169#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "68c5fd5786057e4a42a689c078ab7700dbb2f88daf430c746f74e129d1a939cb"
+kappa = "a723df832ef5019761b270b98c5a82240abfa1e7b404ee2b3a99d11bc3237f1b"
 record = "Catalog::recordsPart169#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "a4cb56f0154907be4543f817722d27f474221756f56d21b861cdcc5d577d117d"
+kappa = "1956f96d1ee624e0234815a014c8877b7ddfe2b8d904224791eaa51540f85b00"
 record = "Catalog::recordsPart169#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b82cddd3842d60a03219b162849ecf1fa76b2f7095bdb69da51b42d58ca98df0"
+kappa = "42b4e4cf645daf59ab6210eee41e306794561afaa0440b8e6e797fdb91aad71f"
 record = "Catalog::recordsPart169#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "8c4687ec78d226086db56215bbcd7b5e0b3c96c007fc54e01175bb3bcfd26fe4"
+kappa = "5b67c60d572973ef853c557c9309e5c74adae3f705cdf75394993309a8f769e7"
 record = "Catalog::recordsPart169#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9ff05bd320452f21da1946018d88ecea31a264bdec5d8389abf41852ed31cb0a"
+kappa = "2dc16d923a54395105c257fb7c9cffecb0a3f88bab0832b5a9c2fcc6ef171aac"
 record = "Catalog::recordsPart169#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "94f23c8edae71e2f4dbf15ebba7495addaa020694e2e5a41fce79893194cee17"
+kappa = "ac9a43a105cb2eeb8533776d6ee847d11d3391060c2aaa98b3e604075cd23027"
 record = "Catalog::recordsPart169#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b9c172cbf01c9d2e8082c0e555ae4d9edbb528b46f3d4641d02baf4a02036764"
+kappa = "2c39e6e24650e7fc3ce9a1c4d7715c66ab7a739e3aacc214d251d39e8dc65177"
 record = "Catalog::recordsPart169#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "1526fd1e8579218064dd01e743fdf54620d673516c87905165c2baabf29ee840"
+kappa = "931cd615b322bd75665e682150961415f4dd18682a51ce130633c91edafd8d2b"
 record = "Catalog::recordsPart169#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ff5330d3a87fbddb1b0079f93bc46cc2e6adf7b2cb49312293ac6627c3b0c410"
+kappa = "dba3237593e0c98faf438f9533d2b75bbb50fdd2ba31e4226508e8809f6cbec6"
 record = "Catalog::recordsPart169#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "904d7855492ac4e38a5a0a23a65a1ddebf029d246d6ab30e5e04543773a39bc9"
+kappa = "7648a89f011f8887ebb2efa554d4745d75f56ec0f6e9d23305248ad3510ee2e5"
 record = "Catalog::recordsPart169#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4425adae276c64d67fbb7577a68c87da17c021973b6567241f3fa6197345e666"
+kappa = "2115fe573357392807ba250492d7eb04fde1fe76000fee19b6e539afa761c2f0"
 record = "Catalog::recordsPart169#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "c8c8f699b95288cd17ecc9a08804b208d6b491911518e956c95e90b3e698d502"
+kappa = "8ab7e619d5ead48cbbef5029af6132899fa3786f35f0bc7e40ce1da6b1a1446e"
 record = "Catalog::recordsPart169#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7ad76db2a5f9624edb3ae38befb6b587d76b7bfc8cbaa0fa694142fdf4ea16a5"
+kappa = "99d09cd05e512310cfb3cb307f81325d693196205541d0df2c71a0142f37a203"
 record = "Catalog::recordsPart169#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -74379,338 +74339,278 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "5d9d7e772fb01ed54925c0bb797f1e781cf74bfb8af94bf3e23f7968869ae89f"
+kappa = "47aba69afae142e25861a9d8f74e48b07baa6871679bb72389fe2c401ab6015a"
 record = "Catalog::recordsPart170#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8e6a5add68d978a4e349165a181dde1dad53cb9e91df533018b53d5209472744"
+kappa = "756f596498d5ff663a73143364cf4bd1ee21b7969ab71745dd43a3f738f5ccf4"
 record = "Catalog::recordsPart170#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "dd24f563a0250de2b4c8a5a066f0ebac690df45a0390a189850d0ba92ed149f8"
+kappa = "034764411525e7378c9b818071c164855c0bec6ecb8543ac4afba18474f0d852"
 record = "Catalog::recordsPart170#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e3cf7ce160c7abdd740da5c85c66b8a4c46935ff24b993ef3a5e8b4badb07ad2"
+kappa = "d0066367ed5f3a0255987d94405d6ab33633d65017751ca8c6aa33d86c9d8a2c"
 record = "Catalog::recordsPart170#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e0186ae2605f7181d9c70877b686847de5bc82cf021c442adfebf90e849e6990"
+kappa = "7b55a03dcdb97059aa63550a145fc1f2e52e6942079869bed859706c36c8449d"
 record = "Catalog::recordsPart170#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "92fa6999495af0e6cad345bc2375c1af6c4bc472906574b0cd3fd870c5a5df01"
+kappa = "78a737718363e705456e0d98a071ae7043e160763172b4dbcf32b6b4a1edbb91"
 record = "Catalog::recordsPart170#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7e2ac780d124d6100a2c96698d5cd48fb44e8d63ae9bff54278a4b56ffc43db3"
+kappa = "88e156f7276be4c6684ec212eb5b2a6a975f3e42c125d104619f8c40f8ce3937"
 record = "Catalog::recordsPart170#11"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d83cf57eb27b9fa9defca65204e1630af06696ce250687587a3faf86671db7e1"
+kappa = "6670d4e075fafbdc7c7319ea6932482d39c82cf9efe636535b8a725605d0c225"
 record = "Catalog::recordsPart170#11"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "ec41d2f85767c75a840e36e4e8a169e1f41ae0236d29f4841186c4d2338aff0d"
+kappa = "973aaccd093930bea59d5f57ec80c843e5865a62d9cd1f0ec97524d007a7b906"
 record = "Catalog::recordsPart170#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7b38523a09cae521550821a44cb4a879fe950f14208f11c45809dbf7181caeff"
+kappa = "683bef1fdb51557ead9b657321fbc362233a5713a27568035cf91a0e2268b01a"
 record = "Catalog::recordsPart170#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b740d26ae50daaf24cb1de7238ff11838e37a7781fbbbe81b6669db3185ce54b"
+kappa = "770dd759f45c6a73e40baaf5b16ca03d355ddce13d065f05a77765e6cca4f91c"
 record = "Catalog::recordsPart170#13"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9d6d86d4565a69b6cfd583897eb2e6d52553a15c0f3ad1e25866498792ff9b3a"
+kappa = "f674eb30826b8fe635f869eafc7d9bcca67d06300f6085aece2d2b5a1ebd417c"
 record = "Catalog::recordsPart170#13"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "36501cfac509db3966b76d28fad36352f6b4c82b67a5b5a78e9a1fa87ea1e7a9"
+kappa = "8fc291e1ad6a0e51adf0b41549b618465e9d051079b3a1d75cde4517f6d1e346"
 record = "Catalog::recordsPart170#14"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "00557121431dc620342bbc43303b0a450889e53ee87871263e4fec63906bf92b"
+kappa = "295bca051b8ce29bae68c2bc026562b8808ea8709ac7c27ea7ff496e73247a81"
 record = "Catalog::recordsPart170#14"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "93ac7db7320d006cbad553f2bef9d880cddca19ce05d52b339af1a6c4a5a8efd"
+kappa = "3130fbad9d88d76f6e10554a5ddb2229d84e5bac46863e9e175380f069d2650c"
 record = "Catalog::recordsPart170#15"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "9c59c751888c6dc6290a0f4316ebfb0e9ad4645936e3577b5bf349a196884296"
+kappa = "5c8ac086998771a5bea5895eee42a47098ae6cdde3ec5df491db2928e5fe1c21"
 record = "Catalog::recordsPart170#15"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "175c62de769ae11744b4f9680d14b90d8cb88c36bb5f3a92cbda08979c61218c"
+kappa = "02789d5830aeffcaab881efd7c2b51c9e50f2dca90635cf5281c8dcc27633195"
 record = "Catalog::recordsPart170#16"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "36be12d0fa1474f1eb220e64875648cc5c5012ecdff19e83d580033b49658f64"
+kappa = "3fbed5f879615616e7f5bbfc3e1e67e897a3c89eee080cbf4f77827087db3c98"
 record = "Catalog::recordsPart170#16"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "9bc333b1e38905a04f0528fb6bba15385593947e497d64036aea2e268ce27970"
+kappa = "fb7e0fb3b54029f3ccd8dca4d4792b2b7b7eebb796175829758fd65aea2f42dc"
 record = "Catalog::recordsPart170#17"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "e1ca299881045a21d80950457fe963ad61156732fc9103688a9b24a5ebdf7c4f"
+kappa = "0fed77f3c4e6dbb00bbdebd134e381c14bb375c44e4cb97e7f0ab63c87aefe6c"
 record = "Catalog::recordsPart170#17"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "334bd127a536c0da4486a4d09fdc6694851119c3b899dfcec6133e3d82c063bd"
+kappa = "f4f54c655bfac6d91f8b7fb0b297a52a6494fd67a01b82e1f456bf4128132c68"
 record = "Catalog::recordsPart170#18"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "133141c0302808f289f614bbb167c9141a091b3206c750e38a6d08cccc44810f"
+kappa = "ba4e04f233287a60768b34a2c9e9c2e648457b8ff4cf8d93e5e60e94c6028038"
 record = "Catalog::recordsPart170#18"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3333048790c3ea58b2174de9cf3360282d9454d0b092cb7570c5d103de2bbf58"
+kappa = "9dc24bfff6fca60b9b598f9956647f497e95d299fb4ef2cef8a10be0e0862599"
 record = "Catalog::recordsPart170#19"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "030f6752965f14085cc42051f34c4ccc6de0c7a3b5793e6327d92a8ebe69e4c3"
+kappa = "30d87778653f01cbc74bae181447c392a376ee876246d71cdbb1661062f34ee6"
 record = "Catalog::recordsPart170#19"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "5cdcdafeabe35b43d6379e33697c109edf33eebaccfc42aa0736a67167fa2cfa"
+kappa = "920de2adc3e73c9e678382089fbdc29f14b3bd891b606b55359a5aa2179e73cb"
 record = "Catalog::recordsPart170#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "aa11a6b2194aa77f4277991d4389a16f3d48fabdfe619a2ea9db588a7747655f"
+kappa = "b3bdee81f517250fe58cfa537e946336f7be6beadb7446f612f05f1b52c19a15"
 record = "Catalog::recordsPart170#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "0bc40545d2975ac3c3042327758f8a2a9744b9f7074297dd391a7fa8b0ed516f"
+kappa = "93cf56a4db9f08a70bc62d81e1d63a37d60b16b5f451380be65767be0786bd95"
 record = "Catalog::recordsPart170#20"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "7774698d7c434a2915b5339b1cd80faf4b17879af4231cad4f02fb6e6e4c460e"
+kappa = "e530f95030ab6a3b611cce934306fa91481504853a8f467c41bc3f8c911ca289"
 record = "Catalog::recordsPart170#20"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "69835d2ecff87a8a984e418e38ca1c587defcad435bdebcce8ce8a067e87484f"
+kappa = "1476065076d15754f6ef3f8cda79469abfb130d5b45b280245d204e2110927f1"
 record = "Catalog::recordsPart170#21"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "6772d25eb835c6b0c5c4363608242a6c6f32a75b98d22fdd5d45a97e6d7c4a64"
+kappa = "b4881469c132ad4bc1926b3459abd07b7f4d2c2aa348406d66268bdd72b08ae2"
 record = "Catalog::recordsPart170#21"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b526a7fe874dadcfa043321bd2920b6df77b19e3eb593adc236a85f6591d7fd1"
+kappa = "2e820afbd175324ded3455505d89ff5e5295c1f9732d8ae596f28baddafed785"
 record = "Catalog::recordsPart170#22"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "89eaeb312677ba8afc7bf2c737a5e0997831f7467176e2ef77b2f5e84d2b1a6e"
+kappa = "868d2c5566b579463ea5dd8e32e81c2c00ffc5b3fe0c9871ffeda75b4b7a63d2"
 record = "Catalog::recordsPart170#22"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "3e27560cdb20bda084b972c1537d7493d99d5c44c44c744d01ae2b61676d18d2"
-record = "Catalog::recordsPart170#23"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "28c84c8f1beeb145f51a83439ca7e52414f3e5d835f5040dac60b4c2455ce3aa"
-record = "Catalog::recordsPart170#23"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "c07e7e24cb20f70031cf05d36a605a297ab92a6000ebd42730390c2357a037ff"
+kappa = "3717b314d96fa0b2502b5aabb0977a1950bfbd9da94b0b3f291407c508b6379f"
 record = "Catalog::recordsPart170#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "c34a6290bef0f8f07c56a5a8c91bd252d1fe1a0f538a7d3dacd5e2ec14463b57"
+kappa = "206c492f1363cb0fb241943c0d7cbb1645f6ed6d775a104c12fb0af50d01050a"
 record = "Catalog::recordsPart170#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "f98ea9d29e5a46e26f6cd29805118df0490d69ed91b4e7c497850642b8060736"
+kappa = "a2dba4d633e6af3f3c4470b15c537924c92487a3adb107cc32d1b1fb86b194cd"
 record = "Catalog::recordsPart170#4"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "b944a46daf5e78d802690c7464a10e2246756082b1ad796280ee085a750dfabf"
+kappa = "e54d516efc160d01fd9c02cb7ef6a9fd6bf50d598062cfa9ada033d227acf4f2"
 record = "Catalog::recordsPart170#4"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "27f8b962ea3b756c2ae4920a74f17753a502cec72182a09447aa6f1768ec4c73"
+kappa = "9f57328d70c4345a2b6fc737896af107d14ce175c1472a41fc3756fdd7837807"
 record = "Catalog::recordsPart170#5"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "d2e1c03562d277a0be69ac3a8f4a91cf600b9d393f90a8bb78a8173472172e1c"
+kappa = "bb282f67dcae98466a20e55ded07967f46234a3c4340fbf24cf974aa496c1402"
 record = "Catalog::recordsPart170#5"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "583e7d7aa22cc4ad3bd11b99ef0b3a8074982893653663412e138031944b79e7"
+kappa = "d1208396c5ecc537a3e14da362db327957263bb4911d5ba753f7a6dc8b4196b8"
 record = "Catalog::recordsPart170#6"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "aeb63cb4db828c42fb5e798b916f163dfc4f4d79ba2a221d32d97374cd16f226"
+kappa = "bd39b372dc8343baa38952b009c7c952a8186815453556ac5f869fef5caa4921"
 record = "Catalog::recordsPart170#6"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "6fd550f0678a8dceeb3119f565bc33e473a42ff8183d7c0c84a28d374e52f7f6"
+kappa = "b4e9cfbf50e76ecb3bb063a28b773c1f1f27d5aec08f87562d4580edbef189b5"
 record = "Catalog::recordsPart170#7"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "ba7e13c02a2ed2a2406c26ab2741db4b3b2f2eaa48189b5fd0a6cc96f36014e5"
+kappa = "7f2c0c16e2faf77fe21884ccffe0d79e328f218f15946e77bd43416ce4e835ca"
 record = "Catalog::recordsPart170#7"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "f44f6aea6ba514dbed83b94b2caeb0c94a175eb92003755f55b738513fa37ea4"
+kappa = "42e661ac335f97995b2f47ee761c6ea2268eb5f841a7e13c21c5243d89126cb0"
 record = "Catalog::recordsPart170#8"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "087dd1b79b25c97bc0fc165484c6f57628442fdf6fb6e8ca2917bd9abeadc272"
+kappa = "aa99789739fad7b0d74c29ab9aa2ca33406175828c4fae53e551043f4cbc1ceb"
 record = "Catalog::recordsPart170#8"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "0a2925afef0d31e16dc29b1787930d23b14eff9d33bc231b95f5505efe21d985"
+kappa = "2bcee4d9c996a5249cc6e8e9a2b40cd9b681acafe8dc653abff4a4bce687593a"
 record = "Catalog::recordsPart170#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "1a6d5808d988cbf534f269d1f86804853591d58c8e633209181f752f1992f972"
+kappa = "70899bd53d940c2fac81730ee6b7b5d5e9b670fed909f9c682d4bd027c756b6a"
 record = "Catalog::recordsPart170#9"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "672af621e5bbb4c4b9e2363e8531d7f9f6e072bb84b9fb6a794e29955ae3fce5"
-record = "Catalog::recordsPart171#0"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "a6f203016ae20214d7984070aed6f5c3e99fb71b0fabeee690941a37910f5287"
-record = "Catalog::recordsPart171#0"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "5bd391d1e4804ada4676c15704ee64a374a0ceff52a9d31184ae9da4a8cc0b26"
-record = "Catalog::recordsPart171#1"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "89d0d3d6aa49b33f826567e9ff41b9401754ca55df392daa051602ef36157d64"
-record = "Catalog::recordsPart171#1"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "a4f8945924cdf537eafbc6e1de3922e055ded21714bd30f1113ff6142452dda9"
-record = "Catalog::recordsPart171#2"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "a3e93a6be297fc2650d5d3e43306ecf0540da1337e17cabdad55152dce24e325"
-record = "Catalog::recordsPart171#2"
-axis = "meant"
-reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
-
-[[residue]]
-kappa = "fd78bf57fabdda198fd46a06e2329ec04c2a11cd1455e9f2dc47acec13eebd7a"
-record = "Catalog::recordsPart171#3"
-axis = "derived"
-reason = "no derivation names it (prov:wasDerivedFrom)"
-
-[[residue]]
-kappa = "ca27c5bd1d5030be391b8a26c48585b036794190904ee86cfe2bd72be8397057"
-record = "Catalog::recordsPart171#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
@@ -101235,31 +101135,31 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "2d90b8f30efdaeb8b059baa03e180ff24b4a836a97ce895cba5458e6899171ca"
+kappa = "986e0f96ee72599663ecc6cf746e4d010bf95d0a3bdb77bb807dda49e3389bb6"
 record = "Catalog::sections#0"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "741e8ed8d8f3ed97ce961a65af0ae3b7812f5676c6affa5a09c8fbf6d55f76e2"
+kappa = "ad7e110d146d217a6cb890380c19d720722d35849d2709f8a50655ad40adc05d"
 record = "Catalog::sections#0"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "9ac515f6682b9f770597f539f863b679283c3766b7d3d9b74eef829e09a872df"
+kappa = "5f63da88543953e38c15518ba60be9b92a517987d91ec5c80178d3973e5f8da5"
 record = "Catalog::sections#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "71df8eb60d0b6c5e8574f53196a03298d2603bed2e3a275dd695124d527ada4a"
+kappa = "cf6b11c61839bbd2e515b329c18447ba8ed21823f3644faa612cee5a4484d3c3"
 record = "Catalog::sections#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "3ff73c3510f18deb6d04301a6dbf513ba80dfb397a95934529d3f484f1254e70"
+kappa = "57b60781fcce779dcbaa1cc14e214bf54d21436f7079d304466a63c994bd4b97"
 record = "Catalog::sections#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -101271,7 +101171,7 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "bd7974f65917775594966816d512a5d4d56d4c94f84a4056b7731ad9a282f59e"
+kappa = "eb6727ca5fbc120a63333dcad9ab56bc62507b6583b88412bf3f038b7f0c7690"
 record = "Catalog::subject"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
@@ -101289,25 +101189,25 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7e59a8ab3136a496b91dbf49590c7e29e3772cdfac9a00de22bfe3a9d8a3c4b0"
+kappa = "4c88c2602556b4593cb7ee817265504be394e8c90c64c789361d90b238c36dc8"
 record = "Catalog::vectors#1"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "54ce2cefc796894bd12dd6573e96aa37dfab9bff41cb8246f573c0005326d9a5"
+kappa = "2e3a9ca8f50d2fd2275603f0cc646eea15eae59766736aa2e4777c884ab2856d"
 record = "Catalog::vectors#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4c7fa4d014720be8fb2bf1ca0c8c4560fe8207d53a8fa6a8db2ce9e8cd1ce745"
+kappa = "0c93f8ed3cfc590f5e10ed40df9004d2c88122f7d32703ffaee72ca6d7e89f3e"
 record = "Catalog::vectors#10"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "8466602fbe396f92c140b68c770d5b2a39ea2b1cc68caf05eba76ac762b79f8d"
+kappa = "f7b1f13d887fc5f1a48d8207d459e5490edef044ac902c20d59bccd566ce8cae"
 record = "Catalog::vectors#10"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -101325,37 +101225,37 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "e4dfd1f5ba97122913afdf46a33053cc5a24d2a5afb2d9449b43e5f17addd13d"
+kappa = "6b047498fa98083862b56ecdaf5072652fa7476cf579147b643fa7f67525e5ca"
 record = "Catalog::vectors#12"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4efb6a584844f67704ebd19723e003ffdc20f9db21f3865227493df294f94c77"
+kappa = "130177ec31c72c53336eabdef64a9429f8ab32f1980a070c1d0eef8699b5b0cf"
 record = "Catalog::vectors#12"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "7247b2d2a16bb844538f5611f48d58bb8980fe99392bda2cbeb601ac4dabc5dc"
+kappa = "e5c8d98c7918e8a116b59f01fc3a00d160425f3f92d1c7b7fe72838bc152b3e6"
 record = "Catalog::vectors#2"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "732352396c7caef879306201092aeb9585b311a5e27046eeed6098363c67afaa"
+kappa = "ef6fb84465b6ee7436c42ad516ab6dcc32ef914e4324fb7c09f708895c7ab5f2"
 record = "Catalog::vectors#2"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "24d2a6193f4441050d6e81b39ebc5a063060ad27745f1859ce4eb0a53b7788ab"
+kappa = "ea1d1e48c8f5259183708fd7d467291f759834968b4195809fc8676ca616e136"
 record = "Catalog::vectors#3"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "4a67eabc408aa484ec1062042c8424160a5bbb0632f7df92aa7d1b7bbfe63be9"
+kappa = "e7c842ac7accf9b41f41a7411bf4a33d89651d26acc749fc43ca4397164529e0"
 record = "Catalog::vectors#3"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -101421,13 +101321,13 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "b0de5413bbb22064535266e7784bfdf6f868a5a54f8be2ec362b8095fa8a2c47"
+kappa = "218912911b2e14fee6adea32afe52ca5be6986caccb0e399cac3bf8b14ac4d42"
 record = "Catalog::vectors#9"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
 
 [[residue]]
-kappa = "0e6e22712adb452b14e50927deeb4ccc36ad337ddc1805160389a2c33267ca3f"
+kappa = "8d394c4f6d20ce9a3182e0e7b7138be710d88d4920f7ed8d8619e4aa2afde729"
 record = "Catalog::vectors#9"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"

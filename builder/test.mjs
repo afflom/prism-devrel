@@ -165,6 +165,37 @@ const CASES = {
     ok(tallOwned.stepNames.length > tallOwned.steps.length, 'a branch still too deep is factored again');
     ok(nest(term(defs.judge.body)) <= MAX_DEPTH, `no path of the decision nests past ${MAX_DEPTH} ifs`);
     ok(everyTall.every((r) => answerOf[evalTerm(term(defs.judge.body), Object.fromEntries(Object.entries(r).map(([f, v]) => [tn.fields[f].id, codeOf(f, v)])))] === judge(tm.spec, r).outcome), 'the factored decision answers as the first-match chain, for every request');
+    // A table of number fields no choice field can factor is factored by how a pair of them stands (Allen's interval relations).
+    const allen = rule30();
+    const fld = (x) => ({ field: x });
+    const cmp = (a, op, b) => ({ field: a, op, value: fld(b) });
+    allen.app.fields = ['astart', 'aend', 'bstart', 'bend'].map((name) => ({ name, kind: 'number', min: 0, max: 9, means: name }));
+    const allenRules = [[[cmp('aend', '<=', 'astart')], 'malformed'], [[cmp('bend', '<=', 'bstart')], 'malformed'], [[cmp('aend', '<', 'bstart')], 'before'], [[cmp('aend', '=', 'bstart')], 'meets'], [[cmp('bend', '<', 'astart')], 'after'], [[cmp('bend', '=', 'astart')], 'metby'], [[cmp('astart', '=', 'bstart'), cmp('aend', '=', 'bend')], 'equals'], [[cmp('astart', '=', 'bstart'), cmp('aend', '<', 'bend')], 'starts'], [[cmp('astart', '=', 'bstart')], 'startedby'], [[cmp('aend', '=', 'bend'), cmp('astart', '>', 'bstart')], 'finishes'], [[cmp('aend', '=', 'bend')], 'finishedby'], [[cmp('astart', '>', 'bstart'), cmp('aend', '<', 'bend')], 'during'], [[cmp('astart', '<', 'bstart'), cmp('aend', '>', 'bend')], 'contains'], [[cmp('astart', '<', 'bstart')], 'overlaps']];
+    allen.app.outcomes = [...new Set([...allenRules.map(([, o]) => o), 'overlappedby'])];
+    allen.app.meanings = Object.fromEntries(allen.app.outcomes.map((o) => [o, o]));
+    allen.app.rules = allenRules.map(([when, then], i) => ({ id: `REQ-${String(i + 1).padStart(3, '0')}`, when, then, says: then, why: "Allen's relation" }));
+    allen.app.otherwise = 'overlappedby';
+    allen.app.properties = [{ id: 'INV-001', kind: 'never', when: [cmp('astart', '=', 'bstart'), cmp('aend', '=', 'bend'), cmp('astart', '<', 'aend')], then: 'before', says: 'equal intervals are not before', why: 'Allen' }];
+    allen.app.examples = [{ request: '0 1 2 3', response: 'before' }];
+    delete allen.journeys;
+    delete allen.app.journeys;
+    const am = deriveModel(allen);
+    const allenOwned = machineDeclarations(am.spec, null);
+    const adefs = Object.fromEntries(allenOwned.decls.map((d) => [d.name, d]));
+    const acode = (x) => +adefs[x].body;
+    const aeval = (x, req) => {
+      if (typeof x === 'string') return /^\d+$/.test(x) ? +x : acode(x);
+      if (x.length === 1) return aeval(x[0], req);
+      if (x[0] === 'if') return aeval(x[1], req) ? aeval(x[3], req) : aeval(x[5], req);
+      if (x[0] === 'project') return req[x[2]];
+      if (x[1] === 'request') return aeval(term(adefs[x[0]].body), req);
+      const [l, r] = [aeval(x[0], req), aeval(x[2], req)];
+      return { '=?': l === r, '<?': l < r, '<=?': l <= r, '||': l || r }[x[1]];
+    };
+    const aAnswer = Object.fromEntries(Object.entries(am.names.answers).map(([o, d]) => [acode(d), o]));
+    const everyAllen = allen.app.fields.reduce((reqs, f) => reqs.flatMap((r) => [0, 1, 2, 3, 4].map((v) => ({ ...r, [f.name]: v }))), [{}]);
+    ok(allenOwned.stepNames.length === 3 && adefs.judge.body.startsWith('(if ((project request astart) =? (project request bstart))'), 'the number table is factored by how astart and bstart stand: equal, below, above');
+    ok(everyAllen.every((r) => aAnswer[aeval(term(adefs.judge.body), Object.fromEntries(Object.entries(r).map(([f, v]) => [am.names.fields[f].id, v])))] === judge(am.spec, r).outcome), 'the pair-factored decision answers as the first-match chain, for every request');
     // A request takes up to sixteen fields (the prism-code-wide-requests patch, UOR-Foundation/PrismPM#679).
     const pad = (p, n) => ({ ...p, app: { ...p.app, fields: [...p.app.fields, ...Array.from({ length: n - p.app.fields.length }, (_, i) => ({ name: `pad${i}`, kind: 'choice', values: ['a', 'b'] }))], examples: p.app.examples.map((e) => ({ ...e, request: `${e.request}${' a'.repeat(n - p.app.fields.length)}` })) } });
     ok(deriveModel(pad(rule30(), 16)).spec.fields.length === 16, 'a decision of sixteen fields is built');
