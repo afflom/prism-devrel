@@ -447,7 +447,7 @@ function siteJson(set, router, claims) {
       claim: props.map((c) => `${c.id}: ${c.statement.replace(/^The app/, `the ${c.app} app`)}.`).join(' '),
       proposition: { name: 'dispatch', text: router.apps.map((m) => `${m.spec.name} request := ${m.module}.judge request`).join('\n'), plain: set.purpose },
       theorems: props.map((c) => ({ name: c.theorem, statement: `no request meets ${c.breaks}: ${c.statement.replace(/^The app/, `the ${c.app} app`)}`, how: 'Proved by linear arithmetic, checked by the Lean kernel by prismpm verify in CI', where: `app/src/${c.proofs}.lex.tex` })),
-      pinned: props.map((c) => ({ name: c.test, what: `${c.id}'s condition and the theorem that no request meets it. A string-matching test, not a theorem: a planted defect fails it.`, where: `crates/conformance/tests/${setSuiteOf(set)}.rs` })),
+      pinned: props.map((c) => ({ name: c.test, what: `${c.id}'s condition and the theorem that no request meets it. A string-matching test, not a theorem: a planted defect fails it.`, where: SET_TESTS })),
       attestations: {
         proof: { id: 'not recorded: the proof ran in the SDK image, not on the UOR MCP server', url: `${url}/actions/workflows/bootstrap.yml` },
         build: { id: 'printed by prismpm verify in every pages run', url: `${url}/actions/workflows/pages.yml` },
@@ -561,15 +561,16 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   if ([...prefixes.values()].includes(setPrefix)) throw new SpecError(`The set's prefix ${setPrefix} is also an app's; rename the set.`, 'name');
   claims.push(...facets);
   files[`features/suites/${setSuite}.feature`] = scenarios(setSuite, set.purpose, facets);
-  files[`crates/conformance/tests/${setSuite}.rs`] = rustTests(setSuite, claims);
+  // A new test file is new non-Prism code, so a fresh instance keeps the set's suite in the template's.
+  files[host ? `crates/conformance/tests/${setSuite}.rs` : SET_TESTS] = rustTests(setSuite, claims);
   // The template's example app (suite `contract`) is replaced, so its register row goes with it.
   const owned = new Set([setSuite, ...models.map((m) => m.suite), ...(host ? [] : ['contract'])]);
   files['model/ids.toml'] = idsToml(current('model/ids.toml') ?? TEMPLATE['model/ids.toml'], owned, claims);
   if (!host) files['site/app.json'] = siteJson(set, router, claims);
-  const perApp = models.map((m) => `crates/conformance/tests/${m.suite}.rs`).filter((p) => !(p in files));
-  return { files, remove: [...TEMPLATE_EXAMPLE, 'app/prompt.json', ...perApp], set, models, router, claims };
+  const perApp = [setSuite, ...models.map((m) => m.suite)].map((s) => `crates/conformance/tests/${s}.rs`);
+  return { files, remove: [...TEMPLATE_EXAMPLE, 'app/prompt.json', ...perApp].filter((p) => !(p in files)), set, models, router, claims };
 }
 
-const setSuiteOf = (set) => suiteOf({ name: set.name });
+const SET_TESTS = 'crates/conformance/tests/contract.rs';
 
 export { describeConditions };
