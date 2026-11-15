@@ -120,3 +120,9 @@ fn guides_dr_21() {
 fn build_set_dr_22() {
     builder("DR-22");
 }
+
+/// `DR-54`: Build-set describes the set as one system when the set has a system record: an OPM system diagram (main process, beneficiary and the attribute it changes, instruments, inputs, results) and its zoom into parts, each part zooming into the decisions it holds, with every app a part's exactly once, a part no app realizes stating what it owes, and one compliance obligation per standard the system names; a record missing any of these is refused
+#[test]
+fn build_set_system_dr_54() {
+    builder("DR-54");
+}

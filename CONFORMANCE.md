@@ -52,6 +52,7 @@ model does not sanction.
 | `DR-51` | `build` | Every Prism facet has a concept page that explains the facet from its standard and shows how each case study declares it, with record counts read from the subjects |
 | `DR-52` | `build` | Every old learn/ address redirects to the page that replaced it, so no published link breaks |
 | `DR-53` | `build` | Every subject pin moves only forward, to the newest main commit whose gate workflow passed, and the catalogs are regenerated from the new pins without anyone editing them |
+| `DR-54` | `build` | build-set describes the set as one system when the set has a system record: an OPM system diagram (main process, beneficiary and the attribute it changes, instruments, inputs, results) and its zoom into parts, each part zooming into the decisions it holds, with every app a part's exactly once, a part no app realizes stating what it owes, and one compliance obligation per standard the system names; a record missing any of these is refused |
 
 ## fidelity
 

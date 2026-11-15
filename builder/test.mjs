@@ -406,6 +406,49 @@ const CASES = {
     const twinIds = twins.claims.map((c) => c.id);
     ok(twinIds.includes('PCL-01') && twinIds.includes('PCLI-01') && new Set(twinIds).size === twinIds.length, "a prefix an earlier app of the set holds is lengthened from the later app's last word");
   },
+  // A set with a system record is described as one system: an OPM system diagram at the top, zooming into its parts and their apps.
+  async 'DR-54'() {
+    const names = ['kappa-namespace-authorization', 'prismpm-container-lifecycle', 'dataflow-policy-check'];
+    const prompts = names.map((n) => readPrompt(JSON.parse(readFileSync(join(examples, `${n}.prompt.json`), 'utf8'))));
+    const system = {
+      name: 'Gallery',
+      text: 'Three gallery apps working as one system.',
+      frame: 'one system of three decisions',
+      mainProcess: { name: 'Deciding', text: 'Answering every request one of the parts takes.' },
+      beneficiary: { name: 'Operator', text: 'The person the decisions serve.' },
+      attribute: { name: 'Confidence', text: 'How sure the operator is of what may happen.', from: { name: 'Unsure', text: 'Unsure.' }, to: { name: 'Sure', text: 'Sure.' } },
+      instruments: [{ component: 'browser' }],
+      inputs: [{ name: 'Requests', kind: 'externalSystem', text: 'Where requests come from.' }],
+      results: [{ name: 'Decision log', kind: 'database', text: 'What was decided.' }],
+      parts: [
+        { name: 'Access', process: 'Deciding access', text: 'Who may act.', decisions: [names[0]] },
+        { name: 'Lifecycle', process: 'Running containers', text: 'What a container does next.', decisions: [names[1]] },
+        { name: 'Flow', process: 'Checking flows', text: 'What may flow.', decisions: [names[2]] },
+        { name: 'Audit', process: 'Auditing', text: 'Looking back.', owed: 'No app decides it yet.' },
+      ],
+      standards: [{ key: 'iso-19450', title: 'ISO/PAS 19450:2015 Object-Process Methodology', settles: 'The system diagram.' }],
+    };
+    const set = { schema: 'prism/prompt-set/1', name: 'gallery-set', title: 'Gallery set', purpose: 'Three gallery apps in one application.', repository: 'afflom/prism-devrel', prompts: names.map((n) => `${n}.prompt.json`), system };
+    const { files } = await buildSet(set, prompts, { lastModified: AT });
+    const declares = (path, name) => new RegExp(`^ {2}name: ${name},$`, 'm').test(files[path]);
+    for (const n of ['stakeholderOperator', 'concernSystemConfidence', 'viewpointSystem', 'viewSystem', 'componentSystemGallery', 'componentSystemOperator', 'componentSystemRequests', 'componentSystemDecisionLog', 'edgeSystemRequestsToGallery', 'edgeSystemOperatorToGallery'])
+      ok(declares('app/src/Architecture.lex.tex', n), `Architecture declares ${n}`);
+    for (const n of ['designViewSystem', 'designViewSystemParts', 'processSystemDeciding', 'stateSystemUnsure', 'stateSystemSure', 'opmSystemOperatorAgent', 'opmSystemOperatorEffect', 'opmSystemBrowserInstrument', 'opmSystemRequestsConsumed', 'opmSystemDecisionLogResult', ...system.parts.flatMap((p) => [`processSystemPart${p.name}`, `opmSystemZoom${p.name}`])])
+      ok(declares('app/src/Design.lex.tex', n), `Design declares ${n}`);
+    for (const p of system.parts.filter((x) => x.decisions))
+      ok(files['app/src/Design.lex.tex'].includes(`opmSystemZoom${p.name}${p.decisions[0].split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join('')}`), `${p.name} zooms into ${p.decisions[0]}`);
+    ok(files['app/src/Compliance.lex.tex'].includes('subject := "Gallery: iso-19450"'), 'Compliance holds an obligation for the standard');
+    const plain = await buildSet({ ...set, system: undefined }, prompts, { lastModified: AT });
+    ok(!plain.files['app/src/Design.lex.tex'].includes('designViewSystem'), 'a set without a system record has no system diagram');
+    const without = (k) => Object.fromEntries(Object.entries(system).filter(([key]) => key !== k));
+    for (const k of ['name', 'mainProcess', 'beneficiary', 'attribute', 'instruments', 'inputs', 'results', 'parts']) await refused(() => buildSet({ ...set, system: without(k) }, prompts, { lastModified: AT }), /system/, `a system without ${k} is refused`);
+    const parts = (ps) => buildSet({ ...set, system: { ...system, parts: ps } }, prompts, { lastModified: AT });
+    await refused(() => parts(system.parts.slice(1)), /is not|are not/, 'an app in no part is refused');
+    await refused(() => parts([...system.parts, { name: 'Again', process: 'p', text: 't', decisions: [names[0]] }]), /both/, 'an app in two parts is refused');
+    await refused(() => parts([...system.parts, { name: 'Empty', process: 'p', text: 't' }]), /owed/, 'a part that holds no app and owes nothing is refused');
+    await refused(() => parts([...system.parts, { name: 'Ghost', process: 'p', text: 't', decisions: ['no-such-app'] }]), /no app of the set/, 'a part holding an unknown app is refused');
+    await refused(() => buildSet({ ...set, system: { ...system, instruments: [{ component: 'printer' }] } }, prompts, { lastModified: AT }), /component/, 'an unknown shared component is refused');
+  },
   async 'DR-07'() {
     const good = rule30();
     ok(deriveModel(good).spec.rules.length === 3, 'the Rule 30 prompt is accepted');

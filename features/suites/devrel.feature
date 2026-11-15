@@ -171,6 +171,13 @@ Feature: devrel
     And no declaration name repeats across the modules the guest compiles, and every line past 100 columns is a term or a lone name, as lexlean fmt leaves it
     And the router answers every vector of every app, prefixed with the app's name, as the app does, and answers its own vectors, and every claim id is distinct, each app's from the initials of its name and the facets' from the set's
 
+  @DR-54 @build
+  Scenario: Build-set describes the set as one system when the set has a system record: an OPM system diagram (main process, beneficiary and the attribute it changes, instruments, inputs, results) and its zoom into parts, each part zooming into the decisions it holds, with every app a part's exactly once, a part no app realizes stating what it owes, and one compliance obligation per standard the system names; a record missing any of these is refused
+    Given the DR-22 prompt set with a system record whose three parts hold its three apps
+    When builder/test.mjs DR-54 builds it, and builds it again with each role taken away
+    Then Architecture declares the beneficiary, the system viewpoint and the system's components, Design declares the system diagram and its zoom with the main process, every part's process and a zoom into every app's Decide process, and Compliance holds an obligation per standard
+    And a record without a role, with an app in no part or in two, or with a part that neither holds an app nor owes one, is refused
+
   @DR-50 @build
   Scenario: Every subject in devrel/subjects.json has a case study under case-studies/<slug>/, read from every facet record of the subject at its pinned commit, or at the commit being built for the self subject, and the case studies index lists every subject
     Given a subjects file listing a pinned subject checked out under --checkouts and this repository as the self subject

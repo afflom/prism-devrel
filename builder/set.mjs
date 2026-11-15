@@ -33,6 +33,7 @@ import { listDefinitions, reflow } from './lean.mjs';
 import { renderMachineModel, renderMachineProofs } from './machine.mjs';
 import { deriveModel } from './model.mjs';
 import { DFD_OF, STRIDE, STRIDE_PER_ELEMENT, STRIDE_TEXT } from './prompt.mjs';
+import { addSystem, readSystem } from './system.mjs';
 
 export const SET_SCHEMA = 'prism/prompt-set/1';
 
@@ -102,6 +103,9 @@ function idPrefixes(models, taken = new Set()) {
 /** One model of the facets of every app in the set: the records each app derives, with what they share made one. */
 export function mergeModels(set, models) {
   const P = 'Architecture::';
+  let systemObligations = [];
+  // A part names its decisions as the set lists their prompts, without `.prompt.json`.
+  const stems = (set.prompts ?? []).map((f) => String(f).replace(/\.prompt\.json$/, ''));
   const rename = new Map();
   // ---- Architecture: shared stakeholders and components become one record.
   const stakeholders = new Map();
@@ -167,19 +171,31 @@ export function mergeModels(set, models) {
   for (const m of models) for (const c of m.architecture.concerns) concernNames.set(c.name, (concernNames.get(c.name) ?? 0) + 1);
   for (const m of models) for (const c of m.architecture.concerns) if (concernNames.get(c.name) > 1) c.name = `${c.name}: ${m.title}`;
 
-  const architecture = {
-    stakeholders: indexed([...stakeholders.values()]),
-    concerns: indexed(models.flatMap((m) => m.architecture.concerns)),
-    components: indexed(allComponents),
-    edges: indexed([...edges.values()]),
-    viewpoints: indexed(models.flatMap((m) => m.architecture.viewpoints)),
-    views: indexed(models.flatMap((m) => m.architecture.views)),
-  };
-
   // ---- Design: every app's views, with references to merged records renamed.
   const keys = ['processes', 'states', 'views', 'opmThings', 'opmStates', 'opmLinks', 'opmZooms', 'umlComponents', 'umlConnectors', 'lifelines', 'messages', 'umlStates', 'transitions'];
   const design = Object.fromEntries(keys.map((k) => [k, models.flatMap((m) => m.design[k])]));
   renameStrings(design, rename);
+
+  // ---- The system as a whole (system.mjs): its records join the merged ones before they are indexed.
+  const top = { stakeholders: [...stakeholders.values()], concerns: models.flatMap((m) => m.architecture.concerns), components: allComponents, edges: [...edges.values()], viewpoints: models.flatMap((m) => m.architecture.viewpoints), views: models.flatMap((m) => m.architecture.views) };
+  const system = set.system
+    ? addSystem(readSystem(set.system, stems), {
+        ...top,
+        design,
+        compliance: (systemObligations = []),
+        shared: (key) => components.get(key),
+        decide: (stem) => models[stems.indexOf(stem)].design.processes.find((p) => p.name === 'Decide').decl,
+      })
+    : null;
+
+  const architecture = {
+    stakeholders: indexed(top.stakeholders),
+    concerns: indexed(top.concerns),
+    components: indexed(top.components),
+    edges: indexed(top.edges),
+    viewpoints: indexed(top.viewpoints),
+    views: indexed(top.views),
+  };
 
   // ---- Features and journeys.
   const features = { features: models.flatMap((m) => m.features.features), journeys: models.flatMap((m) => m.features.journeys) };
@@ -271,7 +287,8 @@ export function mergeModels(set, models) {
     features,
     security,
     quality,
-    compliance: [...obligations.values()],
+    compliance: [...obligations.values(), ...systemObligations],
+    system,
   };
 }
 
