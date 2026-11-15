@@ -244,7 +244,8 @@ export function mergeModels(set, models) {
   // ---- Compliance: one obligation per standard and subject, with every app's evidence.
   const obligations = new Map();
   for (const m of models)
-    for (const o of m.compliance) {
+    // prismpm verify does not regenerate the design/ files a set's merged views emit (PP5004), so a set ships no Design module yet.
+    for (const o of m.compliance.filter((x) => x.subject !== 'Design views')) {
       // The three facet theorems are the set's; every other obligation is an app's, so no evidence list outgrows a list part.
       const own = !['Architecture description', 'Product quality', 'Application security and risk', 'Control set'].includes(o.subject);
       const subject = own ? `${m.title}: ${o.subject}` : o.subject;
@@ -272,6 +273,7 @@ export function mergeModels(set, models) {
     security,
     quality,
     compliance: [...obligations.values()],
+    withoutDesign: true,
   };
 }
 
@@ -511,7 +513,7 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   // lexlean.toml: the set's modules, and every other entrypoint the project already has.
   const ownedSrc = Object.keys(files).filter((p) => p.startsWith('app/src/') && !p.startsWith('app/src/Foundation/') && !p.startsWith('app/src/Production/'));
   const before = current('app/lexlean.toml') ?? '';
-  const kept = [...(/^entrypoints = \[(.*)\]$/m.exec(before)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map((x) => x[1]).filter((e) => !ownedSrc.includes(`app/${e}`) && !(host ? [] : TEMPLATE_EXAMPLE).includes(`app/${e}`) && current(`app/${e}`) !== undefined);
+  const kept = [...(/^entrypoints = \[(.*)\]$/m.exec(before)?.[1] ?? '').matchAll(/"([^"]+)"/g)].map((x) => x[1]).filter((e) => !ownedSrc.includes(`app/${e}`) && !(host ? [] : [...TEMPLATE_EXAMPLE, 'app/src/Design.lex.tex']).includes(`app/${e}`) && current(`app/${e}`) !== undefined);
   const entrypoints = [...new Set([...ownedSrc.map((p) => p.slice('app/'.length)), ...kept])].sort();
   const declared = (text) => text + ['prism.arch', 'prism.qual', 'prism.sec'].filter((p) => !text.includes(`package = "${p}"`)).map((p) => `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n\n`).join('');
   const lexicons = before.includes('[[lexicon_source]]') ? declared(before.slice(before.indexOf('[[lexicon_source]]'), before.indexOf('[limits]')).replace(/\n*$/, '\n\n')) : [['lexlean.std.nat', 'builtin'], ...['prism.arch', 'prism.qual', 'prism.sec'].map((p) => [p, 'path'])].map(([p, k]) => (k === 'builtin' ? `[[lexicon_source]]\npackage = "${p}"\nkind = "builtin"\n` : `[[lexicon_source]]\npackage = "${p}"\nkind = "path"\npath = "language/${p}"\n`)).join('\n') + '\n';
@@ -568,7 +570,7 @@ export async function buildSet(input, prompts, { lastModified, current = () => u
   files['model/ids.toml'] = idsToml(current('model/ids.toml') ?? TEMPLATE['model/ids.toml'], owned, claims);
   if (!host) files['site/app.json'] = siteJson(set, router, claims);
   const perApp = [setSuite, ...models.map((m) => m.suite)].map((s) => `crates/conformance/tests/${s}.rs`);
-  return { files, remove: [...TEMPLATE_EXAMPLE, 'app/prompt.json', ...perApp].filter((p) => !(p in files)), set, models, router, claims };
+  return { files, remove: [...TEMPLATE_EXAMPLE, 'app/prompt.json', 'app/src/Design.lex.tex', ...perApp].filter((p) => !(p in files)), set, models, router, claims };
 }
 
 const SET_TESTS = 'crates/conformance/tests/contract.rs';

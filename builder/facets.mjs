@@ -251,7 +251,7 @@ export function compliance(m) {
     | List.cons item rest => (((project item index) =? position) && ((hasEvidence (project item evidence)) && (obligationsEvidenced (position + 1) rest))))`, { parameters: ['position : Nat', 'items : (List Obligation)'], recursive: 'items' }),
     theorem('everyObligationEvidenced', '((obligationsEvidenced 0 (obligations)) = true)'),
   ];
-  return moduleText({ name: 'Compliance', glossaries: [BOOL, NAT, ARCH], imports: ['Architecture', 'Design', 'Quality', 'Security', ...(m.modules ?? [m.module])], title: 'standards reference', declarations: decls });
+  return moduleText({ name: 'Compliance', glossaries: [BOOL, NAT, ARCH], imports: ['Architecture', ...(m.withoutDesign ? [] : ['Design']), 'Quality', 'Security', ...(m.modules ?? [m.module])], title: 'standards reference', declarations: decls });
 }
 
 /** The facet modules, by path under app/. */
@@ -259,7 +259,7 @@ export function facetModules(m) {
   return {
     'src/Architecture.lex.tex': architecture(m),
     'src/Compliance.lex.tex': compliance(m),
-    'src/Design.lex.tex': design(m),
+    ...(m.withoutDesign ? {} : { 'src/Design.lex.tex': design(m) }),
     'src/Features.lex.tex': features(m),
     'src/Quality.lex.tex': quality(m),
     'src/Security.lex.tex': security(m),
