@@ -650,6 +650,11 @@ record = "Catalog::sections#1"
 axis = "derived"
 
 [[closed]]
+kappa = "355bf073c8090ba8f515d1ad2f1f4da2650568220fed75f8b3ff2ab0ab4d87bd"
+record = "Catalog::sections#1"
+axis = "derived"
+
+[[closed]]
 kappa = "4e250895c5687295fd1667d93300e7c5865e8e7d55520a8e738996100670ca7b"
 record = "Catalog::sections#1"
 axis = "derived"
@@ -891,6 +896,11 @@ axis = "meant"
 
 [[closed]]
 kappa = "cb112dce2eb63d5900a1b0d35100715cfaa3056cc8ad82fae1b489dbbf81a3c6"
+record = "Catalog::subject"
+axis = "meant"
+
+[[closed]]
+kappa = "d05660698978682ef5212d6cfea8d985750def9ab8f59b73fa5ba2bcfa53e7e4"
 record = "Catalog::subject"
 axis = "meant"
 
@@ -102151,7 +102161,7 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "35b7633ba9706899420fa3dd6e723df74cd1dba4ffe0dc8df4d0b9b6c0bfc06d"
+kappa = "bd48fc71a9b964e914aa2f2ed1951d8bbdcbed36a30764ac23eb79147e1baced"
 record = "Catalog::sections#1"
 axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
@@ -102175,7 +102185,7 @@ axis = "meant"
 reason = "no theorem states anything about it (ISO/IEC/IEEE 29148 verification)"
 
 [[residue]]
-kappa = "4dbcac8d3326da72382ff76f036d78d82a97056098005cf1ca238398edbe9a8a"
+kappa = "bd368e3bc743617d6abd05fac9e97e0b405941fe674c47009d2397ddc0861c2a"
 record = "Catalog::subject"
 axis = "derived"
 reason = "no derivation names it (prov:wasDerivedFrom)"
